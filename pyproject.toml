@@ -10,6 +10,7 @@ pandas = "^1.1.2"
 click = "^7.1.2"
 
 [tool.poetry.dev-dependencies]
+pytest = "^6.1.0"
 
 [tool.poetry.scripts]
 visualize = "thesis.visualize:main"
