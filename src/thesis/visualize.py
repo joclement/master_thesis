@@ -1,5 +1,6 @@
 import click
-import pandas as pd
+
+from thesis import measurement
 
 from . import __version__
 
@@ -10,5 +11,5 @@ from . import __version__
 def main(measurement_filepath):
     "Plot visualization of measurement file csv"
 
-    df = pd.read_csv(measurement_filepath, sep=";")
+    df = measurement.read(measurement_filepath)
     click.echo(df.head(10))
