@@ -20,5 +20,13 @@ visualize = "thesis.visualize:main"
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
 
+[tool.coverage.paths]
+source = ["src", "*/site-packages"]
+
+[tool.coverage.run]
+branch = true
+source = ["thesis"]
+
 [tool.coverage.report]
-fail_under = 20
+show_missing = true
+fail_under = 80
