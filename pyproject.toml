@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "thesis"
+version = "0.1.0"
+description = ""
+authors = ["Joris Clement <j.clement@campus.tu-berlin.de>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pandas = "^1.1.2"
+click = "^7.1.2"
+
+[tool.poetry.dev-dependencies]
+
+[tool.poetry.scripts]
+visualize = "thesis.visualize:main"
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
