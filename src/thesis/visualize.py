@@ -1,8 +1,6 @@
 import click
 
-from thesis import measurement
-
-from . import __version__
+from . import __version__, measurement
 
 
 @click.command()
