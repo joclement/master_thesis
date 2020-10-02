@@ -1,4 +1,8 @@
 [flake8]
-select = C,E,F,W
+select = BLK,C,E,F,I,W
+ignore = E203,W503
+max-line-length = 88
 max-complexity = 10
+application-import-names = thesis,tests
+import-order-style = google
 

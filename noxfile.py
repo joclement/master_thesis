@@ -14,7 +14,7 @@ def tests(session):
 @nox.session(python=["3.8"])
 def lint(session):
     args = session.posargs or LOCATIONS
-    session.install("flake8")
+    session.install("flake8", "flake8-black", "flake8-import-order")
     session.run("flake8", *args)
 
 
