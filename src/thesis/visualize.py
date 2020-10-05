@@ -1,7 +1,7 @@
 import click
 import matplotlib.pyplot as plt
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 from . import __version__, measurement
 
