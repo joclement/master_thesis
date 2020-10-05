@@ -1,7 +1,24 @@
 import click
 import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
 
 from . import __version__, measurement
+
+
+def plot_number_of_pds_over_time(plt, df):
+    bins = np.arange(0, df[measurement.TIME].max(), 1)
+    counts = df.groupby(pd.cut(df[measurement.TIME], bins=bins)).size()
+    fake = np.array([])
+    for i in range(len(counts)):
+        a, b = bins[i], bins[i + 1]
+        print(counts[i])
+        sample = a + (b - a) * np.ones(counts[i])
+        fake = np.append(fake, sample)
+    plt.hist(fake, bins=bins)
+
+    plt.xlabel("t in seconds")
+    plt.ylabel("Number of PDs")
 
 
 @click.command()
@@ -27,5 +44,11 @@ def main(measurement_filepath, output_folder, show):
     plt.ylabel("Δt in seconds")
     if output_folder:
         plt.savefig(f"{output_folder}/DeltaTOverTime.png")
+    if show:
+        plt.show()
+
+    plot_number_of_pds_over_time(plt, df)
+    if output_folder:
+        plt.savefig(f"{output_folder}/NumberOfPDsOverTime.png")
     if show:
         plt.show()
