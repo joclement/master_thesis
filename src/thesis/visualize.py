@@ -12,7 +12,6 @@ def plot_number_of_pds_over_time(plt, df):
     fake = np.array([])
     for i in range(len(counts)):
         a, b = bins[i], bins[i + 1]
-        print(counts[i])
         sample = a + (b - a) * np.ones(counts[i])
         fake = np.append(fake, sample)
     plt.hist(fake, bins=bins)
