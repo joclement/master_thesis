@@ -6,6 +6,18 @@ import pandas as pd
 from . import __version__, measurement
 
 
+def plot_pd_volts_over_time(plt, df):
+    plt.scatter(df[measurement.TIME], df[measurement.PD], marker=".")
+    plt.xlabel("t in seconds")
+    plt.ylabel("PD in nV")
+
+
+def plot_timediff_between_pds_over_time(plt, df):
+    plt.scatter(df[measurement.TIME][1:], df[measurement.TIMEDIFF][1:], marker=".")
+    plt.xlabel("t in seconds")
+    plt.ylabel("Δt in seconds")
+
+
 def plot_number_of_pds_over_time(plt, df):
     bins = np.arange(0, df[measurement.TIME].max(), 1)
     counts = df.groupby(pd.cut(df[measurement.TIME], bins=bins)).size()
@@ -30,17 +42,13 @@ def main(measurement_filepath, output_folder, show):
 
     df = measurement.read(measurement_filepath)
 
-    plt.scatter(df[measurement.TIME], df[measurement.PD], marker=".")
-    plt.xlabel("t in seconds")
-    plt.ylabel("PD in nV")
+    plot_pd_volts_over_time(plt, df)
     if output_folder:
         plt.savefig(f"{output_folder}/PDOverTime.png")
     if show:
         plt.show()
 
-    plt.scatter(df[measurement.TIME][1:], df[measurement.TIMEDIFF][1:], marker=".")
-    plt.xlabel("t in seconds")
-    plt.ylabel("Δt in seconds")
+    plot_timediff_between_pds_over_time(plt, df)
     if output_folder:
         plt.savefig(f"{output_folder}/DeltaTOverTime.png")
     if show:
