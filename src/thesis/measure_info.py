@@ -1,9 +1,6 @@
 import click
-from pandas_profiling import ProfileReport
 
 from . import __version__, measurement
-
-PROFILE_REPORT_PATH = "./report.html"
 
 
 @click.command()
@@ -21,8 +18,3 @@ def main(measurement_filepath):
 
     click.echo("\n ============================================================ \n")
     click.echo(df.head(10))
-
-    click.echo("\n ============================================================ \n")
-    click.echo(f"Save pandas profile report to {PROFILE_REPORT_PATH}")
-    report = ProfileReport(df)
-    report.to_file(output_file=PROFILE_REPORT_PATH)
