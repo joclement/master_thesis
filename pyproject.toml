@@ -16,6 +16,7 @@ coverage = "^5.3"
 pytest-cov = "^2.10.1"
 pandas-profiling = "^2.9.0"
 mat4py = "^0.4.3"
+mypy = "^0.790"
 
 [tool.poetry.scripts]
 visualize = "thesis.visualize:main"

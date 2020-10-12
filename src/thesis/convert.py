@@ -35,7 +35,7 @@ def mat2csv(input_path, output_path, recursive):
             _matfile2csvfile(input_file, output_file)
 
 
-def _flatten(list_of_sublists: list):
+def _flatten(list_of_sublists: list) -> list:
     return [item for sublist in list_of_sublists for item in sublist]
 
 
