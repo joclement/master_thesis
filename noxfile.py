@@ -1,6 +1,6 @@
 import nox
 
-nox.options.sessions = "lint", "tests"
+nox.options.sessions = "lint", "mypy", "tests"
 
 LOCATIONS = "src", "tests", "noxfile.py"
 
@@ -23,3 +23,10 @@ def black(session):
     args = session.posargs or LOCATIONS
     session.install("black")
     session.run("black", *args)
+
+
+@nox.session(python="3.8")
+def mypy(session):
+    args = session.posargs or LOCATIONS
+    session.install("mypy")
+    session.run("mypy", *args)
