@@ -8,20 +8,19 @@ authors = ["Joris Clement <j.clement@campus.tu-berlin.de>"]
 python = "^3.8"
 pandas = "^1.1.2"
 click = "^7.1.2"
+scipy = "^1.5.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.1.0"
 coverage = "^5.3"
 pytest-cov = "^2.10.1"
 pandas-profiling = "^2.9.0"
+mat4py = "^0.4.3"
 
 [tool.poetry.scripts]
 visualize = "thesis.visualize:main"
 measure-info = "thesis.measure_info:main"
-
-[build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+mat2csv = "thesis.convert:mat2csv"
 
 [tool.coverage.paths]
 source = ["src", "*/site-packages"]
@@ -33,3 +32,7 @@ source = ["thesis"]
 [tool.coverage.report]
 show_missing = true
 fail_under = 80
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
