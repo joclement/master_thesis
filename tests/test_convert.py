@@ -4,7 +4,7 @@ from pathlib import Path
 import click.testing
 import pytest
 
-from thesis import convert, measurement
+from thesis import convert, data
 
 
 @pytest.fixture
@@ -20,10 +20,10 @@ def test_convert_mat2csv(mat_filepath, tmp_path):
     assert result.exit_code == 0
     assert csv_filepath.exists()
     with open(csv_filepath, "r") as csv_file:
-        reader = csv.reader(csv_file, delimiter=measurement.SEPERATOR)
+        reader = csv.reader(csv_file, delimiter=data.SEPERATOR)
         header = next(reader)
         assert len(header) == 2
-        assert header == [measurement.TIME, measurement.PD]
+        assert header == [data.TIME, data.PD]
         for row in reader:
             assert len(row) == 2
 

@@ -4,24 +4,24 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from . import __version__, measurement
+from . import __version__, data
 
 
 def plot_pd_volts_over_time(df):
-    plt.scatter(df[measurement.TIME], df[measurement.PD], marker=".")
+    plt.scatter(df[data.TIME], df[data.PD], marker=".")
     plt.xlabel("t in seconds")
     plt.ylabel("PD in nV")
 
 
 def plot_timediff_between_pds_over_time(df):
-    plt.scatter(df[measurement.TIME][1:], df[measurement.TIMEDIFF][1:], marker=".")
+    plt.scatter(df[data.TIME][1:], df[data.TIMEDIFF][1:], marker=".")
     plt.xlabel("t in seconds")
     plt.ylabel("Δt in seconds")
 
 
 def plot_number_of_pds_over_time(df):
-    bins = np.arange(0, df[measurement.TIME].max(), 1)
-    counts = df.groupby(pd.cut(df[measurement.TIME], bins=bins)).size()
+    bins = np.arange(0, df[data.TIME].max(), 1)
+    counts = df.groupby(pd.cut(df[data.TIME], bins=bins)).size()
     fake = np.array([])
     for i in range(len(counts)):
         a, b = bins[i], bins[i + 1]
@@ -34,10 +34,10 @@ def plot_number_of_pds_over_time(df):
 
 
 def plot_relation_between_consecutive_pd_volts(df):
-    number_of_bins = int(max(df[measurement.PD]) * 10)
+    number_of_bins = int(max(df[data.PD]) * 10)
     plt.hist2d(
-        df[measurement.PD][:-1],
-        df[measurement.PD][1:],
+        df[data.PD][:-1],
+        df[data.PD][1:],
         number_of_bins,
         [[0, number_of_bins / 10], [0, number_of_bins / 10]],
         cmin=1,
@@ -57,7 +57,7 @@ def plot_relation_between_consecutive_pd_volts(df):
 def main(measurement_filepath, output_folder, show):
     "Plot visualization of measurement file csv"
 
-    df = measurement.read(measurement_filepath)
+    df = data.read(measurement_filepath)
 
     plot_pd_volts_over_time(df)
     if output_folder:
