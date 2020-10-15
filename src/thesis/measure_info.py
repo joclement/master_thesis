@@ -3,7 +3,7 @@ from itertools import combinations
 
 import click
 
-from . import __version__, data
+from . import __version__, data, fingerprint
 
 
 def _echo_measurement_info(df):
@@ -12,6 +12,10 @@ def _echo_measurement_info(df):
     click.echo(df.info())
     click.echo("")
     click.echo(df.head(10))
+
+
+def _echo_fingerprint_info(df):
+    click.echo(fingerprint.tu_graz(df))
 
 
 def _ensure_unique(csv_filepaths: list):
@@ -33,11 +37,16 @@ def main(path, recursive):
     if not recursive:
         df = data.read(path)
         _echo_measurement_info(df)
+        click.echo("")
+        _echo_fingerprint_info(df)
     else:
         measurements, csv_filepaths = data.read_recursive(path)
         _ensure_unique(csv_filepaths)
         for df, csv_filepath in zip(measurements, csv_filepaths):
+            click.echo(f"Info on: '{csv_filepath}'")
             _echo_measurement_info(df)
+            click.echo("")
+            _echo_fingerprint_info(df)
             click.echo(
                 "\n ============================================================ \n"
             )
