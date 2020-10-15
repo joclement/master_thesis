@@ -2,6 +2,7 @@ from enum import Enum
 from pathlib import Path
 from typing import List, Tuple
 
+import numpy as np
 import pandas as pd
 
 TIMEDIFF = "TimeDiff [s]"
@@ -53,6 +54,13 @@ def _get_defect(filename: str) -> Defect:
         raise ValueError(f"No knwown defect found: {filename}")
 
 
+def _do_sanity_test(df: pd.DataFrame):
+    print(df[TIME][:])
+    print(np.sort(df[TIME][:]))
+    if df[TIME].min() < 0.0 or not df[TIME].equals(df[TIME].sort_values()):
+        raise ValueError("Time values seem corrupt.")
+
+
 def read(filepath) -> pd.DataFrame:
     experiment = pd.read_csv(filepath, sep=SEPERATOR, decimal=DECIMAL_SIGN)
     experiment[TIMEDIFF] = experiment[TIME].diff()
@@ -60,6 +68,8 @@ def read(filepath) -> pd.DataFrame:
     filename = Path(filepath).stem
     experiment = _add_voltage_sign(experiment, filename)
     experiment[CLASS] = _get_defect(filename)
+
+    _do_sanity_test(experiment)
 
     return experiment
 
