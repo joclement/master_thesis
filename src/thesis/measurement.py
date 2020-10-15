@@ -1,5 +1,6 @@
 from enum import Enum
 from pathlib import Path
+from typing import List, Tuple
 
 import pandas as pd
 
@@ -52,7 +53,7 @@ def _get_defect(filename: str) -> Defect:
         raise ValueError(f"No knwown defect found: {filename}")
 
 
-def read(filepath):
+def read(filepath) -> pd.DataFrame:
     experiment = pd.read_csv(filepath, sep=SEPERATOR, decimal=DECIMAL_SIGN)
     experiment[TIMEDIFF] = experiment[TIME].diff()
 
@@ -63,9 +64,10 @@ def read(filepath):
     return experiment
 
 
-def read_recursive(dir_path) -> list:
+def read_recursive(dir_path) -> Tuple[List[pd.DataFrame], list]:
     measurements = []
-    for csv_file in Path(dir_path).rglob("*.csv"):
-        measurements.append(read(csv_file))
+    csv_filepaths = list(Path(dir_path).rglob("*.csv"))
+    for csv_filepath in csv_filepaths:
+        measurements.append(read(csv_filepath))
 
-    return measurements
+    return measurements, csv_filepaths
