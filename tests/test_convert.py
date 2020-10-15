@@ -13,7 +13,7 @@ def mat_filepath():
 
 
 def test_convert_mat2csv(mat_filepath, tmp_path):
-    csv_filepath = Path(tmp_path, "measurement_sample.csv")
+    csv_filepath = Path(tmp_path, f"{mat_filepath.stem}.csv")
     assert not csv_filepath.exists()
     runner = click.testing.CliRunner()
     result = runner.invoke(convert.mat2csv, [f"{mat_filepath}", f"{csv_filepath}"])
