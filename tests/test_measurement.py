@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pandas as pd
+
 from thesis import measurement
 
 
@@ -14,5 +16,8 @@ def test_measurement_read(csv_filepath):
 
 
 def test_measurement_read_recursive(csv_filepath):
-    result = measurement.read_recursive(Path(csv_filepath).parent)
-    assert len(result) == 1
+    measurements, csv_filepaths = measurement.read_recursive(Path(csv_filepath).parent)
+    assert len(csv_filepaths) == 1
+    assert csv_filepaths[0] == Path(csv_filepath)
+    assert len(measurements) == 1
+    assert type(measurements[0]) is pd.DataFrame

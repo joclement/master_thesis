@@ -1,3 +1,6 @@
+import filecmp
+from itertools import combinations
+
 import click
 
 from . import __version__, measurement
@@ -9,6 +12,12 @@ def _echo_measurement_info(df):
     click.echo(df.info())
     click.echo("")
     click.echo(df.head(10))
+
+
+def _ensure_unique(csv_filepaths: list):
+    for file1, file2 in combinations(csv_filepaths, 2):
+        if filecmp.cmp(file1, file2):
+            raise ValueError(f"There are duplicates: '{file1}' and '{file2}'")
 
 
 @click.command()
@@ -25,8 +34,9 @@ def main(path, recursive):
         df = measurement.read(path)
         _echo_measurement_info(df)
     else:
-        measurements = measurement.read_recursive(path)
-        for df in measurements:
+        measurements, csv_filepaths = measurement.read_recursive(path)
+        _ensure_unique(csv_filepaths)
+        for df, csv_filepath in zip(measurements, csv_filepaths):
             _echo_measurement_info(df)
             click.echo(
                 "\n ============================================================ \n"
