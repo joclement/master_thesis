@@ -4,7 +4,7 @@ import click
 import pandas as pd
 import scipy.io
 
-from . import __version__, measurement
+from . import __version__, data
 
 
 @click.command()
@@ -47,11 +47,11 @@ def _matfile2csvfile(mat_filepath, csv_filepath):
         mat = {key: _flatten(value) for key, value in mat.items()}
     else:
         raise ValueError("MAT file not convertable")
-    data = pd.DataFrame({k: pd.Series(v) for k, v in mat.items()})
-    data = data.rename(columns={"tm": measurement.TIME, "V": measurement.PD})
-    data.to_csv(
+    measurement = pd.DataFrame({k: pd.Series(v) for k, v in mat.items()})
+    measurement = measurement.rename(columns={"tm": data.TIME, "V": data.PD})
+    measurement.to_csv(
         csv_filepath,
-        sep=measurement.SEPERATOR,
+        sep=data.SEPERATOR,
         index=False,
-        decimal=measurement.DECIMAL_SIGN,
+        decimal=data.DECIMAL_SIGN,
     )

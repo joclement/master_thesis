@@ -3,7 +3,7 @@ from itertools import combinations
 
 import click
 
-from . import __version__, measurement
+from . import __version__, data
 
 
 def _echo_measurement_info(df):
@@ -31,10 +31,10 @@ def main(path, recursive):
     """
 
     if not recursive:
-        df = measurement.read(path)
+        df = data.read(path)
         _echo_measurement_info(df)
     else:
-        measurements, csv_filepaths = measurement.read_recursive(path)
+        measurements, csv_filepaths = data.read_recursive(path)
         _ensure_unique(csv_filepaths)
         for df, csv_filepath in zip(measurements, csv_filepaths):
             _echo_measurement_info(df)
