@@ -2,7 +2,6 @@ from enum import Enum
 from pathlib import Path
 from typing import List, Tuple
 
-import numpy as np
 import pandas as pd
 
 TIMEDIFF = "TimeDiff [s]"
@@ -55,8 +54,6 @@ def _get_defect(filename: str) -> Defect:
 
 
 def _do_sanity_test(df: pd.DataFrame):
-    print(df[TIME][:])
-    print(np.sort(df[TIME][:]))
     if df[TIME].min() < 0.0 or not df[TIME].equals(df[TIME].sort_values()):
         raise ValueError("Time values seem corrupt.")
 
