@@ -21,7 +21,7 @@ TD_WEIBULL_B = "TimeDiff Weibull B"
 PDS_PER_SEC = "Number of PDs/sec"
 
 
-# TODO ensure that weibull fit is correct
+# TODO Issue #22: ensure that weibull fit is correct
 def calc_weibull_params(data: Union[list, pd.Series]) -> Tuple[float, float]:
     weibull_a, _, weibull_b = stats.weibull_min.fit(data, floc=0.0)
     return weibull_a, weibull_b
@@ -31,9 +31,9 @@ def tu_graz(df: pd.DataFrame) -> pd.Series:
     finger = pd.Series(dtype=float)
 
     finger[PD_VAR] = df[data.PD].var()
-    # TODO ensure that skewness is not 0 because of numerical problem
+    # TODO Issue #23: ensure that skewness is not 0 because of numerical problem
     finger[PD_SKEW] = df[data.PD].skew()
-    # TODO ensure that skewness is not 0 because of numerical problem
+    # TODO Issue #23: ensure that skewness is not 0 because of numerical problem
     finger[PD_KURT] = df[data.PD].kurt()
     finger[PD_WEIBULL_A], finger[PD_WEIBULL_B] = calc_weibull_params(df[data.PD])
     finger[TD_MAX] = df[data.TIMEDIFF].max()
