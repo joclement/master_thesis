@@ -80,8 +80,7 @@ def read_recursive(dir_path) -> Tuple[List[pd.DataFrame], list]:
     return measurements, csv_filepaths
 
 
-class Normalizer():
-
+class Normalizer:
     def __init__(self, measurements: List[pd.DataFrame]):
         self.max_pd = max([measurement[PD].max() for measurement in measurements])
         self.max_timediff = max(
@@ -95,6 +94,6 @@ class Normalizer():
 
 
 def split_train_test(measurements: list, train_size=0.7) -> Tuple[list, list]:
-    train = measurements[:int(len(measurements) * train_size)]
-    test = measurements[len(train):]
+    train = measurements[: int(len(measurements) * train_size)]
+    test = measurements[len(train) :]
     return train, test
