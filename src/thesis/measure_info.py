@@ -50,3 +50,17 @@ def main(path, recursive):
             click.echo(
                 "\n ============================================================ \n"
             )
+
+        min_pd = min([measurement[data.PD].min() for measurement in measurements])
+        max_pd = max([measurement[data.PD].max() for measurement in measurements])
+        min_timediff = min(
+            [measurement[data.TIMEDIFF].min() for measurement in measurements]
+        )
+        max_timediff = max(
+            [measurement[data.TIMEDIFF].max() for measurement in measurements]
+        )
+
+        click.echo(f"Overall min PD value: {min_pd}")
+        click.echo(f"Overall max PD value: {max_pd}")
+        click.echo(f"Overall min TimeDiff value: {min_timediff}")
+        click.echo(f"Overall max TimeDiff value: {max_timediff}")
