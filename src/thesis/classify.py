@@ -1,6 +1,6 @@
 import click
-from sklearn.neighbors import KNeighborsClassifier
 from sklearn import metrics
+from sklearn.neighbors import KNeighborsClassifier
 
 from . import __version__, data, fingerprint, util
 
@@ -33,9 +33,7 @@ def main(directory):
     k_nn.fit(x_train, y_train)
     predictions = k_nn.predict(x_test)
 
-    click.echo(
-        f"Accuracy: {metrics.accuracy_score(y_test, predictions)}"
-    )
+    click.echo(f"Accuracy: {metrics.accuracy_score(y_test, predictions)}")
 
     predictions = [data.Defect(i).name for i in predictions]
     y_test = [data.Defect(i).name for i in y_test]

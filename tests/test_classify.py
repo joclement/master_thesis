@@ -1,9 +1,9 @@
+from itertools import product
 from pathlib import Path
+from shutil import copyfile
 
 import click.testing
-from itertools import product
 import pytest
-from shutil import copyfile
 
 
 from thesis import classify

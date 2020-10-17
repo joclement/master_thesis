@@ -1,5 +1,3 @@
-from sklearn.metrics import confusion_matrix
-
 from thesis import util
 
 
