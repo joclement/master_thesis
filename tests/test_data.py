@@ -21,3 +21,7 @@ def test_data_read_recursive(csv_filepath):
     assert csv_filepaths[0] == Path(csv_filepath)
     assert len(measurements) == 1
     assert type(measurements[0]) is pd.DataFrame
+
+
+def test_data_defect():
+    assert int(data.Defect.free_particle) == 0

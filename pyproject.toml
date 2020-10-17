@@ -10,6 +10,7 @@ pandas = "^1.1.2"
 click = "^7.1.2"
 scipy = "^1.5.2"
 matplotlib = "^3.3.2"
+sklearn = "^0.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.1.0"
@@ -26,6 +27,7 @@ flake8-black = "^0.2.1"
 visualize = "thesis.visualize:main"
 measure-info = "thesis.measure_info:main"
 mat2csv = "thesis.convert:mat2csv"
+classify = "thesis.classify:main"
 
 [tool.coverage.paths]
 source = ["src", "*/site-packages"]

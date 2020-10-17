@@ -48,3 +48,12 @@ def tu_graz(df: pd.DataFrame) -> pd.Series:
     finger[PDS_PER_SEC] = len(df[data.TIME]) / df[data.TIME].max()
 
     return finger
+
+
+def build_set(measurements: list) -> pd.DataFrame:
+    fingers = pd.DataFrame([tu_graz(measurement) for measurement in measurements])
+
+    defects = [measurement[data.CLASS][0] for measurement in measurements]
+    fingers[data.CLASS] = pd.Series(defects, dtype="category")
+
+    return fingers
