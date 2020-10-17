@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import click.testing
 
 from thesis import measure_info
@@ -11,7 +13,7 @@ def test_measure_info_main_succeeds(csv_filepath):
 
 def test_measure_info_main_recursive_succeeds(csv_filepath):
     runner = click.testing.CliRunner()
-    result = runner.invoke(measure_info.main, ["-r", csv_filepath])
+    result = runner.invoke(measure_info.main, ["-r", str(Path(csv_filepath).parent)])
     assert result.exit_code == 0
 
 
