@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import pandas as pd
 
 from thesis import data
@@ -15,20 +13,19 @@ def test_data_read(csv_filepath):
     assert len(set(df[data.VOLTAGE_SIGN])) == 1
 
 
-def test_data_read_recursive(csv_filepath):
-    measurements, csv_filepaths = data.read_recursive(Path(csv_filepath).parent)
-    assert len(csv_filepaths) == 1
-    assert csv_filepaths[0] == Path(csv_filepath)
-    assert len(measurements) == 1
+def test_data_read_recursive(csv_folder):
+    measurements, csv_filepaths = data.read_recursive(csv_folder)
+    assert len(csv_filepaths) == 2
+    assert len(measurements) == 2
     assert type(measurements[0]) is pd.DataFrame
 
 
 def test_data_normalize(csv_filepath):
-    measurements, _ = data.read_recursive(Path(csv_filepath).parent)
-    data.Normalizer(measurements).apply(measurements)
-    assert measurements[0][data.PD].max() == 1.0
-    assert measurements[0][data.TIMEDIFF].max() == 1.0
-    assert measurements[0][data.TIMEDIFF].min() >= 0.0
+    df = data.read(csv_filepath)
+    data.Normalizer([df]).apply([df])
+    assert df[data.PD].max() == 1.0
+    assert df[data.TIMEDIFF].max() == 1.0
+    assert df[data.TIMEDIFF].min() >= 0.0
 
 
 def test_data_split_train_test():

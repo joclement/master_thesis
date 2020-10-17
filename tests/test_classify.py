@@ -1,15 +1,26 @@
 from pathlib import Path
 
 import click.testing
+from itertools import product
+import pytest
+from shutil import copyfile
+
 
 from thesis import classify
 
 
-def test_classify_main_succeeds(csv_filepath):
+@pytest.fixture
+def multiple_csv_files(csv_folder, tmpdir):
+    for idx, csv_file in product(range(5), Path(csv_folder).glob("*.csv")):
+        copyfile(csv_file, Path(tmpdir, f"{csv_file.stem}{idx}.csv"))
+    return str(tmpdir)
+
+
+def test_classify_main_succeeds(multiple_csv_files):
     runner = click.testing.CliRunner()
-    result = runner.invoke(classify.main, [str(Path(csv_filepath).parent)])
-    # note: Only 1 data item can not be split into training and test
-    assert result.exit_code != 0
+    result = runner.invoke(classify.main, [multiple_csv_files])
+    assert result.exit_code == 0
+    assert "Accuracy: 1.0" in result.output
 
 
 def test_classify_version_succeeds():

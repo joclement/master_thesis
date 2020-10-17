@@ -1,5 +1,10 @@
+from sklearn.metrics import confusion_matrix
+
+
 # Original taken from here: https://gist.github.com/zachguo/10296432
-def print_confusion_matrix(cm, labels):
+def print_confusion_matrix(true, pred):
+    labels = set(true + pred)
+    cm = confusion_matrix(true, pred)
     # find which fixed column width will be used for the matrix
     columnwidth = max([len(str(x)) for x in labels] + [5])
 
