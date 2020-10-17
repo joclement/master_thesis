@@ -1,8 +1,9 @@
 import click
-from sklearn.model_selection import train_test_split
+import pandas as pd
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn import metrics
 
-from . import __version__, data, fingerprint
+from . import __version__, data, fingerprint, util
 
 
 @click.command()
@@ -15,16 +16,32 @@ def main(directory):
     """
 
     measurements, _ = data.read_recursive(directory)
-    finger_set = fingerprint.build_set(measurements)
+    train, test = data.split_train_test(measurements)
 
-    x_train, x_test, y_train, y_test = train_test_split(
-        finger_set.drop(data.CLASS, axis=1),
-        finger_set[data.CLASS],
-        test_size=0.3,
-        stratify=[int(defect) for defect in finger_set[data.CLASS]],
-    )
+    normalizer = data.Normalizer(train)
+    normalizer.apply(train)
+    normalizer.apply(test)
+
+    train_fingers = fingerprint.build_set(train)
+    test_fingers = fingerprint.build_set(test)
+
+    x_train = train_fingers.drop(data.CLASS, axis=1)
+    y_train = train_fingers[data.CLASS]
+    x_test = test_fingers.drop(data.CLASS, axis=1)
+    y_test = test_fingers[data.CLASS]
 
     k_nn = KNeighborsClassifier(n_neighbors=1)
     k_nn.fit(x_train, y_train)
-    score = k_nn.score(x_test, y_test)
-    click.echo(score)
+    predictions = k_nn.predict(x_test)
+
+    click.echo(
+        f"Accuracy: {metrics.accuracy_score(y_test, predictions)}"
+    )
+
+    predictions = [data.Defect(i).name for i in predictions]
+    y_test = [data.Defect(i).name for i in y_test]
+    defect_labels = [defect.name for defect in data.Defect]
+
+    click.echo(util.print_confusion_matrix(
+        metrics.confusion_matrix(y_test, predictions),
+        defect_labels))
