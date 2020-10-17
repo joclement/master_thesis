@@ -1,5 +1,4 @@
 import click
-import pandas as pd
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn import metrics
 
@@ -40,8 +39,5 @@ def main(directory):
 
     predictions = [data.Defect(i).name for i in predictions]
     y_test = [data.Defect(i).name for i in y_test]
-    defect_labels = [defect.name for defect in data.Defect]
 
-    click.echo(util.print_confusion_matrix(
-        metrics.confusion_matrix(y_test, predictions),
-        defect_labels))
+    click.echo(util.print_confusion_matrix(y_test, predictions))
