@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, IntEnum
 from pathlib import Path
 from typing import List, Tuple
 
@@ -24,7 +24,7 @@ class VoltageSign(Enum):
     negative = 0
 
 
-class Defect(Enum):
+class Defect(IntEnum):
     free_particle = 0
     particle_insulator = 1
     protrusion = 2
