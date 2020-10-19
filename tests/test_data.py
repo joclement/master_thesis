@@ -5,9 +5,14 @@ from thesis import data
 
 def test_data_read(csv_filepath):
     df = data.read(csv_filepath)
+    assert data.TIME in df
+    assert data.TIMEDIFF in df
+    assert data.PD in df
+
     assert data.CLASS in df
     assert df[data.CLASS][0] == data.Defect.free_particle
     assert len(set(df[data.CLASS])) == 1
+
     assert data.VOLTAGE_SIGN in df
     assert df[data.VOLTAGE_SIGN][0] == data.VoltageSign.positive
     assert len(set(df[data.VOLTAGE_SIGN])) == 1
