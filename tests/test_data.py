@@ -33,11 +33,22 @@ def test_data_normalize(csv_filepath):
     assert df[data.TIMEDIFF].min() >= 0.0
 
 
-def test_data_split_train_test():
-    dataset = range(23)
-    train, test = data.split_train_test(dataset)
-    assert train == range(16)
-    assert test == range(16, 23)
+def test_data_split_train_test(csv_folder):
+    measurements, _ = data.read_recursive(csv_folder)
+    dataset = 10 * [measurements[0]] + 10 * [measurements[1]]
+    assert len(dataset) == 20
+    train, test = data.split_train_test(dataset, test_size=0.3)
+    assert len(train) == 14
+    assert len(test) == 6
+    classes_in_train = [df[data.CLASS][0] for df in train]
+    classes_in_test = [df[data.CLASS][0] for df in test]
+    assert (
+        set(classes_in_train)
+        == set(classes_in_test)
+        == set([data.Defect.free_particle, data.Defect.particle_insulator])
+    )
+    assert classes_in_train.count(data.Defect.free_particle) == 7
+    assert classes_in_test.count(data.Defect.particle_insulator) == 3
 
 
 def test_data_Defect():

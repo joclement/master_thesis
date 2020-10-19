@@ -3,6 +3,8 @@ from pathlib import Path
 from typing import List, Tuple
 
 import pandas as pd
+from sklearn.model_selection import train_test_split
+
 
 TIMEDIFF = "TimeDiff [s]"
 PD = "A [nV]"
@@ -93,7 +95,8 @@ class Normalizer:
         measurement[TIMEDIFF] = measurement[TIMEDIFF] / self.max_timediff
 
 
-def split_train_test(measurements: list, train_size=0.7) -> Tuple[list, list]:
-    train = measurements[: int(len(measurements) * train_size)]
-    test = measurements[len(train) :]
-    return train, test
+def split_train_test(
+    measurements: List[pd.DataFrame], test_size=0.2
+) -> Tuple[list, list]:
+    classes = [df[CLASS][0] for df in measurements]
+    return train_test_split(measurements, test_size=test_size, stratify=classes)
