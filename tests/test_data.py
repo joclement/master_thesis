@@ -20,8 +20,8 @@ def test_data_read(csv_filepath):
 
 def test_data_read_recursive(csv_folder):
     measurements, csv_filepaths = data.read_recursive(csv_folder)
-    assert len(csv_filepaths) == 2
-    assert len(measurements) == 2
+    assert len(csv_filepaths) == 5
+    assert len(measurements) == 5
     assert type(measurements[0]) is pd.DataFrame
 
 
@@ -35,20 +35,17 @@ def test_data_normalize(csv_filepath):
 
 def test_data_split_train_test(csv_folder):
     measurements, _ = data.read_recursive(csv_folder)
-    dataset = 10 * [measurements[0]] + 10 * [measurements[1]]
-    assert len(dataset) == 20
-    train, test = data.split_train_test(dataset, test_size=0.3)
-    assert len(train) == 14
-    assert len(test) == 6
+    dataset = 2 * measurements
+    assert len(dataset) == 10
+    train, test = data.split_train_test(dataset, test_size=0.5)
+    assert len(train) == 5
+    assert len(test) == 5
     classes_in_train = [df[data.CLASS][0] for df in train]
     classes_in_test = [df[data.CLASS][0] for df in test]
-    assert (
-        set(classes_in_train)
-        == set(classes_in_test)
-        == set([data.Defect.free_particle, data.Defect.particle_insulator])
+    assert set(classes_in_train) == set(classes_in_test) == set(data.Defect)
+    assert all(
+        [classes_in_train.count(d) == classes_in_test.count(d) for d in data.Defect]
     )
-    assert classes_in_train.count(data.Defect.free_particle) == 7
-    assert classes_in_test.count(data.Defect.particle_insulator) == 3
 
 
 def test_data_Defect():
