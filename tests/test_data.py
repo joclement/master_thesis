@@ -1,4 +1,8 @@
+from pathlib import Path
+from shutil import copyfile
+
 import pandas as pd
+import pytest
 
 from thesis import data
 
@@ -16,6 +20,13 @@ def test_data_read(csv_filepath):
     assert data.VOLTAGE_SIGN in df
     assert df[data.VOLTAGE_SIGN][0] == data.VoltageSign.positive
     assert len(set(df[data.VOLTAGE_SIGN])) == 1
+
+
+def test_data_read_wrong_filename(csv_filepath, tmpdir):
+    wrong_file = Path(tmpdir, "wrong_filename.csv")
+    copyfile(csv_filepath, wrong_file)
+    with pytest.raises(ValueError):
+        data.read(wrong_file)
 
 
 def test_data_read_recursive(csv_folder):
