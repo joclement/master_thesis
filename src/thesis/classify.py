@@ -2,7 +2,7 @@ import click
 from sklearn import metrics
 from sklearn.neighbors import KNeighborsClassifier
 
-from . import __version__, data, fingerprint, util
+from . import __version__, classifiers, data, fingerprint, util
 
 
 @click.command()
@@ -33,9 +33,24 @@ def main(directory):
     k_nn.fit(x_train, y_train)
     predictions = k_nn.predict(x_test)
 
-    click.echo(f"Accuracy: {metrics.accuracy_score(y_test, predictions)}")
+    click.echo(f"Accuracy for k-NN: {metrics.accuracy_score(y_test, predictions)}")
 
     predictions = [data.Defect(i).name for i in predictions]
-    y_test = [data.Defect(i).name for i in y_test]
+    y_test_name = [data.Defect(i).name for i in y_test]
 
-    click.echo(util.print_confusion_matrix(y_test, predictions))
+    click.echo("Confusion matrix for k_nn:")
+    click.echo(util.print_confusion_matrix(y_test_name, predictions))
+
+    lukas = classifiers.LukasMeanDistance()
+    lukas.fit(x_train, y_train)
+    predictions = lukas.predict(x_test)
+
+    click.echo(
+        f"Accuracy for LukasMeanDistance: {metrics.accuracy_score(y_test, predictions)}"
+    )
+
+    predictions = [data.Defect(i).name for i in predictions]
+    y_test_name = [data.Defect(i).name for i in y_test]
+
+    click.echo("Confusion matrix for LukasMeanDistance:")
+    click.echo(util.print_confusion_matrix(y_test_name, predictions))
