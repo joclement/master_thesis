@@ -58,9 +58,9 @@ def _get_defect(filename: str) -> Defect:
         raise ValueError(f"No knwown defect found: {filename}")
 
 
-def _do_sanity_test(df: pd.DataFrame):
+def _do_sanity_test(df: pd.DataFrame, filepath):
     if df[TIME].min() < 0.0 or not df[TIME].equals(df[TIME].sort_values()):
-        raise ValueError("Time values seem corrupt.")
+        raise ValueError(f"Time values are corrupt in file: {filepath}")
 
 
 def read(filepath) -> pd.DataFrame:
@@ -71,7 +71,7 @@ def read(filepath) -> pd.DataFrame:
     experiment = _add_voltage_sign(experiment, filename)
     experiment[CLASS] = _get_defect(filename)
 
-    _do_sanity_test(experiment)
+    _do_sanity_test(experiment, filepath)
 
     return experiment
 
