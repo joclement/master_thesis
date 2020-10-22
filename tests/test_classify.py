@@ -20,7 +20,9 @@ def test_classify_main_succeeds(multiple_csv_files):
     runner = click.testing.CliRunner()
     result = runner.invoke(classify.main, [multiple_csv_files])
     assert result.exit_code == 0
-    assert "Accuracy: 1.0" in result.output
+    assert "Accuracy for k-NN: 1.0" in result.output
+    assert "Accuracy for LukasMeanDistance: 1.0" in result.output
+    assert result.output.count("Confusion matrix") == 2
 
 
 def test_classify_version_succeeds():
