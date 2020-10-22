@@ -29,8 +29,9 @@ class VoltageSign(Enum):
 class Defect(IntEnum):
     free_particle = 0
     particle_insulator = 1
-    protrusion = 2
-    free_potential = 3
+    protrusion_earth = 2
+    protrusion_hv = 3
+    free_potential = 4
 
 
 def _add_voltage_sign(df, filename: str) -> VoltageSign:
@@ -47,8 +48,10 @@ def _get_defect(filename: str) -> Defect:
             return Defect.particle_insulator
         else:
             return Defect.free_particle
-    elif "Spitze an Erde" in filename or "Spitze an HS" in filename:
-        return Defect.protrusion
+    elif "Spitze an Erde" in filename:
+        return Defect.protrusion_earth
+    elif "Spitze an HS" in filename:
+        return Defect.protrusion_hv
     elif "freies Potential" in filename:
         return Defect.free_potential
     else:
