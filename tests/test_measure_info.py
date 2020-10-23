@@ -3,9 +3,9 @@ import click.testing
 from thesis import measure_info
 
 
-def test_measure_info_main_succeeds(csv_filepath):
+def test_measure_info_main_succeeds(large_csv_filepath):
     runner = click.testing.CliRunner()
-    result = runner.invoke(measure_info.main, [csv_filepath])
+    result = runner.invoke(measure_info.main, [large_csv_filepath])
     assert result.exit_code == 0
 
 
