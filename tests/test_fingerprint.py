@@ -1,12 +1,6 @@
 import pandas as pd
-import pytest
 
-from thesis import data, fingerprint
-
-
-@pytest.fixture
-def measurement(csv_filepath):
-    return data.read(csv_filepath)
+from thesis import fingerprint
 
 
 def test_fingerprint_tu_graz(measurement):

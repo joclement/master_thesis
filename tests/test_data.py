@@ -36,24 +36,21 @@ def test_data_read_recursive(csv_folder):
     assert type(measurements[0]) is pd.DataFrame
 
 
-def test_data_normalize(csv_filepath):
-    df = data.read(csv_filepath)
-    data.Normalizer([df]).apply([df])
-    assert df[data.PD].max() == 1.0
-    assert df[data.TIMEDIFF].max() == 1.0
-    assert df[data.TIMEDIFF].min() >= 0.0
+def test_data_normalize(measurement):
+    data.Normalizer([measurement]).apply([measurement])
+    assert measurement[data.PD].max() == 1.0
+    assert measurement[data.TIMEDIFF].max() == 1.0
+    assert measurement[data.TIMEDIFF].min() >= 0.0
 
 
-def test_data_clip_neg_values(csv_filepath):
-    df = data.read(csv_filepath)
-    df[data.PD][0] = -0.01
-    assert df[data.PD].min() == -0.01
-    data.clip_neg_pd_values([df])
-    assert df[data.PD].min() == 0.0
+def test_data_clip_neg_values(measurement):
+    measurement[data.PD][0] = -0.01
+    assert measurement[data.PD].min() == -0.01
+    data.clip_neg_pd_values([measurement])
+    assert measurement[data.PD].min() == 0.0
 
 
-def test_data_split_train_test(csv_folder):
-    measurements, _ = data.read_recursive(csv_folder)
+def test_data_split_train_test(measurements):
     dataset = 2 * measurements
     assert len(dataset) == 10
     train, test = data.split_train_test(dataset, test_size=0.5)
