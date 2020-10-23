@@ -28,7 +28,10 @@ def _ensure_unique(csv_filepaths: list):
 @click.version_option(version=__version__)
 @click.argument("path", type=click.Path(exists=True))
 @click.option("--recursive", "-r", is_flag=True, help="Print info recursively")
-def main(path, recursive):
+@click.option(
+    "--verbose", "-v", is_flag=True, help="Print info on every file, if recursive"
+)
+def main(path, recursive, verbose):
     """Print measurement info on given measurement file or folder
 
     PATH file or folder to print measurement info for
@@ -42,14 +45,15 @@ def main(path, recursive):
     else:
         measurements, csv_filepaths = data.read_recursive(path)
         _ensure_unique(csv_filepaths)
-        for df, csv_filepath in zip(measurements, csv_filepaths):
-            click.echo(f"Info on: '{csv_filepath}'")
-            _echo_measurement_info(df)
-            click.echo("")
-            _echo_fingerprint_info(df)
-            click.echo(
-                "\n ============================================================ \n"
-            )
+        if verbose:
+            for df, csv_filepath in zip(measurements, csv_filepaths):
+                click.echo(f"Info on: '{csv_filepath}'")
+                _echo_measurement_info(df)
+                click.echo("")
+                _echo_fingerprint_info(df)
+                click.echo(
+                    "\n ============================================================ \n"
+                )
 
         min_pd = min([measurement[data.PD].min() for measurement in measurements])
         max_pd = max([measurement[data.PD].max() for measurement in measurements])
