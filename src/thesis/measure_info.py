@@ -18,7 +18,11 @@ def _echo_measurement_info(df):
 
 
 def _echo_fingerprint_info(df):
+    click.echo("Fingerprint TU Graz:")
     click.echo(fingerprint.tu_graz(df))
+    click.echo("")
+    click.echo("Fingerprint Lukas:")
+    click.echo(fingerprint.lukas(df))
 
 
 def _ensure_unique(csv_filepaths: list):
