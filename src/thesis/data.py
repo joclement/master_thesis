@@ -76,6 +76,11 @@ def read(filepath) -> pd.DataFrame:
     return experiment
 
 
+def clip_neg_pd_values(measurements: List[pd.DataFrame]):
+    for measurement in measurements:
+        measurement[PD].clip(lower=0, inplace=True)
+
+
 def read_recursive(dir_path) -> Tuple[List[pd.DataFrame], list]:
     measurements = []
     csv_filepaths = list(Path(dir_path).rglob("*.csv"))

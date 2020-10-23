@@ -12,6 +12,9 @@ def _echo_measurement_info(df):
     click.echo(df.info())
     click.echo("")
     click.echo(df.head(10))
+    click.echo("")
+    if df[data.PD].min() < 0.0:
+        click.echo("This experiment contains negative PD values.")
 
 
 def _echo_fingerprint_info(df):
@@ -68,3 +71,12 @@ def main(path, recursive, verbose):
         click.echo(f"Overall max PD value: {max_pd}")
         click.echo(f"Overall min TimeDiff value: {min_timediff}")
         click.echo(f"Overall max TimeDiff value: {max_timediff}")
+
+        files_with_neg_pd_values = [
+            csv
+            for df, csv in zip(measurements, csv_filepaths)
+            if df[data.PD].min() < 0.0
+        ]
+        click.echo("Summary on files with negative values:")
+        for path in files_with_neg_pd_values:
+            click.echo(path)
