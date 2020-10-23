@@ -44,7 +44,7 @@ def test_data_normalize(measurement):
 
 
 def test_data_clip_neg_values(measurement):
-    measurement[data.PD][0] = -0.01
+    measurement.loc[0, data.PD] = -0.01
     assert measurement[data.PD].min() == -0.01
     data.clip_neg_pd_values([measurement])
     assert measurement[data.PD].min() == 0.0
