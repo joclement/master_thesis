@@ -43,17 +43,16 @@ def _add_voltage_sign(df, filename: str) -> VoltageSign:
 
 
 def _get_defect(filename: str) -> Defect:
-    if "Partikel" in filename:
-        if "Isolator" in filename:
-            return Defect.particle_insulator
-        else:
-            return Defect.free_particle
-    elif "Spitze an Erde" in filename:
+    if "Spitze an Erde" in filename:
         return Defect.protrusion_earth
     elif "Spitze an HS" in filename:
         return Defect.protrusion_hv
     elif "freies Potential" in filename:
         return Defect.free_potential
+    elif "Isolator" in filename:
+        return Defect.particle_insulator
+    elif "Partikel" in filename:
+        return Defect.free_particle
     else:
         raise ValueError(f"No knwown defect found: {filename}")
 
