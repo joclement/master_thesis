@@ -10,7 +10,7 @@ def test_fingerprint_tu_graz(measurement):
     assert len(finger) == len(set(finger.tolist()))
 
 
-def test_fingerprint_build_set(measurement):
-    dataset = fingerprint.build_set([measurement])
+def test_fingerprint_build_set(measurements):
+    dataset = fingerprint.build_set(measurements)
     assert type(dataset) is pd.DataFrame
-    assert dataset.shape == (1, 15)
+    assert dataset.shape == (5, 15)
