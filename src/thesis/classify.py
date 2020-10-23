@@ -15,6 +15,7 @@ def main(directory):
     """
 
     measurements, _ = data.read_recursive(directory)
+    data.clip_neg_pd_values(measurements)
     train, test = data.split_train_test(measurements)
 
     normalizer = data.Normalizer(train)

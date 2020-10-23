@@ -44,6 +44,14 @@ def test_data_normalize(csv_filepath):
     assert df[data.TIMEDIFF].min() >= 0.0
 
 
+def test_data_clip_neg_values(csv_filepath):
+    df = data.read(csv_filepath)
+    df[data.PD][0] = -0.01
+    assert df[data.PD].min() == -0.01
+    data.clip_neg_pd_values([df])
+    assert df[data.PD].min() == 0.0
+
+
 def test_data_split_train_test(csv_folder):
     measurements, _ = data.read_recursive(csv_folder)
     dataset = 2 * measurements
