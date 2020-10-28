@@ -1,5 +1,4 @@
-import math
-from typing import Callable, Tuple, Union
+from typing import Callable, List, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -62,41 +61,20 @@ def tu_graz(df: pd.DataFrame) -> pd.Series:
     return finger
 
 
-def _correlate_pd_and_pd_diff(pds, pd_diffs):
-    indices = pd.cut(pds, 100, labels=list(range(100)), precision=20)
+def _correlate_with_bins(x: pd.Series, y: pd.Series, num_of_boxes: int = 100):
+    indices = pd.cut(x, num_of_boxes, labels=list(range(num_of_boxes)), precision=20)
 
-    pd_boxes = [[] for _ in range(100)]
-    pd_diff_boxes = [[] for _ in range(100)]
+    x_boxes = [[] for _ in range(num_of_boxes)]  # type: List[List[float]]
+    y_boxes = [[] for _ in range(num_of_boxes)]  # type: List[List[float]]
     for idx, box_idx in enumerate(indices):
-        pd_boxes[box_idx].append(pds[idx])
-        pd_diff_boxes[box_idx].append(pd_diffs[idx])
+        x_boxes[box_idx].append(x[idx])
+        y_boxes[box_idx].append(y[idx])
 
-    if any([len(pd_box) == 0 for pd_box in pd_boxes]):
-        raise ValueError("Correlation can not not be computed: Too few data points")
-    pd_means = [np.mean(pd_box) for pd_box in pd_boxes]
-    pd_diff_means = [np.mean(pd_diff_box) for pd_diff_box in pd_diff_boxes]
+    x_means = np.array([np.mean(x_box) if len(x_box) > 0 else 0.0 for x_box in x_boxes])
+    y_means = np.array([np.mean(y_box) if len(y_box) > 0 else 0.0 for y_box in y_boxes])
 
-    correlation_coefficiient, _ = stats.pearsonr(pd_means, pd_diff_means)
-    if math.isnan(correlation_coefficiient):
-        raise ValueError("Correlation between PD and Next PD could not be computed.")
-    return correlation_coefficiient
-
-
-def _correlate_pd_and_next_pd(pds, next_pds):
-    indices = pd.cut(pds, 100, labels=list(range(100)), precision=20)
-
-    pd_boxes = [[] for _ in range(100)]
-    next_pd_boxes = [[] for _ in range(100)]
-    for idx, box_idx in enumerate(indices):
-        pd_boxes[box_idx].append(pds[idx])
-        next_pd_boxes[box_idx].append(next_pds[idx])
-
-    pd_means = [np.mean(pd_box) for pd_box in pd_boxes]
-    next_pd_means = [np.mean(next_pd_box) for next_pd_box in next_pd_boxes]
-
-    correlation_coefficiient, _ = stats.pearsonr(pd_means, next_pd_means)
-    if math.isnan(correlation_coefficiient):
-        raise ValueError("Correlation between PD and Next PD could not be computed.")
+    correlation_coefficiient, _ = stats.pearsonr(x_means, y_means)
+    assert -1 <= correlation_coefficiient <= 1
     return correlation_coefficiient
 
 
@@ -116,10 +94,9 @@ def lukas(df: pd.DataFrame) -> pd.Series:
 
     finger[TD_MEDIAN] = df[data.TIMEDIFF].median()
 
-    finger[CORR_PD_DIFF_TO_PD] = _correlate_pd_and_pd_diff(df[data.PD][:-1], pd_diff)
-    finger[CORR_NEXT_PD_TO_PD] = _correlate_pd_and_next_pd(
-        df[data.PD][:-1], df[data.PD][1:].reset_index(drop=True)
-    )
+    next_pd = df[data.PD][1:].reset_index(drop=True)
+    finger[CORR_PD_DIFF_TO_PD] = _correlate_with_bins(next_pd, pd_diff)
+    finger[CORR_NEXT_PD_TO_PD] = _correlate_with_bins(df[data.PD][:-1], next_pd)
 
     return finger
 
