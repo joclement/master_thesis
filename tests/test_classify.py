@@ -31,7 +31,10 @@ def test_classify_main_succeeds(multiple_csv_files):
     )
     assert "Accuracy for SVC with fingerprint tu_graz: 1.0" in result.output
     assert "Accuracy for SVC with fingerprint lukas: 1.0" in result.output
-    assert result.output.count("Confusion matrix") == 6
+    # FIXME Accuracy only 0.2 for this classifier and fingerprint
+    assert "Accuracy for MLPClassifier with fingerprint tu_graz:" in result.output
+    assert "Accuracy for MLPClassifier with fingerprint lukas: 1.0" in result.output
+    assert result.output.count("Confusion matrix") == 8
 
 
 def test_classify_version_succeeds():
