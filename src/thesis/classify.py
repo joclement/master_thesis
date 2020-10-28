@@ -1,13 +1,17 @@
 import click
 import pandas as pd
-from sklearn import metrics
+from sklearn import metrics, svm
 from sklearn.neighbors import KNeighborsClassifier
 
 from . import __version__, classifiers, data, fingerprint
 
 FINGERPRINTS = [fingerprint.lukas, fingerprint.tu_graz]
 
-CLASSIFIERS = [KNeighborsClassifier(n_neighbors=1), classifiers.LukasMeanDist()]
+CLASSIFIERS = [
+    KNeighborsClassifier(n_neighbors=1),
+    classifiers.LukasMeanDist(),
+    svm.SVC(decision_function_shape="ovo"),
+]
 
 
 @click.command()
