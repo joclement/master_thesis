@@ -14,4 +14,4 @@ def test_kNN_sparse_in__get_tags():
 
 
 def test_LukasMeanDistance_checks_sklearn():
-    check_estimator(classifiers.LukasMeanDistance())
+    check_estimator(classifiers.LukasMeanDist())

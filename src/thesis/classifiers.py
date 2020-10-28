@@ -18,7 +18,7 @@ def _calc_mean_per_defect(x_train, y_train, defects):
     return mean_per_defect
 
 
-class LukasMeanDistance(ClassifierMixin, BaseEstimator):
+class LukasMeanDist(ClassifierMixin, BaseEstimator):
     def fit(self, X, y):
         X, y = check_X_y(X, y)
         self.classes_ = list(unique_labels(y))

@@ -113,3 +113,7 @@ def split_train_test(
 ) -> Tuple[list, list]:
     classes = [df[CLASS][0] for df in measurements]
     return train_test_split(measurements, test_size=test_size, stratify=classes)
+
+
+def get_defects(measurements: List[pd.DataFrame]):
+    return [measurement[CLASS][0] for measurement in measurements]
