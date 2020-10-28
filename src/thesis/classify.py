@@ -1,8 +1,13 @@
 import click
+import pandas as pd
 from sklearn import metrics
 from sklearn.neighbors import KNeighborsClassifier
 
-from . import __version__, classifiers, data, fingerprint, util
+from . import __version__, classifiers, data, fingerprint
+
+FINGERPRINTS = [fingerprint.lukas, fingerprint.tu_graz]
+
+CLASSIFIERS = [KNeighborsClassifier(n_neighbors=1), classifiers.LukasMeanDist()]
 
 
 @click.command()
@@ -22,36 +27,41 @@ def main(directory):
     normalizer.apply(train)
     normalizer.apply(test)
 
-    train_fingers = fingerprint.build_set(train)
-    test_fingers = fingerprint.build_set(test)
-
-    x_train = train_fingers.drop(data.CLASS, axis=1)
-    y_train = train_fingers[data.CLASS]
-    x_test = test_fingers.drop(data.CLASS, axis=1)
-    y_test = test_fingers[data.CLASS]
-
-    k_nn = KNeighborsClassifier(n_neighbors=1)
-    k_nn.fit(x_train, y_train)
-    predictions = k_nn.predict(x_test)
-
-    click.echo(f"Accuracy for k-NN: {metrics.accuracy_score(y_test, predictions)}")
-
-    predictions = [data.Defect(i).name for i in predictions]
-    y_test_name = [data.Defect(i).name for i in y_test]
-
-    click.echo("Confusion matrix for k_nn:")
-    click.echo(util.print_confusion_matrix(y_test_name, predictions))
-
-    lukas = classifiers.LukasMeanDistance()
-    lukas.fit(x_train, y_train)
-    predictions = lukas.predict(x_test)
-
-    click.echo(
-        f"Accuracy for LukasMeanDistance: {metrics.accuracy_score(y_test, predictions)}"
+    defect_names = [data.Defect(d).name for d in sorted(set(data.get_defects(test)))]
+    accuracies = pd.DataFrame(
+        {f.__name__: list(range(len(CLASSIFIERS))) for f in FINGERPRINTS},
+        index=[type(c).__name__ for c in CLASSIFIERS],
     )
+    for finger_algo in FINGERPRINTS:
+        train_fingers = fingerprint.build_set(train, finger_algo)
+        test_fingers = fingerprint.build_set(test, finger_algo)
 
-    predictions = [data.Defect(i).name for i in predictions]
-    y_test_name = [data.Defect(i).name for i in y_test]
+        x_train = train_fingers.drop(data.CLASS, axis=1)
+        y_train = train_fingers[data.CLASS]
+        x_test = test_fingers.drop(data.CLASS, axis=1)
+        y_test = test_fingers[data.CLASS]
 
-    click.echo("Confusion matrix for LukasMeanDistance:")
-    click.echo(util.print_confusion_matrix(y_test_name, predictions))
+        for classifier in CLASSIFIERS:
+            classifier.fit(x_train, y_train)
+            predictions = classifier.predict(x_test)
+
+            accuracy = metrics.accuracy_score(y_test, predictions)
+            accuracies.loc[type(classifier).__name__, finger_algo.__name__] = accuracy
+            click.echo(
+                f"Accuracy for {type(classifier).__name__}"
+                f" with fingerprint {finger_algo.__name__}: {accuracy}"
+            )
+
+            click.echo(f"Confusion matrix for {type(classifier).__name__}:")
+            confusion_matrix = pd.DataFrame(
+                metrics.confusion_matrix(y_test, predictions),
+                index=defect_names,
+                columns=defect_names,
+            )
+            click.echo(confusion_matrix.to_string())
+
+            click.echo()
+            click.echo(" ============================================================ ")
+            click.echo()
+
+    click.echo(accuracies)

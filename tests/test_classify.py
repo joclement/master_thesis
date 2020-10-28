@@ -20,9 +20,16 @@ def test_classify_main_succeeds(multiple_csv_files):
     runner = click.testing.CliRunner()
     result = runner.invoke(classify.main, [multiple_csv_files])
     assert result.exit_code == 0
-    assert "Accuracy for k-NN: 1.0" in result.output
-    assert "Accuracy for LukasMeanDistance: 1.0" in result.output
-    assert result.output.count("Confusion matrix") == 2
+    assert "Accuracy for LukasMeanDist with fingerprint tu_graz: 1.0" in result.output
+    assert "Accuracy for LukasMeanDist with fingerprint lukas: 1.0" in result.output
+    assert (
+        "Accuracy for KNeighborsClassifier with fingerprint tu_graz: 1.0"
+        in result.output
+    )
+    assert (
+        "Accuracy for KNeighborsClassifier with fingerprint lukas: 1.0" in result.output
+    )
+    assert result.output.count("Confusion matrix") == 4
 
 
 def test_classify_version_succeeds():

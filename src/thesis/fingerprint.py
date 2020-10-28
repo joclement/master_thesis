@@ -103,8 +103,5 @@ def lukas(df: pd.DataFrame) -> pd.Series:
 
 def build_set(measurements: list, fingerprint: Callable = tu_graz) -> pd.DataFrame:
     fingers = pd.DataFrame([fingerprint(measurement) for measurement in measurements])
-
-    defects = [measurement[data.CLASS][0] for measurement in measurements]
-    fingers[data.CLASS] = pd.Series(defects, dtype="category")
-
+    fingers[data.CLASS] = pd.Series(data.get_defects(measurements), dtype="category")
     return fingers
