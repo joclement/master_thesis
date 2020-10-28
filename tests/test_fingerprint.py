@@ -1,7 +1,6 @@
 import math
 
 import pandas as pd
-import pytest
 
 from thesis import fingerprint
 
@@ -31,11 +30,6 @@ def test_fingerprint_lukas(large_df):
 
     assert -1 <= finger[fingerprint.CORR_PD_DIFF_TO_PD] <= 1
     assert -1 <= finger[fingerprint.CORR_NEXT_PD_TO_PD] <= 1
-
-
-def test_fingerprint_lukas_too_few_datapoints(measurement):
-    with pytest.raises(ValueError):
-        fingerprint.lukas(measurement)
 
 
 def test_fingerprint_build_set_lukas(large_df):
