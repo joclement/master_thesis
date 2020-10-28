@@ -1,6 +1,6 @@
 import click
 import pandas as pd
-from sklearn import metrics, svm
+from sklearn import metrics, neural_network, svm
 from sklearn.neighbors import KNeighborsClassifier
 
 from . import __version__, classifiers, data, fingerprint
@@ -11,6 +11,10 @@ CLASSIFIERS = [
     KNeighborsClassifier(n_neighbors=1),
     classifiers.LukasMeanDist(),
     svm.SVC(decision_function_shape="ovo"),
+    neural_network.MLPClassifier(
+        hidden_layer_sizes=(9,),
+        solver="lbfgs",
+    ),
 ]
 
 
