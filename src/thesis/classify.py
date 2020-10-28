@@ -11,7 +11,7 @@ from . import __version__, classifiers, data, fingerprint, util
 def main(directory):
     """Print measurement info on given measurement file or folder
 
-    PATH file or folder to print measurement info for
+    PATH file or folder to read csv files for classification from
     """
 
     measurements, _ = data.read_recursive(directory)
