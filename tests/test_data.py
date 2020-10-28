@@ -21,6 +21,8 @@ def test_data_read(csv_filepath):
     assert df[data.VOLTAGE_SIGN][0] == data.VoltageSign.positive
     assert len(set(df[data.VOLTAGE_SIGN])) == 1
 
+    assert data.TEST_VOLTAGE in df and len(df.columns) == 6
+
 
 def test_data_read_wrong_filename(csv_filepath, tmpdir):
     wrong_file = Path(tmpdir, "wrong_filename.csv")
@@ -33,7 +35,15 @@ def test_data_read_recursive(csv_folder):
     measurements, csv_filepaths = data.read_recursive(csv_folder)
     assert len(csv_filepaths) == 5
     assert len(measurements) == 5
-    assert type(measurements[0]) is pd.DataFrame
+    assert all([type(measurement) is pd.DataFrame for measurement in measurements])
+    assert all(
+        [
+            len(measurement.columns) <= 6
+            if data.TEST_VOLTAGE in measurement
+            else len(measurement.columns) <= 5
+            for measurement in measurements
+        ]
+    )
 
 
 def test_data_normalize(measurement):
