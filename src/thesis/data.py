@@ -58,19 +58,25 @@ def _get_defect(filename: str) -> Defect:
 
 
 def _do_sanity_test(df: pd.DataFrame, filepath):
+    if TIME not in df or PD not in df:
+        raise ValueError(f"TIME or PD column missing in file: {filepath}")
+
+    if (TEST_VOLTAGE in df and len(df.columns) > 6) or len(df.columns) > 5:
+        raise ValueError(f"Unexpected columns in file: {filepath}")
+
     if df[TIME].min() < 0.0 or not df[TIME].equals(df[TIME].sort_values()):
         raise ValueError(f"Time values are corrupt in file: {filepath}")
 
 
 def read(filepath) -> pd.DataFrame:
     experiment = pd.read_csv(filepath, sep=SEPERATOR, decimal=DECIMAL_SIGN)
+    _do_sanity_test(experiment, filepath)
+
     experiment[TIMEDIFF] = experiment[TIME].diff()
 
     filename = Path(filepath).stem
     experiment = _add_voltage_sign(experiment, filename)
     experiment[CLASS] = _get_defect(filename)
-
-    _do_sanity_test(experiment, filepath)
 
     return experiment
 
