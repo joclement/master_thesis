@@ -18,6 +18,12 @@ CLASSIFIERS = [
 ]
 
 
+def _drop_unneded_columns(measurements):
+    for measurement in measurements:
+        measurement.drop(columns=data.TEST_VOLTAGE, inplace=True, errors="ignore")
+        measurement.drop(columns=data.VOLTAGE_SIGN, inplace=True)
+
+
 @click.command()
 @click.version_option(version=__version__)
 @click.argument("directory", type=click.Path(exists=True))
@@ -28,6 +34,7 @@ def main(directory):
     """
 
     measurements, _ = data.read_recursive(directory)
+    _drop_unneded_columns(measurements)
     data.clip_neg_pd_values(measurements)
     train, test = data.split_train_test(measurements)
 
