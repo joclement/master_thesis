@@ -24,7 +24,7 @@ CLASSIFIERS = [
 def main(directory):
     """Print measurement info on given measurement file or folder
 
-    PATH file or folder to read csv files for classification from
+    PATH folder containing csv files for classification
     """
 
     measurements, _ = data.read_recursive(directory)
