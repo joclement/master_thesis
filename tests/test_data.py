@@ -77,3 +77,12 @@ def test_data_split_train_test(measurements):
 def test_data_Defect():
     assert data.Defect.free_particle == 0
     assert data.Defect.free_particle.name == "free_particle"
+
+
+def test_data_drop_columns_repeatively(csv_filepath):
+    df = data.read(csv_filepath)
+    assert data.TEST_VOLTAGE in df
+    df.drop(columns=data.TEST_VOLTAGE, inplace=True)
+    with pytest.raises(KeyError):
+        df.drop(columns=data.TEST_VOLTAGE, inplace=True)
+    df.drop(columns=data.TEST_VOLTAGE, inplace=True, errors="ignore")
