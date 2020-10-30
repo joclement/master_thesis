@@ -1,4 +1,7 @@
+from pathlib import Path
+
 import click
+import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn import metrics, neural_network, svm
 from sklearn.model_selection import cross_val_predict, cross_val_score
@@ -29,14 +32,16 @@ def _drop_unneded_columns(measurements):
 
 @click.command()
 @click.version_option(version=__version__)
-@click.argument("directory", type=click.Path(exists=True))
-def main(directory):
+@click.argument("input_directory", type=click.Path(exists=True))
+@click.argument("output_directory", type=click.Path(exists=True))
+def main(input_directory, output_directory):
     """Print measurement info on given measurement file or folder
 
-    PATH folder containing csv files for classification
+    INPUT_DIRECTORY folder containing csv files for classification
+    OUTPUT_DIRECTORY folder where plot(s) will be saved
     """
 
-    measurements, _ = data.read_recursive(directory)
+    measurements, _ = data.read_recursive(input_directory)
     _drop_unneded_columns(measurements)
     data.clip_neg_pd_values(measurements)
 
@@ -81,3 +86,8 @@ def main(directory):
             click.echo()
 
     click.echo(accuracies)
+
+    ax = accuracies.plot.bar(rot=0)
+    ax.set_ylabel("Accuracy")
+    ax.set_title("Accuracy by classifier and fingerprint")
+    plt.savefig(Path(output_directory, "bar.png"))

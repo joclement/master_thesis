@@ -17,11 +17,11 @@ def multiple_csv_files(csv_folder, tmpdir):
     return str(tmpdir)
 
 
-def test_classify_main_succeeds(multiple_csv_files):
+def test_classify_main_succeeds(multiple_csv_files, tmpdir):
     np.random.seed(11)
 
     runner = click.testing.CliRunner()
-    result = runner.invoke(classify.main, [multiple_csv_files])
+    result = runner.invoke(classify.main, [multiple_csv_files, str(tmpdir)])
     assert result.exit_code == 0
     ones = np.ones(4)
     assert (
@@ -54,6 +54,8 @@ def test_classify_main_succeeds(multiple_csv_files):
 
     assert "lukas_with_tu_graz" in result.output
     assert result.output.count("Confusion matrix") == 12
+
+    assert Path(tmpdir, "bar.png").exists()
 
 
 def test_classify_version_succeeds():
