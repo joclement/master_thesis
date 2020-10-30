@@ -55,7 +55,9 @@ def main(directory):
 
         for classifier in CLASSIFIERS:
             pipe = make_pipeline(MinMaxScaler(), classifier)
-            scores = cross_val_score(pipe, X, y, cv=4, scoring="accuracy")
+            scores = cross_val_score(
+                pipe, X, y, cv=4, scoring="accuracy", error_score="raise"
+            )
 
             accuracies.loc[
                 type(classifier).__name__, finger_algo.__name__
