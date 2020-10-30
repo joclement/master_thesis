@@ -8,7 +8,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 from . import __version__, classifiers, data, fingerprint
 
-FINGERPRINTS = [fingerprint.lukas, fingerprint.tu_graz]
+FINGERPRINTS = [fingerprint.lukas, fingerprint.tu_graz, fingerprint.lukas_with_tu_graz]
 
 CLASSIFIERS = [
     KNeighborsClassifier(n_neighbors=1),

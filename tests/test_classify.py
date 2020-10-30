@@ -52,7 +52,8 @@ def test_classify_main_succeeds(multiple_csv_files):
         f"Accuracies for MLPClassifier with fingerprint lukas: {ones}" in result.output
     )
 
-    assert result.output.count("Confusion matrix") == 8
+    assert "lukas_with_tu_graz" in result.output
+    assert result.output.count("Confusion matrix") == 12
 
 
 def test_classify_version_succeeds():
