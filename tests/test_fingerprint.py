@@ -46,6 +46,18 @@ def test_fingerprint_build_set_lukas(large_df):
     assert dataset.shape == (1, 13)
 
 
+def test_fingerprint_lukas_with_tu_graz(measurement):
+    lukas = fingerprint.lukas(measurement)
+    tu_graz = fingerprint.tu_graz(measurement)
+    combined = fingerprint.lukas_with_tu_graz(measurement)
+
+    assert type(combined) is pd.Series
+    assert len(combined) == 24
+
+    assert all(lukas.isin(combined))
+    assert all(tu_graz.isin(combined))
+
+
 def test_normalize_fingerprints(measurements):
     fingerprints = fingerprint.build_set(measurements)
     scaler = MinMaxScaler()
