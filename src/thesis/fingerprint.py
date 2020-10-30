@@ -38,6 +38,7 @@ def calc_weibull_params(data: Union[list, pd.Series]) -> Tuple[float, float]:
     return weibull_a, weibull_b
 
 
+# Based on https://doi.org/10.5324/nordis.v0i26.3268
 def tu_graz(df: pd.DataFrame) -> pd.Series:
     finger = pd.Series(dtype=float)
 
