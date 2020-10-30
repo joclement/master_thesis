@@ -11,6 +11,7 @@ PD_SKEW = "PD Skewness"
 PD_KURT = "PD Kurtosis"
 PD_WEIB_A = "PD Weibull A"
 PD_WEIB_B = "PD Weibull B"
+PD_DIFF_WEIB_B = "PD Diff Weibull B"
 TD_MAX = "TimeDiff Max"
 TD_MEAN = "TimeDiff Mean"
 TD_MIN = "TimeDiff Min"
@@ -47,7 +48,10 @@ def tu_graz(df: pd.DataFrame) -> pd.Series:
     finger[PD_SKEW] = df[data.PD].skew()
     # TODO Issue #23: ensure that skewness is not 0 because of numerical problem
     finger[PD_KURT] = df[data.PD].kurt()
-    finger[PD_WEIB_A], finger[PD_WEIB_B] = calc_weibull_params(df[data.PD])
+
+    finger[PD_DIFF_WEIB_A], finger[PD_DIFF_WEIB_B] = calc_weibull_params(
+        df[data.PD].diff()[1:].reset_index(drop=True)
+    )
 
     finger[TD_MAX] = df[data.TIMEDIFF].max()
     finger[TD_MEAN] = df[data.TIMEDIFF].mean()
