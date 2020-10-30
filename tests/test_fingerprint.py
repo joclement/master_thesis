@@ -13,6 +13,9 @@ def test_fingerprint_tu_graz(measurement):
     assert finger.dtype == "float64"
     assert len(finger) == len(set(finger.tolist()))
 
+    assert finger[fingerprint.PDS_PER_SEC] > 0
+    assert math.isclose(finger[fingerprint.PDS_PER_SEC], 2848, rel_tol=0.05)
+
 
 def test_fingerprint_build_set(measurements):
     dataset = fingerprint.build_set(measurements)
