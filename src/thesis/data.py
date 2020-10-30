@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import List, Tuple
 
 import pandas as pd
-from sklearn.model_selection import train_test_split
 
 
 TIMEDIFF = "TimeDiff [s]"
@@ -93,26 +92,6 @@ def read_recursive(dir_path) -> Tuple[List[pd.DataFrame], list]:
         measurements.append(read(csv_filepath))
 
     return measurements, csv_filepaths
-
-
-class Normalizer:
-    def __init__(self, measurements: List[pd.DataFrame]):
-        self.max_pd = max([measurement[PD].max() for measurement in measurements])
-        self.max_timediff = max(
-            [measurement[TIMEDIFF].max() for measurement in measurements]
-        )
-
-    def apply(self, measurements: List[pd.DataFrame]):
-        for measurement in measurements:
-            measurement[PD] = measurement[PD] / self.max_pd
-        measurement[TIMEDIFF] = measurement[TIMEDIFF] / self.max_timediff
-
-
-def split_train_test(
-    measurements: List[pd.DataFrame], test_size=0.2
-) -> Tuple[list, list]:
-    classes = [df[CLASS][0] for df in measurements]
-    return train_test_split(measurements, test_size=test_size, stratify=classes)
 
 
 def get_defects(measurements: List[pd.DataFrame]):

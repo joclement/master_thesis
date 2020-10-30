@@ -1,8 +1,10 @@
 import math
 
+import numpy as np
 import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
 
-from thesis import fingerprint
+from thesis import data, fingerprint
 
 
 def test_fingerprint_tu_graz(measurement):
@@ -39,3 +41,14 @@ def test_fingerprint_build_set_lukas(large_df):
     dataset = fingerprint.build_set([large_df], fingerprint=fingerprint.lukas)
     assert type(dataset) is pd.DataFrame
     assert dataset.shape == (1, 13)
+
+
+def test_normalize_fingerprints(measurements):
+    fingerprints = fingerprint.build_set(measurements)
+    scaler = MinMaxScaler()
+    fingerprints.drop(data.CLASS, axis=1, inplace=True)
+    scaler.fit(fingerprints)
+    normalized_fingers = scaler.transform(fingerprints)
+
+    assert all(np.amax(normalized_fingers, axis=0) <= 1)
+    assert all(np.amin(normalized_fingers, axis=0) == 0)
