@@ -1,7 +1,10 @@
 import click
 import pandas as pd
 from sklearn import metrics, neural_network, svm
+from sklearn.model_selection import cross_val_predict, cross_val_score
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import MinMaxScaler
 
 from . import __version__, classifiers, data, fingerprint
 
@@ -36,40 +39,36 @@ def main(directory):
     measurements, _ = data.read_recursive(directory)
     _drop_unneded_columns(measurements)
     data.clip_neg_pd_values(measurements)
-    train, test = data.split_train_test(measurements)
 
-    normalizer = data.Normalizer(train)
-    normalizer.apply(train)
-    normalizer.apply(test)
-
-    defect_names = [data.Defect(d).name for d in sorted(set(data.get_defects(test)))]
+    defect_names = [
+        data.Defect(d).name for d in sorted(set(data.get_defects(measurements)))
+    ]
     accuracies = pd.DataFrame(
         {f.__name__: list(range(len(CLASSIFIERS))) for f in FINGERPRINTS},
         index=[type(c).__name__ for c in CLASSIFIERS],
     )
     for finger_algo in FINGERPRINTS:
-        train_fingers = fingerprint.build_set(train, finger_algo)
-        test_fingers = fingerprint.build_set(test, finger_algo)
+        fingerprints = fingerprint.build_set(measurements, finger_algo)
 
-        x_train = train_fingers.drop(data.CLASS, axis=1)
-        y_train = train_fingers[data.CLASS]
-        x_test = test_fingers.drop(data.CLASS, axis=1)
-        y_test = test_fingers[data.CLASS]
+        X = fingerprints.drop(data.CLASS, axis=1)
+        y = fingerprints[data.CLASS]
 
         for classifier in CLASSIFIERS:
-            classifier.fit(x_train, y_train)
-            predictions = classifier.predict(x_test)
+            pipe = make_pipeline(MinMaxScaler(), classifier)
+            scores = cross_val_score(pipe, X, y, cv=4, scoring="accuracy")
 
-            accuracy = metrics.accuracy_score(y_test, predictions)
-            accuracies.loc[type(classifier).__name__, finger_algo.__name__] = accuracy
+            accuracies.loc[
+                type(classifier).__name__, finger_algo.__name__
+            ] = scores.mean()
             click.echo(
-                f"Accuracy for {type(classifier).__name__}"
-                f" with fingerprint {finger_algo.__name__}: {accuracy}"
+                f"Accuracies for {type(classifier).__name__}"
+                f" with fingerprint {finger_algo.__name__}: {scores}"
             )
 
+            predictions = cross_val_predict(pipe, X, y, cv=3)
             click.echo(f"Confusion matrix for {type(classifier).__name__}:")
             confusion_matrix = pd.DataFrame(
-                metrics.confusion_matrix(y_test, predictions),
+                metrics.confusion_matrix(y, predictions),
                 index=defect_names,
                 columns=defect_names,
             )

@@ -3,6 +3,7 @@ from shutil import copyfile
 
 import pandas as pd
 import pytest
+from sklearn.model_selection import train_test_split
 
 from thesis import data
 
@@ -46,13 +47,6 @@ def test_data_read_recursive(csv_folder):
     )
 
 
-def test_data_normalize(measurement):
-    data.Normalizer([measurement]).apply([measurement])
-    assert measurement[data.PD].max() == 1.0
-    assert measurement[data.TIMEDIFF].max() == 1.0
-    assert measurement[data.TIMEDIFF].min() >= 0.0
-
-
 def test_data_clip_neg_values(measurement):
     measurement.loc[0, data.PD] = -0.01
     assert measurement[data.PD].min() == -0.01
@@ -63,7 +57,9 @@ def test_data_clip_neg_values(measurement):
 def test_data_split_train_test(measurements):
     dataset = 2 * measurements
     assert len(dataset) == 10
-    train, test = data.split_train_test(dataset, test_size=0.5)
+    train, test = train_test_split(
+        dataset, test_size=0.5, stratify=data.get_defects(dataset)
+    )
     assert len(train) == 5
     assert len(test) == 5
     classes_in_train = [df[data.CLASS][0] for df in train]

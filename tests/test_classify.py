@@ -3,6 +3,7 @@ from pathlib import Path
 from shutil import copyfile
 
 import click.testing
+import numpy as np
 import pytest
 
 
@@ -11,32 +12,45 @@ from thesis import classify
 
 @pytest.fixture
 def multiple_csv_files(csv_folder, tmpdir):
-    for idx, csv_file in product(range(5), Path(csv_folder).glob("*.csv")):
+    for idx, csv_file in product(range(4), Path(csv_folder).glob("*.csv")):
         copyfile(csv_file, Path(tmpdir, f"{csv_file.stem}{idx}.csv"))
     return str(tmpdir)
 
 
 def test_classify_main_succeeds(multiple_csv_files):
+    np.random.seed(11)
+
     runner = click.testing.CliRunner()
     result = runner.invoke(classify.main, [multiple_csv_files])
     assert result.exit_code == 0
-    assert "Accuracy for LukasMeanDist with fingerprint tu_graz: 1.0" in result.output
-    assert "Accuracy for LukasMeanDist with fingerprint lukas: 1.0" in result.output
-
+    ones = np.ones(4)
     assert (
-        "Accuracy for KNeighborsClassifier with fingerprint tu_graz: 1.0"
+        f"Accuracies for LukasMeanDist with fingerprint tu_graz: {ones}"
         in result.output
     )
     assert (
-        "Accuracy for KNeighborsClassifier with fingerprint lukas: 1.0" in result.output
+        f"Accuracies for LukasMeanDist with fingerprint lukas: {ones}" in result.output
     )
 
-    assert "Accuracy for SVC with fingerprint tu_graz: 1.0" in result.output
-    assert "Accuracy for SVC with fingerprint lukas: 1.0" in result.output
+    assert (
+        f"Accuracies for KNeighborsClassifier with fingerprint tu_graz: {ones}"
+        in result.output
+    )
+    assert (
+        f"Accuracies for KNeighborsClassifier with fingerprint lukas: {ones}"
+        in result.output
+    )
 
-    # FIXME Accuracy only 0.2 for this classifier and fingerprint
-    assert "Accuracy for MLPClassifier with fingerprint tu_graz:" in result.output
-    assert "Accuracy for MLPClassifier with fingerprint lukas: 1.0" in result.output
+    assert f"Accuracies for SVC with fingerprint tu_graz: {ones}" in result.output
+    assert f"Accuracies for SVC with fingerprint lukas: {ones}" in result.output
+
+    assert (
+        f"Accuracies for MLPClassifier with fingerprint tu_graz: {ones}"
+        in result.output
+    )
+    assert (
+        f"Accuracies for MLPClassifier with fingerprint lukas: {ones}" in result.output
+    )
 
     assert result.output.count("Confusion matrix") == 8
 
