@@ -21,7 +21,7 @@ CLASSIFIERS = [
 def _drop_unneded_columns(measurements):
     for measurement in measurements:
         measurement.drop(columns=data.TEST_VOLTAGE, inplace=True, errors="ignore")
-        measurement.drop(columns=data.VOLTAGE_SIGN, inplace=True)
+        measurement.drop(columns=[data.TIME, data.VOLTAGE_SIGN], inplace=True)
 
 
 @click.command()

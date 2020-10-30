@@ -57,7 +57,7 @@ def tu_graz(df: pd.DataFrame) -> pd.Series:
     finger[TD_KURT] = df[data.TIMEDIFF].kurt()
     finger[TD_WEIB_A], finger[TD_WEIB_B] = calc_weibull_params(df[data.TIMEDIFF][1:])
 
-    finger[PDS_PER_SEC] = len(df[data.TIME]) / df[data.TIME].max()
+    finger[PDS_PER_SEC] = len(df[data.TIMEDIFF]) / df[data.TIMEDIFF].sum()
 
     return finger
 
