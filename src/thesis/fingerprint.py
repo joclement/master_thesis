@@ -100,6 +100,7 @@ def lukas(df: pd.DataFrame) -> pd.Series:
     finger[TD_MEDIAN] = df[data.TIMEDIFF].median()
 
     next_pd = df[data.PD][1:].reset_index(drop=True)
+    # TODO Issue #23
     finger[CORR_PD_DIFF_TO_PD] = _correlate_with_bins(next_pd, pd_diff)
     finger[CORR_NEXT_PD_TO_PD] = _correlate_with_bins(df[data.PD][:-1], next_pd)
 
