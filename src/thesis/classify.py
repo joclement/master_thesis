@@ -53,7 +53,8 @@ def main(input_directory, output_directory):
     data.clip_neg_pd_values(measurements)
 
     defect_names = [
-        data.Defect(d).name for d in sorted(set(data.get_defects(measurements)))
+        data.DEFECT_NAMES[data.Defect(d)]
+        for d in sorted(set(data.get_defects(measurements)))
     ]
     accuracies = pd.DataFrame(
         {f: list(range(len(CLASSIFIERS))) for f in FINGERPRINTS.keys()},
@@ -78,13 +79,25 @@ def main(input_directory, output_directory):
             )
 
             predictions = cross_val_predict(pipe, X, y, cv=CV)
+            confusion_matrix = metrics.confusion_matrix(y, predictions)
             click.echo(f"Confusion matrix for {classifier_name}:")
-            confusion_matrix = pd.DataFrame(
-                metrics.confusion_matrix(y, predictions),
-                index=defect_names,
-                columns=defect_names,
+            click.echo(
+                pd.DataFrame(
+                    confusion_matrix,
+                    index=defect_names,
+                    columns=defect_names,
+                ).to_string()
             )
-            click.echo(confusion_matrix.to_string())
+
+            metrics.ConfusionMatrixDisplay(
+                confusion_matrix, display_labels=defect_names
+            ).plot()
+            plt.savefig(
+                Path(
+                    output_directory,
+                    f"confusion_matrix_{classifier_name}_{finger_algo_name}.svg",
+                )
+            )
 
             click.echo()
             click.echo(" ============================================================ ")
