@@ -4,7 +4,7 @@ from sklearn.utils.estimator_checks import check_estimator
 from thesis import classifiers
 
 
-def test_kNN_sparse_in__get_tags():
+def test_sklearn_kNN():
     k_nn = KNeighborsClassifier(n_neighbors=1)
     assert k_nn._get_tags()["allow_nan"] is False
     assert "sparse" not in k_nn._get_tags()["X_types"]
