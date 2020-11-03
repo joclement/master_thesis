@@ -18,7 +18,7 @@ def multiple_csv_files(csv_folder, tmpdir):
 
 
 def test_classify_main_succeeds(multiple_csv_files, tmpdir):
-    np.random.seed(11)
+    np.random.seed(4)
 
     runner = click.testing.CliRunner()
     result = runner.invoke(classify.main, [multiple_csv_files, str(tmpdir)])

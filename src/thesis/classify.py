@@ -28,6 +28,8 @@ CLASSIFIERS = {
     ),
 }
 
+CV = 4
+
 
 def _drop_unneded_columns(measurements):
     for measurement in measurements:
@@ -66,7 +68,7 @@ def main(input_directory, output_directory):
         for classifier_name, classifier in CLASSIFIERS.items():
             pipe = make_pipeline(MinMaxScaler(), classifier)
             scores = cross_val_score(
-                pipe, X, y, cv=4, scoring="accuracy", error_score="raise"
+                pipe, X, y, cv=CV, scoring="accuracy", error_score="raise"
             )
 
             accuracies.loc[classifier_name, finger_algo_name] = scores.mean()
@@ -75,7 +77,7 @@ def main(input_directory, output_directory):
                 f" with fingerprint {finger_algo_name}: {scores}"
             )
 
-            predictions = cross_val_predict(pipe, X, y, cv=3)
+            predictions = cross_val_predict(pipe, X, y, cv=CV)
             click.echo(f"Confusion matrix for {classifier_name}:")
             confusion_matrix = pd.DataFrame(
                 metrics.confusion_matrix(y, predictions),
