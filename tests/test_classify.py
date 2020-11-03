@@ -25,23 +25,23 @@ def test_classify_main_succeeds(multiple_csv_files, tmpdir):
     assert result.exit_code == 0
     ones = np.ones(4)
     assert (
-        f"Accuracies for LukasMeanDist with fingerprint tu_graz: {ones}"
+        f"Accuracies for LukasMeanDist with fingerprint TU Graz: {ones}"
         in result.output
     )
     assert (
-        f"Accuracies for LukasMeanDist with fingerprint lukas: {ones}" in result.output
+        f"Accuracies for LukasMeanDist with fingerprint Lukas: {ones}" in result.output
     )
 
-    assert f"Accuracies for 1-NN with fingerprint tu_graz: {ones}" in result.output
-    assert f"Accuracies for 3-NN with fingerprint lukas: {ones}" in result.output
+    assert f"Accuracies for 1-NN with fingerprint TU Graz: {ones}" in result.output
+    assert f"Accuracies for 3-NN with fingerprint Lukas: {ones}" in result.output
 
-    assert f"Accuracies for SVM with fingerprint tu_graz: {ones}" in result.output
-    assert f"Accuracies for SVM with fingerprint lukas: {ones}" in result.output
+    assert f"Accuracies for SVM with fingerprint TU Graz: {ones}" in result.output
+    assert f"Accuracies for SVM with fingerprint Lukas: {ones}" in result.output
 
-    assert f"Accuracies for MLP with fingerprint tu_graz: {ones}" in result.output
-    assert f"Accuracies for MLP with fingerprint lukas: {ones}" in result.output
+    assert f"Accuracies for MLP with fingerprint TU Graz: {ones}" in result.output
+    assert f"Accuracies for MLP with fingerprint Lukas: {ones}" in result.output
 
-    assert "lukas_plus_tu_graz" in result.output
+    assert "Lukas + TU Graz" in result.output
     assert result.output.count("Confusion matrix") == 15
 
     assert Path(tmpdir, "bar.svg").exists()
