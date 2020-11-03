@@ -32,28 +32,17 @@ def test_classify_main_succeeds(multiple_csv_files, tmpdir):
         f"Accuracies for LukasMeanDist with fingerprint lukas: {ones}" in result.output
     )
 
-    assert (
-        f"Accuracies for KNeighborsClassifier with fingerprint tu_graz: {ones}"
-        in result.output
-    )
-    assert (
-        f"Accuracies for KNeighborsClassifier with fingerprint lukas: {ones}"
-        in result.output
-    )
+    assert f"Accuracies for 1-NN with fingerprint tu_graz: {ones}" in result.output
+    assert f"Accuracies for 3-NN with fingerprint lukas: {ones}" in result.output
 
-    assert f"Accuracies for SVC with fingerprint tu_graz: {ones}" in result.output
-    assert f"Accuracies for SVC with fingerprint lukas: {ones}" in result.output
+    assert f"Accuracies for SVM with fingerprint tu_graz: {ones}" in result.output
+    assert f"Accuracies for SVM with fingerprint lukas: {ones}" in result.output
 
-    assert (
-        f"Accuracies for MLPClassifier with fingerprint tu_graz: {ones}"
-        in result.output
-    )
-    assert (
-        f"Accuracies for MLPClassifier with fingerprint lukas: {ones}" in result.output
-    )
+    assert f"Accuracies for MLP with fingerprint tu_graz: {ones}" in result.output
+    assert f"Accuracies for MLP with fingerprint lukas: {ones}" in result.output
 
     assert "lukas_plus_tu_graz" in result.output
-    assert result.output.count("Confusion matrix") == 12
+    assert result.output.count("Confusion matrix") == 15
 
     assert Path(tmpdir, "bar.png").exists()
 
