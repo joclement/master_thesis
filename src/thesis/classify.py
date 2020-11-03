@@ -69,7 +69,7 @@ def main(input_directory, output_directory):
         for classifier_name, classifier in CLASSIFIERS.items():
             pipe = make_pipeline(MinMaxScaler(), classifier)
             scores = cross_val_score(
-                pipe, X, y, cv=CV, scoring="accuracy", error_score="raise"
+                pipe, X, y, cv=CV, scoring="accuracy", error_score="raise", n_jobs=-1
             )
 
             accuracies.loc[classifier_name, finger_algo_name] = scores.mean()
@@ -78,7 +78,7 @@ def main(input_directory, output_directory):
                 f" with fingerprint {finger_algo_name}: {scores}"
             )
 
-            predictions = cross_val_predict(pipe, X, y, cv=CV)
+            predictions = cross_val_predict(pipe, X, y, cv=CV, n_jobs=-1)
             confusion_matrix = metrics.confusion_matrix(y, predictions)
             click.echo(f"Confusion matrix for {classifier_name}:")
             click.echo(
