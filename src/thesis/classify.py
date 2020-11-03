@@ -13,15 +13,16 @@ from . import __version__, classifiers, data, fingerprint
 
 FINGERPRINTS = [fingerprint.lukas, fingerprint.tu_graz, fingerprint.lukas_plus_tu_graz]
 
-CLASSIFIERS = [
-    KNeighborsClassifier(n_neighbors=1),
-    classifiers.LukasMeanDist(),
-    svm.SVC(decision_function_shape="ovo"),
-    neural_network.MLPClassifier(
+CLASSIFIERS = {
+    "1-NN": KNeighborsClassifier(n_neighbors=1),
+    "3-NN": KNeighborsClassifier(n_neighbors=3),
+    "LukasMeanDist": classifiers.LukasMeanDist(),
+    "SVM": svm.SVC(decision_function_shape="ovo"),
+    "MLP": neural_network.MLPClassifier(
         hidden_layer_sizes=(9,),
         solver="lbfgs",
     ),
-]
+}
 
 
 def _drop_unneded_columns(measurements):
@@ -50,7 +51,7 @@ def main(input_directory, output_directory):
     ]
     accuracies = pd.DataFrame(
         {f.__name__: list(range(len(CLASSIFIERS))) for f in FINGERPRINTS},
-        index=[type(c).__name__ for c in CLASSIFIERS],
+        index=[c for c in CLASSIFIERS.keys()],
     )
     for finger_algo in FINGERPRINTS:
         fingerprints = fingerprint.build_set(measurements, finger_algo)
@@ -58,22 +59,20 @@ def main(input_directory, output_directory):
         X = fingerprints.drop(data.CLASS, axis=1)
         y = fingerprints[data.CLASS]
 
-        for classifier in CLASSIFIERS:
+        for classifier_name, classifier in CLASSIFIERS.items():
             pipe = make_pipeline(MinMaxScaler(), classifier)
             scores = cross_val_score(
                 pipe, X, y, cv=4, scoring="accuracy", error_score="raise"
             )
 
-            accuracies.loc[
-                type(classifier).__name__, finger_algo.__name__
-            ] = scores.mean()
+            accuracies.loc[classifier_name, finger_algo.__name__] = scores.mean()
             click.echo(
-                f"Accuracies for {type(classifier).__name__}"
+                f"Accuracies for {classifier_name}"
                 f" with fingerprint {finger_algo.__name__}: {scores}"
             )
 
             predictions = cross_val_predict(pipe, X, y, cv=3)
-            click.echo(f"Confusion matrix for {type(classifier).__name__}:")
+            click.echo(f"Confusion matrix for {classifier_name}:")
             confusion_matrix = pd.DataFrame(
                 metrics.confusion_matrix(y, predictions),
                 index=defect_names,
