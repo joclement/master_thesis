@@ -89,4 +89,4 @@ def main(input_directory, output_directory):
     ax = accuracies.plot.bar(rot=0)
     ax.set_ylabel("Accuracy")
     ax.set_title("Accuracy by classifier and fingerprint")
-    plt.savefig(Path(output_directory, "bar.png"))
+    plt.savefig(Path(output_directory, "bar.svg"))

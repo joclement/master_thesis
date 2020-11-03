@@ -44,7 +44,7 @@ def test_classify_main_succeeds(multiple_csv_files, tmpdir):
     assert "lukas_plus_tu_graz" in result.output
     assert result.output.count("Confusion matrix") == 15
 
-    assert Path(tmpdir, "bar.png").exists()
+    assert Path(tmpdir, "bar.svg").exists()
 
 
 def test_classify_version_succeeds():
