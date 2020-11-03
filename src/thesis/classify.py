@@ -11,7 +11,11 @@ from sklearn.preprocessing import MinMaxScaler
 
 from . import __version__, classifiers, data, fingerprint
 
-FINGERPRINTS = [fingerprint.lukas, fingerprint.tu_graz, fingerprint.lukas_plus_tu_graz]
+FINGERPRINTS = {
+    "Lukas": fingerprint.lukas,
+    "TU Graz": fingerprint.tu_graz,
+    "Lukas + TU Graz": fingerprint.lukas_plus_tu_graz,
+}
 
 CLASSIFIERS = {
     "1-NN": KNeighborsClassifier(n_neighbors=1),
@@ -50,10 +54,10 @@ def main(input_directory, output_directory):
         data.Defect(d).name for d in sorted(set(data.get_defects(measurements)))
     ]
     accuracies = pd.DataFrame(
-        {f.__name__: list(range(len(CLASSIFIERS))) for f in FINGERPRINTS},
+        {f: list(range(len(CLASSIFIERS))) for f in FINGERPRINTS.keys()},
         index=[c for c in CLASSIFIERS.keys()],
     )
-    for finger_algo in FINGERPRINTS:
+    for finger_algo_name, finger_algo in FINGERPRINTS.items():
         fingerprints = fingerprint.build_set(measurements, finger_algo)
 
         X = fingerprints.drop(data.CLASS, axis=1)
@@ -65,10 +69,10 @@ def main(input_directory, output_directory):
                 pipe, X, y, cv=4, scoring="accuracy", error_score="raise"
             )
 
-            accuracies.loc[classifier_name, finger_algo.__name__] = scores.mean()
+            accuracies.loc[classifier_name, finger_algo_name] = scores.mean()
             click.echo(
                 f"Accuracies for {classifier_name}"
-                f" with fingerprint {finger_algo.__name__}: {scores}"
+                f" with fingerprint {finger_algo_name}: {scores}"
             )
 
             predictions = cross_val_predict(pipe, X, y, cv=3)
