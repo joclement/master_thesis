@@ -52,7 +52,7 @@ def test_classify_main_succeeds(multiple_csv_files, tmpdir):
         f"Accuracies for MLPClassifier with fingerprint lukas: {ones}" in result.output
     )
 
-    assert "lukas_with_tu_graz" in result.output
+    assert "lukas_plus_tu_graz" in result.output
     assert result.output.count("Confusion matrix") == 12
 
     assert Path(tmpdir, "bar.png").exists()
