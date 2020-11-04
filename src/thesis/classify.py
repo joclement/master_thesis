@@ -111,4 +111,5 @@ def main(input_directory, output_directory):
     ax = mean_accuracies.plot.bar(rot=0, yerr=std_accuracies)
     ax.set_ylabel("Accuracy")
     ax.set_title("Accuracy by classifier and fingerprint")
+    ax.legend(loc=3)
     plt.savefig(Path(output_directory, "bar.svg"))
