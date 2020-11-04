@@ -12,15 +12,15 @@ from sklearn.preprocessing import MinMaxScaler
 from . import __version__, classifiers, data, fingerprint
 
 FINGERPRINTS = {
-    "Lukas": fingerprint.lukas,
+    "Ott": fingerprint.lukas,
     "TU Graz": fingerprint.tu_graz,
-    "Lukas + TU Graz": fingerprint.lukas_plus_tu_graz,
+    "Ott + TU Graz": fingerprint.lukas_plus_tu_graz,
 }
 
 CLASSIFIERS = {
     "1-NN": KNeighborsClassifier(n_neighbors=1),
     "3-NN": KNeighborsClassifier(n_neighbors=3),
-    "LukasMeanDist": classifiers.LukasMeanDist(),
+    "Ott": classifiers.LukasMeanDist(),
     "SVM": svm.SVC(decision_function_shape="ovo"),
     "MLP": neural_network.MLPClassifier(
         hidden_layer_sizes=(9,),
