@@ -56,10 +56,11 @@ def main(input_directory, output_directory):
         data.DEFECT_NAMES[data.Defect(d)]
         for d in sorted(set(data.get_defects(measurements)))
     ]
-    accuracies = pd.DataFrame(
+    mean_accuracies = pd.DataFrame(
         {f: list(range(len(CLASSIFIERS))) for f in FINGERPRINTS.keys()},
         index=[c for c in CLASSIFIERS.keys()],
     )
+    std_accuracies = mean_accuracies.copy(deep=True)
     for finger_algo_name, finger_algo in FINGERPRINTS.items():
         fingerprints = fingerprint.build_set(measurements, finger_algo)
 
@@ -72,7 +73,9 @@ def main(input_directory, output_directory):
                 pipe, X, y, cv=CV, scoring="accuracy", error_score="raise", n_jobs=-1
             )
 
-            accuracies.loc[classifier_name, finger_algo_name] = scores.mean()
+            mean_accuracies.loc[classifier_name, finger_algo_name] = scores.mean()
+            std_accuracies.loc[classifier_name, finger_algo_name] = scores.std()
+
             click.echo(
                 f"Accuracies for {classifier_name}"
                 f" with fingerprint {finger_algo_name}: {scores}"
@@ -103,9 +106,9 @@ def main(input_directory, output_directory):
             click.echo(" ============================================================ ")
             click.echo()
 
-    click.echo(accuracies)
+    click.echo(mean_accuracies)
 
-    ax = accuracies.plot.bar(rot=0)
+    ax = mean_accuracies.plot.bar(rot=0, yerr=std_accuracies)
     ax.set_ylabel("Accuracy")
     ax.set_title("Accuracy by classifier and fingerprint")
     plt.savefig(Path(output_directory, "bar.svg"))
