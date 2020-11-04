@@ -48,11 +48,9 @@ def test_classify_main_succeeds(multiple_csv_files, tmpdir):
         f"Accuracies for SVM with fingerprint Lukas + TU Graz: {ones}" in result.output
     )
 
-    assert f"Accuracies for MLP with fingerprint TU Graz: {ones}" in result.output
+    assert "Accuracies for MLP with fingerprint TU Graz: " in result.output
     assert "Accuracies for MLP with fingerprint Lukas:" in result.output
-    assert (
-        f"Accuracies for MLP with fingerprint Lukas + TU Graz: {ones}" in result.output
-    )
+    assert "Accuracies for MLP with fingerprint Lukas + TU Graz: " in result.output
 
     assert result.output.count("Confusion matrix") == 15
 
