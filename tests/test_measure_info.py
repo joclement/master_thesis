@@ -15,6 +15,12 @@ def test_measure_info_main_recursive_succeeds(csv_folder):
     assert result.exit_code == 0
 
 
+def test_measure_info_main_verbose_succeeds(csv_folder):
+    runner = click.testing.CliRunner()
+    result = runner.invoke(measure_info.main, ["-r", "-v", csv_folder])
+    assert result.exit_code == 0
+
+
 def test_measure_info_version_succeeds():
     runner = click.testing.CliRunner()
     result = runner.invoke(measure_info.main, ["--version"])
