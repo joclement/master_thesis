@@ -34,12 +34,10 @@ def plot_number_of_pds_over_time(df):
 
 
 def plot_relation_between_consecutive_pd_volts(df):
-    number_of_bins = int(max(df[data.PD]) * 10)
     plt.hist2d(
         df[data.PD][:-1],
         df[data.PD][1:],
-        number_of_bins,
-        [[0, number_of_bins / 10], [0, number_of_bins / 10]],
+        100,
         cmin=1,
         cmap=plt.cm.jet,
         norm=colors.LogNorm(),
