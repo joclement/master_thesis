@@ -43,6 +43,23 @@ def _info_on_negative_pds(measurements, csv_filepaths):
             click.echo(path)
 
 
+def _info_on_too_few_pds_per_sec(measurements, csv_filepaths):
+    too_few_pds_per_sec_files = {}
+    for df, csv in zip(measurements, csv_filepaths):
+        too_few_pds_per_sec_files[csv] = 0
+        for idx in range(df[data.PD].size - 2):
+            if df[data.PD][idx : idx + 2].sum() > 30.0:
+                too_few_pds_per_sec_files[csv] += 1
+
+    if all([too_few_pds_per_sec_files.values() == 0]):
+        click.echo("No files have less than 3 PDs per 30 seconds.")
+    else:
+        click.echo("Summary on files with less than 3 PDs per 30 seconds:")
+        for csv_path, times in too_few_pds_per_sec_files.items():
+            if times > 0:
+                click.echo(f"{csv_path} with {times} times")
+
+
 @click.command()
 @click.version_option(version=__version__)
 @click.argument("path", type=click.Path(exists=True))
@@ -50,7 +67,10 @@ def _info_on_negative_pds(measurements, csv_filepaths):
 @click.option(
     "--verbose", "-v", is_flag=True, help="Print info on every file, if recursive"
 )
-def main(path, recursive, verbose):
+@click.option(
+    "--expensive", "-e", is_flag=True, help="Print info on every file, if recursive"
+)
+def main(path, recursive, verbose, expensive):
     """Print measurement info on given measurement file or folder
 
     PATH file or folder to print measurement info for
@@ -89,3 +109,6 @@ def main(path, recursive, verbose):
         click.echo(f"Overall max TimeDiff value: {max_timediff}")
 
         _info_on_negative_pds(measurements, csv_filepaths)
+
+        if expensive:
+            _info_on_too_few_pds_per_sec(measurements, csv_filepaths)
