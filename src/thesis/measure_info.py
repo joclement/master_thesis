@@ -31,6 +31,18 @@ def _ensure_unique(csv_filepaths: list):
             raise ValueError(f"There are duplicates: '{file1}' and '{file2}'")
 
 
+def _info_on_negative_pds(measurements, csv_filepaths):
+    files_with_neg_pd_values = [
+        csv for df, csv in zip(measurements, csv_filepaths) if df[data.PD].min() < 0.0
+    ]
+    if len(files_with_neg_pd_values) == 0:
+        click.echo("No files have negative values.")
+    else:
+        click.echo("Summary on files with negative values:")
+        for path in files_with_neg_pd_values:
+            click.echo(path)
+
+
 @click.command()
 @click.version_option(version=__version__)
 @click.argument("path", type=click.Path(exists=True))
@@ -76,11 +88,4 @@ def main(path, recursive, verbose):
         click.echo(f"Overall min TimeDiff value: {min_timediff}")
         click.echo(f"Overall max TimeDiff value: {max_timediff}")
 
-        files_with_neg_pd_values = [
-            csv
-            for df, csv in zip(measurements, csv_filepaths)
-            if df[data.PD].min() < 0.0
-        ]
-        click.echo("Summary on files with negative values:")
-        for path in files_with_neg_pd_values:
-            click.echo(path)
+        _info_on_negative_pds(measurements, csv_filepaths)
