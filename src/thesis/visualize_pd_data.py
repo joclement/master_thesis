@@ -10,19 +10,19 @@ import pandas as pd
 from . import __version__, data
 
 
-def plot_pd_volts_over_time(df):
+def _plot_pd_volts_over_time(df):
     plt.scatter(df[data.TIME], df[data.PD], marker=".")
     plt.xlabel("t in seconds")
     plt.ylabel("PD in nV")
 
 
-def plot_timediff_between_pds_over_time(df):
+def _plot_timediff_between_pds_over_time(df):
     plt.scatter(df[data.TIME][1:], df[data.TIMEDIFF][1:], marker=".")
     plt.xlabel("t in seconds")
     plt.ylabel("Δt in seconds")
 
 
-def plot_number_of_pds_over_time(df):
+def _plot_number_of_pds_over_time(df):
     bins = np.arange(0, df[data.TIME].max(), 1)
     counts = df.groupby(pd.cut(df[data.TIME], bins=bins)).size()
     fake = np.array([])
@@ -36,7 +36,7 @@ def plot_number_of_pds_over_time(df):
     plt.ylabel("Number of PDs")
 
 
-def plot_relation_between_consecutive_pd_volts(df):
+def _plot_relation_between_consecutive_pd_volts(df):
     plt.hist2d(
         df[data.PD][:-1],
         df[data.PD][1:],
@@ -51,25 +51,25 @@ def plot_relation_between_consecutive_pd_volts(df):
 
 
 def _generate_plots_for_single_csv(df: pd.DataFrame, output_folder, show):
-    plot_pd_volts_over_time(df)
+    _plot_pd_volts_over_time(df)
     if output_folder:
         plt.savefig(f"{output_folder}/PDOverTime.png")
     if show:
         plt.show()
 
-    plot_timediff_between_pds_over_time(df)
+    _plot_timediff_between_pds_over_time(df)
     if output_folder:
         plt.savefig(f"{output_folder}/DeltaTOverTime.png")
     if show:
         plt.show()
 
-    plot_number_of_pds_over_time(df)
+    _plot_number_of_pds_over_time(df)
     if output_folder:
         plt.savefig(f"{output_folder}/NumberOfPDsOverTime.png")
     if show:
         plt.show()
 
-    plot_relation_between_consecutive_pd_volts(df)
+    _plot_relation_between_consecutive_pd_volts(df)
     if output_folder:
         plt.savefig(f"{output_folder}/an-an+1.png")
     if show:
