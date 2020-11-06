@@ -25,7 +25,7 @@ flake8-black = "^0.2.1"
 
 [tool.poetry.scripts]
 visualize = "thesis.visualize:main"
-measure-info = "thesis.measure_info:main"
+check-pd-data = "thesis.check_pd_data:main"
 mat2csv = "thesis.convert:mat2csv"
 classify = "thesis.classify:main"
 
