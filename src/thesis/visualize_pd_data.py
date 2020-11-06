@@ -89,6 +89,18 @@ def _generate_summary_plots_(measurements: List[pd.DataFrame], output_folder, sh
     if show:
         plt.show()
 
+    _boxplot_duration_of_pd_csvs_per_defect(measurements)
+    if output_folder:
+        plt.savefig(f"{output_folder}/boxplot_duration_of_pd_csvs_per_defect.png")
+    if show:
+        plt.show()
+
+    _plot_histogram_duration_of_pd_csvs(measurements)
+    if output_folder:
+        plt.savefig(f"{output_folder}/histogram_duration_of_pd_csvs.png")
+    if show:
+        plt.show()
+
 
 def _boxplot_lengths_of_pd_csvs_per_defect(measurements):
     lengths_per_defect = {
@@ -113,6 +125,31 @@ def _plot_histogram_lengths_of_pd_csvs(measurements):
     ax.hist(lengths, 10)
     plt.xlabel("Number of PDs in csv file")
     ax.set_title(f"Histogram of lengths of {len(lengths)} PD csv files")
+
+
+def _boxplot_duration_of_pd_csvs_per_defect(measurements):
+    duration_per_defect = {
+        data.Defect(d): list() for d in set(data.get_defects(measurements))
+    }
+    for df in measurements:
+        duration_per_defect[data.Defect(df[data.CLASS][0])].append(df[data.TIME].max())
+    fig, ax = plt.subplots()
+    labels = [
+        f"{data.DEFECT_NAMES[key]}: {len(value)}"
+        for key, value in duration_per_defect.items()
+    ]
+    ax.boxplot(duration_per_defect.values(), labels=labels)
+    plt.ylabel("Duration in seconds")
+    plt.xlabel("Defect type with number of samples")
+    ax.set_title("Lengths of PD csv files")
+
+
+def _plot_histogram_duration_of_pd_csvs(measurements):
+    durations = [df[data.TIME].max() for df in measurements]
+    fig, ax = plt.subplots()
+    ax.hist(durations, 10)
+    plt.xlabel("Duration in seconds")
+    ax.set_title(f"Histogram of duration of {len(durations)} PD csv files")
 
 
 @click.command()
