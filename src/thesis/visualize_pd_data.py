@@ -15,7 +15,6 @@ def _finish_plot(name: str, output_folder, show: bool):
         plt.savefig(f"{output_folder}/{name}.png")
     if show:
         plt.show()
-    plt.close()
 
 
 def _plot_pd_volts_over_time(df):
