@@ -77,10 +77,11 @@ def _info_on_too_few_pds_per_sec(measurements, csv_filepaths):
     help="Perform expensive computations: Check for enough PDs",
 )
 def main(path, recursive, expensive):
-    """Print measurement info on given measurement file or folder
+    """
+    Print measurement info on given PD measurement csv file or folder containing csv
+    files.
 
-    PATH if file, print info for single file
-         if folder, print summarized info of all files in folder
+    PATH  existing file or folder to check pd data in
     """
 
     if Path(path).is_file():
