@@ -1,5 +1,6 @@
 import filecmp
 from itertools import combinations
+from pathlib import Path
 
 import click
 
@@ -63,9 +64,11 @@ def _info_on_too_few_pds_per_sec(measurements, csv_filepaths):
 @click.command()
 @click.version_option(version=__version__)
 @click.argument("path", type=click.Path(exists=True))
-@click.option("--recursive", "-r", is_flag=True, help="Print info recursively")
 @click.option(
-    "--verbose", "-v", is_flag=True, help="Print info on every file, if recursive"
+    "--recursive",
+    "-r",
+    is_flag=True,
+    help="Print detailed info on every file in folder",
 )
 @click.option(
     "--expensive",
@@ -73,13 +76,14 @@ def _info_on_too_few_pds_per_sec(measurements, csv_filepaths):
     is_flag=True,
     help="Perform expensive computations: Check for enough PDs",
 )
-def main(path, recursive, verbose, expensive):
+def main(path, recursive, expensive):
     """Print measurement info on given measurement file or folder
 
-    PATH file or folder to print measurement info for
+    PATH if file, print info for single file
+         if folder, print summarized info of all files in folder
     """
 
-    if not recursive:
+    if Path(path).is_file():
         df = data.read(path)
         _echo_measurement_info(df)
         click.echo("")
@@ -87,7 +91,7 @@ def main(path, recursive, verbose, expensive):
     else:
         measurements, csv_filepaths = data.read_recursive(path)
         _ensure_unique(csv_filepaths)
-        if verbose:
+        if recursive:
             for df, csv_filepath in zip(measurements, csv_filepaths):
                 click.echo(f"Info on: '{csv_filepath}'")
                 _echo_measurement_info(df)
