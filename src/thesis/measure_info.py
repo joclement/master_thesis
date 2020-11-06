@@ -68,7 +68,10 @@ def _info_on_too_few_pds_per_sec(measurements, csv_filepaths):
     "--verbose", "-v", is_flag=True, help="Print info on every file, if recursive"
 )
 @click.option(
-    "--expensive", "-e", is_flag=True, help="Print info on every file, if recursive"
+    "--expensive",
+    "-e",
+    is_flag=True,
+    help="Perform expensive computations: Check for enough PDs",
 )
 def main(path, recursive, verbose, expensive):
     """Print measurement info on given measurement file or folder
