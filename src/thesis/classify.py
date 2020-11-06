@@ -61,6 +61,7 @@ def main(input_directory, output_directory):
         index=[c for c in CLASSIFIERS.keys()],
     )
     std_accuracies = mean_accuracies.copy(deep=True)
+
     for finger_algo_name, finger_algo in FINGERPRINTS.items():
         fingerprints = fingerprint.build_set(measurements, finger_algo)
 
