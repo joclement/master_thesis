@@ -124,7 +124,7 @@ def _boxplot_duration_of_pd_csvs_per_defect(measurements):
     ax.boxplot(duration_per_defect.values(), labels=labels)
     plt.ylabel("Duration in seconds")
     plt.xlabel("Defect type with number of samples")
-    ax.set_title("Duration of {len(duration_per_defect)} PD csv files")
+    ax.set_title(f"Duration of {len(duration_per_defect)} PD csv files")
 
 
 def _plot_histogram_duration_of_pd_csvs(measurements):
