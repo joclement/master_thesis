@@ -71,7 +71,7 @@ def _generate_plots_for_single_csv(df: pd.DataFrame, output_folder, show):
     _finish_plot("an-an+1", output_folder, show)
 
 
-def _generate_summary_plots_(measurements: List[pd.DataFrame], output_folder, show):
+def _generate_summary_plots(measurements: List[pd.DataFrame], output_folder, show):
     _boxplot_lengths_of_pd_csvs_per_defect(measurements)
     _finish_plot("boxplot_lengths_of_pd_csvs_per_defect", output_folder, show)
 
@@ -147,4 +147,4 @@ def main(path, output_folder, show):
         _generate_plots_for_single_csv(data.read(path), output_folder, show)
     else:
         measurements, csv_filepaths = data.read_recursive(path)
-        _generate_summary_plots_(measurements, output_folder, show)
+        _generate_summary_plots(measurements, output_folder, show)
