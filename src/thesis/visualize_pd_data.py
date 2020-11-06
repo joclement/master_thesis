@@ -1,3 +1,6 @@
+from pathlib import Path
+from typing import List
+
 import click
 import matplotlib.colors as colors
 import matplotlib.pyplot as plt
@@ -47,16 +50,7 @@ def plot_relation_between_consecutive_pd_volts(df):
     plt.ylabel("A(n+1) in nV")
 
 
-@click.command()
-@click.version_option(version=__version__)
-@click.argument("measurement_filepath", type=click.Path(exists=True))
-@click.option("-o", "--output-folder", type=click.Path(exists=True))
-@click.option("--show/--no-show", default=False)
-def main(measurement_filepath, output_folder, show):
-    "Plot visualization of measurement file csv"
-
-    df = data.read(measurement_filepath)
-
+def _generate_plots_for_single_csv(df: pd.DataFrame, output_folder, show):
     plot_pd_volts_over_time(df)
     if output_folder:
         plt.savefig(f"{output_folder}/PDOverTime.png")
@@ -80,3 +74,57 @@ def main(measurement_filepath, output_folder, show):
         plt.savefig(f"{output_folder}/an-an+1.png")
     if show:
         plt.show()
+
+
+def _generate_summary_plots_(measurements: List[pd.DataFrame], output_folder, show):
+    _boxplot_lengths_of_pd_csvs_per_defect(measurements)
+    if output_folder:
+        plt.savefig(f"{output_folder}/boxplot_lengths_of_pd_csvs_per_defect.png")
+    if show:
+        plt.show()
+
+    _plot_histogram_lengths_of_pd_csvs(measurements)
+    if output_folder:
+        plt.savefig(f"{output_folder}/histogram_lengths_of_pd_csvs.png")
+    if show:
+        plt.show()
+
+
+def _boxplot_lengths_of_pd_csvs_per_defect(measurements):
+    lengths_per_defect = {
+        data.Defect(d): list() for d in set(data.get_defects(measurements))
+    }
+    for df in measurements:
+        lengths_per_defect[data.Defect(df[data.CLASS][0])].append(len(df.index))
+    fig, ax = plt.subplots()
+    labels = [
+        f"{data.DEFECT_NAMES[key]}: {len(value)}"
+        for key, value in lengths_per_defect.items()
+    ]
+    ax.boxplot(lengths_per_defect.values(), labels=labels)
+    plt.ylabel("Number of PDs in csv file")
+    plt.xlabel("Defect type with number of samples")
+    ax.set_title("Lengths of PD csv files")
+
+
+def _plot_histogram_lengths_of_pd_csvs(measurements):
+    lengths = [len(df.index) for df in measurements]
+    fig, ax = plt.subplots()
+    ax.hist(lengths, 10)
+    plt.xlabel("Number of PDs in csv file")
+    ax.set_title(f"Histogram of lengths of {len(lengths)} PD csv files")
+
+
+@click.command()
+@click.version_option(version=__version__)
+@click.argument("path", type=click.Path(exists=True))
+@click.option("-o", "--output-folder", type=click.Path(exists=True))
+@click.option("--show/--no-show", default=False)
+def main(path, output_folder, show):
+    "Plot visualization of measurement file csv"
+
+    if Path(path).is_file():
+        _generate_plots_for_single_csv(data.read(path), output_folder, show)
+    else:
+        measurements, csv_filepaths = data.read_recursive(path)
+        _generate_summary_plots_(measurements, output_folder, show)
