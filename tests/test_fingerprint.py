@@ -65,5 +65,6 @@ def test_normalize_fingerprints(measurements):
     scaler.fit(fingerprints)
     normalized_fingers = scaler.transform(fingerprints)
 
-    assert all(np.amax(normalized_fingers, axis=0) <= 1)
+    for max_value in np.amax(normalized_fingers, axis=0):
+        assert math.isclose(max_value, 1.0) or max_value == 0.0
     assert all(np.amin(normalized_fingers, axis=0) == 0)

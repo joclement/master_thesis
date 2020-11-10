@@ -88,6 +88,10 @@ def read(filepath) -> pd.DataFrame:
     experiment = _add_voltage_sign(experiment, filename)
     experiment[CLASS] = _get_defect(filename)
 
+    # @note: The PD values have been probably converted in in a different unit,
+    #        namely V and not and not nV.
+    experiment[PD] *= 10 ** 9
+
     return experiment
 
 
