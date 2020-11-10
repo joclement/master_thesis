@@ -44,9 +44,7 @@ def tu_graz(df: pd.DataFrame) -> pd.Series:
     finger = pd.Series(dtype=float)
 
     finger[PD_VAR] = df[data.PD].var()
-    # TODO Issue #23: ensure that skewness is not 0 because of numerical problem
     finger[PD_SKEW] = df[data.PD].skew()
-    # TODO Issue #23: ensure that skewness is not 0 because of numerical problem
     finger[PD_KURT] = df[data.PD].kurt()
 
     finger[PD_DIFF_WEIB_A], finger[PD_DIFF_WEIB_B] = calc_weibull_params(
