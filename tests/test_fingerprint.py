@@ -36,6 +36,9 @@ def test_fingerprint_lukas(large_df):
     assert finger.dtype == "float64"
     assert len(finger) == len(set(finger.tolist()))
 
+    assert finger[fingerprint.PD_DIFF_MEAN] > 0
+    assert finger[fingerprint.PD_DIFF_WEIB_A] >= 0
+
     assert -1 <= finger[fingerprint.CORR_PD_DIFF_TO_PD] <= 1
     assert -1 <= finger[fingerprint.CORR_NEXT_PD_TO_PD] <= 1
 

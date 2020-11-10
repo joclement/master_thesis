@@ -47,9 +47,7 @@ def tu_graz(df: pd.DataFrame) -> pd.Series:
     finger[PD_SKEW] = df[data.PD].skew()
     finger[PD_KURT] = df[data.PD].kurt()
 
-    finger[PD_DIFF_WEIB_A], finger[PD_DIFF_WEIB_B] = calc_weibull_params(
-        df[data.PD].diff()[1:].reset_index(drop=True)
-    )
+    finger[PD_DIFF_WEIB_A], finger[PD_DIFF_WEIB_B] = calc_weibull_params(_pd_diff(df))
 
     finger[TD_MAX] = df[data.TIMEDIFF].max()
     finger[TD_MEAN] = df[data.TIMEDIFF].mean()
@@ -81,6 +79,10 @@ def _correlate_with_bins(x: pd.Series, y: pd.Series, num_of_boxes: int = 100):
     return correlation_coefficiient
 
 
+def _pd_diff(df: pd.DataFrame):
+    return df[data.PD].diff()[1:].reset_index(drop=True).abs()
+
+
 def lukas(df: pd.DataFrame) -> pd.Series:
     finger = pd.Series(dtype=float)
 
@@ -89,7 +91,7 @@ def lukas(df: pd.DataFrame) -> pd.Series:
     finger[PD_MAX] = df[data.PD].max()
     finger[PD_WEIB_A], finger[PD_WEIB_B] = calc_weibull_params(df[data.PD])
 
-    pd_diff = df[data.PD].diff()[1:].reset_index(drop=True)
+    pd_diff = _pd_diff(df)
     finger[PD_DIFF_MEAN] = pd_diff.mean()
     finger[PD_DIFF_SKEW] = pd_diff.skew()
     finger[PD_DIFF_KURT] = pd_diff.kurt()
