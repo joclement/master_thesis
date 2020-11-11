@@ -1,6 +1,6 @@
 from enum import Enum, IntEnum
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 import pandas as pd
 
@@ -44,7 +44,7 @@ DEFECT_NAMES = {
 }
 
 
-def get_names(defects: List[Defect]) -> List[str]:
+def get_names(defects: Union[List[Defect], pd.Series]) -> List[str]:
     return [DEFECT_NAMES[defect] for defect in defects]
 
 
