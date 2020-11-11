@@ -142,7 +142,9 @@ def lukas_plus_tu_graz(df: pd.DataFrame) -> pd.Series:
     return lukas_finger.combine_first(tu_graz(df))
 
 
-def build_set(measurements: list, fingerprint: Callable = tu_graz) -> pd.DataFrame:
+def build_set(
+    measurements: List[pd.DataFrame], fingerprint: Callable = tu_graz
+) -> pd.DataFrame:
     fingers = pd.DataFrame([fingerprint(measurement) for measurement in measurements])
     fingers[data.CLASS] = pd.Series(data.get_defects(measurements), dtype="category")
     return fingers
