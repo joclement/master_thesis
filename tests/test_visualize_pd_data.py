@@ -5,7 +5,7 @@ from thesis import visualize_pd_data
 
 def test_visualize_pd_data_main_succeeds(csv_filepath):
     runner = click.testing.CliRunner()
-    result = runner.invoke(visualize_pd_data.main, ["--no-show", csv_filepath])
+    result = runner.invoke(visualize_pd_data.main, [csv_filepath])
     assert result.exit_code == 0
 
 
@@ -20,7 +20,7 @@ def test_visualize_pd_data_main_save_succeeds(csv_filepath, tmpdir):
 
 def test_visualize_pd_data_main_dir_succeeds(csv_folder):
     runner = click.testing.CliRunner()
-    result = runner.invoke(visualize_pd_data.main, ["--no-show", csv_folder])
+    result = runner.invoke(visualize_pd_data.main, [csv_folder])
     assert result.exit_code == 0
 
 
