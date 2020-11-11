@@ -7,14 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from . import __version__, data
-
-
-def _finish_plot(name: str, output_folder, show: bool):
-    if output_folder:
-        plt.savefig(f"{output_folder}/{name}.png")
-    if show:
-        plt.show()
+from . import __version__, data, util
 
 
 def _plot_pd_volts_over_time(df):
@@ -59,30 +52,30 @@ def _plot_relation_between_consecutive_pd_volts(df):
 
 def _generate_plots_for_single_csv(df: pd.DataFrame, output_folder, show):
     _plot_pd_volts_over_time(df)
-    _finish_plot("PDOverTime", output_folder, show)
+    util.finish_plot("PDOverTime", output_folder, show)
 
     _plot_timediff_between_pds_over_time(df)
-    _finish_plot("DeltaTOverTime", output_folder, show)
+    util.finish_plot("DeltaTOverTime", output_folder, show)
 
     _plot_number_of_pds_over_time(df)
-    _finish_plot("NumberOfPDsOverTime", output_folder, show)
+    util.finish_plot("NumberOfPDsOverTime", output_folder, show)
 
     _plot_relation_between_consecutive_pd_volts(df)
-    _finish_plot("an-an+1", output_folder, show)
+    util.finish_plot("an-an+1", output_folder, show)
 
 
 def _generate_summary_plots(measurements: List[pd.DataFrame], output_folder, show):
     _boxplot_lengths_of_pd_csvs_per_defect(measurements)
-    _finish_plot("boxplot_lengths_of_pd_csvs_per_defect", output_folder, show)
+    util.finish_plot("boxplot_lengths_of_pd_csvs_per_defect", output_folder, show)
 
     _plot_histogram_lengths_of_pd_csvs(measurements)
-    _finish_plot("histogram_lengths_of_pd_csvs", output_folder, show)
+    util.finish_plot("histogram_lengths_of_pd_csvs", output_folder, show)
 
     _boxplot_duration_of_pd_csvs_per_defect(measurements)
-    _finish_plot("boxplot_duration_of_pd_csvs_per_defect", output_folder, show)
+    util.finish_plot("boxplot_duration_of_pd_csvs_per_defect", output_folder, show)
 
     _plot_histogram_duration_of_pd_csvs(measurements)
-    _finish_plot("histogram_duration_of_pd_csvs", output_folder, show)
+    util.finish_plot("histogram_duration_of_pd_csvs", output_folder, show)
 
 
 def _boxplot_lengths_of_pd_csvs_per_defect(measurements):
