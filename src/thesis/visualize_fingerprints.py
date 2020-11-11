@@ -19,9 +19,10 @@ def _generate_pairplots(fingerprints: pd.DataFrame, output_folder, show):
         parameters = fingerprint.get_parameter_group(fingerprints, group)
         parameters[data.CLASS] = data.get_names(fingerprints[data.CLASS])
 
-        sns.pairplot(parameters, hue=data.CLASS, diag_kind="hist")
-        plt.title(
-            f"Pairwise relationships in fingerprint parameters related to {group}"
+        pairgrid = sns.pairplot(parameters, hue=data.CLASS, diag_kind="hist")
+        pairgrid.fig.suptitle(
+            f"Pairwise relationships in fingerprint parameters related to {group}",
+            y=1.08,
         )
         util.finish_plot(f"pairplot_{group}", output_folder, show)
 
