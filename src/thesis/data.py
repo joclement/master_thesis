@@ -44,6 +44,10 @@ DEFECT_NAMES = {
 }
 
 
+def get_names(defects: List[Defect]) -> List[str]:
+    return [DEFECT_NAMES[defect] for defect in defects]
+
+
 def _add_voltage_sign(df, filename: str) -> VoltageSign:
     if filename[: len(POS_VOLTAGE)] == POS_VOLTAGE:
         df[VOLTAGE_SIGN] = VoltageSign.positive
