@@ -7,7 +7,7 @@ from thesis import data
 
 def pytest_configure(config):
     config.addinivalue_line(
-        "markers", "expensive: mark as expensive test, should not run by default."
+        "markers", "expensive: test takes too much time to run normally with nox."
     )
 
 
