@@ -1,5 +1,3 @@
-from typing import List
-
 import click
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -8,12 +6,13 @@ import seaborn as sns
 from . import __version__, data, fingerprint, util
 
 
-def _generate_fingerprint_plots(measurements: List[pd.DataFrame], output_folder, show):
-    fingerprints = fingerprint.build_set(measurements, fingerprint.lukas_plus_tu_graz)
+def _generate_heatmap(fingerprints: pd.DataFrame, output_folder, show):
     corr = fingerprints.corr()
     sns.heatmap(corr, center=0)
     util.finish_plot("correlation_fingerprint_lukas+tu_graz", output_folder, show)
 
+
+def _generate_pairplots(fingerprints: pd.DataFrame, output_folder, show):
     for group in fingerprint.Group:
         parameters = fingerprint.get_parameter_group(fingerprints, group)
         parameters[data.CLASS] = fingerprints[data.CLASS]
@@ -33,4 +32,7 @@ def _generate_fingerprint_plots(measurements: List[pd.DataFrame], output_folder,
 def main(path, output_folder, show):
     "Plot visualization of measurement file csv"
     measurements, _ = data.read_recursive(path)
-    _generate_fingerprint_plots(measurements, output_folder, show)
+
+    fingerprints = fingerprint.build_set(measurements, fingerprint.lukas_plus_tu_graz)
+    _generate_heatmap(fingerprints, output_folder, show)
+    _generate_pairplots(fingerprints, output_folder, show)
