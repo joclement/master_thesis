@@ -19,6 +19,9 @@ class Group(Enum):
     td = TD
     corr = CORR
 
+    def __str__(self):
+        return "%s" % self.value
+
 
 # @note: parameter in TU Graz fingerprint
 PD_VAR = f"{PD} Variance"
