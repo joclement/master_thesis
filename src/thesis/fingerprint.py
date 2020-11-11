@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Callable, List, Tuple, Union
 
 import numpy as np
@@ -6,31 +7,58 @@ import scipy.stats as stats
 
 from . import data
 
-PD_VAR = "PD Variance"
-PD_SKEW = "PD Skewness"
-PD_KURT = "PD Kurtosis"
-PD_WEIB_A = "PD Weibull A"
-PD_WEIB_B = "PD Weibull B"
-PD_DIFF_WEIB_B = "PD Diff Weibull B"
-TD_MAX = "TimeDiff Max"
-TD_MEAN = "TimeDiff Mean"
-TD_MIN = "TimeDiff Min"
-TD_VAR = "TimeDiff Variance"
-TD_SKEW = "TimeDiff Skewness"
-TD_KURT = "TimeDiff Kurtosis"
-TD_WEIB_A = "TimeDiff Weibull A"
-TD_WEIB_B = "TimeDiff Weibull B"
+PD = "PD-Value"
+PD_DIFF = "PD-Diff"
+TD = "TimeDiff"
+CORR = "Correlate"
+
+
+class Group(Enum):
+    pd = PD
+    pd_diff = PD_DIFF
+    td = TD
+    corr = CORR
+
+
+# @note: parameter in TU Graz fingerprint
+PD_VAR = f"{PD} Variance"
+PD_SKEW = f"{PD} Skewness"
+PD_KURT = f"{PD} Kurtosis"
+PD_WEIB_A = f"{PD} Weibull A"
+PD_WEIB_B = f"{PD} Weibull B"
+
+PD_DIFF_WEIB_B = f"{PD_DIFF} Weibull B"
+
+TD_MAX = f"{TD} Max"
+TD_MEAN = f"{TD} Mean"
+TD_MIN = f"{TD} Min"
+TD_VAR = f"{TD} Variance"
+TD_SKEW = f"{TD} Skewness"
+TD_KURT = f"{TD} Kurtosis"
+TD_WEIB_A = f"{TD} Weibull A"
+TD_WEIB_B = f"{TD} Weibull B"
+
+
+# @note: parameter in Lukas fingerprint
 PDS_PER_SEC = "Number of PDs/sec"
 
-PD_MEAN = "PD Mean"
-PD_MAX = "PD Max"
-PD_DIFF_MEAN = "PD Diff Mean"
-PD_DIFF_SKEW = "PD Diff Skewness"
-PD_DIFF_KURT = "PD Diff Kurtosis"
-PD_DIFF_WEIB_A = "PD Diff Weibull A"
-TD_MEDIAN = "TimeDiff Median"
-CORR_PD_DIFF_TO_PD = "Correlate PD Diff - PD"
-CORR_NEXT_PD_TO_PD = "Correlate Next PD - PD"
+PD_MEAN = f"{PD} Mean"
+PD_MAX = f"{PD} Max"
+
+PD_DIFF_MEAN = f"{PD_DIFF} Mean"
+PD_DIFF_SKEW = f"{PD_DIFF} Skewness"
+PD_DIFF_KURT = f"{PD_DIFF} Kurtosis"
+PD_DIFF_WEIB_A = f"{PD_DIFF} Weibull A"
+
+TD_MEDIAN = f"{TD} Median"
+
+CORR_PD_DIFF_TO_PD = f"{CORR} {PD_DIFF} - PD"
+CORR_NEXT_PD_TO_PD = f"{CORR} Next PD - PD"
+
+
+def get_parameter_group(df: pd.DataFrame, group: Group) -> pd.DataFrame:
+    wanted_columns = [column for column in df.columns if group.value in column]
+    return df[wanted_columns].copy()
 
 
 # TODO Issue #22: ensure that weibull fit is correct
