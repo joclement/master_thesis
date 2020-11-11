@@ -4,7 +4,7 @@ from shutil import copyfile
 import click.testing
 import pytest
 
-from thesis import visualize_fingerprints
+from thesis import data, fingerprint, visualize_fingerprints
 
 
 @pytest.fixture
@@ -12,6 +12,25 @@ def folder_with_two_csv_files(csv_folder, tmpdir):
     for csv_file in list(Path(csv_folder).glob("*.csv"))[:2]:
         copyfile(csv_file, Path(tmpdir, csv_file.name))
     return str(tmpdir)
+
+
+@pytest.fixture
+def fingerprints(folder_with_two_csv_files):
+    return fingerprint.build_set(
+        data.read_recursive(folder_with_two_csv_files)[0],
+        fingerprint.lukas_plus_tu_graz,
+    )
+
+
+def test__generate_heatmap(fingerprints, tmpdir):
+    visualize_fingerprints._generate_heatmap(fingerprints, tmpdir, False)
+    assert len(list(Path(tmpdir).glob("*.png"))) == 1
+
+
+@pytest.mark.expensive
+def test__generate_pairplots(fingerprints, tmpdir):
+    visualize_fingerprints._generate_pairplots(fingerprints, tmpdir, False)
+    assert len(list(Path(tmpdir).glob("*.png"))) == 4
 
 
 @pytest.mark.expensive
