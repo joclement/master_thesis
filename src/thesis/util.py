@@ -6,3 +6,4 @@ def finish_plot(name: str, output_folder, show: bool):
         plt.savefig(f"{output_folder}/{name}.png")
     if show:
         plt.show()
+    plt.close()
