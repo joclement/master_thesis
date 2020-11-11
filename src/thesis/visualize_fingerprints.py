@@ -20,9 +20,9 @@ def _generate_fingerprint_plots(measurements: List[pd.DataFrame], output_folder,
 
         sns.pairplot(parameters, hue=data.CLASS)
         plt.title(
-            f"Pairwise relationships in fingerprint parameters related to {group.value}"
+            f"Pairwise relationships in fingerprint parameters related to {group}"
         )
-        util.finish_plot(f"pairplot_{group.value}", output_folder, show)
+        util.finish_plot(f"pairplot_{group}", output_folder, show)
 
 
 @click.command()
