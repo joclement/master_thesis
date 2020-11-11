@@ -1,7 +1,6 @@
 from typing import List
 
 import click
-import matplotlib.pyplot as plt
 import pandas as pd
 from scipy.cluster import hierarchy
 import seaborn as sns
@@ -18,7 +17,7 @@ def _generate_heatmap(fingerprints: pd.DataFrame, output_folder, show):
 def _generate_pairplots(fingerprints: pd.DataFrame, output_folder, show):
     for group in fingerprint.Group:
         parameters = fingerprint.get_parameter_group(fingerprints, group)
-        parameters[data.CLASS] = fingerprints[data.CLASS]
+        parameters[data.CLASS] = data.get_names(fingerprints[data.CLASS])
 
         sns.pairplot(parameters, hue=data.CLASS)
         plt.title(
