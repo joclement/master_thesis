@@ -47,7 +47,6 @@ def main(input_directory, output_directory):
     INPUT_DIRECTORY folder containing csv files for classification
     OUTPUT_DIRECTORY folder where plot(s) will be saved
     """
-
     measurements, _ = data.read_recursive(input_directory)
     _drop_unneded_columns(measurements)
     data.clip_neg_pd_values(measurements)
