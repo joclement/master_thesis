@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import click.testing
 
 from thesis import visualize_pd_data
@@ -16,6 +18,7 @@ def test_visualize_pd_data_main_save_succeeds(csv_filepath, tmpdir):
         ["--output-folder", tmpdir, csv_filepath],
     )
     assert result.exit_code == 0
+    assert len(list(Path(tmpdir).glob("*.png"))) == 4
 
 
 def test_visualize_pd_data_main_dir_succeeds(csv_folder):
@@ -31,6 +34,7 @@ def test_visualize_pd_data_main_dir_save_succeeds(csv_folder, tmpdir):
         ["--output-folder", tmpdir, csv_folder],
     )
     assert result.exit_code == 0
+    assert len(list(Path(tmpdir).glob("*.png"))) == 4
 
 
 def test_visualize_pd_data_version_succeeds():
