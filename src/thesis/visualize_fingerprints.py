@@ -1,6 +1,9 @@
+from typing import List
+
 import click
 import matplotlib.pyplot as plt
 import pandas as pd
+from scipy.cluster import hierarchy
 import seaborn as sns
 
 from . import __version__, data, fingerprint, util
@@ -24,6 +27,15 @@ def _generate_pairplots(fingerprints: pd.DataFrame, output_folder, show):
         util.finish_plot(f"pairplot_{group}", output_folder, show)
 
 
+def _generate_dendogram(measurements: List[pd.DataFrame], output_folder, show):
+    fingerprints = fingerprint.build_set(measurements, fingerprint.lukas)
+    Z = hierarchy.linkage(fingerprints.drop(data.CLASS, axis=1), "single")
+    hierarchy.dendrogram(
+        Z, labels=data.get_names(fingerprints[data.CLASS]), leaf_rotation=90.0
+    )
+    util.finish_plot("ott_fingerprint_dendogram", output_folder, show)
+
+
 @click.command()
 @click.version_option(version=__version__)
 @click.argument("path", type=click.Path(exists=True))
@@ -36,3 +48,5 @@ def main(path, output_folder, show):
     fingerprints = fingerprint.build_set(measurements, fingerprint.lukas_plus_tu_graz)
     _generate_heatmap(fingerprints, output_folder, show)
     _generate_pairplots(fingerprints, output_folder, show)
+
+    _generate_dendogram(measurements, output_folder, show)
