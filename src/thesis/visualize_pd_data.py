@@ -99,7 +99,7 @@ def _boxplot_lengths_of_pd_csvs_per_defect(measurements):
     ax.boxplot(lengths_per_defect.values(), labels=labels)
     plt.ylabel("Number of PDs in csv file")
     plt.xlabel("Defect type with number of samples")
-    ax.set_title("Lengths of PD csv files")
+    ax.set_title(f"Lengths of {len(measurements)} PD csv files")
 
 
 def _plot_histogram_lengths_of_pd_csvs(measurements):
