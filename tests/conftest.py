@@ -9,6 +9,7 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "expensive: test takes too much time to run normally with nox."
     )
+    config.addinivalue_line("markers", "e2e: mark as end-to-end test.")
 
 
 @pytest.fixture

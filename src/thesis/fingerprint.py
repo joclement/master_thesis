@@ -47,6 +47,7 @@ PDS_PER_SEC = "Number of PDs/sec"
 
 PD_MEAN = f"{PD} Mean"
 PD_MAX = f"{PD} Max"
+PD_CV = f"{PD} std/mean"
 
 PD_DIFF_MEAN = f"{PD_DIFF} Mean"
 PD_DIFF_SKEW = f"{PD_DIFF} Skewness"
@@ -88,7 +89,7 @@ def tu_graz(df: pd.DataFrame) -> pd.Series:
     finger[TD_KURT] = df[data.TIMEDIFF].kurt()
     finger[TD_WEIB_A], finger[TD_WEIB_B] = calc_weibull_params(df[data.TIMEDIFF][1:])
 
-    finger[PDS_PER_SEC] = len(df[data.TIMEDIFF]) / df[data.TIMEDIFF].sum()
+    finger[PDS_PER_SEC] = len(df[data.TIMEDIFF]) / (df[data.TIMEDIFF].sum() / 1000)
 
     return finger
 
@@ -118,7 +119,7 @@ def lukas(df: pd.DataFrame) -> pd.Series:
     finger = pd.Series(dtype=float)
 
     finger[PD_MEAN] = df[data.PD].mean()
-    finger[PD_VAR] = df[data.PD].var()
+    finger[PD_CV] = df[data.PD].std() / df[data.PD].mean()
     finger[PD_MAX] = df[data.PD].max()
     finger[PD_WEIB_A], finger[PD_WEIB_B] = calc_weibull_params(df[data.PD])
 
