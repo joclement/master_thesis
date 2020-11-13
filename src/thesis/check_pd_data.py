@@ -3,6 +3,7 @@ from itertools import combinations
 from pathlib import Path
 
 import click
+import numpy as np
 
 from . import __version__, data, fingerprint
 
@@ -49,10 +50,10 @@ def _info_on_too_few_pds_per_sec(measurements, csv_filepaths):
     for df, csv in zip(measurements, csv_filepaths):
         too_few_pds_per_sec_files[csv] = 0
         for idx in range(df[data.PD].size - 2):
-            if df[data.PD][idx : idx + 2].sum() > 30.0:
+            if df[data.TIMEDIFF][idx : idx + 3].sum() > 30000.0:
                 too_few_pds_per_sec_files[csv] += 1
 
-    if all([too_few_pds_per_sec_files.values() == 0]):
+    if (np.array(list(too_few_pds_per_sec_files.values())) == 0).all():
         click.echo("No files have less than 3 PDs per 30 seconds.")
     else:
         click.echo("Summary on files with less than 3 PDs per 30 seconds:")
