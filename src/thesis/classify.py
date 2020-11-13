@@ -46,22 +46,25 @@ SCORE_METRIC = "balanced_accuracy"
 SCORE_METRIC_NAME = SCORE_METRIC.replace("_", " ")
 
 
+def _echo_visual_break():
+    click.echo()
+    click.echo(" ============================================================ ")
+    click.echo()
+
+
 def _drop_unneded_columns(measurements):
     for measurement in measurements:
         measurement.drop(columns=data.TEST_VOLTAGE, inplace=True, errors="ignore")
         measurement.drop(columns=[data.TIME, data.VOLTAGE_SIGN], inplace=True)
 
 
-def _report_classifier_results(
+def _report_confusion_matrix(
     classifier_name: str,
     variation_description: str,
-    scores,
     confusion_matrix,
     defect_names: List[str],
     output_directory: Path,
 ):
-    click.echo(f"Scores for {classifier_name} with {variation_description}: {scores}")
-
     click.echo(f"Confusion matrix for {classifier_name}:")
     click.echo(
         pd.DataFrame(
@@ -81,16 +84,18 @@ def _report_classifier_results(
         )
     )
 
-    click.echo()
-    click.echo(" ============================================================ ")
-    click.echo()
-
 
 @click.command()
 @click.version_option(version=__version__)
 @click.argument("input_directory", type=click.Path(exists=True))
 @click.argument("output_directory", type=click.Path(exists=True))
-def main(input_directory, output_directory):
+@click.option(
+    "--calc-cm",
+    "-c",
+    is_flag=True,
+    help="Calculate confusion matrix",
+)
+def main(input_directory, output_directory, calc_cm: bool):
     """Print measurement info on given measurement file or folder
 
     INPUT_DIRECTORY folder containing csv files for classification
@@ -124,22 +129,24 @@ def main(input_directory, output_directory):
         scores = cross_val_score(
             pipe, X, y, cv=CV, scoring=SCORE_METRIC, error_score="raise", n_jobs=-1
         )
+        click.echo(f"Scores for {classifier_name} with {TS}: {scores}")
 
         mean_accuracies.loc[classifier_name, TS] = scores.mean()
         std_accuracies.loc[classifier_name, TS] = scores.std()
 
-        confusion_matrix = metrics.confusion_matrix(
-            y, cross_val_predict(pipe, X, y, cv=CV, n_jobs=-1)
-        )
+        if calc_cm:
+            confusion_matrix = metrics.confusion_matrix(
+                y, cross_val_predict(pipe, X, y, cv=CV, n_jobs=-1)
+            )
+            _report_confusion_matrix(
+                classifier_name,
+                TS,
+                confusion_matrix,
+                defect_names,
+                output_directory,
+            )
 
-        _report_classifier_results(
-            classifier_name,
-            TS,
-            scores,
-            confusion_matrix,
-            defect_names,
-            output_directory,
-        )
+        _echo_visual_break()
 
     for finger_algo_name, finger_algo in FINGERPRINTS.items():
         fingerprints = fingerprint.build_set(measurements, finger_algo)
@@ -152,21 +159,26 @@ def main(input_directory, output_directory):
             scores = cross_val_score(
                 pipe, X, y, cv=CV, scoring=SCORE_METRIC, error_score="raise", n_jobs=-1
             )
+            click.echo(
+                f"Scores for {classifier_name} with fingerprint {finger_algo_name}: "
+                f"{scores}"
+            )
 
             mean_accuracies.loc[classifier_name, finger_algo_name] = scores.mean()
             std_accuracies.loc[classifier_name, finger_algo_name] = scores.std()
 
-            predictions = cross_val_predict(pipe, X, y, cv=CV, n_jobs=-1)
-            confusion_matrix = metrics.confusion_matrix(y, predictions)
+            if calc_cm:
+                predictions = cross_val_predict(pipe, X, y, cv=CV, n_jobs=-1)
+                confusion_matrix = metrics.confusion_matrix(y, predictions)
+                _report_confusion_matrix(
+                    classifier_name,
+                    f"fingerprint {finger_algo_name}",
+                    confusion_matrix,
+                    defect_names,
+                    output_directory,
+                )
 
-            _report_classifier_results(
-                classifier_name,
-                f"fingerprint {finger_algo_name}",
-                scores,
-                confusion_matrix,
-                defect_names,
-                output_directory,
-            )
+            _echo_visual_break()
 
     click.echo(mean_accuracies)
 
