@@ -28,18 +28,18 @@ def fingerprints(two_measurements):
 
 def test__generate_heatmap(fingerprints, tmpdir):
     visualize_fingerprints._generate_heatmap(fingerprints, tmpdir, False)
-    assert len(list(Path(tmpdir).glob("*.png"))) == 1
+    assert len(list(Path(tmpdir).glob("*.svg"))) == 1
 
 
 def test__generate_dendogram(measurements, tmpdir):
     visualize_fingerprints._generate_dendogram(measurements, tmpdir, False)
-    assert len(list(Path(tmpdir).glob("*.png"))) == 1
+    assert len(list(Path(tmpdir).glob("*.svg"))) == 1
 
 
 @pytest.mark.expensive
 def test__generate_pairplots(fingerprints, tmpdir):
     visualize_fingerprints._generate_pairplots(fingerprints, tmpdir, False)
-    assert len(list(Path(tmpdir).glob("*.png"))) == 4
+    assert len(list(Path(tmpdir).glob("*.svg"))) == 4
 
 
 @pytest.mark.expensive
@@ -52,7 +52,7 @@ def test_visualize_fingerprints_main_with_save_succeeds(
         ["--output-folder", tmpdir, folder_with_two_csv_files],
     )
     assert result.exit_code == 0
-    assert len(list(Path(tmpdir).glob("*.png"))) == 6
+    assert len(list(Path(tmpdir).glob("*.svg"))) == 6
 
 
 def test_visualize_fingerprints_version_succeeds():
