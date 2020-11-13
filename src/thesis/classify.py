@@ -169,6 +169,9 @@ def main(input_directory, output_directory):
 
     ax = mean_accuracies.plot.bar(rot=0, yerr=std_accuracies)
     ax.set_ylabel("Accuracy")
-    ax.set_title(f"Accuracy by classifier and fingerprint for {CV}-fold cv")
+    ax.set_title(
+        "Accuracy by classifier and fingerprint"
+        f" for {CV}-fold CV on {len(measurements)} files"
+    )
     ax.legend(loc=3)
     plt.savefig(Path(output_directory, "bar.svg"))
