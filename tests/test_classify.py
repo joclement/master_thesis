@@ -23,6 +23,20 @@ def test_classify_main_succeeds(multiple_csv_files, tmpdir):
     runner = click.testing.CliRunner()
     result = runner.invoke(classify.main, [multiple_csv_files, str(tmpdir)])
     assert result.exit_code == 0
+    assert result.output.count("Confusion matrix") == 0
+
+    assert Path(tmpdir, "classifiers_balanced_accuracy_bar.svg").exists()
+    assert not Path(tmpdir, "confusion_matrix_SVM_fingerprint_Ott.svg").exists()
+    assert len(list(Path(tmpdir).rglob("confusion_matrix_*.svg"))) == 0
+
+
+def test_classify_main_calc_confusion_matrix_succeeds(multiple_csv_files, tmpdir):
+    runner = click.testing.CliRunner()
+    result = runner.invoke(
+        classify.main, ["--calc-cm", multiple_csv_files, str(tmpdir)]
+    )
+    assert result.exit_code == 0
+
     ones = np.ones(4)
     assert f"Scores for Ott with fingerprint TU Graz: {ones}" in result.output
     assert f"Scores for Ott with fingerprint Ott: {ones}" in result.output
@@ -45,9 +59,8 @@ def test_classify_main_succeeds(multiple_csv_files, tmpdir):
 
     assert result.output.count("Confusion matrix") == 17
 
-    assert Path(tmpdir, "classifiers_balanced_accuracy_bar.svg").exists()
-    assert Path(tmpdir, "confusion_matrix_SVM_fingerprint_Ott.svg").exists()
     assert len(list(Path(tmpdir).rglob("confusion_matrix_*.svg"))) == 17
+    assert Path(tmpdir, "confusion_matrix_SVM_fingerprint_Ott.svg").exists()
 
 
 def test_classify_version_succeeds():
