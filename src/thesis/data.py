@@ -88,7 +88,7 @@ def read(filepath) -> pd.DataFrame:
     experiment = pd.read_csv(filepath, sep=SEPERATOR, decimal=DECIMAL_SIGN)
     _do_sanity_test(experiment, filepath)
 
-    experiment[_TIME] *= 10 ** 3
+    experiment[_TIME] *= 1000
     experiment.rename(columns={_TIME: TIME}, inplace=True)
     experiment[TIMEDIFF] = experiment[TIME].diff()
 
