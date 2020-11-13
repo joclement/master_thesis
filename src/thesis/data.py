@@ -5,7 +5,7 @@ from typing import List, Tuple, Union
 import pandas as pd
 
 
-TIMEDIFF = "TimeDiff [s]"
+TIMEDIFF = "TimeDiff [ms]"
 PD = "A [nV]"
 TEST_VOLTAGE = "Voltage [kV]"
 _TIME = "Time [s]"
