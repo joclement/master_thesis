@@ -131,7 +131,12 @@ def _plot_histogram_duration_of_pd_csvs(measurements):
 @click.command()
 @click.version_option(version=__version__)
 @click.argument("path", type=click.Path(exists=True))
-@click.option("-o", "--output-folder", type=click.Path(exists=True))
+@click.option(
+    "-o",
+    "--output-folder",
+    type=click.Path(exists=True),
+    help="Folder to save figures in",
+)
 @click.option("--show", "-s", is_flag=True, help="Show plots")
 def main(path, output_folder, show):
     "Plot visualization of measurement file csv"
