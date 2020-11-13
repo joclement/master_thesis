@@ -43,12 +43,13 @@ def test_classify_main_succeeds(multiple_csv_files, tmpdir):
     assert "Accuracies for MLP with fingerprint Ott + TU Graz: " in result.output
 
     assert "Accuracies for 1-NN DTW with Time Series: " in result.output
+    assert "Accuracies for 3-NN DTW with Time Series: " in result.output
 
-    assert result.output.count("Confusion matrix") == 16
+    assert result.output.count("Confusion matrix") == 17
 
     assert Path(tmpdir, "bar.svg").exists()
     assert Path(tmpdir, "confusion_matrix_SVM_fingerprint_Ott.svg").exists()
-    assert len(list(Path(tmpdir).rglob("confusion_matrix_*.svg"))) == 16
+    assert len(list(Path(tmpdir).rglob("confusion_matrix_*.svg"))) == 17
 
 
 def test_classify_version_succeeds():

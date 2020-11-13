@@ -34,7 +34,10 @@ FINGERPRINT_CLASSIFIERS = {
     ),
 }
 
-SEQUENCE_CLASSIFIERS = {"1-NN DTW": KNeighborsTimeSeriesClassifier(n_neighbors=1)}
+SEQUENCE_CLASSIFIERS = {
+    "1-NN DTW": KNeighborsTimeSeriesClassifier(n_neighbors=1),
+    "3-NN DTW": KNeighborsTimeSeriesClassifier(n_neighbors=3),
+}
 
 CLASSIFIERS = {**FINGERPRINT_CLASSIFIERS, **SEQUENCE_CLASSIFIERS}
 
