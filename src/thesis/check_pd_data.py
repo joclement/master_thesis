@@ -89,6 +89,8 @@ def main(path, recursive, expensive):
         _echo_measurement_info(df)
         click.echo("")
         _echo_fingerprint_info(df)
+        if expensive:
+            _info_on_too_few_pds_per_sec([df], [path])
     else:
         measurements, csv_filepaths = data.read_recursive(path)
         _ensure_unique(csv_filepaths)
