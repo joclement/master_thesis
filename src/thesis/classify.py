@@ -1,13 +1,17 @@
 from pathlib import Path
+from typing import List
 
 import click
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from sklearn import metrics, neural_network, svm
 from sklearn.model_selection import cross_val_predict, cross_val_score
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import MinMaxScaler
+from tslearn.neighbors import KNeighborsTimeSeriesClassifier
+from tslearn.utils import to_time_series_dataset
 
 from . import __version__, classifiers, data, fingerprint
 
@@ -16,8 +20,10 @@ FINGERPRINTS = {
     "TU Graz": fingerprint.tu_graz,
     "Ott + TU Graz": fingerprint.lukas_plus_tu_graz,
 }
+TS = "Time Series"
+DATASET_NAMES = list(FINGERPRINTS.keys()) + [TS]
 
-CLASSIFIERS = {
+FINGERPRINT_CLASSIFIERS = {
     "1-NN": KNeighborsClassifier(n_neighbors=1),
     "3-NN": KNeighborsClassifier(n_neighbors=3),
     "Ott": classifiers.LukasMeanDist(),
@@ -28,6 +34,10 @@ CLASSIFIERS = {
     ),
 }
 
+SEQUENCE_CLASSIFIERS = {"1-NN DTW": KNeighborsTimeSeriesClassifier(n_neighbors=1)}
+
+CLASSIFIERS = {**FINGERPRINT_CLASSIFIERS, **SEQUENCE_CLASSIFIERS}
+
 CV = 4
 
 
@@ -35,6 +45,42 @@ def _drop_unneded_columns(measurements):
     for measurement in measurements:
         measurement.drop(columns=data.TEST_VOLTAGE, inplace=True, errors="ignore")
         measurement.drop(columns=[data.TIME, data.VOLTAGE_SIGN], inplace=True)
+
+
+def _report_classifier_results(
+    classifier_name: str,
+    variation_description: str,
+    scores,
+    confusion_matrix,
+    defect_names: List[str],
+    output_directory: Path,
+):
+    click.echo(
+        f"Accuracies for {classifier_name} with {variation_description}: {scores}"
+    )
+
+    click.echo(f"Confusion matrix for {classifier_name}:")
+    click.echo(
+        pd.DataFrame(
+            confusion_matrix,
+            index=defect_names,
+            columns=defect_names,
+        ).to_string()
+    )
+
+    metrics.ConfusionMatrixDisplay(confusion_matrix, display_labels=defect_names).plot()
+    filepath = f"confusion_matrix_{classifier_name}_{variation_description}.svg"
+    filepath = filepath.replace(" ", "_")
+    plt.savefig(
+        Path(
+            output_directory,
+            filepath,
+        )
+    )
+
+    click.echo()
+    click.echo(" ============================================================ ")
+    click.echo()
 
 
 @click.command()
@@ -56,10 +102,41 @@ def main(input_directory, output_directory):
         for d in sorted(set(data.get_defects(measurements)))
     ]
     mean_accuracies = pd.DataFrame(
-        {f: list(range(len(CLASSIFIERS))) for f in FINGERPRINTS.keys()},
+        {f: np.zeros(len(CLASSIFIERS)) for f in DATASET_NAMES},
         index=[c for c in CLASSIFIERS.keys()],
     )
     std_accuracies = mean_accuracies.copy(deep=True)
+
+    min_len_measurements = min([len(m) for m in measurements])
+    X = to_time_series_dataset(
+        [
+            df.drop(data.CLASS, axis=1)[1 : min_len_measurements - 1]
+            for df in measurements
+        ]
+    )
+    y = data.get_defects(measurements)
+
+    for classifier_name, classifier in SEQUENCE_CLASSIFIERS.items():
+        pipe = make_pipeline(classifier)
+        scores = cross_val_score(
+            pipe, X, y, cv=CV, scoring="accuracy", error_score="raise", n_jobs=-1
+        )
+
+        mean_accuracies.loc[classifier_name, TS] = scores.mean()
+        std_accuracies.loc[classifier_name, TS] = scores.std()
+
+        confusion_matrix = metrics.confusion_matrix(
+            y, cross_val_predict(pipe, X, y, cv=CV, n_jobs=-1)
+        )
+
+        _report_classifier_results(
+            classifier_name,
+            TS,
+            scores,
+            confusion_matrix,
+            defect_names,
+            output_directory,
+        )
 
     for finger_algo_name, finger_algo in FINGERPRINTS.items():
         fingerprints = fingerprint.build_set(measurements, finger_algo)
@@ -67,7 +144,7 @@ def main(input_directory, output_directory):
         X = fingerprints.drop(data.CLASS, axis=1)
         y = fingerprints[data.CLASS]
 
-        for classifier_name, classifier in CLASSIFIERS.items():
+        for classifier_name, classifier in FINGERPRINT_CLASSIFIERS.items():
             pipe = make_pipeline(MinMaxScaler(), classifier)
             scores = cross_val_score(
                 pipe, X, y, cv=CV, scoring="accuracy", error_score="raise", n_jobs=-1
@@ -76,35 +153,17 @@ def main(input_directory, output_directory):
             mean_accuracies.loc[classifier_name, finger_algo_name] = scores.mean()
             std_accuracies.loc[classifier_name, finger_algo_name] = scores.std()
 
-            click.echo(
-                f"Accuracies for {classifier_name}"
-                f" with fingerprint {finger_algo_name}: {scores}"
-            )
-
             predictions = cross_val_predict(pipe, X, y, cv=CV, n_jobs=-1)
             confusion_matrix = metrics.confusion_matrix(y, predictions)
-            click.echo(f"Confusion matrix for {classifier_name}:")
-            click.echo(
-                pd.DataFrame(
-                    confusion_matrix,
-                    index=defect_names,
-                    columns=defect_names,
-                ).to_string()
-            )
 
-            metrics.ConfusionMatrixDisplay(
-                confusion_matrix, display_labels=defect_names
-            ).plot()
-            plt.savefig(
-                Path(
-                    output_directory,
-                    f"confusion_matrix_{classifier_name}_{finger_algo_name}.svg",
-                )
+            _report_classifier_results(
+                classifier_name,
+                f"fingerprint {finger_algo_name}",
+                scores,
+                confusion_matrix,
+                defect_names,
+                output_directory,
             )
-
-            click.echo()
-            click.echo(" ============================================================ ")
-            click.echo()
 
     click.echo(mean_accuracies)
 
