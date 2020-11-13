@@ -13,7 +13,7 @@ from sklearn.preprocessing import MinMaxScaler
 from tslearn.neighbors import KNeighborsTimeSeriesClassifier
 from tslearn.utils import to_time_series_dataset
 
-from . import __version__, classifiers, data, fingerprint
+from . import __version__, classifiers, data, fingerprint, util
 
 FINGERPRINTS = {
     "Ott": fingerprint.lukas,
@@ -177,4 +177,4 @@ def main(input_directory, output_directory):
         f" for {CV}-fold CV on {len(measurements)} files"
     )
     ax.legend(loc=3)
-    plt.savefig(Path(output_directory, "bar.svg"))
+    util.finish_plot("classifiers_accuracy_bar", output_directory, False)
