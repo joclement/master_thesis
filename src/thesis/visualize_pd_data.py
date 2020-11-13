@@ -12,14 +12,14 @@ from . import __version__, data, util
 
 def _plot_pd_volts_over_time(df):
     plt.scatter(df[data.TIME], df[data.PD], marker=".")
-    plt.xlabel("t in seconds")
+    plt.xlabel(f"t {data.TIME_UNIT}")
     plt.ylabel("PD in nV")
 
 
 def _plot_timediff_between_pds_over_time(df):
     plt.scatter(df[data.TIME][1:], df[data.TIMEDIFF][1:], marker=".")
-    plt.xlabel("t in seconds")
-    plt.ylabel("Δt in seconds")
+    plt.xlabel(f"t {data.TIME_UNIT}")
+    plt.ylabel(f"Δt {data.TIME_UNIT}")
 
 
 def _plot_number_of_pds_over_time(df):
@@ -32,7 +32,7 @@ def _plot_number_of_pds_over_time(df):
         fake = np.append(fake, sample)
     plt.hist(fake, bins=bins)
 
-    plt.xlabel("t in seconds")
+    plt.xlabel(f"t {data.TIME_UNIT}")
     plt.ylabel("Number of PDs")
 
 
@@ -115,7 +115,7 @@ def _boxplot_duration_of_pd_csvs_per_defect(measurements):
         for key, value in duration_per_defect.items()
     ]
     ax.boxplot(duration_per_defect.values(), labels=labels)
-    plt.ylabel("Duration in seconds")
+    plt.ylabel(f"Duration {data.TIME_UNIT}")
     plt.xlabel("Defect type with number of samples")
     ax.set_title(f"Duration of {len(measurements)} PD csv files")
 
@@ -124,7 +124,7 @@ def _plot_histogram_duration_of_pd_csvs(measurements):
     durations = [df[data.TIME].max() for df in measurements]
     fig, ax = plt.subplots()
     ax.hist(durations, 10)
-    plt.xlabel("Duration in seconds")
+    plt.xlabel(f"Duration {data.TIME_UNIT}")
     ax.set_title(f"Histogram of duration of {len(measurements)} PD csv files")
 
 
