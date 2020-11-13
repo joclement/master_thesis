@@ -42,6 +42,8 @@ SEQUENCE_CLASSIFIERS = {
 CLASSIFIERS = {**FINGERPRINT_CLASSIFIERS, **SEQUENCE_CLASSIFIERS}
 
 CV = 4
+SCORE_METRIC = "balanced_accuracy"
+SCORE_METRIC_NAME = SCORE_METRIC.replace("_", " ")
 
 
 def _drop_unneded_columns(measurements):
@@ -58,9 +60,7 @@ def _report_classifier_results(
     defect_names: List[str],
     output_directory: Path,
 ):
-    click.echo(
-        f"Accuracies for {classifier_name} with {variation_description}: {scores}"
-    )
+    click.echo(f"Scores for {classifier_name} with {variation_description}: {scores}")
 
     click.echo(f"Confusion matrix for {classifier_name}:")
     click.echo(
@@ -122,7 +122,7 @@ def main(input_directory, output_directory):
     for classifier_name, classifier in SEQUENCE_CLASSIFIERS.items():
         pipe = make_pipeline(classifier)
         scores = cross_val_score(
-            pipe, X, y, cv=CV, scoring="accuracy", error_score="raise", n_jobs=-1
+            pipe, X, y, cv=CV, scoring=SCORE_METRIC, error_score="raise", n_jobs=-1
         )
 
         mean_accuracies.loc[classifier_name, TS] = scores.mean()
@@ -150,7 +150,7 @@ def main(input_directory, output_directory):
         for classifier_name, classifier in FINGERPRINT_CLASSIFIERS.items():
             pipe = make_pipeline(MinMaxScaler(), classifier)
             scores = cross_val_score(
-                pipe, X, y, cv=CV, scoring="accuracy", error_score="raise", n_jobs=-1
+                pipe, X, y, cv=CV, scoring=SCORE_METRIC, error_score="raise", n_jobs=-1
             )
 
             mean_accuracies.loc[classifier_name, finger_algo_name] = scores.mean()
@@ -171,10 +171,10 @@ def main(input_directory, output_directory):
     click.echo(mean_accuracies)
 
     ax = mean_accuracies.plot.bar(rot=0, yerr=std_accuracies)
-    ax.set_ylabel("Accuracy")
+    ax.set_ylabel(SCORE_METRIC_NAME)
     ax.set_title(
-        "Accuracy by classifier and fingerprint"
+        f"{SCORE_METRIC_NAME} by classifier and fingerprint"
         f" for {CV}-fold CV on {len(measurements)} files"
     )
     ax.legend(loc=3)
-    util.finish_plot("classifiers_accuracy_bar", output_directory, False)
+    util.finish_plot(f"classifiers_{SCORE_METRIC}_bar", output_directory, False)
