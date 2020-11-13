@@ -4,12 +4,13 @@ from typing import List, Tuple, Union
 
 import pandas as pd
 
+TIME_UNIT = "[ms]"
 
-TIMEDIFF = "TimeDiff [ms]"
+TIMEDIFF = f"TimeDiff {TIME_UNIT}"
 PD = "A [nV]"
 TEST_VOLTAGE = "Voltage [kV]"
 _TIME = "Time [s]"
-TIME = "Time [ms]"
+TIME = f"Time {TIME_UNIT}"
 
 SEPERATOR = ";"
 DECIMAL_SIGN = ","
