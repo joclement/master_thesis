@@ -27,11 +27,11 @@ def test_visualize_pd_data_main_dir_succeeds(csv_folder):
     assert result.exit_code == 0
 
 
-def test_visualize_pd_data_main_dir_save_succeeds(csv_folder, tmpdir):
+def test_visualize_pd_data_main_dir_save_recursive_succeeds(csv_folder, tmpdir):
     runner = click.testing.CliRunner()
     result = runner.invoke(
         visualize_pd_data.main,
-        ["--output-folder", tmpdir, csv_folder],
+        ["-r", "--output-folder", tmpdir, csv_folder],
     )
     assert result.exit_code == 0
     assert len(list(Path(tmpdir).glob("*.svg"))) == 4

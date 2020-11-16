@@ -137,12 +137,21 @@ def _plot_histogram_duration_of_pd_csvs(measurements):
     type=click.Path(exists=True),
     help="Folder to save figures in",
 )
+@click.option(
+    "--recursive",
+    "-r",
+    is_flag=True,
+    help="Generate plots for every file in folder",
+)
 @click.option("--show", "-s", is_flag=True, help="Show plots")
-def main(path, output_folder, show):
+def main(path, output_folder, recursive, show):
     "Plot visualization of measurement file csv"
 
     if Path(path).is_file():
         _generate_plots_for_single_csv(data.read(path), output_folder, show)
     else:
         measurements, csv_filepaths = data.read_recursive(path)
+        if recursive:
+            for measurement in measurements:
+                _generate_plots_for_single_csv(measurement, output_folder, show)
         _generate_summary_plots(measurements, output_folder, show)
