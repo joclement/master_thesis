@@ -200,8 +200,8 @@ def main(path, output_folder, recursive, show):
     else:
         measurements, csv_filepaths = data.read_recursive(path)
         if recursive:
-            for measurement in zip(measurements, csv_filepaths):
-                single_csv_folder = Path(output_folder, Path(csv_filepaths).name)
+            for measurement, csv_filepath in zip(measurements, csv_filepaths):
+                single_csv_folder = Path(output_folder, Path(csv_filepath).name)
                 single_csv_folder.mkdir(parents=True, exist_ok=False)
                 _generate_plots_for_single_csv(measurement, single_csv_folder, show)
         _generate_summary_plots(measurements, output_folder, show)

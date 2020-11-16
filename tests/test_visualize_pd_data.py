@@ -34,7 +34,7 @@ def test_visualize_pd_data_main_dir_save_succeeds(csv_folder, tmpdir):
         ["--output-folder", tmpdir, csv_folder],
     )
     assert result.exit_code == 0
-    assert len(list(Path(tmpdir).glob("*.svg"))) == 4
+    assert len(list(Path(tmpdir).glob("*.svg"))) == 7
 
 
 def test_visualize_pd_data_main_dir_save_recursive_succeeds(csv_folder, tmpdir):
@@ -44,7 +44,7 @@ def test_visualize_pd_data_main_dir_save_recursive_succeeds(csv_folder, tmpdir):
         ["-r", "--output-folder", tmpdir, csv_folder],
     )
     assert result.exit_code == 0
-    assert len(list(Path(tmpdir).glob("*.svg"))) == 4
+    assert sum(sub_path.is_dir() for sub_path in Path(tmpdir).iterdir()) == 5
 
 
 def test_visualize_pd_data_version_succeeds():
