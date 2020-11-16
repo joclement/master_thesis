@@ -6,6 +6,7 @@ import matplotlib.colors as colors
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import seaborn as sns
 
 from . import __version__, data, util
 
@@ -68,6 +69,15 @@ def _generate_summary_plots(measurements: List[pd.DataFrame], output_folder, sho
     _boxplot_lengths_of_pd_csvs_per_defect(measurements)
     util.finish_plot("boxplot_lengths_of_pd_csvs_per_defect", output_folder, show)
 
+    _swarmplot_lengths_of_pd_csvs_per_defect(measurements)
+    util.finish_plot("swarmplot_lengths_of_pd_csv_per_defect", output_folder, show)
+
+    _scatterplot_length_duration(measurements)
+    util.finish_plot("scatterplot_lengths_durations", output_folder, show)
+
+    _swarmplot_duration_of_pd_csvs_per_defect(measurements)
+    util.finish_plot("swarmplot_duration_of_pd_csv_per_defect", output_folder, show)
+
     _plot_histogram_lengths_of_pd_csvs(measurements)
     util.finish_plot("histogram_lengths_of_pd_csvs", output_folder, show)
 
@@ -76,6 +86,23 @@ def _generate_summary_plots(measurements: List[pd.DataFrame], output_folder, sho
 
     _plot_histogram_duration_of_pd_csvs(measurements)
     util.finish_plot("histogram_duration_of_pd_csvs", output_folder, show)
+
+
+_LENGTH_KEY = "Number of PDs x 1000"
+_DURATION_KEY = "Duration [s]"
+
+
+def _calc_duration_and_lengths(measurements):
+    assert data.TIME_UNIT == "[ms]"
+    rows = [
+        {
+            _LENGTH_KEY: len(df.index) / 1000,
+            _DURATION_KEY: df[data.TIME].max() / 1000,
+            data.CLASS: data.DEFECT_NAMES[df[data.CLASS][0]],
+        }
+        for df in measurements
+    ]
+    return pd.DataFrame(rows)
 
 
 def _boxplot_lengths_of_pd_csvs_per_defect(measurements):
@@ -93,6 +120,27 @@ def _boxplot_lengths_of_pd_csvs_per_defect(measurements):
     plt.ylabel("Number of PDs in csv file")
     plt.xlabel("Defect type with number of samples")
     ax.set_title(f"Lengths of {len(measurements)} PD csv files")
+
+
+def _swarmplot_lengths_of_pd_csvs_per_defect(measurements):
+    sns.swarmplot(
+        data=_calc_duration_and_lengths(measurements), x=_LENGTH_KEY, y=data.CLASS
+    )
+
+
+def _scatterplot_length_duration(measurements):
+    sns.relplot(
+        data=_calc_duration_and_lengths(measurements),
+        x=_LENGTH_KEY,
+        y=_DURATION_KEY,
+        hue=data.CLASS,
+    )
+
+
+def _swarmplot_duration_of_pd_csvs_per_defect(measurements):
+    sns.swarmplot(
+        data=_calc_duration_and_lengths(measurements), x=_DURATION_KEY, y=data.CLASS
+    )
 
 
 def _plot_histogram_lengths_of_pd_csvs(measurements):
@@ -152,6 +200,8 @@ def main(path, output_folder, recursive, show):
     else:
         measurements, csv_filepaths = data.read_recursive(path)
         if recursive:
-            for measurement in measurements:
-                _generate_plots_for_single_csv(measurement, output_folder, show)
+            for measurement in zip(measurements, csv_filepaths):
+                single_csv_folder = Path(output_folder, Path(csv_filepaths).name)
+                single_csv_folder.mkdir(parents=True, exist_ok=False)
+                _generate_plots_for_single_csv(measurement, single_csv_folder, show)
         _generate_summary_plots(measurements, output_folder, show)
