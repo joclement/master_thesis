@@ -47,10 +47,13 @@ def _matfile2csvfile(mat_filepath, csv_filepath):
     else:
         raise ValueError("MAT file not convertable")
     measurement = pd.DataFrame({k: pd.Series(v) for k, v in mat.items()})
-    measurement = measurement.rename(columns={"tm": data.TIME, "V": data.PD})
+    measurement = measurement.rename(columns={"tm": data.TIME_IN_FILE, "V": data.PD})
+    # @note: The PD data is in V and will be converted to nV
+    measurement[data.PD] *= 10 ** 9
     measurement.to_csv(
         csv_filepath,
         sep=data.SEPERATOR,
+        columns=[data.TIME_IN_FILE, data.PD],
         index=False,
         decimal=data.DECIMAL_SIGN,
     )
