@@ -28,11 +28,9 @@ def test_convert_mat2csv(mat_filepath, tmp_path):
             assert len(row) == 2
 
 
-def test_convert_mat2csv_recursive(mat_filepath, tmp_path):
+def test_convert_mat2csv_with_directory(mat_filepath, tmp_path):
     runner = click.testing.CliRunner()
-    result = runner.invoke(
-        convert.mat2csv, ["-r", f"{mat_filepath.parent}", f"{tmp_path}"]
-    )
+    result = runner.invoke(convert.mat2csv, [f"{mat_filepath.parent}", f"{tmp_path}"])
     assert result.exit_code == 0
     csv_filepath = Path(tmp_path, mat_filepath.name).with_suffix(".csv")
     assert csv_filepath.exists()

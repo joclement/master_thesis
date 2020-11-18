@@ -11,8 +11,7 @@ from . import __version__, data
 @click.version_option(version=__version__)
 @click.argument("input_path", type=click.Path(exists=True))
 @click.argument("output_path", type=click.Path())
-@click.option("--recursive", "-r", is_flag=True, help="Do conversion recursively")
-def mat2csv(input_path, output_path, recursive):
+def mat2csv(input_path, output_path):
     """Convert MAT file(s) to CSV file(s)
 
     INPUT_PATH   path to file or folder to read MAT file(s) from
@@ -21,13 +20,13 @@ def mat2csv(input_path, output_path, recursive):
     """
     input_path = Path(input_path)
     output_path = Path(output_path)
-    if not recursive:
+    if input_path.is_file():
+        if output_path.exists():
+            raise ValueError(f"Error: OUTPUT_PATH {output_path} exists.")
         _matfile2csvfile(input_path, output_path)
     else:
-        if not input_path.is_dir() or not output_path.is_dir():
-            raise ValueError(
-                "In recursive mode INPUT_PATH and OUTPUT_PATH need to be directories."
-            )
+        if not output_path.is_dir():
+            raise ValueError(f"Error: OUTPUT_PATH {output_path} is not a directory.")
         for input_file in Path(input_path).rglob("*.mat"):
             output_file = Path(output_path, input_file.relative_to(input_path))
             output_file = output_file.with_suffix(".csv")
