@@ -23,7 +23,7 @@ def test_convert_mat2csv(mat_filepath, tmp_path):
         reader = csv.reader(csv_file, delimiter=data.SEPERATOR)
         header = next(reader)
         assert len(header) == 2
-        assert header == [data.TIME, data.PD]
+        assert header == [data.TIME_IN_FILE, data.PD]
         for row in reader:
             assert len(row) == 2
 

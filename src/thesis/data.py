@@ -9,7 +9,7 @@ TIME_UNIT = "[ms]"
 TIMEDIFF = f"TimeDiff {TIME_UNIT}"
 PD = "A [nV]"
 TEST_VOLTAGE = "Voltage [kV]"
-_TIME = "Time [s]"
+TIME_IN_FILE = "Time [s]"
 TIME = f"Time {TIME_UNIT}"
 
 SEPERATOR = ";"
@@ -74,13 +74,15 @@ def _get_defect(filename: str) -> Defect:
 
 
 def _do_sanity_test(df: pd.DataFrame, filepath):
-    if _TIME not in df or PD not in df:
+    if TIME_IN_FILE not in df or PD not in df:
         raise ValueError(f"TIME or PD column missing in file: {filepath}")
 
     if (TEST_VOLTAGE in df and len(df.columns) > 6) or len(df.columns) > 5:
         raise ValueError(f"Unexpected columns in file: {filepath}")
 
-    if df[_TIME].min() < 0.0 or not df[_TIME].equals(df[_TIME].sort_values()):
+    if df[TIME_IN_FILE].min() < 0.0 or not df[TIME_IN_FILE].equals(
+        df[TIME_IN_FILE].sort_values()
+    ):
         raise ValueError(f"Time values are corrupt in file: {filepath}")
 
 
@@ -88,17 +90,13 @@ def read(filepath) -> pd.DataFrame:
     experiment = pd.read_csv(filepath, sep=SEPERATOR, decimal=DECIMAL_SIGN)
     _do_sanity_test(experiment, filepath)
 
-    experiment[_TIME] *= 1000
-    experiment.rename(columns={_TIME: TIME}, inplace=True)
+    experiment[TIME_IN_FILE] *= 1000
+    experiment.rename(columns={TIME_IN_FILE: TIME}, inplace=True)
     experiment[TIMEDIFF] = experiment[TIME].diff()
 
     filename = Path(filepath).stem
     experiment = _add_voltage_sign(experiment, filename)
     experiment[CLASS] = _get_defect(filename)
-
-    # @note: The PD values have been probably converted in in a different unit,
-    #        namely V and not and not nV.
-    experiment[PD] *= 10 ** 9
 
     return experiment
 
