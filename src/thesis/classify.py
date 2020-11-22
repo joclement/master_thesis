@@ -85,36 +85,16 @@ def _report_confusion_matrix(
     )
 
 
-@click.command()
-@click.version_option(version=__version__)
-@click.argument("input_directory", type=click.Path(exists=True))
-@click.argument("output_directory", type=click.Path(exists=True))
-@click.option(
-    "--calc-cm",
-    "-c",
-    is_flag=True,
-    help="Calculate confusion matrix",
-)
-def main(input_directory, output_directory, calc_cm: bool):
-    """Print measurement info on given measurement file or folder
-
-    INPUT_DIRECTORY folder containing csv files for classification
-    OUTPUT_DIRECTORY folder where plot(s) will be saved
-    """
-    measurements, _ = data.read_recursive(input_directory)
-    _drop_unneded_columns(measurements)
-    data.clip_neg_pd_values(measurements)
-
-    defect_names = [
+def _get_defect_names(measurements: List[pd.DataFrame]):
+    return [
         data.DEFECT_NAMES[data.Defect(d)]
         for d in sorted(set(data.get_defects(measurements)))
     ]
-    mean_accuracies = pd.DataFrame(
-        {f: np.zeros(len(CLASSIFIERS)) for f in DATASET_NAMES},
-        index=[c for c in CLASSIFIERS.keys()],
-    )
-    std_accuracies = mean_accuracies.copy(deep=True)
 
+
+def _do_2d_sequence_classification(
+    measurements, mean_accuracies, std_accuracies, output_directory, calc_cm: bool
+):
     min_len_measurements = min([len(m) for m in measurements])
     X = to_time_series_dataset(
         [
@@ -142,12 +122,15 @@ def main(input_directory, output_directory, calc_cm: bool):
                 classifier_name,
                 TS,
                 confusion_matrix,
-                defect_names,
+                _get_defect_names(measurements),
                 output_directory,
             )
-
         _echo_visual_break()
 
+
+def _do_fingerprint_classification(
+    measurements, mean_accuracies, std_accuracies, output_directory, calc_cm: bool
+):
     for finger_algo_name, finger_algo in FINGERPRINTS.items():
         fingerprints = fingerprint.build_set(measurements, finger_algo)
 
@@ -174,11 +157,46 @@ def main(input_directory, output_directory, calc_cm: bool):
                     classifier_name,
                     f"fingerprint {finger_algo_name}",
                     confusion_matrix,
-                    defect_names,
+                    _get_defect_names(measurements),
                     output_directory,
                 )
 
             _echo_visual_break()
+
+
+@click.command()
+@click.version_option(version=__version__)
+@click.argument("input_directory", type=click.Path(exists=True))
+@click.argument("output_directory", type=click.Path(exists=True))
+@click.option(
+    "--calc-cm",
+    "-c",
+    is_flag=True,
+    help="Calculate confusion matrix",
+)
+def main(input_directory, output_directory, calc_cm: bool):
+    """Print measurement info on given measurement file or folder
+
+    INPUT_DIRECTORY folder containing csv files for classification
+    OUTPUT_DIRECTORY folder where plot(s) will be saved
+    """
+    measurements, _ = data.read_recursive(input_directory)
+    _drop_unneded_columns(measurements)
+    data.clip_neg_pd_values(measurements)
+
+    mean_accuracies = pd.DataFrame(
+        {f: np.zeros(len(CLASSIFIERS)) for f in DATASET_NAMES},
+        index=[c for c in CLASSIFIERS.keys()],
+    )
+    std_accuracies = mean_accuracies.copy(deep=True)
+
+    _do_2d_sequence_classification(
+        measurements, mean_accuracies, std_accuracies, output_directory, calc_cm
+    )
+
+    _do_fingerprint_classification(
+        measurements, mean_accuracies, std_accuracies, output_directory, calc_cm
+    )
 
     click.echo(mean_accuracies)
 
