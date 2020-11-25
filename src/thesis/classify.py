@@ -97,10 +97,7 @@ def _do_2d_sequence_classification(
 ):
     min_len_measurements = min([len(m) for m in measurements])
     X = to_time_series_dataset(
-        [
-            df.drop(data.CLASS, axis=1)[1 : min_len_measurements - 1]
-            for df in measurements
-        ]
+        [df.drop(data.CLASS, axis=1)[1:min_len_measurements] for df in measurements]
     )
     y = data.get_defects(measurements)
 
