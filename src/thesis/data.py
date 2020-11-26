@@ -4,13 +4,13 @@ from typing import List, Tuple, Union
 
 import pandas as pd
 
-TIME_UNIT = "[ms]"
+TIME_UNIT = "ms"
 
-TIMEDIFF = f"TimeDiff {TIME_UNIT}"
+TIMEDIFF = f"TimeDiff [{TIME_UNIT}]"
 PD = "A [nV]"
 TEST_VOLTAGE = "Voltage [kV]"
 TIME_IN_FILE = "Time [s]"
-TIME = f"Time {TIME_UNIT}"
+TIME = f"Time [{TIME_UNIT}]"
 
 SEPERATOR = ";"
 DECIMAL_SIGN = ","
@@ -80,8 +80,10 @@ def _do_sanity_test(df: pd.DataFrame, filepath):
     if (TEST_VOLTAGE in df and len(df.columns) > 6) or len(df.columns) > 5:
         raise ValueError(f"Unexpected columns in file: {filepath}")
 
-    if df[TIME_IN_FILE].min() < 0.0 or not df[TIME_IN_FILE].equals(
-        df[TIME_IN_FILE].sort_values()
+    if (
+        df[TIME_IN_FILE].min() < 0.0
+        or not df[TIME_IN_FILE].equals(df[TIME_IN_FILE].sort_values())
+        or not df[TIME_IN_FILE].is_unique
     ):
         raise ValueError(f"Time values are corrupt in file: {filepath}")
 
@@ -90,6 +92,7 @@ def read(filepath) -> pd.DataFrame:
     experiment = pd.read_csv(filepath, sep=SEPERATOR, decimal=DECIMAL_SIGN)
     _do_sanity_test(experiment, filepath)
 
+    assert TIME_UNIT == "ms"
     experiment[TIME_IN_FILE] *= 1000
     experiment.rename(columns={TIME_IN_FILE: TIME}, inplace=True)
     experiment[TIMEDIFF] = experiment[TIME].diff()

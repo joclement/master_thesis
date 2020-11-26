@@ -93,7 +93,7 @@ _DURATION_KEY = "Duration [s]"
 
 
 def _calc_duration_and_lengths(measurements):
-    assert data.TIME_UNIT == "[ms]"
+    assert data.TIME_UNIT == "ms"
     rows = [
         {
             _LENGTH_KEY: len(df.index) / 1000,

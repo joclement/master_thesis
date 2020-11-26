@@ -54,12 +54,15 @@ def test_classify_main_calc_confusion_matrix_succeeds(multiple_csv_files, tmpdir
     assert "Scores for MLP with fingerprint Ott:" in result.output
     assert "Scores for MLP with fingerprint Ott + TU Graz: " in result.output
 
-    assert "Scores for 1-NN DTW with Time Series: " in result.output
-    assert "Scores for 3-NN DTW with Time Series: " in result.output
+    assert "Scores for 1-NN 1D DTW with Time Series: " in result.output
+    assert "Scores for 3-NN 1D DTW with Time Series: " in result.output
 
-    assert result.output.count("Confusion matrix") == 17
+    assert "Scores for 1-NN 2D DTW with Time Series: " in result.output
+    assert "Scores for 3-NN 2D DTW with Time Series: " in result.output
 
-    assert len(list(Path(tmpdir).rglob("confusion_matrix_*.svg"))) == 17
+    assert result.output.count("Confusion matrix") == 19
+
+    assert len(list(Path(tmpdir).rglob("confusion_matrix_*.svg"))) == 19
     assert Path(tmpdir, "confusion_matrix_SVM_fingerprint_Ott.svg").exists()
 
 

@@ -34,16 +34,27 @@ FINGERPRINT_CLASSIFIERS = {
     ),
 }
 
-SEQUENCE_CLASSIFIERS = {
-    "1-NN DTW": KNeighborsTimeSeriesClassifier(n_neighbors=1),
-    "3-NN DTW": KNeighborsTimeSeriesClassifier(n_neighbors=3),
+ONED_SEQUENCE_CLASSIFIERS = {
+    "1-NN 1D DTW": KNeighborsTimeSeriesClassifier(n_neighbors=1),
+    "3-NN 1D DTW": KNeighborsTimeSeriesClassifier(n_neighbors=3),
 }
 
-CLASSIFIERS = {**FINGERPRINT_CLASSIFIERS, **SEQUENCE_CLASSIFIERS}
+TWOD_SEQUENCE_CLASSIFIERS = {
+    "1-NN 2D DTW": KNeighborsTimeSeriesClassifier(n_neighbors=1),
+    "3-NN 2D DTW": KNeighborsTimeSeriesClassifier(n_neighbors=3),
+}
+
+CLASSIFIERS = {
+    **FINGERPRINT_CLASSIFIERS,
+    **ONED_SEQUENCE_CLASSIFIERS,
+    **TWOD_SEQUENCE_CLASSIFIERS,
+}
 
 CV = 4
 SCORE_METRIC = "balanced_accuracy"
 SCORE_METRIC_NAME = SCORE_METRIC.replace("_", " ")
+
+FREQUENCY = pd.tseries.frequencies.to_offset("1000us")
 
 
 def _echo_visual_break():
@@ -53,9 +64,12 @@ def _echo_visual_break():
 
 
 def _drop_unneded_columns(measurements):
+    cleaned_measurements = []
     for measurement in measurements:
-        measurement.drop(columns=data.TEST_VOLTAGE, inplace=True, errors="ignore")
-        measurement.drop(columns=[data.TIME, data.VOLTAGE_SIGN], inplace=True)
+        new_measurement = measurement.drop(columns=data.TEST_VOLTAGE, errors="ignore")
+        new_measurement.drop(columns=[data.TIME, data.VOLTAGE_SIGN], inplace=True)
+        cleaned_measurements.append(new_measurement)
+    return cleaned_measurements
 
 
 def _report_confusion_matrix(
@@ -92,16 +106,60 @@ def _get_defect_names(measurements: List[pd.DataFrame]):
     ]
 
 
+def _convert_to_time_series(df: pd.DataFrame) -> pd.Series:
+    df[data.TIME] = pd.to_datetime(df[data.TIME], unit=data.TIME_UNIT)
+    df.set_index(data.TIME, inplace=True)
+    time_series = df[data.PD]
+    return time_series.asfreq(FREQUENCY, fill_value=0.0)
+
+
+def _do_1d_sequence_classification(
+    measurements, mean_accuracies, std_accuracies, output_directory, calc_cm: bool
+):
+    time_serieses = [
+        _convert_to_time_series(df.drop(data.CLASS, axis=1)[1:]) for df in measurements
+    ]
+    min_len = min([len(time_series) for time_series in time_serieses])
+    X = to_time_series_dataset(
+        np.array([time_series[:min_len] for time_series in time_serieses])
+    )
+    y = data.get_defects(measurements)
+
+    for classifier_name, classifier in ONED_SEQUENCE_CLASSIFIERS.items():
+        pipe = make_pipeline(classifier)
+        scores = cross_val_score(
+            pipe, X, y, cv=CV, scoring=SCORE_METRIC, error_score="raise", n_jobs=-1
+        )
+        click.echo(f"Scores for {classifier_name} with {TS}: {scores}")
+
+        mean_accuracies.loc[classifier_name, TS] = scores.mean()
+        std_accuracies.loc[classifier_name, TS] = scores.std()
+
+        if calc_cm:
+            confusion_matrix = metrics.confusion_matrix(
+                y, cross_val_predict(pipe, X, y, cv=CV, n_jobs=-1)
+            )
+            _report_confusion_matrix(
+                classifier_name,
+                TS,
+                confusion_matrix,
+                _get_defect_names(measurements),
+                output_directory,
+            )
+        _echo_visual_break()
+
+
 def _do_2d_sequence_classification(
     measurements, mean_accuracies, std_accuracies, output_directory, calc_cm: bool
 ):
+    measurements = _drop_unneded_columns(measurements)
     min_len_measurements = min([len(m) for m in measurements])
     X = to_time_series_dataset(
         [df.drop(data.CLASS, axis=1)[1:min_len_measurements] for df in measurements]
     )
     y = data.get_defects(measurements)
 
-    for classifier_name, classifier in SEQUENCE_CLASSIFIERS.items():
+    for classifier_name, classifier in TWOD_SEQUENCE_CLASSIFIERS.items():
         pipe = make_pipeline(classifier)
         scores = cross_val_score(
             pipe, X, y, cv=CV, scoring=SCORE_METRIC, error_score="raise", n_jobs=-1
@@ -128,6 +186,7 @@ def _do_2d_sequence_classification(
 def _do_fingerprint_classification(
     measurements, mean_accuracies, std_accuracies, output_directory, calc_cm: bool
 ):
+    measurements = _drop_unneded_columns(measurements)
     for finger_algo_name, finger_algo in FINGERPRINTS.items():
         fingerprints = fingerprint.build_set(measurements, finger_algo)
 
@@ -178,7 +237,6 @@ def main(input_directory, output_directory, calc_cm: bool):
     OUTPUT_DIRECTORY folder where plot(s) will be saved
     """
     measurements, _ = data.read_recursive(input_directory)
-    _drop_unneded_columns(measurements)
     data.clip_neg_pd_values(measurements)
 
     mean_accuracies = pd.DataFrame(
@@ -186,6 +244,10 @@ def main(input_directory, output_directory, calc_cm: bool):
         index=[c for c in CLASSIFIERS.keys()],
     )
     std_accuracies = mean_accuracies.copy(deep=True)
+
+    _do_1d_sequence_classification(
+        measurements, mean_accuracies, std_accuracies, output_directory, calc_cm
+    )
 
     _do_2d_sequence_classification(
         measurements, mean_accuracies, std_accuracies, output_directory, calc_cm
