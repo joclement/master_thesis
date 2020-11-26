@@ -56,7 +56,7 @@ SCORE_METRIC_NAME = SCORE_METRIC.replace("_", " ")
 
 FREQUENCY = pd.tseries.frequencies.to_offset("1000us")
 
-N_JOBS = -1
+N_JOBS = -2
 
 
 def _echo_visual_break():
