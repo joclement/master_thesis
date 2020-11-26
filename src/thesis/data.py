@@ -16,8 +16,8 @@ SEPERATOR = ";"
 DECIMAL_SIGN = ","
 
 VOLTAGE_SIGN = "Voltage Sign"
-POS_VOLTAGE = "(+DC)"
-NEG_VOLTAGE = "(-DC)"
+POS_VOLTAGE = "+DC"
+NEG_VOLTAGE = "-DC"
 
 CLASS = "Defect"
 
@@ -25,6 +25,12 @@ CLASS = "Defect"
 class VoltageSign(Enum):
     positive = 1
     negative = 0
+
+
+VOLTAGE_NAMES = {
+    VoltageSign.positive: POS_VOLTAGE,
+    VoltageSign.negative: NEG_VOLTAGE,
+}
 
 
 class Defect(IntEnum):
@@ -50,27 +56,37 @@ def get_names(defects: Union[List[Defect], pd.Series]) -> List[str]:
     return [DEFECT_NAMES[defect] for defect in defects]
 
 
-def _add_voltage_sign(df, filename: str) -> VoltageSign:
-    if filename[: len(POS_VOLTAGE)] == POS_VOLTAGE:
-        df[VOLTAGE_SIGN] = VoltageSign.positive
-    elif filename[: len(NEG_VOLTAGE)] == NEG_VOLTAGE:
-        df[VOLTAGE_SIGN] = VoltageSign.negative
-    return df
+def _has_voltage_sign(voltage_sign: VoltageSign, filename: str) -> bool:
+    volt_name = VOLTAGE_NAMES[voltage_sign]
+    return (
+        filename[1 : 1 + len(volt_name)] == volt_name
+        or filename[11 : 11 + len(volt_name)] == volt_name
+    )
+
+
+def _get_voltage_sign(filename: str) -> VoltageSign:
+    if _has_voltage_sign(VoltageSign.positive, filename):
+        return VoltageSign.positive
+    if _has_voltage_sign(VoltageSign.negative, filename):
+        return VoltageSign.negative
+    raise ValueError(f"No voltage sign found: {filename}")
 
 
 def _get_defect(filename: str) -> Defect:
-    if "Spitze an Erde" in filename:
-        return Defect.protrusion_earth
-    elif "Spitze an HS" in filename:
-        return Defect.protrusion_hv
-    elif "freies Potential" in filename:
-        return Defect.floating
-    elif "Isolator" in filename:
-        return Defect.particle_insulator
+    defects = []
+    if "Spitze an Erde" in filename or "Spitze_an_Erde" in filename:
+        defects.append(Defect.protrusion_earth)
+    if "Spitze an HS" in filename or "Spitze-HSP01" in filename:
+        defects.append(Defect.protrusion_hv)
+    if "freies Potential" in filename or "Floating_Hülse" in filename:
+        defects.append(Defect.floating)
+    if "Isolator" in filename:
+        defects.append(Defect.particle_insulator)
     elif "Partikel" in filename:
-        return Defect.free_particle
-    else:
-        raise ValueError(f"No knwown defect found: {filename}")
+        defects.append(Defect.free_particle)
+    if len(defects) != 1:
+        raise ValueError(f"No or multiple defects found: {filename}")
+    return defects[0]
 
 
 def _do_sanity_test(df: pd.DataFrame, filepath):
@@ -98,7 +114,7 @@ def read(filepath) -> pd.DataFrame:
     experiment[TIMEDIFF] = experiment[TIME].diff()
 
     filename = Path(filepath).stem
-    experiment = _add_voltage_sign(experiment, filename)
+    experiment[VOLTAGE_SIGN] = _get_voltage_sign(filename)
     experiment[CLASS] = _get_defect(filename)
 
     return experiment
