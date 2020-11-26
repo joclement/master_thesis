@@ -56,6 +56,8 @@ SCORE_METRIC_NAME = SCORE_METRIC.replace("_", " ")
 
 FREQUENCY = pd.tseries.frequencies.to_offset("1000us")
 
+N_JOBS = -1
+
 
 def _echo_visual_break():
     click.echo()
@@ -113,111 +115,93 @@ def _convert_to_time_series(df: pd.DataFrame) -> pd.Series:
     return time_series.asfreq(FREQUENCY, fill_value=0.0)
 
 
-def _do_1d_sequence_classification(
-    measurements, mean_accuracies, std_accuracies, output_directory, calc_cm: bool
-):
-    time_serieses = [
-        _convert_to_time_series(df.drop(data.CLASS, axis=1)[1:]) for df in measurements
-    ]
-    min_len = min([len(time_series) for time_series in time_serieses])
-    X = to_time_series_dataset(
-        np.array([time_series[:min_len] for time_series in time_serieses])
-    )
-    y = data.get_defects(measurements)
-
-    for classifier_name, classifier in ONED_SEQUENCE_CLASSIFIERS.items():
-        pipe = make_pipeline(classifier)
-        scores = cross_val_score(
-            pipe, X, y, cv=CV, scoring=SCORE_METRIC, error_score="raise", n_jobs=-1
+class ClassificationHandler:
+    def __init__(
+        self, measurements: List[pd.DataFrame], output_directory, calc_cm: bool
+    ):
+        self.mean_accuracies = pd.DataFrame(
+            {f: np.zeros(len(CLASSIFIERS)) for f in DATASET_NAMES},
+            index=[c for c in CLASSIFIERS.keys()],
         )
-        click.echo(f"Scores for {classifier_name} with {TS}: {scores}")
+        self.std_accuracies = self.mean_accuracies.copy(deep=True)
 
-        mean_accuracies.loc[classifier_name, TS] = scores.mean()
-        std_accuracies.loc[classifier_name, TS] = scores.std()
+        self.measurements = measurements
+        self.calc_cm = calc_cm
+        self.output_directory = output_directory
 
-        if calc_cm:
+    def _cross_validate(self, classifier_name, pipeline, X, y, variation_description):
+        scores = cross_val_score(
+            pipeline,
+            X,
+            y,
+            cv=CV,
+            scoring=SCORE_METRIC,
+            error_score="raise",
+            n_jobs=N_JOBS,
+        )
+        click.echo(
+            f"Scores for {classifier_name} with {variation_description}: {scores}"
+        )
+
+        self.mean_accuracies.loc[classifier_name, TS] = scores.mean()
+        self.std_accuracies.loc[classifier_name, TS] = scores.std()
+
+        if self.calc_cm:
             confusion_matrix = metrics.confusion_matrix(
-                y, cross_val_predict(pipe, X, y, cv=CV, n_jobs=-1)
+                y, cross_val_predict(pipeline, X, y, cv=CV, n_jobs=N_JOBS)
             )
             _report_confusion_matrix(
                 classifier_name,
-                TS,
+                variation_description,
                 confusion_matrix,
-                _get_defect_names(measurements),
-                output_directory,
+                _get_defect_names(self.measurements),
+                self.output_directory,
             )
-        _echo_visual_break()
 
-
-def _do_2d_sequence_classification(
-    measurements, mean_accuracies, std_accuracies, output_directory, calc_cm: bool
-):
-    measurements = _drop_unneded_columns(measurements)
-    min_len_measurements = min([len(m) for m in measurements])
-    X = to_time_series_dataset(
-        [df.drop(data.CLASS, axis=1)[1:min_len_measurements] for df in measurements]
-    )
-    y = data.get_defects(measurements)
-
-    for classifier_name, classifier in TWOD_SEQUENCE_CLASSIFIERS.items():
-        pipe = make_pipeline(classifier)
-        scores = cross_val_score(
-            pipe, X, y, cv=CV, scoring=SCORE_METRIC, error_score="raise", n_jobs=-1
+    def do_1d_sequence_classification(self):
+        time_serieses = [
+            _convert_to_time_series(df.drop(data.CLASS, axis=1)[1:])
+            for df in self.measurements
+        ]
+        min_len = min([len(time_series) for time_series in time_serieses])
+        X = to_time_series_dataset(
+            np.array([time_series[:min_len] for time_series in time_serieses])
         )
-        click.echo(f"Scores for {classifier_name} with {TS}: {scores}")
+        y = data.get_defects(self.measurements)
 
-        mean_accuracies.loc[classifier_name, TS] = scores.mean()
-        std_accuracies.loc[classifier_name, TS] = scores.std()
-
-        if calc_cm:
-            confusion_matrix = metrics.confusion_matrix(
-                y, cross_val_predict(pipe, X, y, cv=CV, n_jobs=-1)
-            )
-            _report_confusion_matrix(
-                classifier_name,
-                TS,
-                confusion_matrix,
-                _get_defect_names(measurements),
-                output_directory,
-            )
-        _echo_visual_break()
-
-
-def _do_fingerprint_classification(
-    measurements, mean_accuracies, std_accuracies, output_directory, calc_cm: bool
-):
-    measurements = _drop_unneded_columns(measurements)
-    for finger_algo_name, finger_algo in FINGERPRINTS.items():
-        fingerprints = fingerprint.build_set(measurements, finger_algo)
-
-        X = fingerprints.drop(data.CLASS, axis=1)
-        y = fingerprints[data.CLASS]
-
-        for classifier_name, classifier in FINGERPRINT_CLASSIFIERS.items():
-            pipe = make_pipeline(MinMaxScaler(), classifier)
-            scores = cross_val_score(
-                pipe, X, y, cv=CV, scoring=SCORE_METRIC, error_score="raise", n_jobs=-1
-            )
-            click.echo(
-                f"Scores for {classifier_name} with fingerprint {finger_algo_name}: "
-                f"{scores}"
-            )
-
-            mean_accuracies.loc[classifier_name, finger_algo_name] = scores.mean()
-            std_accuracies.loc[classifier_name, finger_algo_name] = scores.std()
-
-            if calc_cm:
-                predictions = cross_val_predict(pipe, X, y, cv=CV, n_jobs=-1)
-                confusion_matrix = metrics.confusion_matrix(y, predictions)
-                _report_confusion_matrix(
-                    classifier_name,
-                    f"fingerprint {finger_algo_name}",
-                    confusion_matrix,
-                    _get_defect_names(measurements),
-                    output_directory,
-                )
-
+        for classifier_name, classifier in ONED_SEQUENCE_CLASSIFIERS.items():
+            self._cross_validate(classifier_name, make_pipeline(classifier), X, y, TS)
             _echo_visual_break()
+
+    def do_2d_sequence_classification(self):
+        measurements = _drop_unneded_columns(self.measurements)
+        min_len_measurements = min([len(m) for m in measurements])
+        X = to_time_series_dataset(
+            [df.drop(data.CLASS, axis=1)[1:min_len_measurements] for df in measurements]
+        )
+        y = data.get_defects(measurements)
+
+        for classifier_name, classifier in TWOD_SEQUENCE_CLASSIFIERS.items():
+            self._cross_validate(classifier_name, make_pipeline(classifier), X, y, TS)
+            _echo_visual_break()
+
+    def do_fingerprint_classification(self):
+        measurements = _drop_unneded_columns(self.measurements)
+        for finger_algo_name, finger_algo in FINGERPRINTS.items():
+            fingerprints = fingerprint.build_set(measurements, finger_algo)
+
+            X = fingerprints.drop(data.CLASS, axis=1)
+            y = fingerprints[data.CLASS]
+
+            for classifier_name, classifier in FINGERPRINT_CLASSIFIERS.items():
+                self._cross_validate(
+                    classifier_name,
+                    make_pipeline(MinMaxScaler(), classifier),
+                    X,
+                    y,
+                    f"fingerprint {finger_algo_name}",
+                )
+                _echo_visual_break()
 
 
 @click.command()
@@ -239,27 +223,20 @@ def main(input_directory, output_directory, calc_cm: bool):
     measurements, _ = data.read_recursive(input_directory)
     data.clip_neg_pd_values(measurements)
 
-    mean_accuracies = pd.DataFrame(
-        {f: np.zeros(len(CLASSIFIERS)) for f in DATASET_NAMES},
-        index=[c for c in CLASSIFIERS.keys()],
+    classificationHandler = ClassificationHandler(
+        measurements, output_directory, calc_cm
     )
-    std_accuracies = mean_accuracies.copy(deep=True)
+    classificationHandler.do_1d_sequence_classification()
 
-    _do_1d_sequence_classification(
-        measurements, mean_accuracies, std_accuracies, output_directory, calc_cm
+    classificationHandler.do_2d_sequence_classification()
+
+    classificationHandler.do_fingerprint_classification()
+
+    click.echo(classificationHandler.mean_accuracies)
+
+    ax = classificationHandler.mean_accuracies.plot.bar(
+        rot=0, yerr=classificationHandler.std_accuracies
     )
-
-    _do_2d_sequence_classification(
-        measurements, mean_accuracies, std_accuracies, output_directory, calc_cm
-    )
-
-    _do_fingerprint_classification(
-        measurements, mean_accuracies, std_accuracies, output_directory, calc_cm
-    )
-
-    click.echo(mean_accuracies)
-
-    ax = mean_accuracies.plot.bar(rot=0, yerr=std_accuracies)
     ax.set_ylabel(SCORE_METRIC_NAME)
     ax.set_title(
         f"{SCORE_METRIC_NAME} by classifier and fingerprint"
