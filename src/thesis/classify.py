@@ -129,7 +129,12 @@ class ClassificationHandler:
         self.calc_cm = calc_cm
         self.output_directory = output_directory
 
-    def _cross_validate(self, classifier_name, pipeline, X, y, variation_description):
+    def _cross_validate(
+        self, classifier_name, pipeline, X, y, variation, variation_description=None
+    ):
+        if variation_description is None:
+            variation_description = variation
+
         scores = cross_val_score(
             pipeline,
             X,
@@ -143,8 +148,8 @@ class ClassificationHandler:
             f"Scores for {classifier_name} with {variation_description}: {scores}"
         )
 
-        self.mean_accuracies.loc[classifier_name, TS] = scores.mean()
-        self.std_accuracies.loc[classifier_name, TS] = scores.std()
+        self.mean_accuracies.loc[classifier_name, variation] = scores.mean()
+        self.std_accuracies.loc[classifier_name, variation] = scores.std()
 
         if self.calc_cm:
             confusion_matrix = metrics.confusion_matrix(
@@ -199,6 +204,7 @@ class ClassificationHandler:
                     make_pipeline(MinMaxScaler(), classifier),
                     X,
                     y,
+                    finger_algo_name,
                     f"fingerprint {finger_algo_name}",
                 )
                 _echo_visual_break()
