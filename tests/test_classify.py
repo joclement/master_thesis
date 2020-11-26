@@ -26,7 +26,6 @@ def test_classify_main_succeeds(multiple_csv_files, tmpdir):
     assert result.output.count("Confusion matrix") == 0
 
     assert Path(tmpdir, "classifiers_balanced_accuracy_bar.svg").exists()
-    assert not Path(tmpdir, "confusion_matrix_SVM_fingerprint_Ott.svg").exists()
     assert len(list(Path(tmpdir).rglob("confusion_matrix_*.svg"))) == 0
 
 
