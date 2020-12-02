@@ -21,7 +21,9 @@ FINGERPRINTS = {
     "Ott + TU Graz": fingerprint.lukas_plus_tu_graz,
 }
 TS = "Time Series"
-DATASET_NAMES = list(FINGERPRINTS.keys()) + [TS]
+ONED_TS = f"1D {TS}"
+TWOD_TS = f"2D {TS}"
+DATASET_NAMES = list(FINGERPRINTS.keys()) + [ONED_TS, TWOD_TS]
 
 FINGERPRINT_CLASSIFIERS = {
     "1-NN": KNeighborsClassifier(n_neighbors=1),
@@ -34,20 +36,14 @@ FINGERPRINT_CLASSIFIERS = {
     ),
 }
 
-ONED_SEQUENCE_CLASSIFIERS = {
-    "1-NN 1D DTW": KNeighborsTimeSeriesClassifier(n_neighbors=1),
-    "3-NN 1D DTW": KNeighborsTimeSeriesClassifier(n_neighbors=3),
-}
-
-TWOD_SEQUENCE_CLASSIFIERS = {
-    "1-NN 2D DTW": KNeighborsTimeSeriesClassifier(n_neighbors=1),
-    "3-NN 2D DTW": KNeighborsTimeSeriesClassifier(n_neighbors=3),
+SEQUENCE_CLASSIFIERS = {
+    "1-NN DTW": KNeighborsTimeSeriesClassifier(n_neighbors=1),
+    "3-NN DTW": KNeighborsTimeSeriesClassifier(n_neighbors=3),
 }
 
 CLASSIFIERS = {
     **FINGERPRINT_CLASSIFIERS,
-    **ONED_SEQUENCE_CLASSIFIERS,
-    **TWOD_SEQUENCE_CLASSIFIERS,
+    **SEQUENCE_CLASSIFIERS,
 }
 
 CV = 4
@@ -120,8 +116,8 @@ class ClassificationHandler:
         self, measurements: List[pd.DataFrame], output_directory, calc_cm: bool
     ):
         self.mean_accuracies = pd.DataFrame(
-            {f: np.zeros(len(CLASSIFIERS)) for f in DATASET_NAMES},
-            index=[c for c in CLASSIFIERS.keys()],
+            {c: np.empty(len(DATASET_NAMES)) for c in CLASSIFIERS.keys()},
+            index=[c for c in DATASET_NAMES],
         )
         self.std_accuracies = self.mean_accuracies.copy(deep=True)
 
@@ -174,8 +170,10 @@ class ClassificationHandler:
         )
         y = data.get_defects(self.measurements)
 
-        for classifier_name, classifier in ONED_SEQUENCE_CLASSIFIERS.items():
-            self._cross_validate(classifier_name, make_pipeline(classifier), X, y, TS)
+        for classifier_name, classifier in SEQUENCE_CLASSIFIERS.items():
+            self._cross_validate(
+                classifier_name, make_pipeline(classifier), X, y, ONED_TS
+            )
             _echo_visual_break()
 
     def do_2d_sequence_classification(self):
@@ -186,8 +184,10 @@ class ClassificationHandler:
         )
         y = data.get_defects(measurements)
 
-        for classifier_name, classifier in TWOD_SEQUENCE_CLASSIFIERS.items():
-            self._cross_validate(classifier_name, make_pipeline(classifier), X, y, TS)
+        for classifier_name, classifier in SEQUENCE_CLASSIFIERS.items():
+            self._cross_validate(
+                classifier_name, make_pipeline(classifier), X, y, TWOD_TS
+            )
             _echo_visual_break()
 
     def do_fingerprint_classification(self):
