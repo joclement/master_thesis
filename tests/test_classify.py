@@ -36,7 +36,7 @@ def test_classify_main_calc_confusion_matrix_succeeds(multiple_csv_files, tmpdir
     )
     assert result.exit_code == 0
 
-    ones = np.ones(4)
+    ones = np.ones(classify.CV)
     assert f"Scores for Ott with fingerprint TU Graz: {ones}" in result.output
     assert f"Scores for Ott with fingerprint Ott: {ones}" in result.output
     assert f"Scores for Ott with fingerprint Ott + TU Graz: {ones}" in result.output
