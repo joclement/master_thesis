@@ -249,6 +249,7 @@ def main(input_directory, output_directory, calc_cm: bool):
     ax.set_title(
         f"{SCORE_METRIC_NAME} by classifier and fingerprint"
         f" for {CV}-fold CV on {len(measurements)} files"
+        f" for {len(_get_defect_names(measurements))} defects"
     )
     ax.legend(loc=3)
     util.finish_plot(f"classifiers_{SCORE_METRIC}_bar", output_directory, False)
