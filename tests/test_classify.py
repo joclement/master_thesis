@@ -45,9 +45,9 @@ def test_classify_main_calc_confusion_matrix_succeeds(multiple_csv_files, tmpdir
     assert f"Scores for 3-NN with fingerprint Ott: {ones}" in result.output
     assert f"Scores for 3-NN with fingerprint Ott + TU Graz: {ones}" in result.output
 
-    assert f"Scores for SVM with fingerprint TU Graz: {ones}" in result.output
-    assert f"Scores for SVM with fingerprint Ott: {ones}" in result.output
-    assert f"Scores for SVM with fingerprint Ott + TU Graz: {ones}" in result.output
+    assert "Scores for SVM with fingerprint TU Graz: " in result.output
+    assert "Scores for SVM with fingerprint Ott: " in result.output
+    assert "Scores for SVM with fingerprint Ott + TU Graz: " in result.output
 
     assert "Scores for MLP with fingerprint TU Graz: " in result.output
     assert "Scores for MLP with fingerprint Ott:" in result.output
