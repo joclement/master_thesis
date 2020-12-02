@@ -144,8 +144,8 @@ class ClassificationHandler:
             f"Scores for {classifier_name} with {variation_description}: {scores}"
         )
 
-        self.mean_accuracies.loc[classifier_name, variation] = scores.mean()
-        self.std_accuracies.loc[classifier_name, variation] = scores.std()
+        self.mean_accuracies.loc[variation, classifier_name] = scores.mean()
+        self.std_accuracies.loc[variation, classifier_name] = scores.std()
 
         if self.calc_cm:
             confusion_matrix = metrics.confusion_matrix(
