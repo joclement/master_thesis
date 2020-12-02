@@ -194,6 +194,7 @@ class ClassificationHandler:
 
     def do_fingerprint_classification(self):
         measurements = _drop_unneded_columns(self.measurements)
+
         for finger_algo_name, finger_algo in FINGERPRINTS.items():
             fingerprints = fingerprint.build_set(measurements, finger_algo)
 
