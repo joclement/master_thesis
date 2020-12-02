@@ -10,6 +10,7 @@ from sklearn.model_selection import cross_val_predict, cross_val_score
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.tree import DecisionTreeClassifier
 from tslearn.neighbors import KNeighborsTimeSeriesClassifier
 from tslearn.utils import to_time_series_dataset
 
@@ -34,6 +35,7 @@ FINGERPRINT_CLASSIFIERS = {
         hidden_layer_sizes=(9,),
         solver="lbfgs",
     ),
+    "DT": DecisionTreeClassifier(),
 }
 
 SEQUENCE_CLASSIFIERS = {
