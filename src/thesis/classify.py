@@ -21,7 +21,7 @@ FINGERPRINTS = {
     "TU Graz": fingerprint.tu_graz,
     "Ott + TU Graz": fingerprint.lukas_plus_tu_graz,
 }
-TS = "Time Series"
+TS = "TS"
 ONED_TS = f"1D {TS}"
 TWOD_TS = f"2D {TS}"
 DATASET_NAMES = list(FINGERPRINTS.keys()) + [ONED_TS, TWOD_TS]
@@ -29,7 +29,7 @@ DATASET_NAMES = list(FINGERPRINTS.keys()) + [ONED_TS, TWOD_TS]
 FINGERPRINT_CLASSIFIERS = {
     "1-NN": KNeighborsClassifier(n_neighbors=1),
     "3-NN": KNeighborsClassifier(n_neighbors=3),
-    "Ott": classifiers.LukasMeanDist(),
+    "Ott Algo": classifiers.LukasMeanDist(),
     "SVM": svm.SVC(decision_function_shape="ovo"),
     "MLP": neural_network.MLPClassifier(
         hidden_layer_sizes=(9,),
