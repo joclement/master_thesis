@@ -36,39 +36,11 @@ def test_classify_main_calc_confusion_matrix_succeeds(multiple_csv_files, tmpdir
     )
     assert result.exit_code == 0
 
-    ones = np.ones(classify.CV)
-    assert f"Scores for Ott Algo with fingerprint TU Graz: {ones}" in result.output
-    assert f"Scores for Ott Algo with fingerprint Ott: {ones}" in result.output
     assert (
-        f"Scores for Ott Algo with fingerprint Ott + TU Graz: {ones}" in result.output
+        result.output.count("Confusion matrix")
+        == result.output.count("Scores for")
+        == len(list(Path(tmpdir).rglob("confusion_matrix_*.svg")))
     )
-
-    assert f"Scores for 1-NN with fingerprint TU Graz: {ones}" in result.output
-    assert f"Scores for 3-NN with fingerprint Ott: {ones}" in result.output
-    assert f"Scores for 3-NN with fingerprint Ott + TU Graz: {ones}" in result.output
-
-    assert "Scores for SVM with fingerprint TU Graz: " in result.output
-    assert "Scores for SVM with fingerprint Ott: " in result.output
-    assert "Scores for SVM with fingerprint Ott + TU Graz: " in result.output
-
-    assert "Scores for MLP with fingerprint TU Graz: " in result.output
-    assert "Scores for MLP with fingerprint Ott:" in result.output
-    assert "Scores for MLP with fingerprint Ott + TU Graz: " in result.output
-
-    assert "Scores for DT with fingerprint TU Graz: " in result.output
-    assert "Scores for DT with fingerprint Ott:" in result.output
-    assert "Scores for DT with fingerprint Ott + TU Graz: " in result.output
-
-    assert "Scores for 1-NN DTW with 1D Time Series: " in result.output
-    assert "Scores for 3-NN DTW with 1D Time Series: " in result.output
-
-    assert "Scores for 1-NN DTW with 2D Time Series: " in result.output
-    assert "Scores for 3-NN DTW with 2D Time Series: " in result.output
-
-    assert result.output.count("Confusion matrix") == 22
-
-    assert len(list(Path(tmpdir).rglob("confusion_matrix_*.svg"))) == 22
-    assert Path(tmpdir, "confusion_matrix_SVM_fingerprint_Ott.svg").exists()
 
 
 def test_classify_version_succeeds():
