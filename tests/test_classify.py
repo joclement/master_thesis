@@ -29,6 +29,7 @@ def test_classify_main_succeeds(multiple_csv_files, tmpdir):
     assert len(list(Path(tmpdir).rglob("confusion_matrix_*.svg"))) == 0
 
 
+@pytest.mark.expensive
 def test_classify_main_calc_confusion_matrix_succeeds(multiple_csv_files, tmpdir):
     runner = click.testing.CliRunner()
     result = runner.invoke(

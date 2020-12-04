@@ -45,3 +45,13 @@ def large_csv_filepath(testdata):
 @pytest.fixture
 def large_df(large_csv_filepath):
     return data.read(large_csv_filepath)
+
+
+@pytest.fixture
+def tiny_csv_folder(testdata):
+    return str(Path(testdata, "small_visualize"))
+
+
+@pytest.fixture
+def tiny_csv_filepath(tiny_csv_folder):
+    return str(Path(tiny_csv_folder, "(+DC) Spitze an HS_FOO.csv"))
