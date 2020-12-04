@@ -120,10 +120,10 @@ def _build_fingerprint_sequence(df: pd.DataFrame, finger_algo):
     timedelta_sum = pd.Timedelta(0)
     index_sequence_splits = []
     for index, value in df[data.TIMEDIFF][1:].iteritems():
+        timedelta_sum += pd.Timedelta(value, unit=data.TIME_UNIT)
         if timedelta_sum >= FINGERPRINT_SEQUENCE_DURATION:
             index_sequence_splits.append(index)
             timedelta_sum = pd.Timedelta(0)
-        timedelta_sum += pd.Timedelta(value, unit=data.TIME_UNIT)
     sequence = [df.iloc[: index_sequence_splits[0]]]
     for idx in range(1, len(index_sequence_splits)):
         sequence.append(
@@ -147,6 +147,7 @@ def _build_fingerprint_sequence(df: pd.DataFrame, finger_algo):
             )
 
     assert all([len(sub_df.index) >= 3 for sub_df in sequence])
+    assert(len(sequence) >= 3)
 
     fingerprints = fingerprint.build_set(sequence, finger_algo, False)
     assert all(fingerprints.dtypes == "float64")
