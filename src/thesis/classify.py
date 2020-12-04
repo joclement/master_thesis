@@ -24,7 +24,8 @@ FINGERPRINTS = {
 TS = "TS"
 ONED_TS = f"1D {TS}"
 TWOD_TS = f"2D {TS}"
-DATASET_NAMES = list(FINGERPRINTS.keys()) + [ONED_TS, TWOD_TS]
+FINGER_SEQUENCES = {f"{finger} Seq": algo for finger, algo in FINGERPRINTS.items()}
+DATASET_NAMES = list(FINGERPRINTS.keys()) + [ONED_TS, TWOD_TS, *FINGER_SEQUENCES]
 
 FINGERPRINT_CLASSIFIERS = {
     "1-NN": KNeighborsClassifier(n_neighbors=1),
@@ -48,11 +49,13 @@ CLASSIFIERS = {
     **SEQUENCE_CLASSIFIERS,
 }
 
-CV = 4
+CV = 2
 SCORE_METRIC = "balanced_accuracy"
 SCORE_METRIC_NAME = SCORE_METRIC.replace("_", " ")
 
-FREQUENCY = pd.tseries.frequencies.to_offset("1000us")
+MAX_FREQUENCY = pd.tseries.frequencies.to_offset("50us")
+FREQUENCY = pd.tseries.frequencies.to_offset("1s")
+FINGERPRINT_SEQUENCE_DURATION = pd.Timedelta("30 seconds")
 
 N_JOBS = -2
 
@@ -110,7 +113,45 @@ def _convert_to_time_series(df: pd.DataFrame) -> pd.Series:
     df[data.TIME] = pd.to_datetime(df[data.TIME], unit=data.TIME_UNIT)
     df.set_index(data.TIME, inplace=True)
     time_series = df[data.PD]
-    return time_series.asfreq(FREQUENCY, fill_value=0.0)
+    return time_series.asfreq(MAX_FREQUENCY, fill_value=0.0).resample(FREQUENCY).max()
+
+
+def _build_fingerprint_sequence(df: pd.DataFrame, finger_algo):
+    timedelta_sum = pd.Timedelta(0)
+    index_sequence_splits = []
+    for index, value in df[data.TIMEDIFF][1:].iteritems():
+        if timedelta_sum >= FINGERPRINT_SEQUENCE_DURATION:
+            index_sequence_splits.append(index)
+            timedelta_sum = pd.Timedelta(0)
+        timedelta_sum += pd.Timedelta(value, unit=data.TIME_UNIT)
+    sequence = [df.iloc[: index_sequence_splits[0]]]
+    for idx in range(1, len(index_sequence_splits)):
+        sequence.append(
+            df.iloc[index_sequence_splits[idx - 1] : index_sequence_splits[idx]]
+        )
+
+    too_short_indexes = []
+    for index, sub_df in enumerate(sequence):
+        if len(sub_df.index) <= 2:
+            too_short_indexes.append(index)
+
+    if len(too_short_indexes) > 0:
+        if (
+            len(too_short_indexes) - len(range(too_short_indexes[0], len(sequence)))
+            <= 1
+        ):
+            del sequence[too_short_indexes[0] :]
+        else:
+            raise ValueError(
+                f"Invalid measurement file: {FINGERPRINT_SEQUENCE_DURATION}"
+            )
+
+    assert all([len(sub_df.index) >= 3 for sub_df in sequence])
+
+    fingerprints = fingerprint.build_set(sequence, finger_algo, False)
+    assert all(fingerprints.dtypes == "float64")
+    assert not fingerprints.isnull().any().any()
+    return fingerprints
 
 
 class ClassificationHandler:
@@ -192,6 +233,22 @@ class ClassificationHandler:
             )
             _echo_visual_break()
 
+    def do_fingerprint_sequence_classification(self):
+        measurements = _drop_unneded_columns(self.measurements)
+        y = data.get_defects(measurements)
+
+        measurements = [df.drop(data.CLASS, axis=1) for df in measurements]
+        for finger_sequence_id, finger_algo in FINGER_SEQUENCES.items():
+            X = to_time_series_dataset(
+                [_build_fingerprint_sequence(df, finger_algo) for df in measurements]
+            )
+
+            for classifier_name, classifier in SEQUENCE_CLASSIFIERS.items():
+                self._cross_validate(
+                    classifier_name, make_pipeline(classifier), X, y, finger_sequence_id
+                )
+                _echo_visual_break()
+
     def do_fingerprint_classification(self):
         measurements = _drop_unneded_columns(self.measurements)
 
@@ -238,6 +295,8 @@ def main(input_directory, output_directory, calc_cm: bool):
     classificationHandler.do_1d_sequence_classification()
 
     classificationHandler.do_2d_sequence_classification()
+
+    classificationHandler.do_fingerprint_sequence_classification()
 
     classificationHandler.do_fingerprint_classification()
 
