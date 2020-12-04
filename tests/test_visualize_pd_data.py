@@ -5,46 +5,46 @@ import click.testing
 from thesis import visualize_pd_data
 
 
-def test_visualize_pd_data_main_succeeds(csv_filepath):
+def test_visualize_pd_data_main_succeeds(tiny_csv_filepath):
     runner = click.testing.CliRunner()
-    result = runner.invoke(visualize_pd_data.main, [csv_filepath])
+    result = runner.invoke(visualize_pd_data.main, [tiny_csv_filepath])
     assert result.exit_code == 0
 
 
-def test_visualize_pd_data_main_save_succeeds(csv_filepath, tmpdir):
+def test_visualize_pd_data_main_save_succeeds(tiny_csv_filepath, tmpdir):
     runner = click.testing.CliRunner()
     result = runner.invoke(
         visualize_pd_data.main,
-        ["--output-folder", tmpdir, csv_filepath],
+        ["--output-folder", tmpdir, tiny_csv_filepath],
     )
     assert result.exit_code == 0
     assert len(list(Path(tmpdir).glob("*.svg"))) == 4
 
 
-def test_visualize_pd_data_main_dir_succeeds(csv_folder):
+def test_visualize_pd_data_main_dir_succeeds(tiny_csv_folder):
     runner = click.testing.CliRunner()
-    result = runner.invoke(visualize_pd_data.main, [csv_folder])
+    result = runner.invoke(visualize_pd_data.main, [tiny_csv_folder])
     assert result.exit_code == 0
 
 
-def test_visualize_pd_data_main_dir_save_succeeds(csv_folder, tmpdir):
+def test_visualize_pd_data_main_dir_save_succeeds(tiny_csv_folder, tmpdir):
     runner = click.testing.CliRunner()
     result = runner.invoke(
         visualize_pd_data.main,
-        ["--output-folder", tmpdir, csv_folder],
+        ["--output-folder", tmpdir, tiny_csv_folder],
     )
     assert result.exit_code == 0
     assert len(list(Path(tmpdir).glob("*.svg"))) == 7
 
 
-def test_visualize_pd_data_main_dir_save_recursive_succeeds(csv_folder, tmpdir):
+def test_visualize_pd_data_main_dir_save_recursive_succeeds(tiny_csv_folder, tmpdir):
     runner = click.testing.CliRunner()
     result = runner.invoke(
         visualize_pd_data.main,
-        ["-r", "--output-folder", tmpdir, csv_folder],
+        ["-r", "--output-folder", tmpdir, tiny_csv_folder],
     )
     assert result.exit_code == 0
-    assert sum(sub_path.is_dir() for sub_path in Path(tmpdir).iterdir()) == 5
+    assert sum(sub_path.is_dir() for sub_path in Path(tmpdir).iterdir()) == 2
 
 
 def test_visualize_pd_data_version_succeeds():
