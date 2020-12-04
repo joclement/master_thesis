@@ -1,4 +1,5 @@
 from enum import Enum
+import math
 from typing import Callable, List, Tuple, Union
 
 import numpy as np
@@ -127,13 +128,23 @@ def lukas(df: pd.DataFrame) -> pd.Series:
     finger[PD_DIFF_MEAN] = pd_diff.mean()
     finger[PD_DIFF_SKEW] = pd_diff.skew()
     finger[PD_DIFF_KURT] = pd_diff.kurt()
+    # FIXME workaround
+    if math.isnan(finger[PD_DIFF_KURT]):
+        finger[PD_DIFF_KURT] = 0.0
     finger[PD_DIFF_WEIB_A], _ = calc_weibull_params(pd_diff)
 
     finger[TD_MEDIAN] = df[data.TIMEDIFF].median()
 
     next_pd = df[data.PD][1:].reset_index(drop=True)
-    finger[CORR_PD_DIFF_TO_PD] = _correlate_with_bins(next_pd, pd_diff)
-    finger[CORR_NEXT_PD_TO_PD] = _correlate_with_bins(df[data.PD][:-1], next_pd)
+    # FIXME workaround
+    if df[data.TIMEDIFF].sum() <= 60000:
+        finger[CORR_PD_DIFF_TO_PD], _ = stats.pearsonr(next_pd, pd_diff)
+        finger[CORR_NEXT_PD_TO_PD], _ = stats.pearsonr(df[data.PD][:-1], next_pd)
+    else:
+        finger[CORR_PD_DIFF_TO_PD] = _correlate_with_bins(next_pd, pd_diff)
+        finger[CORR_NEXT_PD_TO_PD] = _correlate_with_bins(df[data.PD][:-1], next_pd)
+    assert not math.isnan(finger[CORR_PD_DIFF_TO_PD])
+    assert not math.isnan(finger[CORR_NEXT_PD_TO_PD])
 
     return finger
 
@@ -144,8 +155,13 @@ def lukas_plus_tu_graz(df: pd.DataFrame) -> pd.Series:
 
 
 def build_set(
-    measurements: List[pd.DataFrame], fingerprint: Callable = tu_graz
+    measurements: List[pd.DataFrame],
+    fingerprint: Callable = tu_graz,
+    add_class: bool = True,
 ) -> pd.DataFrame:
     fingers = pd.DataFrame([fingerprint(measurement) for measurement in measurements])
-    fingers[data.CLASS] = pd.Series(data.get_defects(measurements), dtype="category")
+    if add_class:
+        fingers[data.CLASS] = pd.Series(
+            data.get_defects(measurements), dtype="category"
+        )
     return fingers

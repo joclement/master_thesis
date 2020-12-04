@@ -21,7 +21,6 @@ def test_fingerprint_tu_graz(measurement):
     assert finger[fingerprint.PD_DIFF_WEIB_B] >= 0
 
     assert finger[fingerprint.PDS_PER_SEC] > 0
-    assert math.isclose(finger[fingerprint.PDS_PER_SEC], 2848, rel_tol=0.05)
 
 
 def test_fingerprint_build_set(measurements):
