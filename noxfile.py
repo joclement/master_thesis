@@ -1,6 +1,7 @@
 import tempfile
 
 import nox
+import nox_poetry.patch # noqa F401
 
 nox.options.sessions = "lint", "mypy", "tests"
 
@@ -23,26 +24,24 @@ def install_with_constraints(session, *args, **kwargs):
 @nox.session(python="3.8")
 def tests(session):
     args = session.posargs or ["-n", "3", "--cov", "-m", "not e2e"]
-    session.run("poetry", "install", "--no-dev", external=True)
-    install_with_constraints(
-        session, "coverage[toml]", "pytest", "pytest-cov", "pytest-xdist"
-    )
+    session.install(".")
+    session.install("coverage[toml]", "pytest", "pytest-cov", "pytest-xdist")
     session.run("pytest", *args)
 
 
 @nox.session(python="3.8")
 def lint(session):
-    install_with_constraints(session, "flake8", "flake8-black", "flake8-import-order")
+    session.install("flake8", "flake8-black", "flake8-import-order")
     session.run("flake8", *LOCATIONS)
 
 
 @nox.session(python="3.8")
 def black(session):
-    install_with_constraints(session, "black")
+    session.install("black")
     session.run("black", *LOCATIONS)
 
 
 @nox.session(python="3.8")
 def mypy(session):
-    install_with_constraints(session, "mypy")
+    session.install("mypy")
     session.run("mypy", *LOCATIONS)
