@@ -30,20 +30,17 @@ def tests(session):
 
 @nox.session(python=["3.8"])
 def lint(session):
-    args = session.posargs or LOCATIONS
     install_with_constraints(session, "flake8", "flake8-black", "flake8-import-order")
-    session.run("flake8", *args)
+    session.run("flake8", *LOCATIONS)
 
 
 @nox.session(python="3.8")
 def black(session):
-    args = session.posargs or LOCATIONS
     install_with_constraints(session, "black")
-    session.run("black", *args)
+    session.run("black", *LOCATIONS)
 
 
 @nox.session(python="3.8")
 def mypy(session):
-    args = session.posargs or LOCATIONS
     install_with_constraints(session, "mypy")
-    session.run("mypy", *args)
+    session.run("mypy", *LOCATIONS)
