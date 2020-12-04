@@ -33,6 +33,15 @@ def _ensure_unique(csv_filepaths: list):
             raise ValueError(f"There are duplicates: '{file1}' and '{file2}'")
 
 
+def _info_on_test_voltage(measurements, csv_filepaths):
+    files_with_test_voltage = [
+        csv for df, csv in zip(measurements, csv_filepaths) if data.TEST_VOLTAGE in df
+    ]
+    click.echo(
+        f"{len(files_with_test_voltage)} of {len(measurements)} files have test voltage"
+    )
+
+
 def _info_on_negative_pds(measurements, csv_filepaths):
     files_with_neg_pd_values = [
         csv for df, csv in zip(measurements, csv_filepaths) if df[data.PD].min() < 0.0
@@ -120,6 +129,8 @@ def main(path, recursive, expensive):
         click.echo(f"Overall max TimeDiff value: {max_timediff}")
 
         _info_on_negative_pds(measurements, csv_filepaths)
+
+        _info_on_test_voltage(measurements, csv_filepaths)
 
         if expensive:
             _info_on_too_few_pds_per_sec(measurements, csv_filepaths)
