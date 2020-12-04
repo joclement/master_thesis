@@ -292,6 +292,7 @@ def main(input_directory, output_directory, calc_cm: bool):
     classificationHandler = ClassificationHandler(
         measurements, output_directory, calc_cm
     )
+    # FIXME Issue #38
     classificationHandler.do_1d_sequence_classification()
 
     classificationHandler.do_2d_sequence_classification()
