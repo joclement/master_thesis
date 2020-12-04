@@ -49,7 +49,7 @@ CLASSIFIERS = {
     **SEQUENCE_CLASSIFIERS,
 }
 
-CV = 2
+CV = 4
 SCORE_METRIC = "balanced_accuracy"
 SCORE_METRIC_NAME = SCORE_METRIC.replace("_", " ")
 
