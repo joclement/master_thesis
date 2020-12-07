@@ -1,7 +1,7 @@
 import tempfile
 
 import nox
-import nox_poetry.patch # noqa F401
+import nox_poetry.patch  # noqa F401
 
 nox.options.sessions = "lint", "mypy", "tests"
 
