@@ -506,17 +506,6 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
-name = "sklearn"
-version = "0.0"
-description = "A set of python modules for machine learning and data mining"
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-scikit-learn = "*"
-
-[[package]]
 name = "threadpoolctl"
 version = "2.1.0"
 description = "threadpoolctl"
@@ -570,7 +559,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "ae7ee1e5e68e4282e11a114cd0794ed0ffdc4932d50496f175f97566c3c1fe35"
+content-hash = "293ea0d46b3a69e915bc450b1cef7b690ff3070fa9da10f1ddaff02f581456ff"
 
 [metadata.files]
 apipkg = [
@@ -1077,9 +1066,6 @@ seaborn = [
 six = [
     {file = "six-1.15.0-py2.py3-none-any.whl", hash = "sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"},
     {file = "six-1.15.0.tar.gz", hash = "sha256:30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259"},
-]
-sklearn = [
-    {file = "sklearn-0.0.tar.gz", hash = "sha256:e23001573aa194b834122d2b9562459bf5ae494a2d59ca6b8aa22c85a44c0e31"},
 ]
 threadpoolctl = [
     {file = "threadpoolctl-2.1.0-py3-none-any.whl", hash = "sha256:38b74ca20ff3bb42caca8b00055111d74159ee95c4370882bbff2b93d24da725"},
