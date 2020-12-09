@@ -176,7 +176,11 @@ class ClassificationHandler:
 
         for classifier_name, classifier in self.SEQUENCE_CLASSIFIERS:
             self._cross_validate(
-                classifier_name, make_pipeline(classifier), X, y, self.ONED_TS
+                classifier_name,
+                make_pipeline(classifier),
+                X,
+                y,
+                f"{self.ONED_TS} {self.FREQUENCY.freqstr}",
             )
             _echo_visual_break()
 
@@ -277,13 +281,14 @@ class ClassificationHandler:
     def plot_results(self):
         click.echo(self.mean_accuracies)
 
-        ax = self.mean_accuracies.plot.bar(rot=0, yerr=self.std_accuracies)
         score_metric_name = self.SCORE_METRIC.replace("_", " ")
-        ax.set_ylabel(score_metric_name)
-        ax.set_title(
+        title = (
             f"{score_metric_name} by classifier and fingerprint"
             f" for {self.CV}-fold CV on {len(self.measurements)} files"
             f" for {len(_get_defect_names(self.measurements))} defects"
+        )
+        ax = self.mean_accuracies.plot.bar(
+            rot=30, title=title, yerr=self.std_accuracies, ylabel=score_metric_name
         )
         ax.legend(loc=3)
         util.finish_plot(
