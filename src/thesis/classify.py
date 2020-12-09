@@ -2,7 +2,6 @@ from pathlib import Path
 from typing import List
 
 import click
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from sklearn import metrics, neural_network, svm
@@ -94,14 +93,9 @@ def _report_confusion_matrix(
     )
 
     metrics.ConfusionMatrixDisplay(confusion_matrix, display_labels=defect_names).plot()
-    filepath = f"confusion_matrix_{classifier_name}_{variation_description}.svg"
-    filepath = filepath.replace(" ", "_")
-    plt.savefig(
-        Path(
-            output_directory,
-            filepath,
-        )
-    )
+    filestem = f"confusion_matrix_{classifier_name}_{variation_description}"
+    filestem = filestem.replace(" ", "_")
+    util.finish_plot(filestem, output_directory)
 
 
 def _get_defect_names(measurements: List[pd.DataFrame]):
