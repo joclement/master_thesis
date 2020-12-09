@@ -137,6 +137,7 @@ def lukas(df: pd.DataFrame) -> pd.Series:
 
     next_pd = df[data.PD][1:].reset_index(drop=True)
     # FIXME workaround
+    assert data.TIME_UNIT == "ms"
     if df[data.TIME_DIFF].sum() <= 60000:
         finger[CORR_PD_DIFF_TO_PD], _ = stats.pearsonr(next_pd, df[data.PD_DIFF][:-1])
         finger[CORR_NEXT_PD_TO_PD], _ = stats.pearsonr(df[data.PD][:-1], next_pd)
