@@ -149,12 +149,10 @@ def _build_fingerprint_sequence(df: pd.DataFrame, finger_algo):
             )
 
     assert all([len(sub_df.index) >= 3 for sub_df in sequence])
-    assert(len(sequence) >= 3)
+    assert all([not sub_df.index.isnull().any() for sub_df in sequence])
+    assert len(sequence) >= 3
 
-    fingerprints = fingerprint.build_set(sequence, finger_algo, False)
-    assert all(fingerprints.dtypes == "float64")
-    assert not fingerprints.isnull().any().any()
-    return fingerprints
+    return fingerprint.build_set(sequence, finger_algo, False).to_numpy()
 
 
 class ClassificationHandler:
@@ -248,6 +246,8 @@ class ClassificationHandler:
             X = to_time_series_dataset(
                 [_build_fingerprint_sequence(df, finger_algo) for df in measurements]
             )
+            assert not np.isinf(X).any()
+            assert np.isnan(X).any()
 
             for classifier_name, classifier in SEQUENCE_CLASSIFIERS.items():
                 self._cross_validate(
