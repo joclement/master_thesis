@@ -185,7 +185,7 @@ class ClassificationHandler:
         min_len_measurements = min([len(m) for m in measurements])
         X = to_time_series_dataset(
             [
-                df.drop(data.CLASS, axis=1)[1 : 2 * min_len_measurements]
+                df.drop(data.CLASS, axis=1)[: 2 * min_len_measurements]
                 for df in measurements
             ]
         )
@@ -200,7 +200,7 @@ class ClassificationHandler:
     def _build_fingerprint_sequence(self, df: pd.DataFrame, finger_algo):
         timedelta_sum = pd.Timedelta(0)
         index_sequence_splits = []
-        for index, value in df[data.TIME_DIFF][1:].iteritems():
+        for index, value in df[data.TIME_DIFF].iteritems():
             timedelta_sum += pd.Timedelta(value, unit=data.TIME_UNIT)
             if timedelta_sum >= self.FINGERPRINT_SEQUENCE_DURATION:
                 index_sequence_splits.append(index)
