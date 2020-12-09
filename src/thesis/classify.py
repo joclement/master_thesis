@@ -278,8 +278,10 @@ class ClassificationHandler:
                 )
                 _echo_visual_break()
 
-    def plot_results(self):
+    def finish(self):
         click.echo(self.mean_accuracies)
+        self.mean_accuracies.to_csv(f"classifiers_{self.SCORE_METRIC}_means.csv")
+        self.std_accuracies.to_csv(f"classifiers_{self.SCORE_METRIC}_stds.csv")
 
         score_metric_name = self.SCORE_METRIC.replace("_", " ")
         title = (
@@ -323,4 +325,4 @@ def main(input_directory, output_directory, calc_cm: bool):
     classificationHandler.do_2d_sequence_classification()
     classificationHandler.do_fingerprint_sequence_classification()
     classificationHandler.do_fingerprint_classification()
-    classificationHandler.plot_results()
+    classificationHandler.finish()
