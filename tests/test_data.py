@@ -11,7 +11,7 @@ from thesis import data
 def test_data_read(csv_filepath):
     df = data.read(csv_filepath)
     assert data.TIME in df
-    assert data.TIMEDIFF in df
+    assert data.TIME_DIFF in df
     assert data.PD in df
 
     assert data.CLASS in df
@@ -22,7 +22,9 @@ def test_data_read(csv_filepath):
     assert df[data.VOLTAGE_SIGN][0] == data.VoltageSign.positive
     assert len(set(df[data.VOLTAGE_SIGN])) == 1
 
-    assert data.TEST_VOLTAGE in df and len(df.columns) == 6
+    assert data.TEST_VOLTAGE in df
+    assert data.PD_DIFF in df
+    assert len(df.columns) == 7
 
 
 def test_data_read_wrong_filename(csv_filepath, tmpdir):
@@ -39,9 +41,9 @@ def test_data_read_recursive(csv_folder):
     assert all([type(measurement) is pd.DataFrame for measurement in measurements])
     assert all(
         [
-            len(measurement.columns) <= 6
+            len(measurement.columns) <= 7
             if data.TEST_VOLTAGE in measurement
-            else len(measurement.columns) <= 5
+            else len(measurement.columns) <= 6
             for measurement in measurements
         ]
     )

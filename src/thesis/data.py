@@ -4,13 +4,16 @@ from typing import List, Tuple, Union
 
 import pandas as pd
 
-TIME_UNIT = "ms"
 
-TIMEDIFF = f"TimeDiff [{TIME_UNIT}]"
 PD = "A [nV]"
+PD_DIFF = "PDDiff [nV]"
+
 TEST_VOLTAGE = "Voltage [kV]"
+
 TIME_IN_FILE = "Time [s]"
+TIME_UNIT = "ms"
 TIME = f"Time [{TIME_UNIT}]"
+TIME_DIFF = f"TimeDiff [{TIME_UNIT}]"
 
 SEPERATOR = ";"
 DECIMAL_SIGN = ","
@@ -111,13 +114,15 @@ def read(filepath) -> pd.DataFrame:
     assert TIME_UNIT == "ms"
     experiment[TIME_IN_FILE] *= 1000
     experiment.rename(columns={TIME_IN_FILE: TIME}, inplace=True)
-    experiment[TIMEDIFF] = experiment[TIME].diff()
+    experiment[TIME_DIFF] = experiment[TIME].diff()
+
+    experiment[PD_DIFF] = experiment[PD].diff().abs()
 
     filename = Path(filepath).stem
     experiment[VOLTAGE_SIGN] = _get_voltage_sign(filename)
     experiment[CLASS] = _get_defect(filename)
 
-    return experiment
+    return experiment.iloc[1:].reset_index(drop=True)
 
 
 def clip_neg_pd_values(measurements: List[pd.DataFrame]):

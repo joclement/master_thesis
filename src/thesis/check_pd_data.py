@@ -59,7 +59,7 @@ def _info_on_too_few_pds_per_sec(measurements, csv_filepaths):
     for df, csv in zip(measurements, csv_filepaths):
         too_few_pds_per_sec_files[csv] = 0
         for idx in range(df[data.PD].size - 2):
-            if df[data.TIMEDIFF][idx : idx + 3].sum() > 30000.0:
+            if df[data.TIME_DIFF][idx : idx + 3].sum() > 30000.0:
                 too_few_pds_per_sec_files[csv] += 1
 
     if (np.array(list(too_few_pds_per_sec_files.values())) == 0).all():
@@ -117,10 +117,10 @@ def main(path, recursive, expensive):
         min_pd = min([measurement[data.PD].min() for measurement in measurements])
         max_pd = max([measurement[data.PD].max() for measurement in measurements])
         min_timediff = min(
-            [measurement[data.TIMEDIFF].min() for measurement in measurements]
+            [measurement[data.TIME_DIFF].min() for measurement in measurements]
         )
         max_timediff = max(
-            [measurement[data.TIMEDIFF].max() for measurement in measurements]
+            [measurement[data.TIME_DIFF].max() for measurement in measurements]
         )
 
         click.echo(f"Overall min PD value: {min_pd}")
