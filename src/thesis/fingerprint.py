@@ -139,12 +139,10 @@ def lukas(df: pd.DataFrame) -> pd.Series:
     # FIXME workaround
     assert data.TIME_UNIT == "ms"
     if df[data.TIME_DIFF].sum() <= 60000:
-        finger[CORR_PD_DIFF_TO_PD], _ = stats.pearsonr(next_pd, df[data.PD_DIFF][:-1])
+        finger[CORR_PD_DIFF_TO_PD], _ = stats.pearsonr(df[data.PD], df[data.PD_DIFF])
         finger[CORR_NEXT_PD_TO_PD], _ = stats.pearsonr(df[data.PD][:-1], next_pd)
     else:
-        finger[CORR_PD_DIFF_TO_PD] = _correlate_with_bins(
-            next_pd, df[data.PD_DIFF][:-1]
-        )
+        finger[CORR_PD_DIFF_TO_PD] = _correlate_with_bins(df[data.PD], df[data.PD_DIFF])
         finger[CORR_NEXT_PD_TO_PD] = _correlate_with_bins(df[data.PD][:-1], next_pd)
     assert not math.isnan(finger[CORR_PD_DIFF_TO_PD])
     assert not math.isnan(finger[CORR_NEXT_PD_TO_PD])
