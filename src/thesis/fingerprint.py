@@ -124,6 +124,9 @@ def lukas(df: pd.DataFrame) -> pd.Series:
 
     finger[PD_DIFF_MEAN] = df[data.PD_DIFF].mean()
     finger[PD_DIFF_SKEW] = df[data.PD_DIFF].skew()
+    # FIXME workaround
+    if math.isnan(finger[PD_DIFF_SKEW]):
+        finger[PD_DIFF_SKEW] = 0.0
     finger[PD_DIFF_KURT] = df[data.PD_DIFF].kurt()
     # FIXME workaround
     if math.isnan(finger[PD_DIFF_KURT]):
@@ -145,6 +148,8 @@ def lukas(df: pd.DataFrame) -> pd.Series:
     assert not math.isnan(finger[CORR_PD_DIFF_TO_PD])
     assert not math.isnan(finger[CORR_NEXT_PD_TO_PD])
 
+    if finger.isnull().any() or finger.isin([np.inf, -np.inf]).any():
+        raise ValueError(f"Incorrect finger: \n {finger}")
     return finger
 
 
