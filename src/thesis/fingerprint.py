@@ -80,17 +80,19 @@ def tu_graz(df: pd.DataFrame) -> pd.Series:
     finger[PD_SKEW] = df[data.PD].skew()
     finger[PD_KURT] = df[data.PD].kurt()
 
-    finger[PD_DIFF_WEIB_A], finger[PD_DIFF_WEIB_B] = calc_weibull_params(_pd_diff(df))
+    finger[PD_DIFF_WEIB_A], finger[PD_DIFF_WEIB_B] = calc_weibull_params(
+        df[data.PD_DIFF]
+    )
 
-    finger[TD_MAX] = df[data.TIMEDIFF].max()
-    finger[TD_MEAN] = df[data.TIMEDIFF].mean()
-    finger[TD_MIN] = df[data.TIMEDIFF].min()
-    finger[TD_VAR] = df[data.TIMEDIFF].var()
-    finger[TD_SKEW] = df[data.TIMEDIFF].skew()
-    finger[TD_KURT] = df[data.TIMEDIFF].kurt()
-    finger[TD_WEIB_A], finger[TD_WEIB_B] = calc_weibull_params(df[data.TIMEDIFF][1:])
+    finger[TD_MAX] = df[data.TIME_DIFF].max()
+    finger[TD_MEAN] = df[data.TIME_DIFF].mean()
+    finger[TD_MIN] = df[data.TIME_DIFF].min()
+    finger[TD_VAR] = df[data.TIME_DIFF].var()
+    finger[TD_SKEW] = df[data.TIME_DIFF].skew()
+    finger[TD_KURT] = df[data.TIME_DIFF].kurt()
+    finger[TD_WEIB_A], finger[TD_WEIB_B] = calc_weibull_params(df[data.TIME_DIFF][1:])
 
-    finger[PDS_PER_SEC] = len(df[data.TIMEDIFF]) / (df[data.TIMEDIFF].sum() / 1000)
+    finger[PDS_PER_SEC] = len(df[data.TIME_DIFF]) / (df[data.TIME_DIFF].sum() / 1000)
 
     return finger
 
@@ -112,10 +114,6 @@ def _correlate_with_bins(x: pd.Series, y: pd.Series, num_of_boxes: int = 100):
     return correlation_coefficiient
 
 
-def _pd_diff(df: pd.DataFrame):
-    return df[data.PD].diff()[1:].reset_index(drop=True).abs()
-
-
 def lukas(df: pd.DataFrame) -> pd.Series:
     finger = pd.Series(dtype=float)
 
@@ -124,24 +122,25 @@ def lukas(df: pd.DataFrame) -> pd.Series:
     finger[PD_MAX] = df[data.PD].max()
     finger[PD_WEIB_A], finger[PD_WEIB_B] = calc_weibull_params(df[data.PD])
 
-    pd_diff = _pd_diff(df)
-    finger[PD_DIFF_MEAN] = pd_diff.mean()
-    finger[PD_DIFF_SKEW] = pd_diff.skew()
-    finger[PD_DIFF_KURT] = pd_diff.kurt()
+    finger[PD_DIFF_MEAN] = df[data.PD_DIFF].mean()
+    finger[PD_DIFF_SKEW] = df[data.PD_DIFF].skew()
+    finger[PD_DIFF_KURT] = df[data.PD_DIFF].kurt()
     # FIXME workaround
     if math.isnan(finger[PD_DIFF_KURT]):
         finger[PD_DIFF_KURT] = 0.0
-    finger[PD_DIFF_WEIB_A], _ = calc_weibull_params(pd_diff)
+    finger[PD_DIFF_WEIB_A], _ = calc_weibull_params(df[data.PD_DIFF])
 
-    finger[TD_MEDIAN] = df[data.TIMEDIFF].median()
+    finger[TD_MEDIAN] = df[data.TIME_DIFF].median()
 
     next_pd = df[data.PD][1:].reset_index(drop=True)
     # FIXME workaround
-    if df[data.TIMEDIFF].sum() <= 60000:
-        finger[CORR_PD_DIFF_TO_PD], _ = stats.pearsonr(next_pd, pd_diff)
+    if df[data.TIME_DIFF].sum() <= 60000:
+        finger[CORR_PD_DIFF_TO_PD], _ = stats.pearsonr(next_pd, df[data.PD_DIFF][:-1])
         finger[CORR_NEXT_PD_TO_PD], _ = stats.pearsonr(df[data.PD][:-1], next_pd)
     else:
-        finger[CORR_PD_DIFF_TO_PD] = _correlate_with_bins(next_pd, pd_diff)
+        finger[CORR_PD_DIFF_TO_PD] = _correlate_with_bins(
+            next_pd, df[data.PD_DIFF][:-1]
+        )
         finger[CORR_NEXT_PD_TO_PD] = _correlate_with_bins(df[data.PD][:-1], next_pd)
     assert not math.isnan(finger[CORR_PD_DIFF_TO_PD])
     assert not math.isnan(finger[CORR_NEXT_PD_TO_PD])

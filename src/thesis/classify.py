@@ -66,10 +66,12 @@ def _echo_visual_break():
     click.echo()
 
 
-def _drop_unneded_columns(measurements):
+def _drop_unneded_columns(measurements, other_columns: List[str] = []):
     cleaned_measurements = []
     for measurement in measurements:
-        new_measurement = measurement.drop(columns=data.TEST_VOLTAGE, errors="ignore")
+        new_measurement = measurement.drop(
+            columns=[data.TEST_VOLTAGE, *other_columns], errors="ignore"
+        )
         new_measurement.drop(columns=[data.TIME, data.VOLTAGE_SIGN], inplace=True)
         cleaned_measurements.append(new_measurement)
     return cleaned_measurements
@@ -119,7 +121,7 @@ def _convert_to_time_series(df: pd.DataFrame) -> pd.Series:
 def _build_fingerprint_sequence(df: pd.DataFrame, finger_algo):
     timedelta_sum = pd.Timedelta(0)
     index_sequence_splits = []
-    for index, value in df[data.TIMEDIFF][1:].iteritems():
+    for index, value in df[data.TIME_DIFF][1:].iteritems():
         timedelta_sum += pd.Timedelta(value, unit=data.TIME_UNIT)
         if timedelta_sum >= FINGERPRINT_SEQUENCE_DURATION:
             index_sequence_splits.append(index)
@@ -221,10 +223,13 @@ class ClassificationHandler:
             _echo_visual_break()
 
     def do_2d_sequence_classification(self):
-        measurements = _drop_unneded_columns(self.measurements)
+        measurements = _drop_unneded_columns(self.measurements, data.PD_DIFF)
         min_len_measurements = min([len(m) for m in measurements])
         X = to_time_series_dataset(
-            [df.drop(data.CLASS, axis=1)[1:min_len_measurements] for df in measurements]
+            [
+                df.drop(data.CLASS, axis=1)[1 : 2 * min_len_measurements]
+                for df in measurements
+            ]
         )
         y = data.get_defects(measurements)
 
