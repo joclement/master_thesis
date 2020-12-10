@@ -79,6 +79,9 @@ def tu_graz(df: pd.DataFrame) -> pd.Series:
     finger[PD_VAR] = df[data.PD].var()
     finger[PD_SKEW] = df[data.PD].skew()
     finger[PD_KURT] = df[data.PD].kurt()
+    # FIXME workaround
+    if math.isnan(finger[PD_KURT]):
+        finger[PD_KURT] = 0.0
 
     finger[PD_DIFF_WEIB_A], finger[PD_DIFF_WEIB_B] = calc_weibull_params(
         df[data.PD_DIFF]
@@ -90,10 +93,15 @@ def tu_graz(df: pd.DataFrame) -> pd.Series:
     finger[TD_VAR] = df[data.TIME_DIFF].var()
     finger[TD_SKEW] = df[data.TIME_DIFF].skew()
     finger[TD_KURT] = df[data.TIME_DIFF].kurt()
+    # FIXME workaround
+    if math.isnan(finger[TD_KURT]):
+        finger[TD_KURT] = 0.0
     finger[TD_WEIB_A], finger[TD_WEIB_B] = calc_weibull_params(df[data.TIME_DIFF][1:])
 
     finger[PDS_PER_SEC] = len(df[data.TIME_DIFF]) / (df[data.TIME_DIFF].sum() / 1000)
 
+    if finger.isnull().any() or finger.isin([np.inf, -np.inf]).any():
+        raise ValueError(f"Incorrect finger: \n {finger}")
     return finger
 
 
