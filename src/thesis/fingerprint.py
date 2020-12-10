@@ -152,8 +152,6 @@ def lukas(df: pd.DataFrame) -> pd.Series:
     else:
         finger[CORR_PD_DIFF_TO_PD] = _correlate_with_bins(df[data.PD], df[data.PD_DIFF])
         finger[CORR_NEXT_PD_TO_PD] = _correlate_with_bins(df[data.PD][:-1], next_pd)
-    assert not math.isnan(finger[CORR_PD_DIFF_TO_PD])
-    assert not math.isnan(finger[CORR_NEXT_PD_TO_PD])
 
     if finger.isnull().any() or finger.isin([np.inf, -np.inf]).any():
         raise ValueError(f"Incorrect finger: \n {finger}")
