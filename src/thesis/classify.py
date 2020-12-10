@@ -171,7 +171,7 @@ class ClassificationHandler:
         ]
         min_len = min([len(time_series) for time_series in time_serieses])
         X = to_time_series_dataset(
-            np.array([time_series[:min_len] for time_series in time_serieses])
+            [time_series[:min_len] for time_series in time_serieses]
         )
         y = data.get_defects(self.measurements)
 
@@ -181,18 +181,15 @@ class ClassificationHandler:
                 make_pipeline(classifier),
                 X,
                 y,
-                f"{self.ONED_TS} {self.FREQUENCY.freqstr}",
+                self.ONED_TS,
             )
             _echo_visual_break()
 
     def do_2d_sequence_classification(self):
         measurements = _drop_unneded_columns(self.measurements, data.PD_DIFF)
-        min_len_measurements = min([len(m) for m in measurements])
+        min_len = min([len(m) for m in measurements])
         X = to_time_series_dataset(
-            [
-                df.drop(data.CLASS, axis=1)[: 2 * min_len_measurements]
-                for df in measurements
-            ]
+            [df.drop(data.CLASS, axis=1)[: 2 * min_len] for df in measurements]
         )
         y = data.get_defects(measurements)
 
