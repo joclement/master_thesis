@@ -1,24 +1,9 @@
-import tempfile
-
 import nox
 import nox_poetry.patch  # noqa F401
 
 nox.options.sessions = "lint", "mypy", "tests"
 
 LOCATIONS = "src", "tests", "noxfile.py"
-
-
-def install_with_constraints(session, *args, **kwargs):
-    with tempfile.NamedTemporaryFile() as requirements:
-        session.run(
-            "poetry",
-            "export",
-            "--dev",
-            "--format=requirements.txt",
-            f"--output={requirements.name}",
-            external=True,
-        )
-        session.install(f"--constraint={requirements.name}", *args, **kwargs)
 
 
 @nox.session(python="3.8")
