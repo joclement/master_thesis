@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import List
 
 import click
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from sklearn import metrics, neural_network, svm
@@ -280,14 +281,10 @@ class ClassificationHandler:
 
     def finish(self):
         click.echo(self.mean_accuracies)
+        self.save_results()
+        self.plot_results()
 
-        self.mean_accuracies.to_csv(
-            Path(self.output_directory, f"classifiers_{self.SCORE_METRIC}_means.csv")
-        )
-        self.std_accuracies.to_csv(
-            Path(self.output_directory, f"classifiers_{self.SCORE_METRIC}_stds.csv")
-        )
-
+    def plot_results(self):
         score_metric_name = self.SCORE_METRIC.replace("_", " ")
         title = (
             f"{score_metric_name} by classifier and fingerprint"
@@ -301,6 +298,14 @@ class ClassificationHandler:
         ax.legend(loc=3)
         util.finish_plot(
             f"classifiers_{self.SCORE_METRIC}_bar", self.output_directory, False
+        )
+
+    def save_results(self):
+        self.mean_accuracies.to_csv(
+            Path(self.output_directory, f"classifiers_{self.SCORE_METRIC}_means.csv")
+        )
+        self.std_accuracies.to_csv(
+            Path(self.output_directory, f"classifiers_{self.SCORE_METRIC}_stds.csv")
         )
 
 
