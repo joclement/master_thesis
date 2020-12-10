@@ -280,8 +280,13 @@ class ClassificationHandler:
 
     def finish(self):
         click.echo(self.mean_accuracies)
-        self.mean_accuracies.to_csv(f"classifiers_{self.SCORE_METRIC}_means.csv")
-        self.std_accuracies.to_csv(f"classifiers_{self.SCORE_METRIC}_stds.csv")
+
+        self.mean_accuracies.to_csv(
+            Path(self.output_directory, f"classifiers_{self.SCORE_METRIC}_means.csv")
+        )
+        self.std_accuracies.to_csv(
+            Path(self.output_directory, f"classifiers_{self.SCORE_METRIC}_stds.csv")
+        )
 
         score_metric_name = self.SCORE_METRIC.replace("_", " ")
         title = (
