@@ -110,7 +110,7 @@ class ClassificationHandler:
         self.SCORE_METRIC = "balanced_accuracy"
 
         self.MAX_FREQUENCY = pd.tseries.frequencies.to_offset("50us")
-        self.FREQUENCY = pd.tseries.frequencies.to_offset("1s")
+        self.FREQUENCY = pd.tseries.frequencies.to_offset("500ms")
         self.FINGERPRINT_SEQUENCE_DURATION = pd.Timedelta("30 seconds")
 
         self.N_JOBS = -2
