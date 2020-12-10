@@ -34,6 +34,7 @@ visualize-fingerprints = "thesis.visualize_fingerprints:main"
 check-pd-data = "thesis.check_pd_data:main"
 mat2csv = "thesis.convert:mat2csv"
 classify = "thesis.classify:main"
+visualize-results = "thesis.visualize_results:main"
 
 [tool.coverage.paths]
 source = ["src", "*/site-packages"]
