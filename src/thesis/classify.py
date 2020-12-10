@@ -66,22 +66,27 @@ class ClassificationHandler:
     def __init__(
         self, measurements: List[pd.DataFrame], output_directory, calc_cm: bool
     ):
+        self.MAX_FREQUENCY = pd.tseries.frequencies.to_offset("50us")
+        self.FREQUENCY = pd.tseries.frequencies.to_offset("5000ms")
+        self.FINGERPRINT_SEQUENCE_DURATION = pd.Timedelta("30 seconds")
+
         self.FINGERPRINTS = {
             "Ott": fingerprint.lukas,
-            "TU Graz": fingerprint.tu_graz,
-            "Ott + TU Graz": fingerprint.lukas_plus_tu_graz,
+            "TuGraz": fingerprint.tu_graz,
+            "Ott+TuGraz": fingerprint.lukas_plus_tu_graz,
         }
         TS = "TS"
-        self.ONED_TS = f"1D {TS}"
+        self.ONED_TS = f"1D {TS} {self.FREQUENCY.freqstr}"
         self.TWOD_TS = f"2D {TS}"
         self.FINGER_SEQUENCES = {
-            f"{finger} Seq": algo for finger, algo in self.FINGERPRINTS.items()
+            f"{finger} {self.FINGERPRINT_SEQUENCE_DURATION.seconds} Seq": algo
+            for finger, algo in self.FINGERPRINTS.items()
         }
 
         self.FINGERPRINT_CLASSIFIERS = {
             ("1-NN", KNeighborsClassifier(n_neighbors=1)),
             ("3-NN", KNeighborsClassifier(n_neighbors=3)),
-            ("Ott Algo", classifiers.LukasMeanDist()),
+            ("OttAlgo", classifiers.LukasMeanDist()),
             ("SVM", svm.SVC(decision_function_shape="ovo")),
             (
                 "MLP",
@@ -99,19 +104,14 @@ class ClassificationHandler:
             self.TWOD_TS,
             *self.FINGER_SEQUENCES,
         ]
-        CLASSIFIERS = self.FINGERPRINT_CLASSIFIERS | self.SEQUENCE_CLASSIFIERS
-        self.mean_accuracies = pd.DataFrame(
-            {c[0]: np.empty(len(DATASET_NAMES)) for c in CLASSIFIERS},
-            index=[c for c in DATASET_NAMES],
+        CLASSIFIERS = set(
+            [c[0] for c in self.FINGERPRINT_CLASSIFIERS | self.SEQUENCE_CLASSIFIERS]
         )
+        self.mean_accuracies = pd.DataFrame(index=DATASET_NAMES, columns=CLASSIFIERS)
         self.std_accuracies = self.mean_accuracies.copy(deep=True)
 
         self.CV = 4
         self.SCORE_METRIC = "balanced_accuracy"
-
-        self.MAX_FREQUENCY = pd.tseries.frequencies.to_offset("50us")
-        self.FREQUENCY = pd.tseries.frequencies.to_offset("500ms")
-        self.FINGERPRINT_SEQUENCE_DURATION = pd.Timedelta("30 seconds")
 
         self.N_JOBS = -2
 
@@ -294,6 +294,7 @@ class ClassificationHandler:
             f" for {self.CV}-fold CV on {len(self.measurements)} files"
             f" for {len(_get_defect_names(self.measurements))} defects"
         )
+        plt.figure(figsize=(20, 10))
         ax = self.mean_accuracies.plot.bar(
             rot=30, title=title, yerr=self.std_accuracies, ylabel=score_metric_name
         )
