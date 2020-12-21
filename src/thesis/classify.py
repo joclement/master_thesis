@@ -12,6 +12,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.tree import DecisionTreeClassifier
 from tslearn.neighbors import KNeighborsTimeSeriesClassifier
+from tslearn.svm import TimeSeriesSVC
 from tslearn.utils import to_time_series_dataset
 
 from . import __version__, classifiers, data, fingerprint, util
@@ -238,8 +239,10 @@ class ClassificationHandler:
     def do_fingerprint_sequence_classification(self):
         measurements = _drop_unneded_columns(self.measurements)
         y = data.get_defects(measurements)
-
         measurements = [df.drop(data.CLASS, axis=1) for df in measurements]
+
+        sequence_classifiers = set(self.SEQUENCE_CLASSIFIERS)
+        sequence_classifiers.add(("SVM", TimeSeriesSVC()))
         for finger_sequence_id, finger_algo in self.FINGER_SEQUENCES.items():
             X = to_time_series_dataset(
                 [
@@ -250,7 +253,7 @@ class ClassificationHandler:
             assert not np.isinf(X).any()
             assert np.isnan(X).any()
 
-            for classifier_name, classifier in self.SEQUENCE_CLASSIFIERS:
+            for classifier_name, classifier in sequence_classifiers:
                 self._cross_validate(
                     classifier_name, make_pipeline(classifier), X, y, finger_sequence_id
                 )
