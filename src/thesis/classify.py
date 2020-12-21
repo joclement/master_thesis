@@ -172,7 +172,10 @@ class ClassificationHandler:
         ]
         min_len = min([len(time_series) for time_series in time_serieses])
         X = to_time_series_dataset(
-            [time_series[:min_len] for time_series in time_serieses]
+            [
+                time_series[: min(8 * min_len, len(time_series))]
+                for time_series in time_serieses
+            ]
         )
         y = data.get_defects(self.measurements)
 
@@ -190,7 +193,10 @@ class ClassificationHandler:
         measurements = _drop_unneded_columns(self.measurements, data.PD_DIFF)
         min_len = min([len(m) for m in measurements])
         X = to_time_series_dataset(
-            [df.drop(data.CLASS, axis=1)[: 2 * min_len] for df in measurements]
+            [
+                df.drop(data.CLASS, axis=1)[: min(len(df.index), 8 * min_len)]
+                for df in measurements
+            ]
         )
         y = data.get_defects(measurements)
 
