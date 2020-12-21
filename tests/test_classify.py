@@ -3,9 +3,7 @@ from pathlib import Path
 from shutil import copyfile
 
 import click.testing
-import numpy as np
 import pytest
-
 
 from thesis import classify
 
@@ -18,8 +16,6 @@ def multiple_csv_files(csv_folder, tmpdir):
 
 
 def test_classify_main_succeeds(multiple_csv_files, tmpdir):
-    np.random.seed(2)
-
     runner = click.testing.CliRunner()
     result = runner.invoke(classify.main, [multiple_csv_files, str(tmpdir)])
     assert result.exit_code == 0
