@@ -4,7 +4,7 @@ from typing import Union
 
 import pandas as pd
 from tsfresh import extract_features
-from tsfresh import select_features
+from tsfresh.feature_selection.relevance import calculate_relevance_table
 from tsfresh.utilities.dataframe_functions import impute
 
 from . import data
@@ -57,11 +57,19 @@ def main(input_directory: Union[str, Path] = sys.argv[1]):
         impute_function=impute,
     )
     print("extracted_features.shape: ", extracted_features.shape)
-    features_filtered = select_features(
+    relevance_table = calculate_relevance_table(
         extracted_features,
         y,
         ml_task="classification",
         multiclass=True,
         show_warnings=True,
     )
-    print("features_filtered.shape: ", features_filtered.shape)
+    print("columns:")
+    print(relevance_table.columns)
+    relevance_table = relevance_table[relevance_table.relevant]
+    p_value_columns = [c for c in relevance_table.columns if "p_value" in c]
+    relevance_table["p_value"] = relevance_table.loc[:, p_value_columns].sum(axis=1)
+    relevance_table.sort_values("p_value", inplace=True)
+    print("relevant_features:")
+    relevant_columns = [c for c in relevance_table.columns if "relevant_" in c]
+    print(relevance_table[["p_value", *relevant_columns]])
