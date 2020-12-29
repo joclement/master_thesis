@@ -42,6 +42,7 @@ class Defect(IntEnum):
     protrusion_earth = 2
     protrusion_hv = 3
     floating = 4
+    cavity = 5
 
 
 # TODO try this maybe as an improvement:
@@ -52,6 +53,7 @@ DEFECT_NAMES = {
     Defect.protrusion_earth: "Protrusion on Earth",
     Defect.protrusion_hv: "Protrusion on HV",
     Defect.floating: "Floating",
+    Defect.cavity: "Cavity in Insulator",
 }
 
 
@@ -77,6 +79,8 @@ def _get_voltage_sign(filename: str) -> VoltageSign:
 
 def _get_defect(filename: str) -> Defect:
     defects = []
+    if "Stütze" in filename:
+        defects.append(Defect.cavity)
     if "Spitze an Erde" in filename or "Spitze_an_Erde" in filename:
         defects.append(Defect.protrusion_earth)
     if "Spitze an HS" in filename or "Spitze-HSP01" in filename:

@@ -26,7 +26,7 @@ def test_fingerprint_tu_graz(measurement):
 def test_fingerprint_build_set(measurements):
     dataset = fingerprint.build_set(measurements)
     assert type(dataset) is pd.DataFrame
-    assert dataset.shape == (5, 15)
+    assert dataset.shape == (len(measurements), 15)
 
 
 def test_fingerprint_lukas(large_df):
