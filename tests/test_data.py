@@ -36,8 +36,7 @@ def test_data_read_wrong_filename(csv_filepath, tmpdir):
 
 def test_data_read_recursive(csv_folder):
     measurements, csv_filepaths = data.read_recursive(csv_folder)
-    assert len(csv_filepaths) == 5
-    assert len(measurements) == 5
+    assert len(csv_filepaths) == len(measurements) == 6
     assert all([type(measurement) is pd.DataFrame for measurement in measurements])
     assert all(
         [
@@ -58,12 +57,11 @@ def test_data_clip_neg_values(measurement):
 
 def test_data_split_train_test(measurements):
     dataset = 2 * measurements
-    assert len(dataset) == 10
     train, test = train_test_split(
         dataset, test_size=0.5, stratify=data.get_defects(dataset)
     )
-    assert len(train) == 5
-    assert len(test) == 5
+    assert len(train) == len(dataset) / 2
+    assert len(test) == len(dataset) / 2
     classes_in_train = [df[data.CLASS][0] for df in train]
     classes_in_test = [df[data.CLASS][0] for df in test]
     assert set(classes_in_train) == set(classes_in_test) == set(data.Defect)
