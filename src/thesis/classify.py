@@ -11,11 +11,12 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.tree import DecisionTreeClassifier
+from tsfresh.transformers import RelevantFeatureAugmenter
 from tslearn.neighbors import KNeighborsTimeSeriesClassifier
 from tslearn.svm import TimeSeriesSVC
 from tslearn.utils import to_time_series_dataset
 
-from . import __version__, classifiers, data, fingerprint, util
+from . import __version__, classifiers, data, fingerprint, tsfresh_features, util
 
 
 def _echo_visual_break():
@@ -80,6 +81,7 @@ class ClassificationHandler:
         TS = "TS"
         self.ONED_TS = f"1D {TS} {self.FREQUENCY.freqstr}"
         self.TWOD_TS = f"2D {TS}"
+        self.TSFRESH = "tsfresh"
         self.FINGER_SEQUENCES = {
             f"{finger} {self.FINGERPRINT_SEQUENCE_DURATION.seconds} Seq": algo
             for finger, algo in self.FINGERPRINTS.items()
@@ -104,6 +106,7 @@ class ClassificationHandler:
         DATASET_NAMES = list(self.FINGERPRINTS.keys()) + [
             self.ONED_TS,
             self.TWOD_TS,
+            self.TSFRESH,
             *self.FINGER_SEQUENCES,
         ]
         CLASSIFIERS = set(
@@ -154,6 +157,31 @@ class ClassificationHandler:
                 _get_defect_names(self.measurements),
                 self.output_directory,
             )
+
+    def do_tsfresh_classification(self):
+        y = data.get_defects(self.measurements)
+        X = tsfresh_features.convert_to_tsfresh_dataset(self.measurements)
+        for classifier_name, classifier in self.FINGERPRINT_CLASSIFIERS:
+            pipeline = make_pipeline(
+                RelevantFeatureAugmenter(
+                    column_id="id",
+                    column_kind="kind",
+                    column_value="value",
+                    n_jobs=self.N_JOBS,
+                    fdr_level=0.23,
+                    ml_task="classification",
+                    multiclass=True,
+                ),
+                classifier,
+            )
+            self._cross_validate(
+                classifier_name,
+                pipeline,
+                X,
+                y,
+                self.TSFRESH,
+            )
+            _echo_visual_break()
 
     def _convert_to_time_series(self, df: pd.DataFrame) -> pd.Series:
         df[data.TIME] = pd.to_datetime(df[data.TIME], unit=data.TIME_UNIT)
@@ -337,6 +365,7 @@ def main(input_directory, output_directory, calc_cm: bool):
     classificationHandler = ClassificationHandler(
         measurements, output_directory, calc_cm
     )
+    classificationHandler.do_tsfresh_classification()
     # FIXME Issue #38
     classificationHandler.do_1d_sequence_classification()
     classificationHandler.do_2d_sequence_classification()

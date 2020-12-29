@@ -775,7 +775,7 @@ dev = ["py-make (>=0.1.0)", "twine", "argopt", "pydoc-markdown", "wheel"]
 
 [[package]]
 name = "tsfresh"
-version = "0.17.1.dev16+g6814f40"
+version = "0.17.1.dev22+gd0dc5aa"
 description = "tsfresh extracts relevant characteristics from time series"
 category = "main"
 optional = false
@@ -796,9 +796,9 @@ tqdm = ">=4.10.0"
 
 [package.source]
 type = "git"
-url = "https://github.com/blue-yonder/tsfresh"
+url = "https://github.com/flyingdutchman23/tsfresh"
 reference = "main"
-resolved_reference = "6814f40b9abd0385431b963327faae7ae93e962e"
+resolved_reference = "d0dc5aae3f03ce8c062329a7dd971e3dbf9dab51"
 
 [[package]]
 name = "tslearn"
@@ -862,7 +862,7 @@ heapdict = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "26edf3c93b9ccf4889c7ff1c9bf4968beb441d5e4d163fd69a9a02e6f8ab24f0"
+content-hash = "1ffc1d7bfeeb5c97f715b783c78a770c7f8ab4aa17636912f8ff26bd8ef35c6a"
 
 [metadata.files]
 apipkg = [

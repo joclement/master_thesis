@@ -15,7 +15,7 @@ tslearn = "^0.4.1"
 h5py = "^3.1.0"
 scikit-learn = "^0.23.2"
 numpy = "^1.19.4"
-tsfresh = { git = "https://github.com/blue-yonder/tsfresh", tag = "main" }
+tsfresh = { git = "https://github.com/flyingdutchman23/tsfresh", tag = "main" }
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.1.0"
