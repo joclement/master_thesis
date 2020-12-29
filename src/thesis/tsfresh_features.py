@@ -54,8 +54,6 @@ def main(input_directory: Union[str, Path] = sys.argv[1]):
         multiclass=True,
         show_warnings=True,
     )
-    print("columns:")
-    print(relevance_table.columns)
     relevance_table = relevance_table[relevance_table.relevant]
     p_value_columns = [c for c in relevance_table.columns if "p_value" in c]
     relevance_table["p_value"] = relevance_table.loc[:, p_value_columns].sum(axis=1)
