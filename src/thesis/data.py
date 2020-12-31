@@ -115,6 +115,8 @@ def read(filepath) -> pd.DataFrame:
     experiment = pd.read_csv(filepath, sep=SEPERATOR, decimal=DECIMAL_SIGN)
     _do_sanity_test(experiment, filepath)
 
+    experiment.drop(TEST_VOLTAGE, axis=1, inplace=True, errors="ignore")
+
     assert TIME_UNIT == "ms"
     experiment[TIME_IN_FILE] *= 1000
     experiment.rename(columns={TIME_IN_FILE: TIME}, inplace=True)

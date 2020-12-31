@@ -22,9 +22,9 @@ def test_data_read(csv_filepath):
     assert df[data.VOLTAGE_SIGN][0] == data.VoltageSign.positive
     assert len(set(df[data.VOLTAGE_SIGN])) == 1
 
-    assert data.TEST_VOLTAGE in df
+    assert data.TEST_VOLTAGE not in df
     assert data.PD_DIFF in df
-    assert len(df.columns) == 7
+    assert len(df.columns) == 6
 
 
 def test_data_read_wrong_filename(csv_filepath, tmpdir):
@@ -77,8 +77,8 @@ def test_data_Defect():
 
 def test_data_drop_columns_repeatively(csv_filepath):
     df = data.read(csv_filepath)
-    assert data.TEST_VOLTAGE in df
-    df.drop(columns=data.TEST_VOLTAGE, inplace=True)
+    assert data.TIME in df
+    df.drop(columns=data.TIME, inplace=True)
     with pytest.raises(KeyError):
-        df.drop(columns=data.TEST_VOLTAGE, inplace=True)
-    df.drop(columns=data.TEST_VOLTAGE, inplace=True, errors="ignore")
+        df.drop(columns=data.TIME, inplace=True)
+    df.drop(columns=data.TIME, inplace=True, errors="ignore")

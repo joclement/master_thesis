@@ -61,6 +61,15 @@ CORR_PD_DIFF_TO_PD = f"{CORR} {PD_DIFF} - PD"
 CORR_NEXT_PD_TO_PD = f"{CORR} Next PD - PD"
 
 
+def keep_needed_columns(measurements: List[pd.DataFrame]):
+    for df in measurements:
+        df.drop(
+            df.columns.difference([data.TIME_DIFF, data.PD_DIFF, data.PD]),
+            axis=1,
+            inplace=True,
+        )
+
+
 def get_parameter_group(df: pd.DataFrame, group: Group) -> pd.DataFrame:
     wanted_columns = [column for column in df.columns if group.value in column]
     return df[wanted_columns].copy()
@@ -166,7 +175,7 @@ def lukas_plus_tu_graz(df: pd.DataFrame) -> pd.Series:
 def build_set(
     measurements: List[pd.DataFrame],
     fingerprint: Callable = tu_graz,
-    add_class: bool = True,
+    add_class: bool = False,
 ) -> pd.DataFrame:
     fingers = pd.DataFrame([fingerprint(measurement) for measurement in measurements])
     if add_class:

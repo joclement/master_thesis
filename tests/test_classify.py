@@ -2,10 +2,16 @@ from itertools import product
 from pathlib import Path
 from shutil import copyfile
 
-import click.testing
 import pytest
+import yaml
 
 from thesis import classify
+
+
+@pytest.fixture
+def config():
+    with open("./config/default.yml", "r") as stream:
+        return yaml.safe_load(stream)
 
 
 @pytest.fixture
@@ -15,38 +21,34 @@ def multiple_csv_files(csv_folder, tmpdir):
     return str(tmpdir)
 
 
-def test_classify_main_succeeds(multiple_csv_files, tmpdir):
-    runner = click.testing.CliRunner()
-    result = runner.invoke(classify.main, [multiple_csv_files, str(tmpdir)])
-    assert result.exit_code == 0
-    assert result.output.count("Confusion matrix") == 0
+@pytest.fixture
+def config_and_multiple_csv_files(config, csv_folder, tmpdir):
+    config["general"]["data_dir"] = str(tmpdir)
+    config["general"]["output_dir"] = str(tmpdir)
+    config_filepath = Path(tmpdir, "config.yml")
+    with open(config_filepath, "w") as outfile:
+        yaml.dump(config, outfile)
+    for idx, csv_file in product(range(4), Path(csv_folder).glob("*.csv")):
+        copyfile(csv_file, Path(tmpdir, f"{csv_file.stem}{idx}.csv"))
+    return config_filepath, tmpdir
 
-    assert Path(tmpdir, "classifiers_balanced_accuracy_bar.svg").exists()
+
+def test_classify_main_succeeds(config_and_multiple_csv_files, tmpdir):
+    config_filepath, csv_folder = config_and_multiple_csv_files
+    classify.main(config_filepath)
+
+    assert Path(tmpdir, "models_balanced_accuracy_bar.svg").exists()
     assert len(list(Path(tmpdir).rglob("confusion_matrix_*.svg"))) == 0
 
 
 @pytest.mark.expensive
-def test_classify_main_calc_confusion_matrix_succeeds(multiple_csv_files, tmpdir):
-    runner = click.testing.CliRunner()
-    result = runner.invoke(
-        classify.main, ["--calc-cm", multiple_csv_files, str(tmpdir)]
-    )
-    assert result.exit_code == 0
+def test_classify_main_calc_confusion_matrix_succeeds(
+    config, multiple_csv_files, tmpdir
+):
+    config["general"]["data_dir"] = str(multiple_csv_files)
+    config["general"]["output_dir"] = str(tmpdir)
+    config["general"]["calc_cm"] = True
 
-    assert (
-        result.output.count("Confusion matrix")
-        == result.output.count("Scores for")
-        == len(list(Path(tmpdir).rglob("confusion_matrix_*.svg")))
-    )
-
-
-def test_classify_version_succeeds():
-    runner = click.testing.CliRunner()
-    result = runner.invoke(classify.main, ["--version"])
-    assert result.exit_code == 0
-
-
-def test_classify_help_succeeds():
-    runner = click.testing.CliRunner()
-    result = runner.invoke(classify.main, ["--help"])
-    assert result.exit_code == 0
+    handler = classify.ClassificationHandler(config)
+    handler.run()
+    assert len(list(Path(tmpdir).rglob("confusion_matrix_*.svg"))) > 0
