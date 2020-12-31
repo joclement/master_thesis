@@ -26,7 +26,7 @@ def test_fingerprint_tu_graz(measurement):
 def test_fingerprint_build_set(measurements):
     dataset = fingerprint.build_set(measurements)
     assert type(dataset) is pd.DataFrame
-    assert dataset.shape == (len(measurements), 15)
+    assert dataset.shape == (len(measurements), 14)
 
 
 def test_fingerprint_lukas(large_df):
@@ -47,7 +47,7 @@ def test_fingerprint_lukas(large_df):
 def test_fingerprint_build_set_lukas(large_df):
     dataset = fingerprint.build_set([large_df], fingerprint=fingerprint.lukas)
     assert type(dataset) is pd.DataFrame
-    assert dataset.shape == (1, 13)
+    assert dataset.shape == (1, 12)
 
 
 def test_fingerprint_lukas_plus_tu_graz(measurement):
@@ -65,7 +65,6 @@ def test_fingerprint_lukas_plus_tu_graz(measurement):
 def test_normalize_fingerprints(measurements):
     fingerprints = fingerprint.build_set(measurements)
     scaler = MinMaxScaler()
-    fingerprints.drop(data.CLASS, axis=1, inplace=True)
     scaler.fit(fingerprints)
     normalized_fingers = scaler.transform(fingerprints)
 
