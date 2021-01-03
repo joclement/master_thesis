@@ -52,7 +52,6 @@ def main(input_directory: Union[str, Path] = sys.argv[1]) -> pd.DataFrame:
         y,
         ml_task="classification",
         multiclass=True,
-        show_warnings=True,
     )
     relevance_table = relevance_table[relevance_table.relevant]
     p_value_columns = [c for c in relevance_table.columns if "p_value" in c]
