@@ -1,28 +1,28 @@
 from enum import Enum, IntEnum
 from pathlib import Path
-from typing import List, Tuple, Union
+from typing import Final, List, Tuple, Union
 
 import pandas as pd
 
 
-PD = "A [nV]"
-PD_DIFF = "PDDiff [nV]"
+PD: Final = "A [nV]"
+PD_DIFF: Final = "PDDiff [nV]"
 
-TEST_VOLTAGE = "Voltage [kV]"
+TEST_VOLTAGE: Final = "Voltage [kV]"
 
-TIME_IN_FILE = "Time [s]"
-TIME_UNIT = "ms"
-TIME = f"Time [{TIME_UNIT}]"
-TIME_DIFF = f"TimeDiff [{TIME_UNIT}]"
+TIME_IN_FILE: Final = "Time [s]"
+TIME_UNIT: Final = "ms"
+TIME: Final = f"Time [{TIME_UNIT}]"
+TIME_DIFF: Final = f"TimeDiff [{TIME_UNIT}]"
 
-SEPERATOR = ";"
-DECIMAL_SIGN = ","
+SEPERATOR: Final = ";"
+DECIMAL_SIGN: Final = ","
 
-VOLTAGE_SIGN = "Voltage Sign"
-POS_VOLTAGE = "+DC"
-NEG_VOLTAGE = "-DC"
+VOLTAGE_SIGN: Final = "Voltage Sign"
+POS_VOLTAGE: Final = "+DC"
+NEG_VOLTAGE: Final = "-DC"
 
-CLASS = "Defect"
+CLASS: Final = "Defect"
 
 
 class VoltageSign(Enum):
@@ -30,7 +30,7 @@ class VoltageSign(Enum):
     negative = 0
 
 
-VOLTAGE_NAMES = {
+VOLTAGE_NAMES: Final = {
     VoltageSign.positive: POS_VOLTAGE,
     VoltageSign.negative: NEG_VOLTAGE,
 }
@@ -47,7 +47,7 @@ class Defect(IntEnum):
 
 # TODO try this maybe as an improvement:
 # https://stackoverflow.com/questions/43862184/associating-string-representations-with-an-enum-that-uses-integer-values
-DEFECT_NAMES = {
+DEFECT_NAMES: Final = {
     Defect.free_particle: "Free Particle",
     Defect.particle_insulator: "Particle on Insulator",
     Defect.protrusion_earth: "Protrusion on Earth",
