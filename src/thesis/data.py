@@ -145,5 +145,5 @@ def read_recursive(dir_path) -> Tuple[List[pd.DataFrame], list]:
     return measurements, csv_filepaths
 
 
-def get_defects(measurements: List[pd.DataFrame]):
+def get_defects(measurements: List[pd.DataFrame]) -> List[Defect]:
     return [measurement[CLASS][0] for measurement in measurements]
