@@ -37,6 +37,7 @@ mat2csv = "thesis.convert:mat2csv"
 classify = "thesis.classify:main"
 visualize-results = "thesis.visualize_results:main"
 tsfresh-features = "thesis.tsfresh_features:main"
+gui = "thesis.gui:main"
 
 [tool.coverage.paths]
 source = ["src", "*/site-packages"]

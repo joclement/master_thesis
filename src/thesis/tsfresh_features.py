@@ -1,13 +1,12 @@
-from pathlib import Path
-import sys
-from typing import List, Union
+from typing import List
 
+import click
 import pandas as pd
 from tsfresh import extract_features
 from tsfresh.feature_selection.relevance import calculate_relevance_table
 from tsfresh.utilities.dataframe_functions import impute
 
-from . import data
+from . import __version__, data
 
 
 def convert_to_tsfresh_dataset(measurements: List[pd.DataFrame]) -> pd.DataFrame:
