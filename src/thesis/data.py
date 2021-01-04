@@ -111,7 +111,7 @@ def _do_sanity_test(df: pd.DataFrame, filepath):
         raise ValueError(f"Time values are corrupt in file: {filepath}")
 
 
-def read(filepath) -> pd.DataFrame:
+def read(filepath, labeled_file: bool = True) -> pd.DataFrame:
     experiment = pd.read_csv(filepath, sep=SEPERATOR, decimal=DECIMAL_SIGN)
     _do_sanity_test(experiment, filepath)
 
@@ -125,8 +125,9 @@ def read(filepath) -> pd.DataFrame:
     experiment[PD_DIFF] = experiment[PD].diff().abs()
 
     filename = Path(filepath).stem
-    experiment[VOLTAGE_SIGN] = _get_voltage_sign(filename)
-    experiment[CLASS] = _get_defect(filename)
+    if labeled_file:
+        experiment[VOLTAGE_SIGN] = _get_voltage_sign(filename)
+        experiment[CLASS] = _get_defect(filename)
 
     return experiment.iloc[1:].reset_index(drop=True)
 
