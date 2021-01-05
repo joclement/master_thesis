@@ -1,6 +1,6 @@
 general:
   cv: 3
-  data_dir: ./data/csv-files/prepared/dataset/train/longer
+  data_dir: ./testdata/small
   n_jobs: 3
   calc_cm: False
   output_dir: ./output/tmp
