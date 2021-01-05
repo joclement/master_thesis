@@ -166,6 +166,7 @@ def finger_tsfresh(
         fdr_level=config["fdr_level"],
         ml_task="classification",
         multiclass=True,
+        n_jobs=config["n_jobs"],
     )
     tsfreshTransformer.set_timeseries_container(X_data)
     X = pd.DataFrame(index=list(range(len(measurements))))

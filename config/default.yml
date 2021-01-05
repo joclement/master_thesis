@@ -1,11 +1,13 @@
 general:
   cv: 3
   data_dir: ./testdata/small
-  n_jobs: 3
   calc_cm: False
   output_dir: ./output/tmp
+  save_models: True
   show_plots: False
-  metric: "balanced_accuracy"
+  metric: "balanced_accuracy_score"
+  further_metrics:
+    - "accuracy_score"
 
 
 models-to-run:
@@ -63,6 +65,7 @@ models:
       n_neighbors: 1
 
   knn-finger_tsfresh:
+    n_jobs: 3
     fdr_level: 0.23
     classifier_hyperparameters:
       n_neighbors: 1
@@ -83,6 +86,7 @@ models:
       n_neighbors: 1
 
   knn_dtw-seqfinger_tsfresh:
+    n_jobs: 3
     fdr_level: 0.23
     duration: "30 seconds"
     classifier_hyperparameters:
@@ -98,6 +102,7 @@ models:
     duration: "30 seconds"
 
   svm-seqfinger_tsfresh:
+    n_jobs: 3
     fdr_level: 0.23
     duration: "30 seconds"
 
@@ -122,6 +127,7 @@ models:
       solver: "lbfgs"
 
   mlp-finger_tsfresh:
+    n_jobs: 3
     fdr_level: 0.23
     classifier_hyperparameters:
       hidden_layer_sizes:
@@ -141,6 +147,7 @@ models:
       decision_function_shape: "ovr"
 
   svm-finger_tsfresh:
+    n_jobs: 3
     fdr_level: 0.23
     classifier_hyperparameters:
       decision_function_shape: "ovr"
@@ -161,4 +168,5 @@ models:
   dt-finger_both: {}
 
   dt-finger_tsfresh:
+    n_jobs: 3
     fdr_level: 0.23
