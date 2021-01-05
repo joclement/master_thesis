@@ -1,11 +1,13 @@
 from pathlib import Path
+import pickle
 import sys
 from typing import Final, Union
 
 import matplotlib.pyplot as plt
 import pandas as pd
+import sklearn
 from sklearn import metrics
-from sklearn.model_selection import cross_val_predict, cross_val_score
+from sklearn.model_selection import StratifiedKFold
 import yaml
 
 from . import __version__, data, models, util
@@ -25,10 +27,12 @@ class ClassificationHandler:
 
         self.calc_cm = self.config["general"]["calc_cm"]
         self.metric = self.config["general"]["metric"]
+        self.further_metrics = self.config["general"]["further_metrics"]
         self.cv = self.config["general"]["cv"]
-        self.n_jobs = self.config["general"]["n_jobs"]
+        self.save_models = self.config["general"]["save_models"]
 
-        score_columns = [f"cv{idx}" for idx in range(self.config["general"]["cv"])]
+        iterables = [["train", "val", *self.further_metrics], list(range(self.cv))]
+        score_columns = pd.MultiIndex.from_product(iterables, names=["metric", "index"])
         self.scores = pd.DataFrame(
             index=self.config["models-to-run"], columns=score_columns
         )
@@ -46,7 +50,9 @@ class ClassificationHandler:
         with open(Path(self.output_dir, "config.yml"), "w") as outfile:
             yaml.dump(self.config, outfile)
 
-    def _report_confusion_matrix(self, model_name: str, confusion_matrix):
+    def _report_confusion_matrix(
+        self, model_name: str, model_folder: Path, confusion_matrix
+    ):
         print(f"Confusion matrix for {model_name}:")
         print(
             pd.DataFrame(
@@ -59,57 +65,93 @@ class ClassificationHandler:
         metrics.ConfusionMatrixDisplay(
             confusion_matrix, display_labels=self.defect_names
         ).plot()
-        filestem = f"confusion_matrix_{model_name}"
-        filestem = filestem.replace(" ", "_")
-        util.finish_plot(filestem, self.output_dir)
+        model_folder.mkdir(exist_ok=True)
+        util.finish_plot(f"confusion_matrix_{model_name}", model_folder)
 
     def _get_measurements_copy(self):
         return [df.copy() for df in self.measurements]
 
-    def _cross_validate(self, model_name, model_config):
-        pipeline, X = models.get_model_with_data(
-            self._get_measurements_copy(), model_name, model_config
-        )
-        self.scores.loc[model_name, :] = cross_val_score(
-            pipeline,
-            X,
-            self.y,
-            cv=self.cv,
-            scoring=self.metric,
-            error_score="raise",
-            n_jobs=self.n_jobs,
-        )
-        print(f"Scores for {model_name}: {self.scores.loc[model_name, :]}")
+    def _cross_validate(self, model_name, model_folder, classifier, X):
+        skfold = StratifiedKFold(n_splits=self.cv)
+        all_val_correct = []
+        all_val_predictions = []
+        for idx, split_indexes in enumerate(skfold.split(X, self.y)):
+            train_index, val_index = split_indexes
+            if isinstance(X, pd.DataFrame):
+                X_train = X.loc[train_index, :]
+                X_val = X.loc[val_index, :]
+            else:
+                X_train = X[train_index]
+                X_val = X[val_index]
+            y_train = self.y[train_index]
+            y_val = self.y[val_index]
+
+            classifier.fit(X_train, y_train)
+
+            train_predictions = classifier.predict(X_train)
+            val_predictions = classifier.predict(X_val)
+            self._calc_scores(
+                model_name, idx, y_train, y_val, train_predictions, val_predictions
+            )
+
+            if self.calc_cm:
+                all_val_predictions.extend(val_predictions)
+                all_val_correct.extend(y_val)
 
         if self.calc_cm:
             confusion_matrix = metrics.confusion_matrix(
-                self.y,
-                cross_val_predict(pipeline, X, self.y, cv=self.cv, n_jobs=self.n_jobs),
+                all_val_correct, all_val_predictions
             )
-            self._report_confusion_matrix(model_name, confusion_matrix)
+            self._report_confusion_matrix(model_name, model_folder, confusion_matrix)
+
+    def _calc_scores(
+        self, model_name, idx, y_train, y_val, train_predictions, val_predictions
+    ):
+        score = getattr(sklearn.metrics, self.metric)
+        train_score = score(y_train, train_predictions)
+        print("Train score: ", train_score)
+        self.scores.loc[model_name, ("train", idx)] = train_score
+
+        val_score = score(y_val, val_predictions)
+        print("Validation score: ", val_score)
+        self.scores.loc[model_name, ("val", idx)] = val_score
+        for metric in self.further_metrics:
+            score = getattr(sklearn.metrics, metric)
+            self.scores.loc[model_name, (metric, idx)] = score(y_val, val_predictions)
 
     def run(self):
         for model_name in self.config["models-to-run"]:
-            model_config = self.config["models"][model_name]
-            self._cross_validate(model_name, model_config)
+            print("Model: ", model_name)
+            classifier, X = models.get_model_with_data(
+                self._get_measurements_copy(),
+                model_name,
+                self.config["models"][model_name],
+            )
+            model_folder = Path(self.output_dir, model_name)
+            self._cross_validate(model_name, model_folder, classifier, X)
+
+            if self.save_models:
+                classifier.fit(X, self.y)
+                model_folder.mkdir(exist_ok=True)
+                pickle.dump(classifier, open(Path(model_folder, "model.p"), "wb"))
+
             print("\n ============================================================ \n")
         self._finish()
 
     def _finish(self):
         print(self.scores)
         print(self.scores.mean(axis=1))
-        self.scores.to_csv(Path(self.output_dir, f"models_{self.metric}.csv"))
+        self.scores.to_csv(Path(self.output_dir, "models_scores.csv"))
         self._plot_results()
 
     def _plot_results(self):
         title = (
-            f"metric: {self.metric}, cv: {self.cv}, n: {len(self.measurements)}"
-            f" , n_defects: {len(set(self.y))}"
+            f"cv: {self.cv}, n: {len(self.measurements)}, n_defects: {len(set(self.y))}"
         )
         plt.figure(figsize=(20, 10))
         ax = self.scores.plot.bar(rot=30, title=title, ylabel=self.metric)
         ax.legend(loc=3)
-        util.finish_plot(f"models_{self.metric}_bar", self.output_dir, False)
+        util.finish_plot("models_all_bar", self.output_dir, False)
 
 
 def main(config_path: Union[str, Path] = sys.argv[1]):
