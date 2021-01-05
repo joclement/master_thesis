@@ -1,5 +1,5 @@
 general:
-  cv: 4
+  cv: 3
   data_dir: ./data/csv-files/prepared/dataset/train/longer
   n_jobs: 3
   calc_cm: False
