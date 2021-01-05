@@ -1,18 +1,17 @@
 from pathlib import Path
 import pickle
+import sys
 import tkinter as tk
 from tkinter.filedialog import askopenfilename
-from typing import Final
-import sys
 import traceback
-from tkinter import messagebox
+from typing import Any, Dict, Final
 
 from . import data, prepared_data
 
 
 CLASSIFIER_PATH: Final = Path("./output/refactored2/dt-finger_both/model.p")
 PREPARE_DATA_FUNCTION: Final = prepared_data.finger_both
-MODEL_CONFIG: Final = {}
+MODEL_CONFIG: Final[Dict[str, Any]] = {}
 
 
 class ClassifierGui(tk.Toplevel):
@@ -32,13 +31,17 @@ class ClassifierGui(tk.Toplevel):
         )
         self.button_explore.grid(column=1, row=2)
 
-
-        self.polarity_options = [ "", data.POS_VOLTAGE, data.NEG_VOLTAGE]
+        self.polarity_options = ["", data.POS_VOLTAGE, data.NEG_VOLTAGE]
         polarity_variable = tk.StringVar(parent)
         polarity_variable.set(self.polarity_options[0])
         self.polarity = self.polarity_options[0]
 
-        polarity_options_menu = tk.OptionMenu(parent, polarity_variable, *self.polarity_options, command=self._polarity_chosen)
+        polarity_options_menu = tk.OptionMenu(
+            parent,
+            polarity_variable,
+            *self.polarity_options,
+            command=self._polarity_chosen,
+        )
         polarity_options_menu.grid(column=1, row=3)
 
         self.button_classify = tk.Button(
@@ -76,8 +79,15 @@ class ClassifierGui(tk.Toplevel):
         X, _ = self.prepare_data([self.csv_data], **self.model_config)
         prediction = data.Defect(self.classifier.predict(X)[0])
         probabilities_list = self.classifier.predict_proba(X)[0]
-        probabilities_dict = {data.Defect(idx): prob for idx, prob in enumerate(probabilities_list)}
-        probabilities_output = "".join([f"{data.DEFECT_NAMES[defect]}: {prob}\n" for defect, prob in probabilities_dict.items()])
+        probabilities_dict = {
+            data.Defect(idx): prob for idx, prob in enumerate(probabilities_list)
+        }
+        probabilities_output = "".join(
+            [
+                f"{data.DEFECT_NAMES[defect]}: {prob}\n"
+                for defect, prob in probabilities_dict.items()
+            ]
+        )
         self.text_field.insert(
             tk.END,
             "Classification results:\n"
