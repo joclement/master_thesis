@@ -34,7 +34,7 @@ class ClassificationHandler:
         )
 
         measurements, _ = data.read_recursive(self.config["general"]["data_dir"])
-        self.y = pd.Series(data.get_defects(measurements))
+        self.y: Final = pd.Series(data.get_defects(measurements))
         data.clip_neg_pd_values(measurements)
         self.measurements: Final = [df.drop(data.CLASS, axis=1) for df in measurements]
 
