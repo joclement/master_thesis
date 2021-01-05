@@ -26,7 +26,10 @@ def _convert_to_time_series(df: pd.DataFrame, index: int) -> pd.DataFrame:
     return time_series
 
 
-def main(input_directory: Union[str, Path] = sys.argv[1]) -> pd.DataFrame:
+@click.command()
+@click.version_option(version=__version__)
+@click.argument("input_directory", type=click.Path(exists=True))
+def main(input_directory, n_jobs=-1) -> pd.DataFrame:
     """Print measurement info on given measurement file or folder
 
     INPUT_DIRECTORY folder containing csv files for classification
@@ -44,6 +47,7 @@ def main(input_directory: Union[str, Path] = sys.argv[1]) -> pd.DataFrame:
         column_value="value",
         impute_function=impute,
         show_warnings=True,
+        n_jobs=n_jobs,
     )
     print("extracted_features.shape: ", extracted_features.shape)
     relevance_table = calculate_relevance_table(
@@ -51,6 +55,7 @@ def main(input_directory: Union[str, Path] = sys.argv[1]) -> pd.DataFrame:
         y,
         ml_task="classification",
         multiclass=True,
+        n_jobs=n_jobs,
     )
     relevance_table = relevance_table[relevance_table.relevant]
     p_value_columns = [c for c in relevance_table.columns if "p_value" in c]
