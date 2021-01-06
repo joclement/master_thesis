@@ -37,8 +37,7 @@ def test_classify_main_succeeds(config_and_multiple_csv_files, tmpdir):
     config_filepath, csv_folder = config_and_multiple_csv_files
     classify.main(config_filepath)
 
-    assert Path(tmpdir, "models_balanced_accuracy_bar.svg").exists()
-    assert len(list(Path(tmpdir).rglob("confusion_matrix_*.svg"))) == 0
+    assert Path(tmpdir, "output", "models_all_bar.svg").exists()
 
 
 @pytest.mark.expensive
