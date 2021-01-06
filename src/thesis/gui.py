@@ -63,6 +63,7 @@ class ClassifierGui(tk.Toplevel):
 
     def _check_classification_readiness(self):
         if self.csv_data is not None and self.polarity != self.polarity_options[0]:
+            self.text_field.delete(1.0, tk.END)
             self.button_classify["state"] = "normal"
 
     def _browseFiles(self):
