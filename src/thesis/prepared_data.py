@@ -138,6 +138,13 @@ def finger_ott(
     return fingerprint.build_set(measurements, fingerprint.lukas), MinMaxScaler()
 
 
+def finger_own(
+    measurements: List[pd.DataFrame], **config
+) -> Tuple[pd.DataFrame, Union[None, TransformerMixin]]:
+    fingerprint.keep_needed_columns(measurements)
+    return fingerprint.build_set(measurements, fingerprint.own), MinMaxScaler()
+
+
 def finger_tugraz(
     measurements: List[pd.DataFrame], **config
 ) -> Tuple[pd.DataFrame, Union[None, TransformerMixin]]:

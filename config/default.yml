@@ -27,7 +27,7 @@ models-to-run:
   - knn-finger_tugraz
   - mlp-finger_both
   - mlp-finger_ott
-  - mlp-finger_tsfresh
+  - mlp-finger_own
   - mlp-finger_tugraz
   - ott_algo-finger_ott
   - svm_dtw-seqfinger_both
@@ -112,6 +112,12 @@ models:
     classifier_hyperparameters:
       hidden_layer_sizes:
         - 9
+      solver: "lbfgs"
+
+  mlp-finger_own:
+    classifier_hyperparameters:
+      hidden_layer_sizes:
+        - 5
       solver: "lbfgs"
 
   mlp-finger_tugraz:
