@@ -48,12 +48,12 @@ class Defect(IntEnum):
 # TODO try this maybe as an improvement:
 # https://stackoverflow.com/questions/43862184/associating-string-representations-with-an-enum-that-uses-integer-values
 DEFECT_NAMES: Final = {
-    Defect.free_particle: "Free Particle",
-    Defect.particle_insulator: "Particle on Insulator",
-    Defect.protrusion_earth: "Protrusion on Earth",
-    Defect.protrusion_hv: "Protrusion on HV",
+    Defect.free_particle: "Particle",
+    Defect.particle_insulator: "ParticleInsulator",
+    Defect.protrusion_earth: "ProtruEnclosure",
+    Defect.protrusion_hv: "ProtruHV",
     Defect.floating: "Floating",
-    Defect.cavity: "Cavity in Insulator",
+    Defect.cavity: "Void",
 }
 
 
