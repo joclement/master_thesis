@@ -5,7 +5,7 @@ from thesis import tsfresh_features
 
 
 def test_main(csv_folder):
-    relevance_table = tsfresh_features.main(csv_folder, n_jobs=1)
+    relevance_table = tsfresh_features.calc_relevant_features(csv_folder, n_jobs=1)
     assert type(relevance_table) is pd.DataFrame
 
 
