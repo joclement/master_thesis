@@ -4,9 +4,11 @@ import sys
 from typing import Final, Union
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import sklearn
 from sklearn import metrics
+from sklearn.metrics import accuracy_score, top_k_accuracy_score
 from sklearn.model_selection import StratifiedKFold
 import yaml
 
@@ -28,11 +30,13 @@ class ClassificationHandler:
 
         self.calc_cm = self.config["general"]["calc_cm"]
         self.metric = self.config["general"]["metric"]
-        self.further_metrics = self.config["general"]["further_metrics"]
         self.cv = self.config["general"]["cv"]
         self.save_models = self.config["general"]["save_models"]
 
-        iterables = [["train", "val", *self.further_metrics], list(range(self.cv))]
+        iterables = [
+            ["train", "val", "accuracy", "top_k_accuracy"],
+            list(range(self.cv)),
+        ]
         score_columns = pd.MultiIndex.from_product(iterables, names=["metric", "index"])
         self.scores = pd.DataFrame(
             index=self.config["models-to-run"], columns=score_columns
@@ -88,9 +92,25 @@ class ClassificationHandler:
             classifier.fit(X_train, y_train)
 
             train_predictions = classifier.predict(X_train)
-            val_predictions = classifier.predict(X_val)
-            self._calc_scores(
-                model_name, idx, y_train, y_val, train_predictions, val_predictions
+            val_proba_predictions = classifier.predict_proba(X_val)
+            print(val_proba_predictions)
+            val_predictions = np.argmax(val_proba_predictions, axis=1)
+            print(val_predictions)
+            self.scores.loc[model_name, ("top_k_accuracy", idx)] = top_k_accuracy_score(
+                y_val, val_proba_predictions, k=3
+            )
+            assert np.array_equal(val_predictions, classifier.predict(X_val))
+
+            score = getattr(sklearn.metrics, self.metric)
+            train_score = score(y_train, train_predictions)
+            print("Train score: ", train_score)
+            self.scores.loc[model_name, ("train", idx)] = train_score
+
+            val_score = score(y_val, val_predictions)
+            print("Validation score: ", val_score)
+            self.scores.loc[model_name, ("val", idx)] = val_score
+            self.scores.loc[model_name, ("accuracy", idx)] = accuracy_score(
+                y_val, val_predictions
             )
 
             if self.calc_cm:
@@ -104,21 +124,6 @@ class ClassificationHandler:
                 all_val_correct, all_val_predictions
             )
             self._report_confusion_matrix(model_name, model_folder, confusion_matrix)
-
-    def _calc_scores(
-        self, model_name, idx, y_train, y_val, train_predictions, val_predictions
-    ):
-        score = getattr(sklearn.metrics, self.metric)
-        train_score = score(y_train, train_predictions)
-        print("Train score: ", train_score)
-        self.scores.loc[model_name, ("train", idx)] = train_score
-
-        val_score = score(y_val, val_predictions)
-        print("Validation score: ", val_score)
-        self.scores.loc[model_name, ("val", idx)] = val_score
-        for metric in self.further_metrics:
-            score = getattr(sklearn.metrics, metric)
-            self.scores.loc[model_name, (metric, idx)] = score(y_val, val_predictions)
 
     def run(self):
         for model_name in self.config["models-to-run"]:
