@@ -183,3 +183,31 @@ def build_set(
             data.get_defects(measurements), dtype="category"
         )
     return fingers
+
+def own(df: pd.DataFrame) -> pd.Series:
+    finger = pd.Series(dtype=float)
+
+    finger[PD_MEAN] = df[data.PD].mean()
+    finger[PD_CV] = df[data.PD].std() / df[data.PD].mean()
+    finger[PD_MAX] = df[data.PD].max()
+    finger[PD_WEIB_A], finger[PD_WEIB_B] = calc_weibull_params(df[data.PD])
+
+    finger[PD_DIFF_MEAN] = df[data.PD_DIFF].mean()
+    finger[PD_DIFF_SKEW] = df[data.PD_DIFF].skew()
+    # FIXME workaround
+    if math.isnan(finger[PD_DIFF_SKEW]):
+        finger[PD_DIFF_SKEW] = 0.0
+    finger[PD_DIFF_KURT] = df[data.PD_DIFF].kurt()
+    # FIXME workaround
+    if math.isnan(finger[PD_DIFF_KURT]):
+        finger[PD_DIFF_KURT] = 0.0
+    finger[PD_DIFF_WEIB_A], _ = calc_weibull_params(df[data.PD_DIFF])
+
+    finger[TD_MEDIAN] = df[data.TIME_DIFF].median()
+
+    finger[PDS_PER_SEC] = len(df[data.TIME_DIFF]) / (df[data.TIME_DIFF].sum() / 1000)
+    finger[TD_MEAN] = df[data.TIME_DIFF].mean()
+
+    if finger.isnull().any() or finger.isin([np.inf, -np.inf]).any():
+        raise ValueError(f"Incorrect finger: \n {finger}")
+    return finger
