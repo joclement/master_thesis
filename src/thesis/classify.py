@@ -18,6 +18,7 @@ class ClassificationHandler:
         self.config = config
 
         self.output_dir = Path(self.config["general"]["output_dir"])
+        self.output_dir.mkdir(exist_ok=False)
         if "version" in self.config and self.config["version"] != __version__:
             raise ValueError(
                 "Non matching version {self.config['version']}, wanted {__version__}"
