@@ -51,10 +51,8 @@ class ClassificationHandler:
         with open(Path(self.output_dir, "config.yml"), "w") as outfile:
             yaml.dump(self.config, outfile)
 
-    def _report_confusion_matrix(
-        self, model_name: str, model_folder: Path, confusion_matrix
-    ):
-        print(f"Confusion matrix for {model_name}:")
+    def _report_confusion_matrix(self, name: str, model_folder: Path, confusion_matrix):
+        print(f"Confusion matrix for {name}:")
         print(
             pd.DataFrame(
                 confusion_matrix,
@@ -67,7 +65,7 @@ class ClassificationHandler:
             confusion_matrix, display_labels=self.defect_names
         ).plot()
         model_folder.mkdir(exist_ok=True)
-        util.finish_plot(f"confusion_matrix_{model_name}", model_folder)
+        util.finish_plot(f"confusion_matrix_{name}", model_folder)
 
     def _get_measurements_copy(self):
         return [df.copy() for df in self.measurements]
@@ -96,6 +94,8 @@ class ClassificationHandler:
             )
 
             if self.calc_cm:
+                confusion_matrix = metrics.confusion_matrix(y_val, val_predictions)
+                self._report_confusion_matrix(str(idx), model_folder, confusion_matrix)
                 all_val_predictions.extend(val_predictions)
                 all_val_correct.extend(y_val)
 
