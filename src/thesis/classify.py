@@ -1,7 +1,6 @@
 from pathlib import Path
 import pickle
 import shutil
-import sys
 from typing import Final
 
 import click
