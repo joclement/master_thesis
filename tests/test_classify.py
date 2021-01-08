@@ -2,6 +2,7 @@ from itertools import product
 from pathlib import Path
 from shutil import copyfile
 
+import click.testing
 import pytest
 import yaml
 
@@ -35,8 +36,10 @@ def config_and_multiple_csv_files(config, csv_folder, tmpdir):
 
 def test_classify_main_succeeds(config_and_multiple_csv_files, tmpdir):
     config_filepath, csv_folder = config_and_multiple_csv_files
-    classify.main(config_filepath)
+    runner = click.testing.CliRunner()
+    result = runner.invoke(classify.main, [str(config_filepath)])
 
+    assert result.exit_code == 0
     assert Path(tmpdir, "output", "models_all_bar.svg").exists()
 
 
@@ -51,3 +54,15 @@ def test_classify_main_calc_confusion_matrix_succeeds(
     handler = classify.ClassificationHandler(config)
     handler.run()
     assert len(list(Path(tmpdir).rglob("confusion_matrix_*.svg"))) > 0
+
+
+def test_main_version_succeeds():
+    runner = click.testing.CliRunner()
+    result = runner.invoke(classify.main, ["--version"])
+    assert result.exit_code == 0
+
+
+def test_main_help_succeeds():
+    runner = click.testing.CliRunner()
+    result = runner.invoke(classify.main, ["--help"])
+    assert result.exit_code == 0

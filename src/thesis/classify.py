@@ -1,8 +1,9 @@
 from pathlib import Path
 import pickle
 import sys
-from typing import Final, Union
+from typing import Final
 
+import click
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -56,8 +57,8 @@ class ClassificationHandler:
             yaml.dump(self.config, outfile)
 
     def _report_confusion_matrix(self, name: str, model_folder: Path, confusion_matrix):
-        print(f"Confusion matrix for {name}:")
-        print(
+        click.echo(f"Confusion matrix for {name}:")
+        click.echo(
             pd.DataFrame(
                 confusion_matrix,
                 index=self.defect_names,
@@ -101,11 +102,11 @@ class ClassificationHandler:
 
             score = getattr(sklearn.metrics, self.metric)
             train_score = score(y_train, train_predictions)
-            print("Train score: ", train_score)
+            click.echo(f"Train score: {train_score}")
             self.scores.loc[model_name, ("train", idx)] = train_score
 
             val_score = score(y_val, val_predictions)
-            print("Validation score: ", val_score)
+            click.echo(f"Validation score: {val_score}")
             self.scores.loc[model_name, ("val", idx)] = val_score
             self.scores.loc[model_name, ("accuracy", idx)] = accuracy_score(
                 y_val, val_predictions
@@ -125,7 +126,7 @@ class ClassificationHandler:
 
     def run(self):
         for model_name in self.config["models-to-run"]:
-            print("Model: ", model_name)
+            click.echo(f"Model: {model_name}")
             classifier, X = models.get_model_with_data(
                 self._get_measurements_copy(),
                 model_name,
@@ -139,12 +140,14 @@ class ClassificationHandler:
                 model_folder.mkdir(exist_ok=True)
                 pickle.dump(classifier, open(Path(model_folder, "model.p"), "wb"))
 
-            print("\n ============================================================ \n")
+            click.echo(
+                "\n ============================================================ \n"
+            )
         self._finish()
 
     def _finish(self):
-        print(self.scores)
-        print(self.scores.mean(axis=1))
+        click.echo(self.scores)
+        click.echo(self.scores.mean(axis=1))
         self.scores.to_csv(Path(self.output_dir, "models_scores.csv"))
         self._plot_results()
 
@@ -158,7 +161,10 @@ class ClassificationHandler:
         util.finish_plot("models_all_bar", self.output_dir, False)
 
 
-def main(config_path: Union[str, Path] = sys.argv[1]):
+@click.command()
+@click.version_option(version=__version__)
+@click.argument("config_path", type=click.Path(exists=True))
+def main(config_path):
     """Print measurement info on given measurement file or folder
 
     INPUT_DIRECTORY folder containing csv files for classification
