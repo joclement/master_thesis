@@ -63,8 +63,9 @@ models:
       n_neighbors: 1
 
   knn-finger_tsfresh:
+    default_fc_parameters: MinimalFCParameters
     n_jobs: 3
-    fdr_level: 0.50
+    fdr_level: 0.23
     classifier_hyperparameters:
       n_neighbors: 1
 
@@ -84,6 +85,7 @@ models:
       n_neighbors: 1
 
   knn_dtw-seqfinger_tsfresh:
+    default_fc_parameters: MinimalFCParameters
     n_jobs: 3
     fdr_level: 0.23
     duration: "30 seconds"
@@ -100,6 +102,7 @@ models:
     duration: "30 seconds"
 
   svm-seqfinger_tsfresh:
+    default_fc_parameters: MinimalFCParameters
     n_jobs: 3
     fdr_level: 0.23
     duration: "30 seconds"
@@ -135,6 +138,7 @@ models:
       solver: "lbfgs"
 
   mlp-finger_tsfresh:
+    default_fc_parameters: MinimalFCParameters
     n_jobs: 3
     fdr_level: 0.23
     classifier_hyperparameters:
@@ -155,8 +159,9 @@ models:
       decision_function_shape: "ovr"
 
   svm-finger_tsfresh:
+    default_fc_parameters: MinimalFCParameters
     n_jobs: 3
-    fdr_level: 0.50
+    fdr_level: 0.23
     classifier_hyperparameters:
       decision_function_shape: "ovr"
 
@@ -176,5 +181,6 @@ models:
   dt-finger_both: {}
 
   dt-finger_tsfresh:
+    default_fc_parameters: MinimalFCParameters
     n_jobs: 3
-    fdr_level: 0.50
+    fdr_level: 0.23

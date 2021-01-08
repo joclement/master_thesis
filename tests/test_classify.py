@@ -10,9 +10,12 @@ from thesis import classify
 
 
 @pytest.fixture
-def config():
+def config(multiple_csv_files, tmpdir):
     with open("./config/test.yml", "r") as stream:
-        return yaml.safe_load(stream)
+        config = yaml.safe_load(stream)
+    config["general"]["data_dir"] = str(multiple_csv_files)
+    config["general"]["output_dir"] = str(Path(tmpdir, "output"))
+    return config
 
 
 @pytest.fixture
@@ -22,34 +25,21 @@ def multiple_csv_files(csv_folder, tmpdir):
     return str(tmpdir)
 
 
-@pytest.fixture
-def config_and_multiple_csv_files(config, csv_folder, tmpdir):
-    config["general"]["data_dir"] = str(tmpdir)
-    config["general"]["output_dir"] = str(Path(tmpdir, "output"))
+def test_classify_main_succeeds(config, tmpdir):
+    config["models-to-run"] = config["models-to-run"][0:2]
     config_filepath = Path(tmpdir, "config.yml")
     with open(config_filepath, "w") as outfile:
         yaml.dump(config, outfile)
-    for idx, csv_file in product(range(4), Path(csv_folder).glob("*.csv")):
-        copyfile(csv_file, Path(tmpdir, f"{csv_file.stem}{idx}.csv"))
-    return config_filepath, tmpdir
 
-
-def test_classify_main_succeeds(config_and_multiple_csv_files, tmpdir):
-    config_filepath, csv_folder = config_and_multiple_csv_files
     runner = click.testing.CliRunner()
     result = runner.invoke(classify.main, [str(config_filepath)])
 
     assert result.exit_code == 0
-    assert Path(tmpdir, "output", "models_all_bar.svg").exists()
+    assert Path(config["general"]["output_dir"], "models_all_bar.svg").exists()
 
 
-@pytest.mark.expensive
-def test_classify_main_calc_confusion_matrix_and_save_models_succeeds(
-    config, multiple_csv_files, tmpdir
-):
-    output_dir = Path(tmpdir, "output")
-    config["general"]["data_dir"] = str(multiple_csv_files)
-    config["general"]["output_dir"] = str(output_dir)
+def test_classify_main_calc_confusion_matrix_and_save_models_succeeds(config, tmpdir):
+    output_dir = Path(config["general"]["output_dir"])
     config["general"]["calc_cm"] = True
     config["general"]["save_models"] = True
 
@@ -58,7 +48,10 @@ def test_classify_main_calc_confusion_matrix_and_save_models_succeeds(
     handler = classify.ClassificationHandler(config)
     handler.run()
     assert Path(output_dir, "models_all_bar.svg").exists()
-    assert len(list(output_dir.rglob("confusion_matrix_*.svg"))) == num_of_models
+
+    assert len(list(output_dir.rglob("confusion_matrix_*.svg"))) == num_of_models * (
+        config["general"]["cv"] + 1
+    )
     assert len(list(output_dir.rglob("model.p"))) == num_of_models
 
 
