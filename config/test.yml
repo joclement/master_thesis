@@ -3,6 +3,7 @@ general:
   data_dir: ./testdata/small
   calc_cm: False
   output_dir: ./output/tmp
+  overwrite_output_dir: True
   save_models: True
   show_plots: False
   metric: "balanced_accuracy_score"
