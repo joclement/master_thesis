@@ -58,8 +58,8 @@ def ott_algo(**classifier_config) -> BaseEstimator:
 
 
 def svm(**classifier_config: dict) -> BaseEstimator:
-    return SVC(**classifier_config)
+    return SVC(probability=True, **classifier_config)
 
 
 def svm_dtw(**classifier_config: dict) -> BaseEstimator:
-    return TimeSeriesSVC()
+    return TimeSeriesSVC(probability=True)
