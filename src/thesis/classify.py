@@ -1,5 +1,6 @@
 from pathlib import Path
 import pickle
+import shutil
 import sys
 from typing import Final
 
@@ -21,6 +22,8 @@ class ClassificationHandler:
         self.config = config
 
         self.output_dir = Path(self.config["general"]["output_dir"])
+        if self.config["general"]["overwrite_output_dir"] and self.output_dir.exists():
+            shutil.rmtree(self.output_dir)
         self.output_dir.mkdir(exist_ok=False)
         if "version" in self.config and self.config["version"] != __version__:
             raise ValueError(
