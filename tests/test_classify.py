@@ -44,16 +44,24 @@ def test_classify_main_succeeds(config_and_multiple_csv_files, tmpdir):
 
 
 @pytest.mark.expensive
-def test_classify_main_calc_confusion_matrix_succeeds(
+def test_classify_main_calc_confusion_matrix_and_save_models_succeeds(
     config, multiple_csv_files, tmpdir
 ):
     config["general"]["data_dir"] = str(multiple_csv_files)
     config["general"]["output_dir"] = str(Path(tmpdir, "output"))
     config["general"]["calc_cm"] = True
+    config["general"]["save_models"] = True
+
+    num_of_models = len(config["models-to-run"])
 
     handler = classify.ClassificationHandler(config)
     handler.run()
-    assert len(list(Path(tmpdir).rglob("confusion_matrix_*.svg"))) > 0
+    assert Path(tmpdir, "output", "models_all_bar.svg").exists()
+    assert (
+        len(list(Path(tmpdir, "output").rglob("confusion_matrix_*.svg")))
+        == num_of_models
+    )
+    assert len(list(Path(tmpdir, "output").rglob("model.p"))) == num_of_models
 
 
 def test_main_version_succeeds():
