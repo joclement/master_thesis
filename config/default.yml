@@ -6,9 +6,6 @@ general:
   save_models: False
   show_plots: False
   metric: "balanced_accuracy_score"
-  further_metrics:
-    - "accuracy_score"
-
 
 models-to-run:
   - dt-finger_both
