@@ -3,6 +3,8 @@ from typing import List, Tuple, Union
 import pandas as pd
 from sklearn.base import TransformerMixin
 from sklearn.preprocessing import MinMaxScaler
+import tsfresh.feature_extraction
+from tsfresh.feature_extraction import ComprehensiveFCParameters
 from tsfresh.transformers import RelevantFeatureAugmenter
 from tslearn.utils import to_time_series_dataset
 
@@ -166,6 +168,12 @@ def finger_tsfresh(
     measurements: List[pd.DataFrame], **config
 ) -> Tuple[pd.DataFrame, Union[None, TransformerMixin]]:
     X_data = tsfresh_features.convert_to_tsfresh_dataset(measurements)
+    if "default_fc_parameters" in config:
+        DefaultFcParameters = getattr(
+            tsfresh.feature_extraction, config["default_fc_parameters"]
+        )
+    else:
+        DefaultFcParameters = ComprehensiveFCParameters
     tsfreshTransformer = RelevantFeatureAugmenter(
         column_id="id",
         column_kind="kind",
@@ -174,6 +182,7 @@ def finger_tsfresh(
         ml_task="classification",
         multiclass=True,
         n_jobs=config["n_jobs"],
+        default_fc_parameters=DefaultFcParameters(),
     )
     tsfreshTransformer.set_timeseries_container(X_data)
     X = pd.DataFrame(index=list(range(len(measurements))))
