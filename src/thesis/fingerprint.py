@@ -184,6 +184,7 @@ def build_set(
         )
     return fingers
 
+
 def own(df: pd.DataFrame) -> pd.Series:
     finger = pd.Series(dtype=float)
 
