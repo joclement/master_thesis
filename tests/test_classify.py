@@ -10,7 +10,7 @@ from thesis import classify
 
 @pytest.fixture
 def config():
-    with open("./config/default.yml", "r") as stream:
+    with open("./config/test.yml", "r") as stream:
         return yaml.safe_load(stream)
 
 

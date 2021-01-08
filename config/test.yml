@@ -1,0 +1,179 @@
+general:
+  cv: 3
+  data_dir: ./testdata/small
+  calc_cm: False
+  output_dir: ./output/tmp
+  save_models: True
+  show_plots: False
+  metric: "balanced_accuracy_score"
+
+models-to-run:
+  - dt-finger_both
+  - dt-finger_ott
+  - dt-finger_tsfresh
+  - dt-finger_tugraz
+  - knn_dtw-oned
+  - knn_dtw-twod
+  - knn_dtw-seqfinger_both
+  - knn_dtw-seqfinger_ott
+  # TODO - knn_dtw-seqfinger_tsfresh
+  - knn_dtw-seqfinger_tugraz
+  - knn-finger_both
+  - knn-finger_ott
+  - knn-finger_tsfresh
+  - knn-finger_tugraz
+  - mlp-finger_both
+  - mlp-finger_ott
+  - mlp-finger_own
+  - mlp-finger_tugraz
+  - ott_algo-finger_ott
+  - svm_dtw-seqfinger_both
+  - svm_dtw-seqfinger_ott
+  # TODO - svm_dtw-seqfinger_tsfresh
+  - svm_dtw-seqfinger_tugraz
+  - svm-finger_both
+  - svm-finger_ott
+  - svm-finger_tsfresh
+  - svm-finger_tugraz
+
+
+models:
+  knn_dtw-oned:
+    frequency: "5000ms"
+    multiple_of_min_len: 8
+    classifier_hyperparameters:
+      n_neighbors: 1
+
+  knn_dtw-twod:
+    multiple_of_min_len: 8
+    classifier_hyperparameters:
+      n_neighbors: 1
+
+  knn-finger_ott:
+    classifier_hyperparameters:
+      n_neighbors: 1
+
+  knn-finger_tugraz:
+    classifier_hyperparameters:
+      n_neighbors: 1
+
+  knn-finger_both:
+    classifier_hyperparameters:
+      n_neighbors: 1
+
+  knn-finger_tsfresh:
+    n_jobs: 3
+    fdr_level: 0.23
+    classifier_hyperparameters:
+      n_neighbors: 1
+
+  knn_dtw-seqfinger_ott:
+    duration: "30 seconds"
+    classifier_hyperparameters:
+      n_neighbors: 1
+
+  knn_dtw-seqfinger_tugraz:
+    duration: "30 seconds"
+    classifier_hyperparameters:
+      n_neighbors: 1
+
+  knn_dtw-seqfinger_both:
+    duration: "30 seconds"
+    classifier_hyperparameters:
+      n_neighbors: 1
+
+  knn_dtw-seqfinger_tsfresh:
+    n_jobs: 3
+    fdr_level: 0.23
+    duration: "30 seconds"
+    classifier_hyperparameters:
+      n_neighbors: 1
+
+  svm-seqfinger_ott:
+    duration: "30 seconds"
+
+  svm-seqfinger_tugraz:
+    duration: "30 seconds"
+
+  svm-seqfinger_both:
+    duration: "30 seconds"
+
+  svm-seqfinger_tsfresh:
+    n_jobs: 3
+    fdr_level: 0.23
+    duration: "30 seconds"
+
+  ott_algo-finger_ott: {}
+
+  mlp-finger_ott:
+    classifier_hyperparameters:
+      hidden_layer_sizes:
+        - 4
+      solver: "lbfgs"
+
+  mlp-finger_own:
+    classifier_hyperparameters:
+      hidden_layer_sizes:
+        - 3
+      solver: "lbfgs"
+      batch_size: 6
+      max_iter: 300
+      max_fun:  20000
+
+
+  mlp-finger_tugraz:
+    classifier_hyperparameters:
+      hidden_layer_sizes:
+        - 4
+      solver: "lbfgs"
+
+  mlp-finger_both:
+    classifier_hyperparameters:
+      hidden_layer_sizes:
+        - 6
+      solver: "lbfgs"
+
+  mlp-finger_tsfresh:
+    n_jobs: 3
+    fdr_level: 0.23
+    classifier_hyperparameters:
+      hidden_layer_sizes:
+        - 9
+      solver: "lbfgs"
+
+  svm-finger_ott:
+    classifier_hyperparameters:
+      decision_function_shape: "ovr"
+
+  svm-finger_tugraz:
+    classifier_hyperparameters:
+      decision_function_shape: "ovr"
+
+  svm-finger_both:
+    classifier_hyperparameters:
+      decision_function_shape: "ovr"
+
+  svm-finger_tsfresh:
+    n_jobs: 3
+    fdr_level: 0.23
+    classifier_hyperparameters:
+      decision_function_shape: "ovr"
+
+  svm_dtw-seqfinger_both:
+    duration: "30 seconds"
+
+  svm_dtw-seqfinger_ott:
+    duration: "30 seconds"
+
+  svm_dtw-seqfinger_tugraz:
+    duration: "30 seconds"
+
+  dt-finger_ott: {}
+
+  dt-finger_tugraz: {}
+
+  dt-finger_both: {}
+
+  dt-finger_tsfresh:
+    n_jobs: 3
+    fdr_level: 0.23
