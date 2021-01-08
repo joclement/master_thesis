@@ -93,9 +93,7 @@ class ClassificationHandler:
 
             train_predictions = classifier.predict(X_train)
             val_proba_predictions = classifier.predict_proba(X_val)
-            print(val_proba_predictions)
             val_predictions = np.argmax(val_proba_predictions, axis=1)
-            print(val_predictions)
             self.scores.loc[model_name, ("top_k_accuracy", idx)] = top_k_accuracy_score(
                 y_val, val_proba_predictions, k=3
             )
