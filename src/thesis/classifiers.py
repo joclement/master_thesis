@@ -22,6 +22,8 @@ class LukasMeanDist(KNeighborsClassifier):
         super().__init__(n_neighbors=1)
 
     def fit(self, X, y):
+        if y is None:
+            raise ValueError("requires y to be passed, but the target y is None")
         X, y = check_X_y(X, y)
         mean_per_defect = _calc_mean_per_defect(X, y, list(unique_labels(y)))
         y_mean = list(mean_per_defect.keys())
@@ -30,4 +32,4 @@ class LukasMeanDist(KNeighborsClassifier):
         return self
 
     def _more_tags(self):
-        return {"multioutput": False}
+        return {"multioutput": False, "requires_y": True}
