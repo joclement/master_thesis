@@ -1,10 +1,10 @@
 general:
-  cv: 3
+  cv: 2
   data_dir: ./testdata/small
   calc_cm: False
   output_dir: ./output/tmp
   overwrite_output_dir: True
-  save_models: True
+  save_models: False
   show_plots: False
   metric: "balanced_accuracy_score"
 
@@ -64,7 +64,7 @@ models:
 
   knn-finger_tsfresh:
     n_jobs: 3
-    fdr_level: 0.23
+    fdr_level: 0.50
     classifier_hyperparameters:
       n_neighbors: 1
 
@@ -156,7 +156,7 @@ models:
 
   svm-finger_tsfresh:
     n_jobs: 3
-    fdr_level: 0.23
+    fdr_level: 0.50
     classifier_hyperparameters:
       decision_function_shape: "ovr"
 
@@ -177,4 +177,4 @@ models:
 
   dt-finger_tsfresh:
     n_jobs: 3
-    fdr_level: 0.23
+    fdr_level: 0.50
