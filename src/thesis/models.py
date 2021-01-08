@@ -33,7 +33,7 @@ def get_model_with_data(
     if transformer:
         pipeline = make_pipeline(transformer, classifier)
     else:
-        pipeline = classifier
+        pipeline = make_pipeline(classifier)
     return pipeline, input_data
 
 
@@ -58,7 +58,7 @@ def ott_algo(**classifier_config) -> BaseEstimator:
 
 
 def svm(**classifier_config: dict) -> BaseEstimator:
-    return SVC(probability=True, **classifier_config)
+    return SVC(**classifier_config)
 
 
 def svm_dtw(**classifier_config: dict) -> BaseEstimator:
