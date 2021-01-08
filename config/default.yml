@@ -1,9 +1,9 @@
 general:
   cv: 3
-  data_dir: ./testdata/small
-  calc_cm: False
+  data_dir: ./data/csv-files/prepared/dataset
+  calc_cm: True
   output_dir: ./output/tmp
-  save_models: True
+  save_models: False
   show_plots: False
   metric: "balanced_accuracy_score"
   further_metrics:
@@ -111,25 +111,29 @@ models:
   mlp-finger_ott:
     classifier_hyperparameters:
       hidden_layer_sizes:
-        - 9
+        - 4
       solver: "lbfgs"
 
   mlp-finger_own:
     classifier_hyperparameters:
       hidden_layer_sizes:
-        - 5
+        - 3
       solver: "lbfgs"
+      batch_size: 6
+      max_iter: 300
+      max_fun:  20000
+
 
   mlp-finger_tugraz:
     classifier_hyperparameters:
       hidden_layer_sizes:
-        - 9
+        - 4
       solver: "lbfgs"
 
   mlp-finger_both:
     classifier_hyperparameters:
       hidden_layer_sizes:
-        - 9
+        - 6
       solver: "lbfgs"
 
   mlp-finger_tsfresh:
