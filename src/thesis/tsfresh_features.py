@@ -46,7 +46,7 @@ def calc_relevant_features(input_directory, n_jobs=1) -> pd.DataFrame:
         show_warnings=True,
         n_jobs=n_jobs,
     )
-    print("extracted_features.shape: ", extracted_features.shape)
+    click.echo(f"extracted_features.shape: {extracted_features.shape}")
     relevance_table = calculate_relevance_table(
         extracted_features,
         y,
@@ -58,9 +58,9 @@ def calc_relevant_features(input_directory, n_jobs=1) -> pd.DataFrame:
     p_value_columns = [c for c in relevance_table.columns if "p_value" in c]
     relevance_table["p_value"] = relevance_table.loc[:, p_value_columns].sum(axis=1)
     relevance_table.sort_values("p_value", inplace=True)
-    print("relevant_features:")
+    click.echo("relevant_features:")
     relevant_columns = [c for c in relevance_table.columns if "relevant_" in c]
-    print(relevance_table[["p_value", *relevant_columns]])
+    click.echo(relevance_table[["p_value", *relevant_columns]])
     return relevance_table[["p_value", *relevant_columns]]
 
 
