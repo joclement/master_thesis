@@ -47,8 +47,9 @@ def test_classify_main_succeeds(config_and_multiple_csv_files, tmpdir):
 def test_classify_main_calc_confusion_matrix_and_save_models_succeeds(
     config, multiple_csv_files, tmpdir
 ):
+    output_dir = Path(tmpdir, "output")
     config["general"]["data_dir"] = str(multiple_csv_files)
-    config["general"]["output_dir"] = str(Path(tmpdir, "output"))
+    config["general"]["output_dir"] = str(output_dir)
     config["general"]["calc_cm"] = True
     config["general"]["save_models"] = True
 
@@ -56,12 +57,9 @@ def test_classify_main_calc_confusion_matrix_and_save_models_succeeds(
 
     handler = classify.ClassificationHandler(config)
     handler.run()
-    assert Path(tmpdir, "output", "models_all_bar.svg").exists()
-    assert (
-        len(list(Path(tmpdir, "output").rglob("confusion_matrix_*.svg")))
-        == num_of_models
-    )
-    assert len(list(Path(tmpdir, "output").rglob("model.p"))) == num_of_models
+    assert Path(output_dir, "models_all_bar.svg").exists()
+    assert len(list(output_dir.rglob("confusion_matrix_*.svg"))) == num_of_models
+    assert len(list(output_dir.rglob("model.p"))) == num_of_models
 
 
 def test_main_version_succeeds():
