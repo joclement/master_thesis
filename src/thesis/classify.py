@@ -11,6 +11,8 @@ import sklearn
 from sklearn import metrics
 from sklearn.metrics import accuracy_score, top_k_accuracy_score
 from sklearn.model_selection import StratifiedKFold
+from sklearn.svm import SVC
+from tslearn.svm import TimeSeriesSVC
 import yaml
 
 from . import __version__, data, models, util
@@ -95,11 +97,16 @@ class ClassificationHandler:
             classifier.fit(X_train, y_train)
 
             train_predictions = classifier.predict(X_train)
-            val_proba_predictions = classifier.predict_proba(X_val)
-            val_predictions = np.argmax(val_proba_predictions, axis=1)
-            self.scores.loc[model_name, ("top_k_accuracy", idx)] = top_k_accuracy_score(
-                y_val, val_proba_predictions, k=3
-            )
+            if isinstance(
+                list(classifier.named_steps.values())[-1], (SVC, TimeSeriesSVC)
+            ):
+                val_predictions = classifier.predict(X_val)
+            else:
+                val_proba_predictions = classifier.predict_proba(X_val)
+                val_predictions = np.argmax(val_proba_predictions, axis=1)
+                top_k_accuracy = top_k_accuracy_score(y_val, val_proba_predictions, k=3)
+                click.echo(f"top_k_accuracy: {top_k_accuracy}")
+                self.scores.loc[model_name, ("top_k_accuracy", idx)] = top_k_accuracy
             assert np.array_equal(val_predictions, classifier.predict(X_val))
 
             score = getattr(sklearn.metrics, self.metric)
