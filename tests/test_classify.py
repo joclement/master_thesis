@@ -25,7 +25,7 @@ def multiple_csv_files(csv_folder, tmpdir):
     return str(tmpdir)
 
 
-def test_classify_main_succeeds(config, tmpdir):
+def test_classify_main(config, tmpdir):
     config["models-to-run"] = config["models-to-run"][0:2]
     config_filepath = Path(tmpdir, "config.yml")
     with open(config_filepath, "w") as outfile:
@@ -38,7 +38,7 @@ def test_classify_main_succeeds(config, tmpdir):
     assert Path(config["general"]["output_dir"], "models_all_bar.svg").exists()
 
 
-def test_classify_main_calc_confusion_matrix_and_save_models_succeeds(config, tmpdir):
+def test_classify_ClassificationHandler(config, tmpdir):
     output_dir = Path(config["general"]["output_dir"])
     config["general"]["calc_cm"] = True
     config["general"]["save_models"] = True
