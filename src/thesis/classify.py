@@ -4,6 +4,7 @@ import shutil
 from typing import Final
 
 import click
+from keras.wrappers.scikit_learn import KerasClassifier
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -11,11 +12,17 @@ import sklearn
 from sklearn import metrics
 from sklearn.metrics import accuracy_score, top_k_accuracy_score
 from sklearn.model_selection import StratifiedKFold
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import LabelBinarizer
 from sklearn.svm import SVC
 from tslearn.svm import TimeSeriesSVC
 import yaml
 
 from . import __version__, data, models, util
+
+
+def isKeras(classifier: Pipeline) -> bool:
+    return isinstance(list(classifier.named_steps.values())[-1], (KerasClassifier))
 
 
 class ClassificationHandler:
@@ -49,6 +56,7 @@ class ClassificationHandler:
 
         measurements, _ = data.read_recursive(self.config["general"]["data_dir"])
         self.y: Final = pd.Series(data.get_defects(measurements))
+        self.onehot_y = LabelBinarizer().fit_transform(self.y)
         data.clip_neg_pd_values(measurements)
         self.measurements: Final = [df.drop(data.CLASS, axis=1) for df in measurements]
 
@@ -79,6 +87,17 @@ class ClassificationHandler:
     def _get_measurements_copy(self):
         return [df.copy() for df in self.measurements]
 
+    def _do_val_predictions(self, model_name, idx, classifier, X_val, y_val):
+        if isinstance(list(classifier.named_steps.values())[-1], (SVC, TimeSeriesSVC)):
+            val_predictions = classifier.predict(X_val)
+        else:
+            val_proba_predictions = classifier.predict_proba(X_val)
+            val_predictions = np.argmax(val_proba_predictions, axis=1)
+            top_k_accuracy = top_k_accuracy_score(y_val, val_proba_predictions, k=3)
+            click.echo(f"top_k_accuracy: {top_k_accuracy}")
+            self.scores.loc[model_name, ("top_k_accuracy", idx)] = top_k_accuracy
+        return val_predictions
+
     def _cross_validate(self, model_name, model_folder, classifier, X):
         skfold = StratifiedKFold(n_splits=self.cv)
         all_val_correct = []
@@ -93,20 +112,18 @@ class ClassificationHandler:
                 X_val = X[val_index]
             y_train = self.y[train_index]
             y_val = self.y[val_index]
-
-            classifier.fit(X_train, y_train)
+            if isKeras(classifier):
+                classifier.fit(
+                    X_train,
+                    self.onehot_y[train_index],
+                )
+            else:
+                classifier.fit(X_train, y_train)
 
             train_predictions = classifier.predict(X_train)
-            if isinstance(
-                list(classifier.named_steps.values())[-1], (SVC, TimeSeriesSVC)
-            ):
-                val_predictions = classifier.predict(X_val)
-            else:
-                val_proba_predictions = classifier.predict_proba(X_val)
-                val_predictions = np.argmax(val_proba_predictions, axis=1)
-                top_k_accuracy = top_k_accuracy_score(y_val, val_proba_predictions, k=3)
-                click.echo(f"top_k_accuracy: {top_k_accuracy}")
-                self.scores.loc[model_name, ("top_k_accuracy", idx)] = top_k_accuracy
+            val_predictions = self._do_val_predictions(
+                model_name, idx, classifier, X_val, y_val
+            )
             assert np.array_equal(val_predictions, classifier.predict(X_val))
 
             score = getattr(sklearn.metrics, self.metric)
@@ -138,6 +155,7 @@ class ClassificationHandler:
             click.echo(f"Model: {model_name}")
             classifier, X = models.get_model_with_data(
                 self._get_measurements_copy(),
+                self.y,
                 model_name,
                 self.config["models"][model_name],
             )
@@ -147,7 +165,12 @@ class ClassificationHandler:
             if self.save_models:
                 classifier.fit(X, self.y)
                 model_folder.mkdir(exist_ok=True)
-                pickle.dump(classifier, open(Path(model_folder, "model.p"), "wb"))
+                if isKeras(classifier):
+                    list(classifier.named_steps.values())[-1].model.save(
+                        Path(model_folder, "model.h5")
+                    )
+                else:
+                    pickle.dump(classifier, open(Path(model_folder, "model.p"), "wb"))
 
             click.echo(
                 "\n ============================================================ \n"

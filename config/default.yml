@@ -63,6 +63,7 @@ models:
       n_neighbors: 1
 
   knn-finger_tsfresh:
+    default_fc_parameters: MinimalFCParameters
     n_jobs: 3
     fdr_level: 0.23
     classifier_hyperparameters:
@@ -110,13 +111,14 @@ models:
     classifier_hyperparameters:
       hidden_layer_sizes:
         - 4
-      solver: "lbfgs"
+      batch_size: 6
+      optimizer: "adam"
 
   mlp-finger_own:
     classifier_hyperparameters:
       hidden_layer_sizes:
         - 3
-      solver: "lbfgs"
+      optimizer: "adam"
       batch_size: 6
       max_iter: 300
       max_fun:  20000
@@ -126,13 +128,15 @@ models:
     classifier_hyperparameters:
       hidden_layer_sizes:
         - 4
-      solver: "lbfgs"
+      batch_size: 6
+      optimizer: "adam"
 
   mlp-finger_both:
     classifier_hyperparameters:
       hidden_layer_sizes:
         - 6
-      solver: "lbfgs"
+      batch_size: 6
+      optimizer: "adam"
 
   mlp-finger_tsfresh:
     n_jobs: 3
@@ -140,7 +144,8 @@ models:
     classifier_hyperparameters:
       hidden_layer_sizes:
         - 9
-      solver: "lbfgs"
+      batch_size: 6
+      optimizer: "adam"
 
   svm-finger_ott:
     classifier_hyperparameters:

@@ -52,7 +52,8 @@ def test_classify_main_calc_confusion_matrix_and_save_models_succeeds(config, tm
     assert len(list(output_dir.rglob("confusion_matrix_*.svg"))) == num_of_models * (
         config["general"]["cv"] + 1
     )
-    assert len(list(output_dir.rglob("model.p"))) == num_of_models
+    num_of_mlp_models = len([m for m in config["models-to-run"] if "mlp-" in m])
+    assert len(list(output_dir.rglob("model.p"))) == num_of_models - num_of_mlp_models
 
 
 def test_main_version_succeeds():
