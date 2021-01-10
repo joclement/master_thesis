@@ -118,10 +118,10 @@ models:
 
   mlp-finger_own:
     classifier_hyperparameters:
+      batch_size: 6
       hidden_layer_sizes:
         - 3
       optimizer: "adam"
-      batch_size: 6
       max_iter: 300
       max_fun:  20000
 

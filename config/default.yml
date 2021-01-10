@@ -109,9 +109,9 @@ models:
 
   mlp-finger_ott:
     classifier_hyperparameters:
+      batch_size: 6
       hidden_layer_sizes:
         - 4
-      batch_size: 6
       optimizer: "adam"
 
   mlp-finger_own:
@@ -126,25 +126,25 @@ models:
 
   mlp-finger_tugraz:
     classifier_hyperparameters:
+      batch_size: 6
       hidden_layer_sizes:
         - 4
-      batch_size: 6
       optimizer: "adam"
 
   mlp-finger_both:
     classifier_hyperparameters:
+      batch_size: 6
       hidden_layer_sizes:
         - 6
-      batch_size: 6
       optimizer: "adam"
 
   mlp-finger_tsfresh:
     n_jobs: 3
     fdr_level: 0.23
     classifier_hyperparameters:
+      batch_size: 6
       hidden_layer_sizes:
         - 9
-      batch_size: 6
       optimizer: "adam"
 
   svm-finger_ott:
