@@ -191,6 +191,7 @@ def own(df: pd.DataFrame) -> pd.Series:
     finger[PD_MEAN] = df[data.PD].mean()
     finger[PD_CV] = df[data.PD].std() / df[data.PD].mean()
     finger[PD_MAX] = df[data.PD].max()
+    finger[PD_VAR] = df[data.PD].var()
     finger[PD_WEIB_A], finger[PD_WEIB_B] = calc_weibull_params(df[data.PD])
 
     finger[PD_DIFF_MEAN] = df[data.PD_DIFF].mean()
@@ -204,10 +205,16 @@ def own(df: pd.DataFrame) -> pd.Series:
         finger[PD_DIFF_KURT] = 0.0
     finger[PD_DIFF_WEIB_A], _ = calc_weibull_params(df[data.PD_DIFF])
 
+    finger[TD_MEAN] = df[data.TIME_DIFF].mean()
     finger[TD_MEDIAN] = df[data.TIME_DIFF].median()
+    finger[TD_SKEW] = df[data.TIME_DIFF].skew()
+    finger[TD_KURT] = df[data.TIME_DIFF].kurt()
 
     finger[PDS_PER_SEC] = len(df[data.TIME_DIFF]) / (df[data.TIME_DIFF].sum() / 1000)
-    finger[TD_MEAN] = df[data.TIME_DIFF].mean()
+
+    finger[CORR_PD_DIFF_TO_PD], _ = stats.pearsonr(df[data.PD], df[data.PD_DIFF])
+    next_pd = df[data.PD][1:].reset_index(drop=True)
+    finger[CORR_NEXT_PD_TO_PD], _ = stats.pearsonr(df[data.PD][:-1], next_pd)
 
     if finger.isnull().any() or finger.isin([np.inf, -np.inf]).any():
         raise ValueError(f"Incorrect finger: \n {finger}")
