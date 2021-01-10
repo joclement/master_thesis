@@ -1,6 +1,6 @@
 general:
   cv: 3
-  data_dir: ./data/csv-files/prepared/dataset
+  data_dir: ./data/csv-files/prepared/dataset/train
   calc_cm: True
   output_dir: ./output/tmp
   overwrite_output_dir: False
