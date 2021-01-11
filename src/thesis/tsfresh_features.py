@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import List
 
 import click
@@ -26,7 +27,9 @@ def _convert_to_time_series(df: pd.DataFrame, index: int) -> pd.DataFrame:
     return time_series
 
 
-def calc_relevant_features(input_directory, n_jobs=1) -> pd.DataFrame:
+def calc_relevant_features(
+    input_directory, n_jobs=1, output_file: Path = None
+) -> pd.DataFrame:
     """Print measurement info on given measurement file or folder
 
     INPUT_DIRECTORY folder containing csv files for classification
@@ -46,6 +49,8 @@ def calc_relevant_features(input_directory, n_jobs=1) -> pd.DataFrame:
         show_warnings=True,
         n_jobs=n_jobs,
     )
+    if output_file:
+        extracted_features.to_csv(output_file)
     click.echo(f"extracted_features.shape: {extracted_features.shape}")
     relevance_table = calculate_relevance_table(
         extracted_features,
@@ -67,5 +72,18 @@ def calc_relevant_features(input_directory, n_jobs=1) -> pd.DataFrame:
 @click.command()
 @click.version_option(version=__version__)
 @click.argument("input_directory", type=click.Path(exists=True))
-def main(input_directory, n_jobs=1):
-    calc_relevant_features(input_directory, n_jobs)
+@click.option(
+    "--n_jobs",
+    "-j",
+    default=1,
+    show_default=True,
+    help="Number of jobs",
+)
+@click.option(
+    "--output-file",
+    "-o",
+    type=click.Path(exists=False),
+    help="Save extracted features",
+)
+def main(input_directory, n_jobs=1, output_file=None):
+    calc_relevant_features(input_directory, n_jobs, output_file)
