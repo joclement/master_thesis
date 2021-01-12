@@ -144,9 +144,9 @@ class ClassificationHandler:
             val_score = score(y_val, val_predictions)
             click.echo(f"Validation score: {val_score}")
             self.scores.loc[model_name, ("val", idx)] = val_score
-            self.scores.loc[model_name, ("accuracy", idx)] = accuracy_score(
-                y_val, val_predictions
-            )
+            accuracy = accuracy_score(y_val, val_predictions)
+            click.echo(f"accuracy_score: {accuracy}")
+            self.scores.loc[model_name, ("accuracy", idx)] = accuracy
 
             if self.calc_cm:
                 confusion_matrix = metrics.confusion_matrix(y_val, val_predictions)
