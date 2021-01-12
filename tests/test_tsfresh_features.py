@@ -18,11 +18,6 @@ def test_extracted_features_saved(csv_folder, tmpdir):
     assert output_file.exists()
 
 
-def test_convert_to_tsfresh_dataset(measurements):
-    dataset = tsfresh_features.convert_to_tsfresh_dataset(measurements)
-    assert type(dataset) is pd.DataFrame
-
-
 def test_main_version_succeeds():
     runner = click.testing.CliRunner()
     result = runner.invoke(tsfresh_features.main, ["--version"])

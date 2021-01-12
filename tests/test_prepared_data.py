@@ -19,3 +19,8 @@ def test__convert_to_time_series(simple_artificial_measurement):
     assert time_series[0] == 1
     assert time_series[6] == 2
     assert time_series[-1] == 3
+
+
+def test_convert_to_tsfresh_dataset(measurements):
+    dataset = prepared_data.convert_to_tsfresh_dataset(measurements)
+    assert type(dataset) is pd.DataFrame
