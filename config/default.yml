@@ -45,7 +45,6 @@ models-to-run:
   - svm-finger_tsfresh
   - svm-finger_tugraz
 
-
 models:
   knn_dtw-oned:
     frequency: "5000ms"
