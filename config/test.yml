@@ -122,7 +122,6 @@ models:
       max_iter: 300
       max_fun:  20000
 
-
   mlp-finger_tugraz:
     classifier_hyperparameters:
       batch_size: 6
