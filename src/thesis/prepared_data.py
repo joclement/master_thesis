@@ -1,4 +1,4 @@
-from typing import List, Tuple, Union
+from typing import List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -64,7 +64,7 @@ def _convert_to_time_series(df: pd.DataFrame, frequency) -> pd.Series:
 
 def oned(
     measurements: List[pd.DataFrame], **config
-) -> Tuple[pd.DataFrame, Union[None, TransformerMixin]]:
+) -> Tuple[pd.DataFrame, Optional[TransformerMixin]]:
     time_serieses = [
         _convert_to_time_series(df, config["frequency"]) for df in measurements
     ]
@@ -80,7 +80,7 @@ def oned(
 
 def twod(
     measurements: List[pd.DataFrame], **config
-) -> Tuple[pd.DataFrame, Union[None, TransformerMixin]]:
+) -> Tuple[pd.DataFrame, Optional[TransformerMixin]]:
     for df in measurements:
         df.drop(df.columns.difference([data.TIME_DIFF, data.PD]), axis=1, inplace=True)
     min_len = min([len(m) for m in measurements])
@@ -128,7 +128,7 @@ def _build_fingerprint_sequence(df: pd.DataFrame, finger_algo, duration: pd.Time
 
 def seqfinger_ott(
     measurements: List[pd.DataFrame], **config
-) -> Tuple[pd.DataFrame, Union[None, TransformerMixin]]:
+) -> Tuple[pd.DataFrame, Optional[TransformerMixin]]:
     fingerprint.keep_needed_columns(measurements)
     duration = pd.Timedelta(config["duration"])
     X = to_time_series_dataset(
@@ -142,7 +142,7 @@ def seqfinger_ott(
 
 def seqfinger_tugraz(
     measurements: List[pd.DataFrame], **config
-) -> Tuple[pd.DataFrame, Union[None, TransformerMixin]]:
+) -> Tuple[pd.DataFrame, Optional[TransformerMixin]]:
     fingerprint.keep_needed_columns(measurements)
     duration = pd.Timedelta(config["duration"])
     X = to_time_series_dataset(
@@ -156,7 +156,7 @@ def seqfinger_tugraz(
 
 def seqfinger_both(
     measurements: List[pd.DataFrame], **config
-) -> Tuple[pd.DataFrame, Union[None, TransformerMixin]]:
+) -> Tuple[pd.DataFrame, Optional[TransformerMixin]]:
     fingerprint.keep_needed_columns(measurements)
     duration = pd.Timedelta(config["duration"])
     X = to_time_series_dataset(
@@ -170,35 +170,35 @@ def seqfinger_both(
 
 def seqfinger_tsfresh(
     measurements: List[pd.DataFrame], **config
-) -> Tuple[pd.DataFrame, Union[None, TransformerMixin]]:
+) -> Tuple[pd.DataFrame, Optional[TransformerMixin]]:
     # TODO do own implementation
     return None, SeqFingerMinMaxScaler()
 
 
 def finger_ott(
     measurements: List[pd.DataFrame], **config
-) -> Tuple[pd.DataFrame, Union[None, TransformerMixin]]:
+) -> Tuple[pd.DataFrame, Optional[TransformerMixin]]:
     fingerprint.keep_needed_columns(measurements)
     return fingerprint.build_set(measurements, fingerprint.lukas), MinMaxScaler()
 
 
 def finger_own(
     measurements: List[pd.DataFrame], **config
-) -> Tuple[pd.DataFrame, Union[None, TransformerMixin]]:
+) -> Tuple[pd.DataFrame, Optional[TransformerMixin]]:
     fingerprint.keep_needed_columns(measurements)
     return fingerprint.build_set(measurements, fingerprint.own), MinMaxScaler()
 
 
 def finger_tugraz(
     measurements: List[pd.DataFrame], **config
-) -> Tuple[pd.DataFrame, Union[None, TransformerMixin]]:
+) -> Tuple[pd.DataFrame, Optional[TransformerMixin]]:
     fingerprint.keep_needed_columns(measurements)
     return fingerprint.build_set(measurements, fingerprint.tu_graz), MinMaxScaler()
 
 
 def finger_both(
     measurements: List[pd.DataFrame], **config
-) -> Tuple[pd.DataFrame, Union[None, TransformerMixin]]:
+) -> Tuple[pd.DataFrame, Optional[TransformerMixin]]:
     fingerprint.keep_needed_columns(measurements)
     return (
         fingerprint.build_set(measurements, fingerprint.lukas_plus_tu_graz),
@@ -208,7 +208,7 @@ def finger_both(
 
 def finger_tsfresh(
     measurements: List[pd.DataFrame], **config
-) -> Tuple[pd.DataFrame, Union[None, TransformerMixin]]:
+) -> Tuple[pd.DataFrame, Optional[TransformerMixin]]:
     X_data = convert_to_tsfresh_dataset(measurements)
     if "default_fc_parameters" in config:
         DefaultFcParameters = getattr(
