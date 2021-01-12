@@ -56,6 +56,13 @@ def test_classify_ClassificationHandler(config, tmpdir):
     assert len(list(output_dir.rglob("model.p"))) == num_of_models - num_of_mlp_models
 
 
+def test_classify_ClassificationHandler_no_defects(config):
+    config["defects"] = list()
+
+    with pytest.raises(ValueError):
+        classify.ClassificationHandler(config)
+
+
 def test_main_version_succeeds():
     runner = click.testing.CliRunner()
     result = runner.invoke(classify.main, ["--version"])

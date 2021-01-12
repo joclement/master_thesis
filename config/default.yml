@@ -8,6 +8,14 @@ general:
   show_plots: False
   metric: "balanced_accuracy_score"
 
+defects:
+  - free_particle
+  - particle_insulator
+  - protrusion_earth
+  - protrusion_hv
+  - floating
+  - cavity
+
 models-to-run:
   - dt-finger_both
   - dt-finger_ott
