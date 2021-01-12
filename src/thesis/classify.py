@@ -1,7 +1,7 @@
 from pathlib import Path
 import pickle
 import shutil
-from typing import Final
+from typing import Final, List
 
 import click
 from keras.wrappers.scikit_learn import KerasClassifier
@@ -55,6 +55,9 @@ class ClassificationHandler:
         )
 
         measurements, _ = data.read_recursive(self.config["general"]["data_dir"])
+        if len(measurements) == 0:
+            raise ValueError(f"No data in: {self.config['general']['data_dir']}")
+        measurements = self._keep_wanted_defects(measurements)
         self.y: Final = pd.Series(data.get_defects(measurements))
         self.onehot_y = LabelBinarizer().fit_transform(self.y)
         data.clip_neg_pd_values(measurements)
@@ -63,6 +66,13 @@ class ClassificationHandler:
         self.defect_names = [
             data.DEFECT_NAMES[data.Defect(d)] for d in sorted(set(self.y))
         ]
+
+    def _keep_wanted_defects(self, measurements: List[pd.DataFrame]):
+        defects = [data.Defect[defect] for defect in self.config["defects"]]
+        measurements = [df for df in measurements if df[data.CLASS][0] in defects]
+        if len(measurements) == 0:
+            raise ValueError(f"No data matching these defects: {defects}")
+        return measurements
 
     def _save_config(self):
         with open(Path(self.output_dir, "config.yml"), "w") as outfile:
