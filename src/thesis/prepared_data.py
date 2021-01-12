@@ -1,5 +1,6 @@
 from typing import List, Tuple, Union
 
+import numpy as np
 import pandas as pd
 from sklearn.base import TransformerMixin
 from sklearn.preprocessing import MinMaxScaler
@@ -11,6 +12,37 @@ from tslearn.utils import to_time_series_dataset
 from . import data, fingerprint
 
 MAX_FREQUENCY = pd.tseries.frequencies.to_offset("50us")
+
+
+class SeqFingerMinMaxScaler(TransformerMixin):
+    def __init__(self, **kwargs):
+        self._scaler = MinMaxScaler(**kwargs)
+
+    def fit(self, X, y=None, **kwargs):
+        X = np.array(X)
+        if len(X.shape) > 1:
+            self._orig_shape = X.shape[1:]
+        X = self._flatten(X)
+        self._scaler.fit(X, **kwargs)
+        return self
+
+    def transform(self, X, y=None, **kwargs):
+        X = np.array(X)
+        X = self._flatten(X)
+        X = self._scaler.transform(X, **kwargs)
+        X = self._reshape(X)
+        return X
+
+    def _flatten(self, X):
+        if len(X.shape) > 2:
+            n_dims = np.prod(self._orig_shape)
+            X = X.reshape(-1, n_dims)
+        return X
+
+    def _reshape(self, X):
+        if len(X.shape) >= 2:
+            X = X.reshape(-1, *self._orig_shape)
+        return X
 
 
 def convert_to_tsfresh_dataset(measurements: List[pd.DataFrame]) -> pd.DataFrame:
@@ -105,7 +137,7 @@ def seqfinger_ott(
             for df in measurements
         ]
     )
-    return X, None
+    return X, SeqFingerMinMaxScaler()
 
 
 def seqfinger_tugraz(
@@ -119,7 +151,7 @@ def seqfinger_tugraz(
             for df in measurements
         ]
     )
-    return X, None
+    return X, SeqFingerMinMaxScaler()
 
 
 def seqfinger_both(
@@ -133,14 +165,14 @@ def seqfinger_both(
             for df in measurements
         ]
     )
-    return X, None
+    return X, SeqFingerMinMaxScaler()
 
 
 def seqfinger_tsfresh(
     measurements: List[pd.DataFrame], **config
 ) -> Tuple[pd.DataFrame, Union[None, TransformerMixin]]:
     # TODO do own implementation
-    return None, None
+    return None, SeqFingerMinMaxScaler()
 
 
 def finger_ott(

@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -24,3 +25,12 @@ def test__convert_to_time_series(simple_artificial_measurement):
 def test_convert_to_tsfresh_dataset(measurements):
     dataset = prepared_data.convert_to_tsfresh_dataset(measurements)
     assert type(dataset) is pd.DataFrame
+
+
+def test_seqfinger_ott(measurements):
+    config = {"duration": "30 seconds"}
+    X, scaler = prepared_data.seqfinger_ott(measurements, **config)
+    X_transformed = scaler.fit_transform(X)
+    assert X.shape == X_transformed.shape
+    assert np.nanmax(X_transformed) == pytest.approx(1.0)
+    assert np.nanmin(X_transformed) == 0.0
