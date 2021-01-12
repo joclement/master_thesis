@@ -126,6 +126,13 @@ def _build_fingerprint_sequence(df: pd.DataFrame, finger_algo, duration: pd.Time
     return fingerprint.build_set(sequence, finger_algo).to_numpy()
 
 
+def _get_seqfinger_transformer(normalize: bool) -> Optional[TransformerMixin]:
+    if normalize:
+        return SeqFingerMinMaxScaler()
+    else:
+        return None
+
+
 def seqfinger_ott(
     measurements: List[pd.DataFrame], **config
 ) -> Tuple[pd.DataFrame, Optional[TransformerMixin]]:
@@ -137,7 +144,7 @@ def seqfinger_ott(
             for df in measurements
         ]
     )
-    return X, SeqFingerMinMaxScaler()
+    return X, _get_seqfinger_transformer(config["normalize"])
 
 
 def seqfinger_tugraz(
@@ -151,7 +158,7 @@ def seqfinger_tugraz(
             for df in measurements
         ]
     )
-    return X, SeqFingerMinMaxScaler()
+    return X, _get_seqfinger_transformer(config["normalize"])
 
 
 def seqfinger_both(
@@ -165,14 +172,14 @@ def seqfinger_both(
             for df in measurements
         ]
     )
-    return X, SeqFingerMinMaxScaler()
+    return X, _get_seqfinger_transformer(config["normalize"])
 
 
 def seqfinger_tsfresh(
     measurements: List[pd.DataFrame], **config
 ) -> Tuple[pd.DataFrame, Optional[TransformerMixin]]:
     # TODO do own implementation
-    return None, SeqFingerMinMaxScaler()
+    return None, _get_seqfinger_transformer(config["normalize"])
 
 
 def finger_ott(

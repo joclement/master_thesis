@@ -79,16 +79,19 @@ models:
 
   knn_dtw-seqfinger_ott:
     duration: "30 seconds"
+    normalize: False
     classifier_hyperparameters:
       n_neighbors: 1
 
   knn_dtw-seqfinger_tugraz:
     duration: "30 seconds"
+    normalize: True
     classifier_hyperparameters:
       n_neighbors: 1
 
   knn_dtw-seqfinger_both:
     duration: "30 seconds"
+    normalize: True
     classifier_hyperparameters:
       n_neighbors: 1
 
@@ -97,6 +100,7 @@ models:
     n_jobs: 3
     fdr_level: 0.23
     duration: "30 seconds"
+    normalize: True
     classifier_hyperparameters:
       n_neighbors: 1
 
@@ -179,12 +183,15 @@ models:
 
   svm_dtw-seqfinger_both:
     duration: "30 seconds"
+    normalize: True
 
   svm_dtw-seqfinger_ott:
     duration: "30 seconds"
+    normalize: True
 
   svm_dtw-seqfinger_tugraz:
     duration: "30 seconds"
+    normalize: True
 
   dt-finger_ott: {}
 
