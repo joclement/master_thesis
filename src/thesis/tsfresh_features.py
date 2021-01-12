@@ -1,30 +1,13 @@
 from pathlib import Path
-from typing import List
 
 import click
 import pandas as pd
 from tsfresh import extract_features
+from tsfresh.feature_extraction import MinimalFCParameters
 from tsfresh.feature_selection.relevance import calculate_relevance_table
 from tsfresh.utilities.dataframe_functions import impute
 
-from . import __version__, data
-
-
-def convert_to_tsfresh_dataset(measurements: List[pd.DataFrame]) -> pd.DataFrame:
-    measurements = [m.loc[:, [data.TIME, data.PD]] for m in measurements]
-    measurements = [_convert_to_time_series(df, i) for i, df in enumerate(measurements)]
-    min_len = min([len(m) for m in measurements])
-    measurements = [df[: min(len(df.index), 10 * min_len)] for df in measurements]
-    return pd.concat(measurements)
-
-
-def _convert_to_time_series(df: pd.DataFrame, index: int) -> pd.DataFrame:
-    df.loc[:, data.TIME] = pd.to_datetime(df[data.TIME], unit=data.TIME_UNIT)
-    df.set_index(data.TIME, inplace=True)
-    time_series = df.rename(columns={data.PD: "value"})
-    time_series["kind"] = data.PD
-    time_series["id"] = index
-    return time_series
+from . import __version__, data, prepared_data
 
 
 def calc_relevant_features(
@@ -38,13 +21,15 @@ def calc_relevant_features(
     data.clip_neg_pd_values(measurements)
     y = pd.Series(data.get_defects(measurements))
 
-    all_df = convert_to_tsfresh_dataset(measurements)
+    all_df = prepared_data.convert_to_tsfresh_dataset(measurements)
 
     extracted_features = extract_features(
         all_df,
         column_id="id",
         column_kind="kind",
+        column_sort=data.TIME,
         column_value="value",
+        default_fc_parameters=MinimalFCParameters(),
         impute_function=impute,
         show_warnings=True,
         n_jobs=n_jobs,
