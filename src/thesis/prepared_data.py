@@ -8,9 +8,19 @@ from tsfresh.feature_extraction import ComprehensiveFCParameters
 from tsfresh.transformers import RelevantFeatureAugmenter
 from tslearn.utils import to_time_series_dataset
 
-from . import data, fingerprint, tsfresh_features
+from . import data, fingerprint
 
 MAX_FREQUENCY = pd.tseries.frequencies.to_offset("50us")
+
+
+def convert_to_tsfresh_dataset(measurements: List[pd.DataFrame]) -> pd.DataFrame:
+    measurements = [m.loc[:, [data.TIME, data.PD]] for m in measurements]
+    for index, df in enumerate(measurements):
+        df["id"] = index
+        df["kind"] = data.PD
+    all_df = pd.concat(measurements)
+    all_df = all_df.rename(columns={data.PD: "value"})
+    return all_df
 
 
 def _convert_to_time_series(df: pd.DataFrame, frequency) -> pd.Series:
@@ -167,7 +177,7 @@ def finger_both(
 def finger_tsfresh(
     measurements: List[pd.DataFrame], **config
 ) -> Tuple[pd.DataFrame, Union[None, TransformerMixin]]:
-    X_data = tsfresh_features.convert_to_tsfresh_dataset(measurements)
+    X_data = convert_to_tsfresh_dataset(measurements)
     if "default_fc_parameters" in config:
         DefaultFcParameters = getattr(
             tsfresh.feature_extraction, config["default_fc_parameters"]
@@ -177,6 +187,7 @@ def finger_tsfresh(
     tsfreshTransformer = RelevantFeatureAugmenter(
         column_id="id",
         column_kind="kind",
+        column_sort=data.TIME,
         column_value="value",
         fdr_level=config["fdr_level"],
         ml_task="classification",
