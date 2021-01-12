@@ -66,6 +66,8 @@ class ClassificationHandler:
         self.defect_names = [
             data.DEFECT_NAMES[data.Defect(d)] for d in sorted(set(self.y))
         ]
+        skfold = StratifiedKFold(n_splits=self.cv)
+        self.cv_splits = list(skfold.split(np.zeros(len(self.y)), self.y))
 
     def _keep_wanted_defects(self, measurements: List[pd.DataFrame]):
         defects = [data.Defect[defect] for defect in self.config["defects"]]
@@ -109,10 +111,9 @@ class ClassificationHandler:
         return val_predictions
 
     def _cross_validate(self, model_name, model_folder, classifier, X):
-        skfold = StratifiedKFold(n_splits=self.cv)
         all_val_correct = []
         all_val_predictions = []
-        for idx, split_indexes in enumerate(skfold.split(X, self.y)):
+        for idx, split_indexes in enumerate(self.cv_splits):
             train_index, val_index = split_indexes
             if isinstance(X, pd.DataFrame):
                 X_train = X.loc[train_index, :]
