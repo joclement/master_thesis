@@ -28,7 +28,7 @@ def test_convert_to_tsfresh_dataset(measurements):
 
 
 def test_seqfinger_ott(measurements):
-    config = {"duration": "30 seconds"}
+    config = {"duration": "30 seconds", "normalize": True}
     X, scaler = prepared_data.seqfinger_ott(measurements, **config)
     X_transformed = scaler.fit_transform(X)
     assert X.shape == X_transformed.shape
