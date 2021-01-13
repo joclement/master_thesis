@@ -21,12 +21,17 @@ import yaml
 from . import __version__, data, models, util
 
 
+def _print_score(name: str, value: float) -> None:
+    click.echo(f"{name}: {value:.2f}")
+
+
 def isKeras(classifier: Pipeline) -> bool:
     return isinstance(list(classifier.named_steps.values())[-1], (KerasClassifier))
 
 
 class ClassificationHandler:
     def __init__(self, config):
+        pd.set_option("precision", 2)
         self.config = config
 
         self.output_dir = Path(self.config["general"]["output_dir"])
@@ -106,7 +111,7 @@ class ClassificationHandler:
             val_proba_predictions = classifier.predict_proba(X_val)
             val_predictions = np.argmax(val_proba_predictions, axis=1)
             top_k_accuracy = top_k_accuracy_score(y_val, val_proba_predictions, k=3)
-            click.echo(f"top_k_accuracy: {top_k_accuracy}")
+            _print_score("Top 3 accuracy", top_k_accuracy)
             self.scores.loc[model_name, ("top_k_accuracy", idx)] = top_k_accuracy
         return val_predictions
 
@@ -139,14 +144,14 @@ class ClassificationHandler:
 
             score = getattr(sklearn.metrics, self.metric)
             train_score = score(y_train, train_predictions)
-            click.echo(f"Train score: {train_score}")
+            _print_score("Train score", train_score)
             self.scores.loc[model_name, ("train", idx)] = train_score
 
             val_score = score(y_val, val_predictions)
-            click.echo(f"Validation score: {val_score}")
+            _print_score("Validation score", val_score)
             self.scores.loc[model_name, ("val", idx)] = val_score
             accuracy = accuracy_score(y_val, val_predictions)
-            click.echo(f"accuracy_score: {accuracy}")
+            _print_score("Accuracy score", accuracy)
             self.scores.loc[model_name, ("accuracy", idx)] = accuracy
 
             if self.calc_cm:
