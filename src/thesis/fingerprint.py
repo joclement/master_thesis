@@ -60,6 +60,9 @@ TD_MEDIAN = f"{TD} Median"
 CORR_PD_DIFF_TO_PD = f"{CORR} {PD_DIFF} - PD"
 CORR_NEXT_PD_TO_PD = f"{CORR} Next PD - PD"
 
+# @note: parameter in own fingerprint
+POLARITY = "DC+/DC-"
+
 
 def keep_needed_columns(measurements: List[pd.DataFrame]):
     for df in measurements:
@@ -215,6 +218,8 @@ def own(df: pd.DataFrame) -> pd.Series:
     finger[CORR_PD_DIFF_TO_PD], _ = stats.pearsonr(df[data.PD], df[data.PD_DIFF])
     next_pd = df[data.PD][1:].reset_index(drop=True)
     finger[CORR_NEXT_PD_TO_PD], _ = stats.pearsonr(df[data.PD][:-1], next_pd)
+
+    finger[POLARITY] = df[data.VOLTAGE_SIGN][0]
 
     if finger.isnull().any() or finger.isin([np.inf, -np.inf]).any():
         raise ValueError(f"Incorrect finger: \n {finger}")

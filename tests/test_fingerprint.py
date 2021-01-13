@@ -73,6 +73,15 @@ def test_normalize_fingerprints(measurements):
     assert all(np.amin(normalized_fingers, axis=0) == 0)
 
 
+def test_fingerprint_own(measurements):
+    dataset = fingerprint.build_set(measurements, fingerprint=fingerprint.own)
+    assert dataset.shape == (6, 18)
+    assert dataset[fingerprint.POLARITY].max() == 1.0
+    assert dataset[fingerprint.POLARITY].min() == 0.0
+    assert dataset[fingerprint.POLARITY].value_counts()[1.0] == 4
+    assert dataset[fingerprint.POLARITY].value_counts()[0.0] == 2
+
+
 @fixture
 def real_data_folder() -> Path:
     folder = Path(
