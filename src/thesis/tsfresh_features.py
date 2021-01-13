@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import List
 
 import click
 import pandas as pd
@@ -10,20 +11,12 @@ from tsfresh.utilities.dataframe_functions import impute
 from . import __version__, data, models
 
 
-def calc_relevant_features(
-    input_directory,
-    n_jobs=1,
-    output_file: Path = None,
+def save_extract_features(
+    measurements: List[pd.DataFrame],
+    n_jobs: int,
+    output_file,
     ParameterSet=feature_extraction.MinimalFCParameters,
-) -> pd.DataFrame:
-    """Print measurement info on given measurement file or folder
-
-    INPUT_DIRECTORY folder containing csv files for classification
-    """
-    measurements, paths = data.read_recursive(input_directory)
-    data.clip_neg_pd_values(measurements)
-    y = pd.Series(data.get_defects(measurements))
-
+):
     all_df = models.convert_to_tsfresh_dataset(measurements)
 
     extracted_features = extract_features(
@@ -38,9 +31,24 @@ def calc_relevant_features(
         n_jobs=n_jobs,
     )
     if output_file:
-        extracted_features["path"] = paths
-        extracted_features.set_index("path", verify_integrity=True).to_csv(output_file)
-    extracted_features.drop(columns="path", inplace=True, errors="ignore")
+        paths = [Path(df.attrs[data.PATH]) for df in measurements]
+        extracted_features[data.PATH] = paths
+        extracted_features.set_index(data.PATH, verify_integrity=True).to_csv(
+            output_file
+        )
+    extracted_features.drop(columns=data.PATH, inplace=True, errors="ignore")
+    return extracted_features
+
+
+def calc_relevant_features(
+    extracted_features: pd.DataFrame,
+    y: pd.Series,
+    n_jobs: int = 1,
+) -> pd.DataFrame:
+    """Print measurement info on given measurement file or folder
+
+    INPUT_DIRECTORY folder containing csv files for classification
+    """
     click.echo(f"extracted_features.shape: {extracted_features.shape}")
     relevance_table = calculate_relevance_table(
         extracted_features,
@@ -85,5 +93,12 @@ def calc_relevant_features(
 def main(
     input_directory, n_jobs=1, output_file=None, parameter_set="MinimalFCParameters"
 ):
+    measurements, _ = data.read_recursive(input_directory)
+    data.clip_neg_pd_values(measurements)
+    y = pd.Series(data.get_defects(measurements))
+
     ParameterSet = getattr(feature_extraction, parameter_set)
-    calc_relevant_features(input_directory, n_jobs, output_file, ParameterSet)
+    extracted_features = save_extract_features(
+        measurements, n_jobs, output_file, ParameterSet
+    )
+    calc_relevant_features(extracted_features, y, n_jobs)

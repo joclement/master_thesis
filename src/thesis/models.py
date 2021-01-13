@@ -12,9 +12,7 @@ from sklearn.pipeline import make_pipeline, Pipeline
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
-import tsfresh.feature_extraction
-from tsfresh.feature_extraction import ComprehensiveFCParameters
-from tsfresh.transformers import RelevantFeatureAugmenter
+from tsfresh.transformers import FeatureSelector
 from tslearn.neighbors import KNeighborsTimeSeriesClassifier
 from tslearn.svm import TimeSeriesSVC
 
@@ -31,32 +29,30 @@ def convert_to_tsfresh_dataset(measurements: List[pd.DataFrame]) -> pd.DataFrame
     return all_df
 
 
-def _seqfinger_tsfresh(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
+def _seqfinger_tsfresh(
+    measurements: List[pd.DataFrame], **config
+) -> Tuple[pd.DataFrame, TransformerMixin]:
     # TODO do own implementation
     return None, None
 
 
-def _finger_tsfresh(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
-    X_data = convert_to_tsfresh_dataset(measurements)
-    if "default_fc_parameters" in config:
-        DefaultFcParameters = getattr(
-            tsfresh.feature_extraction, config["default_fc_parameters"]
-        )
-    else:
-        DefaultFcParameters = ComprehensiveFCParameters
-    tsfreshTransformer = RelevantFeatureAugmenter(
-        column_id="id",
-        column_kind="kind",
-        column_sort=data.TIME,
-        column_value="value",
+def _finger_tsfresh(
+    measurements: List[pd.DataFrame], **config
+) -> Tuple[pd.DataFrame, TransformerMixin]:
+    extracted_features = pd.read_csv(config["tsfresh_data"], index_col=data.PATH)
+    indices = []
+    extracted_features["idx"] = list(range(len(measurements)))
+    for index, df in enumerate(measurements):
+        indices.append(extracted_features.loc[df.attrs[data.PATH], "idx"])
+    assert (indices == extracted_features["idx"]).all()
+    extracted_features["idx"] = indices
+    X = extracted_features.set_index("idx", drop=True, verify_integrity=True)
+    tsfreshTransformer = FeatureSelector(
         fdr_level=config["fdr_level"],
         ml_task="classification",
         multiclass=True,
         n_jobs=config["n_jobs"],
-        default_fc_parameters=DefaultFcParameters(),
     )
-    tsfreshTransformer.set_timeseries_container(X_data)
-    X = pd.DataFrame(index=list(range(len(measurements))))
     return X, tsfreshTransformer
 
 

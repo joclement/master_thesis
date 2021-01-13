@@ -6,7 +6,8 @@ import click.testing
 import pytest
 import yaml
 
-from thesis import classify
+from thesis import classify, data
+from thesis.tsfresh_features import save_extract_features
 
 
 @pytest.fixture
@@ -15,6 +16,19 @@ def config(multiple_csv_files, tmpdir):
         config = yaml.safe_load(stream)
     config["general"]["data_dir"] = str(multiple_csv_files)
     config["general"]["output_dir"] = str(Path(tmpdir, "output"))
+    return config
+
+
+@pytest.fixture
+def config_with_tsfresh(config, multiple_csv_files):
+    data_dir = Path(config["general"]["data_dir"])
+    extracted_features_path = Path(data_dir, "extracted_features.data")
+    save_extract_features(data.read_recursive(data_dir)[0], 1, extracted_features_path)
+    for model_config in config["models"]:
+        if "tsfresh_data" in config["models"][model_config]:
+            config["models"][model_config]["tsfresh_data"] = str(
+                extracted_features_path
+            )
     return config
 
 
@@ -38,7 +52,8 @@ def test_classify_main(config, tmpdir):
     assert Path(config["general"]["output_dir"], "models_all_bar.svg").exists()
 
 
-def test_classify_ClassificationHandler(config, tmpdir):
+def test_classify_ClassificationHandler(config_with_tsfresh, tmpdir):
+    config = config_with_tsfresh
     output_dir = Path(config["general"]["output_dir"])
     config["general"]["calc_cm"] = True
     config["general"]["save_models"] = True
