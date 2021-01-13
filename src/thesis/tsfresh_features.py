@@ -3,7 +3,7 @@ from pathlib import Path
 import click
 import pandas as pd
 from tsfresh import extract_features
-from tsfresh.feature_extraction import MinimalFCParameters
+from tsfresh import feature_extraction
 from tsfresh.feature_selection.relevance import calculate_relevance_table
 from tsfresh.utilities.dataframe_functions import impute
 
@@ -11,13 +11,16 @@ from . import __version__, data, models
 
 
 def calc_relevant_features(
-    input_directory, n_jobs=1, output_file: Path = None
+    input_directory,
+    n_jobs=1,
+    output_file: Path = None,
+    ParameterSet=feature_extraction.MinimalFCParameters,
 ) -> pd.DataFrame:
     """Print measurement info on given measurement file or folder
 
     INPUT_DIRECTORY folder containing csv files for classification
     """
-    measurements, _ = data.read_recursive(input_directory)
+    measurements, paths = data.read_recursive(input_directory)
     data.clip_neg_pd_values(measurements)
     y = pd.Series(data.get_defects(measurements))
 
@@ -29,13 +32,15 @@ def calc_relevant_features(
         column_kind="kind",
         column_sort=data.TIME,
         column_value="value",
-        default_fc_parameters=MinimalFCParameters(),
+        default_fc_parameters=ParameterSet(),
         impute_function=impute,
         show_warnings=True,
         n_jobs=n_jobs,
     )
     if output_file:
-        extracted_features.to_csv(output_file)
+        extracted_features["path"] = paths
+        extracted_features.set_index("path", verify_integrity=True).to_csv(output_file)
+    extracted_features.drop(columns="path", inplace=True, errors="ignore")
     click.echo(f"extracted_features.shape: {extracted_features.shape}")
     relevance_table = calculate_relevance_table(
         extracted_features,
@@ -70,5 +75,15 @@ def calc_relevant_features(
     type=click.Path(exists=False),
     help="Save extracted features",
 )
-def main(input_directory, n_jobs=1, output_file=None):
-    calc_relevant_features(input_directory, n_jobs, output_file)
+@click.option(
+    "--parameter_set",
+    "-p",
+    default="MinimalFCParameters",
+    show_default=True,
+    help="Choose tsfresh parameter set",
+)
+def main(
+    input_directory, n_jobs=1, output_file=None, parameter_set="MinimalFCParameters"
+):
+    ParameterSet = getattr(feature_extraction, parameter_set)
+    calc_relevant_features(input_directory, n_jobs, output_file, ParameterSet)
