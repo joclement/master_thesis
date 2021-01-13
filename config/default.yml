@@ -31,7 +31,7 @@ models-to-run:
   - knn_dtw-seqfinger_tugraz
   - knn-finger_both
   - knn-finger_ott
-  - knn_finger_own
+  - knn-finger_own
   - knn-finger_tsfresh
   - knn-finger_tugraz
   - mlp-finger_both
