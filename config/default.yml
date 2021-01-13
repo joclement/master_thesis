@@ -133,8 +133,6 @@ models:
         - 3
       optimizer: "adam"
       batch_size: 6
-      max_iter: 300
-      max_fun:  20000
       epochs: 123
 
 
