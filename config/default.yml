@@ -135,7 +135,6 @@ models:
       batch_size: 6
       epochs: 123
 
-
   mlp-finger_tugraz:
     classifier_hyperparameters:
       batch_size: 6
