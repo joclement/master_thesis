@@ -221,8 +221,6 @@ def own(df: pd.DataFrame) -> pd.Series:
     next_pd = df[data.PD][1:].reset_index(drop=True)
     finger[CORR_NEXT_PD_TO_PD], _ = stats.pearsonr(df[data.PD][:-1], next_pd)
 
-    finger[POLARITY] = df.attrs[data.VOLTAGE_SIGN]
-
     if finger.isnull().any() or finger.isin([np.inf, -np.inf]).any():
         raise ValueError(f"Incorrect finger: \n {finger}")
     return finger

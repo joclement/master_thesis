@@ -75,11 +75,8 @@ def test_normalize_fingerprints(measurements):
 
 def test_fingerprint_own(measurements):
     dataset = fingerprint.build_set(measurements, fingerprint=fingerprint.own)
-    assert dataset.shape == (6, 18)
-    assert dataset[fingerprint.POLARITY].max() == 1.0
-    assert dataset[fingerprint.POLARITY].min() == 0.0
-    assert dataset[fingerprint.POLARITY].value_counts()[1.0] == 4
-    assert dataset[fingerprint.POLARITY].value_counts()[0.0] == 2
+    assert dataset.shape == (6, 17)
+    assert fingerprint.POLARITY not in dataset
 
 
 @fixture
