@@ -25,7 +25,7 @@ NEG_VOLTAGE: Final = "-DC"
 CLASS: Final = "Defect"
 
 
-class VoltageSign(Enum):
+class VoltageSign(IntEnum):
     positive = 1
     negative = 0
 
