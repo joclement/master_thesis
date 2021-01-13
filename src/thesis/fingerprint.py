@@ -212,6 +212,8 @@ def own(df: pd.DataFrame) -> pd.Series:
     finger[TD_MEDIAN] = df[data.TIME_DIFF].median()
     finger[TD_SKEW] = df[data.TIME_DIFF].skew()
     finger[TD_KURT] = df[data.TIME_DIFF].kurt()
+    if math.isnan(finger[TD_KURT]):
+        finger[TD_KURT] = 0.0
 
     finger[PDS_PER_SEC] = len(df[data.TIME_DIFF]) / (df[data.TIME_DIFF].sum() / 1000)
 
