@@ -18,13 +18,12 @@ def test_data_read(csv_filepath):
     assert df[data.CLASS][0] == data.Defect.free_particle
     assert len(set(df[data.CLASS])) == 1
 
-    assert data.VOLTAGE_SIGN in df
-    assert df[data.VOLTAGE_SIGN][0] == data.VoltageSign.positive
-    assert len(set(df[data.VOLTAGE_SIGN])) == 1
+    assert data.VOLTAGE_SIGN in df.attrs
+    assert df.attrs[data.VOLTAGE_SIGN] == data.VoltageSign.positive
 
     assert data.TEST_VOLTAGE not in df
     assert data.PD_DIFF in df
-    assert len(df.columns) == 6
+    assert len(df.columns) == 5
 
 
 def test_data_read_wrong_filename(csv_filepath, tmpdir):
