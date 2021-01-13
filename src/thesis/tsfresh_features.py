@@ -7,7 +7,7 @@ from tsfresh.feature_extraction import MinimalFCParameters
 from tsfresh.feature_selection.relevance import calculate_relevance_table
 from tsfresh.utilities.dataframe_functions import impute
 
-from . import __version__, data, prepared_data
+from . import __version__, data, models
 
 
 def calc_relevant_features(
@@ -21,7 +21,7 @@ def calc_relevant_features(
     data.clip_neg_pd_values(measurements)
     y = pd.Series(data.get_defects(measurements))
 
-    all_df = prepared_data.convert_to_tsfresh_dataset(measurements)
+    all_df = models.convert_to_tsfresh_dataset(measurements)
 
     extracted_features = extract_features(
         all_df,

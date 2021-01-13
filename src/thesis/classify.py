@@ -66,7 +66,10 @@ class ClassificationHandler:
         self.y: Final = pd.Series(data.get_defects(measurements))
         self.onehot_y = LabelBinarizer().fit_transform(self.y)
         data.clip_neg_pd_values(measurements)
-        self.measurements: Final = [df.drop(data.CLASS, axis=1) for df in measurements]
+        measurements = [df.drop(data.CLASS, axis=1) for df in measurements]
+        self.modelHandler = models.ModelHandler(
+            measurements, self.y, self.config["models"]
+        )
 
         self.defect_names = [
             data.DEFECT_NAMES[data.Defect(d)] for d in sorted(set(self.y))
@@ -100,9 +103,6 @@ class ClassificationHandler:
         ).plot()
         model_folder.mkdir(exist_ok=True)
         util.finish_plot(f"confusion_matrix_{name}", model_folder)
-
-    def _get_measurements_copy(self):
-        return [df.copy() for df in self.measurements]
 
     def _do_val_predictions(self, model_name, idx, classifier, X_val, y_val):
         if isinstance(list(classifier.named_steps.values())[-1], (SVC, TimeSeriesSVC)):
@@ -169,12 +169,7 @@ class ClassificationHandler:
     def run(self):
         for model_name in self.config["models-to-run"]:
             click.echo(f"Model: {model_name}")
-            classifier, X = models.get_model_with_data(
-                self._get_measurements_copy(),
-                self.y,
-                model_name,
-                self.config["models"][model_name],
-            )
+            classifier, X = self.modelHandler.get_model_with_data(model_name)
             model_folder = Path(self.output_dir, model_name)
             self._cross_validate(model_name, model_folder, classifier, X)
 
@@ -200,9 +195,7 @@ class ClassificationHandler:
         self._plot_results()
 
     def _plot_results(self):
-        title = (
-            f"cv: {self.cv}, n: {len(self.measurements)}, n_defects: {len(set(self.y))}"
-        )
+        title = f"cv: {self.cv}, n: {len(self.y)}, n_defects: {len(set(self.y))}"
         plt.figure(figsize=(20, 10))
         ax = self.scores.plot.bar(rot=30, title=title, ylabel=self.metric)
         ax.legend(loc=3)
