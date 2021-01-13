@@ -23,6 +23,7 @@ POS_VOLTAGE: Final = "+DC"
 NEG_VOLTAGE: Final = "-DC"
 
 CLASS: Final = "Defect"
+PATH: Final = "path"
 
 
 class VoltageSign(IntEnum):
@@ -124,6 +125,7 @@ def read(filepath, labeled_file: bool = True) -> pd.DataFrame:
 
     experiment[PD_DIFF] = experiment[PD].diff().abs()
 
+    experiment.attrs[PATH] = str(filepath)
     filename = Path(filepath).stem
     if labeled_file:
         experiment.attrs[VOLTAGE_SIGN] = _get_voltage_sign(filename)
