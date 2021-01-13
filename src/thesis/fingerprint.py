@@ -61,7 +61,7 @@ CORR_PD_DIFF_TO_PD = f"{CORR} {PD_DIFF} - PD"
 CORR_NEXT_PD_TO_PD = f"{CORR} Next PD - PD"
 
 # @note: parameter in own fingerprint
-POLARITY = "DC+/DC-"
+POLARITY = "+DC/-DC"
 
 
 def keep_needed_columns(measurements: List[pd.DataFrame]):
