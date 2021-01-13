@@ -19,16 +19,19 @@ defects:
 models-to-run:
   - dt-finger_both
   - dt-finger_ott
+  - dt-finger_own
   - dt-finger_tsfresh
   - dt-finger_tugraz
   - knn_dtw-oned
   - knn_dtw-twod
   - knn_dtw-seqfinger_both
   - knn_dtw-seqfinger_ott
+  - knn_dtw-seqfinger_own
   # TODO - knn_dtw-seqfinger_tsfresh
   - knn_dtw-seqfinger_tugraz
   - knn-finger_both
   - knn-finger_ott
+  - knn_finger_own
   - knn-finger_tsfresh
   - knn-finger_tugraz
   - mlp-finger_both
@@ -38,10 +41,12 @@ models-to-run:
   # - ott_algo-finger_ott
   # - svm_dtw-seqfinger_both
   - svm_dtw-seqfinger_ott
+  - svm_dtw-seqfinger_own
   # TODO - svm_dtw-seqfinger_tsfresh
   # - svm_dtw-seqfinger_tugraz
   - svm-finger_both
   # - svm-finger_ott
+  - svm-finger_own
   - svm-finger_tsfresh
   # - svm-finger_tugraz
 
@@ -61,6 +66,10 @@ models:
     classifier_hyperparameters:
       n_neighbors: 1
 
+  knn-finger_own:
+    classifier_hyperparameters:
+      n_neighbors: 1
+
   knn-finger_tugraz:
     classifier_hyperparameters:
       n_neighbors: 1
@@ -77,6 +86,12 @@ models:
       n_neighbors: 1
 
   knn_dtw-seqfinger_ott:
+    duration: "30 seconds"
+    normalize: False
+    classifier_hyperparameters:
+      n_neighbors: 1
+
+  knn_dtw-seqfinger_own:
     duration: "30 seconds"
     normalize: False
     classifier_hyperparameters:
@@ -148,6 +163,10 @@ models:
     classifier_hyperparameters:
       decision_function_shape: "ovr"
 
+  svm-finger_own:
+    classifier_hyperparameters:
+      decision_function_shape: "ovr"
+
   svm-finger_tugraz:
     classifier_hyperparameters:
       decision_function_shape: "ovr"
@@ -170,11 +189,17 @@ models:
     duration: "30 seconds"
     normalize: True
 
+  svm_dtw-seqfinger_own:
+    duration: "30 seconds"
+    normalize: True
+
   svm_dtw-seqfinger_tugraz:
     duration: "30 seconds"
     normalize: True
 
   dt-finger_ott: {}
+
+  dt-finger_own: {}
 
   dt-finger_tugraz: {}
 

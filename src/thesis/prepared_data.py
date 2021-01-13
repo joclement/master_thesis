@@ -147,6 +147,20 @@ def seqfinger_ott(
     return X, _get_seqfinger_transformer(config["normalize"])
 
 
+def seqfinger_own(
+    measurements: List[pd.DataFrame], **config
+) -> Tuple[pd.DataFrame, Optional[TransformerMixin]]:
+    fingerprint.keep_needed_columns(measurements)
+    duration = pd.Timedelta(config["duration"])
+    X = to_time_series_dataset(
+        [
+            _build_fingerprint_sequence(df, fingerprint.own, duration)
+            for df in measurements
+        ]
+    )
+    return X, _get_seqfinger_transformer(config["normalize"])
+
+
 def seqfinger_tugraz(
     measurements: List[pd.DataFrame], **config
 ) -> Tuple[pd.DataFrame, Optional[TransformerMixin]]:
