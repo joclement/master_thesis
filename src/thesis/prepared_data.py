@@ -1,12 +1,6 @@
-from typing import List, Optional, Tuple
+from typing import List
 
-import numpy as np
 import pandas as pd
-from sklearn.base import TransformerMixin
-from sklearn.preprocessing import MinMaxScaler
-import tsfresh.feature_extraction
-from tsfresh.feature_extraction import ComprehensiveFCParameters
-from tsfresh.transformers import RelevantFeatureAugmenter
 from tslearn.utils import to_time_series_dataset
 
 from . import data, fingerprint
@@ -14,57 +8,14 @@ from . import data, fingerprint
 MAX_FREQUENCY = pd.tseries.frequencies.to_offset("50us")
 
 
-class SeqFingerMinMaxScaler(TransformerMixin):
-    def __init__(self, **kwargs):
-        self._scaler = MinMaxScaler(**kwargs)
-
-    def fit(self, X, y=None, **kwargs):
-        X = np.array(X)
-        if len(X.shape) > 1:
-            self._orig_shape = X.shape[1:]
-        X = self._flatten(X)
-        self._scaler.fit(X, **kwargs)
-        return self
-
-    def transform(self, X, y=None, **kwargs):
-        X = np.array(X)
-        X = self._flatten(X)
-        X = self._scaler.transform(X, **kwargs)
-        X = self._reshape(X)
-        return X
-
-    def _flatten(self, X):
-        if len(X.shape) > 2:
-            n_dims = np.prod(self._orig_shape)
-            X = X.reshape(-1, n_dims)
-        return X
-
-    def _reshape(self, X):
-        if len(X.shape) >= 2:
-            X = X.reshape(-1, *self._orig_shape)
-        return X
-
-
-def convert_to_tsfresh_dataset(measurements: List[pd.DataFrame]) -> pd.DataFrame:
-    measurements = [m.loc[:, [data.TIME, data.PD]] for m in measurements]
-    for index, df in enumerate(measurements):
-        df["id"] = index
-        df["kind"] = data.PD
-    all_df = pd.concat(measurements)
-    all_df = all_df.rename(columns={data.PD: "value"})
-    return all_df
-
-
 def _convert_to_time_series(df: pd.DataFrame, frequency) -> pd.Series:
-    df[data.TIME] = pd.to_datetime(df[data.TIME], unit=data.TIME_UNIT)
-    df.set_index(data.TIME, inplace=True)
+    df["DateTimeIndex"] = pd.to_datetime(df[data.TIME], unit=data.TIME_UNIT)
+    df.set_index("DateTimeIndex", inplace=True)
     time_series = df[data.PD]
     return time_series.asfreq(MAX_FREQUENCY, fill_value=0.0).resample(frequency).max()
 
 
-def oned(
-    measurements: List[pd.DataFrame], **config
-) -> Tuple[pd.DataFrame, Optional[TransformerMixin]]:
+def oned(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     time_serieses = [
         _convert_to_time_series(df, config["frequency"]) for df in measurements
     ]
@@ -75,19 +26,17 @@ def oned(
             for time_series in time_serieses
         ]
     )
-    return X, None
+    return X
 
 
-def twod(
-    measurements: List[pd.DataFrame], **config
-) -> Tuple[pd.DataFrame, Optional[TransformerMixin]]:
+def twod(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     for df in measurements:
         df.drop(df.columns.difference([data.TIME_DIFF, data.PD]), axis=1, inplace=True)
     min_len = min([len(m) for m in measurements])
     X = to_time_series_dataset(
         [df[: config["multiple_of_min_len"] * min_len] for df in measurements]
     )
-    return X, None
+    return X
 
 
 def _build_fingerprint_sequence(df: pd.DataFrame, finger_algo, duration: pd.Timedelta):
@@ -126,16 +75,7 @@ def _build_fingerprint_sequence(df: pd.DataFrame, finger_algo, duration: pd.Time
     return fingerprint.build_set(sequence, finger_algo).to_numpy()
 
 
-def _get_seqfinger_transformer(normalize: bool) -> Optional[TransformerMixin]:
-    if normalize:
-        return SeqFingerMinMaxScaler()
-    else:
-        return None
-
-
-def seqfinger_ott(
-    measurements: List[pd.DataFrame], **config
-) -> Tuple[pd.DataFrame, Optional[TransformerMixin]]:
+def seqfinger_ott(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     fingerprint.keep_needed_columns(measurements)
     duration = pd.Timedelta(config["duration"])
     X = to_time_series_dataset(
@@ -144,12 +84,10 @@ def seqfinger_ott(
             for df in measurements
         ]
     )
-    return X, _get_seqfinger_transformer(config["normalize"])
+    return X
 
 
-def seqfinger_own(
-    measurements: List[pd.DataFrame], **config
-) -> Tuple[pd.DataFrame, Optional[TransformerMixin]]:
+def seqfinger_own(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     fingerprint.keep_needed_columns(measurements)
     duration = pd.Timedelta(config["duration"])
     X = to_time_series_dataset(
@@ -158,12 +96,10 @@ def seqfinger_own(
             for df in measurements
         ]
     )
-    return X, _get_seqfinger_transformer(config["normalize"])
+    return X
 
 
-def seqfinger_tugraz(
-    measurements: List[pd.DataFrame], **config
-) -> Tuple[pd.DataFrame, Optional[TransformerMixin]]:
+def seqfinger_tugraz(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     fingerprint.keep_needed_columns(measurements)
     duration = pd.Timedelta(config["duration"])
     X = to_time_series_dataset(
@@ -172,12 +108,10 @@ def seqfinger_tugraz(
             for df in measurements
         ]
     )
-    return X, _get_seqfinger_transformer(config["normalize"])
+    return X
 
 
-def seqfinger_both(
-    measurements: List[pd.DataFrame], **config
-) -> Tuple[pd.DataFrame, Optional[TransformerMixin]]:
+def seqfinger_both(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     fingerprint.keep_needed_columns(measurements)
     duration = pd.Timedelta(config["duration"])
     X = to_time_series_dataset(
@@ -186,68 +120,24 @@ def seqfinger_both(
             for df in measurements
         ]
     )
-    return X, _get_seqfinger_transformer(config["normalize"])
+    return X
 
 
-def seqfinger_tsfresh(
-    measurements: List[pd.DataFrame], **config
-) -> Tuple[pd.DataFrame, Optional[TransformerMixin]]:
-    # TODO do own implementation
-    return None, _get_seqfinger_transformer(config["normalize"])
-
-
-def finger_ott(
-    measurements: List[pd.DataFrame], **config
-) -> Tuple[pd.DataFrame, Optional[TransformerMixin]]:
+def finger_ott(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     fingerprint.keep_needed_columns(measurements)
-    return fingerprint.build_set(measurements, fingerprint.lukas), MinMaxScaler()
+    return fingerprint.build_set(measurements, fingerprint.lukas)
 
 
-def finger_own(
-    measurements: List[pd.DataFrame], **config
-) -> Tuple[pd.DataFrame, Optional[TransformerMixin]]:
+def finger_own(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     fingerprint.keep_needed_columns(measurements)
-    return fingerprint.build_set(measurements, fingerprint.own), MinMaxScaler()
+    return fingerprint.build_set(measurements, fingerprint.own)
 
 
-def finger_tugraz(
-    measurements: List[pd.DataFrame], **config
-) -> Tuple[pd.DataFrame, Optional[TransformerMixin]]:
+def finger_tugraz(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     fingerprint.keep_needed_columns(measurements)
-    return fingerprint.build_set(measurements, fingerprint.tu_graz), MinMaxScaler()
+    return fingerprint.build_set(measurements, fingerprint.tu_graz)
 
 
-def finger_both(
-    measurements: List[pd.DataFrame], **config
-) -> Tuple[pd.DataFrame, Optional[TransformerMixin]]:
+def finger_both(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     fingerprint.keep_needed_columns(measurements)
-    return (
-        fingerprint.build_set(measurements, fingerprint.lukas_plus_tu_graz),
-        MinMaxScaler(),
-    )
-
-
-def finger_tsfresh(
-    measurements: List[pd.DataFrame], **config
-) -> Tuple[pd.DataFrame, Optional[TransformerMixin]]:
-    X_data = convert_to_tsfresh_dataset(measurements)
-    if "default_fc_parameters" in config:
-        DefaultFcParameters = getattr(
-            tsfresh.feature_extraction, config["default_fc_parameters"]
-        )
-    else:
-        DefaultFcParameters = ComprehensiveFCParameters
-    tsfreshTransformer = RelevantFeatureAugmenter(
-        column_id="id",
-        column_kind="kind",
-        column_sort=data.TIME,
-        column_value="value",
-        fdr_level=config["fdr_level"],
-        ml_task="classification",
-        multiclass=True,
-        n_jobs=config["n_jobs"],
-        default_fc_parameters=DefaultFcParameters(),
-    )
-    tsfreshTransformer.set_timeseries_container(X_data)
-    X = pd.DataFrame(index=list(range(len(measurements))))
-    return X, tsfreshTransformer
+    return fingerprint.build_set(measurements, fingerprint.lukas_plus_tu_graz)
