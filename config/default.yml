@@ -125,6 +125,7 @@ models:
       hidden_layer_sizes:
         - 4
       optimizer: "adam"
+      epochs: 123
 
   mlp-finger_own:
     classifier_hyperparameters:
@@ -134,6 +135,7 @@ models:
       batch_size: 6
       max_iter: 300
       max_fun:  20000
+      epochs: 123
 
 
   mlp-finger_tugraz:
@@ -142,6 +144,7 @@ models:
       hidden_layer_sizes:
         - 4
       optimizer: "adam"
+      epochs: 123
 
   mlp-finger_both:
     classifier_hyperparameters:
@@ -149,6 +152,7 @@ models:
       hidden_layer_sizes:
         - 6
       optimizer: "adam"
+      epochs: 123
 
   mlp-finger_tsfresh:
     n_jobs: 3
@@ -158,6 +162,7 @@ models:
       hidden_layer_sizes:
         - 9
       optimizer: "adam"
+      epochs: 123
 
   svm-finger_ott:
     classifier_hyperparameters:

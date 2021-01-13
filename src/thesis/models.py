@@ -94,7 +94,7 @@ def get_mlp(
         optimizer=classifier_config["optimizer"],
         output_dim=len(defects),
         hidden_layer_sizes=classifier_config["hidden_layer_sizes"],
-        epochs=150,
+        epochs=classifier_config["epochs"],
         batch_size=classifier_config["batch_size"],
         verbose=3,
     )
