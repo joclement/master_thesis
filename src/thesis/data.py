@@ -126,7 +126,7 @@ def read(filepath, labeled_file: bool = True) -> pd.DataFrame:
 
     filename = Path(filepath).stem
     if labeled_file:
-        experiment[VOLTAGE_SIGN] = _get_voltage_sign(filename)
+        experiment.attrs[VOLTAGE_SIGN] = _get_voltage_sign(filename)
         experiment[CLASS] = _get_defect(filename)
 
     return experiment.iloc[1:].reset_index(drop=True)
