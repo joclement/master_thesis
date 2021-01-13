@@ -34,16 +34,16 @@ models-to-run:
   - mlp-finger_both
   - mlp-finger_ott
   - mlp-finger_own
-  - mlp-finger_tugraz
-  - ott_algo-finger_ott
-  - svm_dtw-seqfinger_both
+  # - mlp-finger_tugraz
+  # - ott_algo-finger_ott
+  # - svm_dtw-seqfinger_both
   - svm_dtw-seqfinger_ott
   # TODO - svm_dtw-seqfinger_tsfresh
-  - svm_dtw-seqfinger_tugraz
+  # - svm_dtw-seqfinger_tugraz
   - svm-finger_both
-  - svm-finger_ott
+  # - svm-finger_ott
   - svm-finger_tsfresh
-  - svm-finger_tugraz
+  # - svm-finger_tugraz
 
 models:
   knn_dtw-oned:
