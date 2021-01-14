@@ -86,7 +86,11 @@ def _get_defect(filename: str) -> Defect:
         defects.append(Defect.protrusion_earth)
     if "Spitze an HS" in filename or "Spitze-HSP01" in filename:
         defects.append(Defect.protrusion_hv)
-    if "freies Potential" in filename or "Floating_Hülse" in filename:
+    if (
+        "freies Potential" in filename
+        or "Floating_Hülse" in filename
+        or "Floating electrode" in filename
+    ):
         defects.append(Defect.floating)
     if "Isolator" in filename:
         defects.append(Defect.particle_insulator)
