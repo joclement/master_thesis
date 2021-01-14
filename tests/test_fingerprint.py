@@ -82,8 +82,7 @@ def test_fingerprint_own(measurements):
 @fixture
 def real_data_folder() -> Path:
     folder = Path(
-        "./data/csv-files/prepared/",
-        "new_data_converted_from_mat/unique/3_entities_or_more",
+        "./data/csv-files/prepared/older_mat_converted/unique/3_entities_or_more",
     )
     assert folder.is_dir()
     return folder
