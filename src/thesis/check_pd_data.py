@@ -33,6 +33,34 @@ def _ensure_unique(csv_filepaths: list):
             raise ValueError(f"There are duplicates: '{file1}' and '{file2}'")
 
 
+def _info_on_unique_filenames(csv_filepaths: list):
+    click.echo("Checking for duplicate filenames")
+    for file1, file2 in combinations(csv_filepaths, 2):
+        file1 = Path(file1).name.replace(" ", "")
+        file2 = Path(file2).name.replace(" ", "")
+        if file1 == file2:
+            raise ValueError(
+                f"Duplicate filenames: '{file1}' and '{file2}' !!!!!!!!!!!!!!!!!"
+            )
+
+
+def _check_similar_filenames_for_content(measurements: list, csv_filepaths: list):
+    for fm1, fm2 in combinations(zip(measurements, csv_filepaths), 2):
+        df1, file1 = fm1
+        df2, file2 = fm2
+        file1 = Path(file1)
+        file2 = Path(file2)
+        str1 = file1.name.replace(" ", "")
+        str2 = file2.name.replace(" ", "")
+        if sum(1 for a, b in zip(str1, str2) if a != b) <= 1 or set(str1) == set(str2):
+            click.echo(f"Check similar filenames: '{str1}' and '{str1}':")
+            print(df1.isin(df2).all())
+            if df1.isin(df2).all().any() or df2.isin(df1).all().any():
+                raise ValueError("Possibly duplicate content!")
+            else:
+                click.echo("No.")
+
+
 def _info_on_test_voltage(measurements, csv_filepaths):
     files_with_test_voltage = [
         csv for df, csv in zip(measurements, csv_filepaths) if data.TEST_VOLTAGE in df
@@ -114,6 +142,8 @@ def main(path, recursive, expensive):
                     "\n ============================================================ \n"
                 )
 
+        measurements = [m.drop(columns=[data.PD_DIFF]) for m in measurements]
+
         min_pd = min([measurement[data.PD].min() for measurement in measurements])
         max_pd = max([measurement[data.PD].max() for measurement in measurements])
         min_timediff = min(
@@ -134,3 +164,9 @@ def main(path, recursive, expensive):
 
         if expensive:
             _info_on_too_few_pds_per_sec(measurements, csv_filepaths)
+
+        _info_on_unique_filenames(csv_filepaths)
+        measurements = [
+            m.drop(columns=[data.TIME_DIFF, data.CLASS]) for m in measurements
+        ]
+        _check_similar_filenames_for_content(measurements, csv_filepaths)
