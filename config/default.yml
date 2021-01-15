@@ -1,6 +1,7 @@
 general:
   cv: 3
   data_dir: ./data/csv-files/prepared/dataset/train
+  tsfresh_data: &tsfresh_data ./data/csv-files/prepared/dataset/minimal_extracted_tsfresh_features.data
   calc_cm: True
   output_dir: ./output/tmp
   overwrite_output_dir: False
@@ -82,6 +83,7 @@ models:
     default_fc_parameters: MinimalFCParameters
     n_jobs: 3
     fdr_level: 0.23
+    tsfresh_data: *tsfresh_data
     classifier_hyperparameters:
       n_neighbors: 1
 
@@ -114,6 +116,7 @@ models:
     fdr_level: 0.23
     duration: "30 seconds"
     normalize: True
+    tsfresh_data: *tsfresh_data
     classifier_hyperparameters:
       n_neighbors: 1
 
@@ -154,6 +157,7 @@ models:
   mlp-finger_tsfresh:
     n_jobs: 3
     fdr_level: 0.23
+    tsfresh_data: *tsfresh_data
     classifier_hyperparameters:
       batch_size: 6
       hidden_layer_sizes:
@@ -180,6 +184,7 @@ models:
   svm-finger_tsfresh:
     n_jobs: 3
     fdr_level: 0.23
+    tsfresh_data: *tsfresh_data
     classifier_hyperparameters:
       decision_function_shape: "ovr"
 
@@ -210,3 +215,4 @@ models:
   dt-finger_tsfresh:
     n_jobs: 3
     fdr_level: 0.23
+    tsfresh_data: *tsfresh_data
