@@ -1,5 +1,5 @@
 general:
-  cv: 3
+  cv: 4
   data_dir: ./data/csv-files/prepared/dataset/train
   tsfresh_data: &tsfresh_data ./data/csv-files/prepared/dataset/minimal_extracted_tsfresh_features.data
   calc_cm: True
