@@ -40,13 +40,9 @@ def _finger_tsfresh(
     measurements: List[pd.DataFrame], **config
 ) -> Tuple[pd.DataFrame, TransformerMixin]:
     extracted_features = pd.read_csv(config["tsfresh_data"], index_col=data.PATH)
-    indices = []
-    extracted_features["idx"] = list(range(len(measurements)))
-    for index, df in enumerate(measurements):
-        indices.append(extracted_features.loc[df.attrs[data.PATH], "idx"])
-    assert (indices == extracted_features["idx"]).all()
-    extracted_features["idx"] = indices
-    X = extracted_features.set_index("idx", drop=True, verify_integrity=True)
+    paths = [df.attrs[data.PATH] for df in measurements]
+    X = extracted_features[extracted_features.index.isin(paths)]
+    X = X.reset_index(drop=True)
     tsfreshTransformer = FeatureSelector(
         fdr_level=config["fdr_level"],
         ml_task="classification",
