@@ -29,14 +29,15 @@ def oned(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     return X
 
 
+def _shorten(measurements: List[pd.DataFrame], multiple_of_min_len: int):
+    max_len = multiple_of_min_len * min([len(m) for m in measurements])
+    return [df.loc[:max_len, :] for df in measurements]
+
+
 def twod(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     for df in measurements:
         df.drop(df.columns.difference([data.TIME_DIFF, data.PD]), axis=1, inplace=True)
-    min_len = min([len(m) for m in measurements])
-    X = to_time_series_dataset(
-        [df[: config["multiple_of_min_len"] * min_len] for df in measurements]
-    )
-    return X
+    return to_time_series_dataset(_shorten(measurements, config["multiple_of_min_len"]))
 
 
 def _build_fingerprint_sequence(df: pd.DataFrame, finger_algo, duration: pd.Timedelta):
@@ -77,6 +78,7 @@ def _build_fingerprint_sequence(df: pd.DataFrame, finger_algo, duration: pd.Time
 
 def seqfinger_ott(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     fingerprint.keep_needed_columns(measurements)
+    _shorten(measurements, config["multiple_of_min_len"])
     duration = pd.Timedelta(config["duration"])
     X = to_time_series_dataset(
         [
@@ -89,6 +91,7 @@ def seqfinger_ott(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
 
 def seqfinger_own(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     fingerprint.keep_needed_columns(measurements)
+    _shorten(measurements, config["multiple_of_min_len"])
     duration = pd.Timedelta(config["duration"])
     X = to_time_series_dataset(
         [
@@ -101,6 +104,7 @@ def seqfinger_own(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
 
 def seqfinger_tugraz(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     fingerprint.keep_needed_columns(measurements)
+    _shorten(measurements, config["multiple_of_min_len"])
     duration = pd.Timedelta(config["duration"])
     X = to_time_series_dataset(
         [
@@ -113,6 +117,7 @@ def seqfinger_tugraz(measurements: List[pd.DataFrame], **config) -> pd.DataFrame
 
 def seqfinger_both(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     fingerprint.keep_needed_columns(measurements)
+    _shorten(measurements, config["multiple_of_min_len"])
     duration = pd.Timedelta(config["duration"])
     X = to_time_series_dataset(
         [

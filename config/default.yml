@@ -2,6 +2,7 @@ general:
   cv: 4
   data_dir: ./data/csv-files/prepared/dataset/train
   tsfresh_data: &tsfresh_data ./data/csv-files/prepared/dataset/train/minimal_extracted_tsfresh_features.data
+  multiple_of_min_len: &multiple_of_min_len 2
   calc_cm: True
   output_dir: ./output/tmp
   overwrite_output_dir: False
@@ -54,12 +55,12 @@ models-to-run:
 models:
   knn_dtw-oned:
     frequency: "5000ms"
-    multiple_of_min_len: 8
+    multiple_of_min_len: *multiple_of_min_len
     classifier_hyperparameters:
       n_neighbors: 1
 
   knn_dtw-twod:
-    multiple_of_min_len: 8
+    multiple_of_min_len: *multiple_of_min_len
     classifier_hyperparameters:
       n_neighbors: 1
 
@@ -89,24 +90,28 @@ models:
 
   knn_dtw-seqfinger_ott:
     duration: "30 seconds"
+    multiple_of_min_len: *multiple_of_min_len
     normalize: False
     classifier_hyperparameters:
       n_neighbors: 1
 
   knn_dtw-seqfinger_own:
     duration: "30 seconds"
+    multiple_of_min_len: *multiple_of_min_len
     normalize: False
     classifier_hyperparameters:
       n_neighbors: 1
 
   knn_dtw-seqfinger_tugraz:
     duration: "30 seconds"
+    multiple_of_min_len: *multiple_of_min_len
     normalize: True
     classifier_hyperparameters:
       n_neighbors: 1
 
   knn_dtw-seqfinger_both:
     duration: "30 seconds"
+    multiple_of_min_len: *multiple_of_min_len
     normalize: True
     classifier_hyperparameters:
       n_neighbors: 1
@@ -115,6 +120,7 @@ models:
     n_jobs: 3
     fdr_level: 0.23
     duration: "30 seconds"
+    multiple_of_min_len: *multiple_of_min_len
     normalize: True
     tsfresh_data: *tsfresh_data
     classifier_hyperparameters:
@@ -190,18 +196,22 @@ models:
 
   svm_dtw-seqfinger_both:
     duration: "30 seconds"
+    multiple_of_min_len: *multiple_of_min_len
     normalize: True
 
   svm_dtw-seqfinger_ott:
     duration: "30 seconds"
+    multiple_of_min_len: *multiple_of_min_len
     normalize: True
 
   svm_dtw-seqfinger_own:
     duration: "30 seconds"
+    multiple_of_min_len: *multiple_of_min_len
     normalize: True
 
   svm_dtw-seqfinger_tugraz:
     duration: "30 seconds"
+    multiple_of_min_len: *multiple_of_min_len
     normalize: True
 
   dt-finger_ott: {}
