@@ -73,24 +73,28 @@ models:
 
   knn_dtw-seqfinger_ott:
     duration: "30 seconds"
+    multiple_of_min_len: 2
     normalize: False
     classifier_hyperparameters:
       n_neighbors: 1
 
   knn_dtw-seqfinger_own:
     duration: "30 seconds"
+    multiple_of_min_len: 2
     normalize: False
     classifier_hyperparameters:
       n_neighbors: 1
 
   knn_dtw-seqfinger_tugraz:
     duration: "30 seconds"
+    multiple_of_min_len: 2
     normalize: True
     classifier_hyperparameters:
       n_neighbors: 1
 
   knn_dtw-seqfinger_both:
     duration: "30 seconds"
+    multiple_of_min_len: 2
     normalize: True
     classifier_hyperparameters:
       n_neighbors: 1
@@ -99,6 +103,7 @@ models:
     n_jobs: 3
     fdr_level: 0.23
     duration: "30 seconds"
+    multiple_of_min_len: 2
     normalize: True
     tsfresh_data: *tsfresh_data
     classifier_hyperparameters:
@@ -177,18 +182,22 @@ models:
 
   svm_dtw-seqfinger_both:
     duration: "30 seconds"
+    multiple_of_min_len: 2
     normalize: True
 
   svm_dtw-seqfinger_ott:
     duration: "30 seconds"
+    multiple_of_min_len: 2
     normalize: True
 
   svm_dtw-seqfinger_own:
     duration: "30 seconds"
+    multiple_of_min_len: 2
     normalize: True
 
   svm_dtw-seqfinger_tugraz:
     duration: "30 seconds"
+    multiple_of_min_len: 2
     normalize: True
 
   dt-finger_ott: {}
