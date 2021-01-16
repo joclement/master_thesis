@@ -1,7 +1,7 @@
 general:
   cv: 2
-  data_dir: ./testdata/small
-  tsfresh_data: &tsfresh_data ./testdata/small/tsfresh_extracted_features.data
+  data_dir: ./data/csv-files/testdata_small
+  tsfresh_data: &tsfresh_data ./data/csv-files/testdata_small/minimal_extracted_features.data
   calc_cm: False
   output_dir: ./output/tmp
   overwrite_output_dir: True
