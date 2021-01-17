@@ -46,7 +46,8 @@ class ClassificationHandler:
         self._save_config()
 
         self.calc_cm = self.config["general"]["calc_cm"]
-        self.metric = self.config["general"]["metric"]
+        self.metric = getattr(sklearn.metrics, self.config["general"]["metric"])
+
         self.cv = self.config["general"]["cv"]
         self.save_models = self.config["general"]["save_models"]
 
@@ -142,12 +143,11 @@ class ClassificationHandler:
             )
             assert np.array_equal(val_predictions, classifier.predict(X_val))
 
-            score = getattr(sklearn.metrics, self.metric)
-            train_score = score(y_train, train_predictions)
+            train_score = self.metric(y_train, train_predictions)
             _print_score("Train score", train_score)
             self.scores.loc[model_name, ("train", idx)] = train_score
 
-            val_score = score(y_val, val_predictions)
+            val_score = self.metric(y_val, val_predictions)
             _print_score("Validation score", val_score)
             self.scores.loc[model_name, ("val", idx)] = val_score
             accuracy = accuracy_score(y_val, val_predictions)
