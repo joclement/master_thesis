@@ -190,7 +190,7 @@ class ClassificationHandler:
 
     def _finish(self):
         click.echo(self.scores)
-        click.echo(self.scores.mean(axis=1))
+        click.echo(self.scores.loc[:, (VAL_SCORE, slice(None))].mean(axis=1))
         self.scores.to_csv(Path(self.output_dir, "models_scores.csv"))
         self._plot_results()
 
