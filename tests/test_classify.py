@@ -1,6 +1,4 @@
-from itertools import product
 from pathlib import Path
-from shutil import copyfile
 
 import click.testing
 import pytest
@@ -11,12 +9,8 @@ from thesis.tsfresh_features import save_extract_features
 
 
 @pytest.fixture
-def config(multiple_csv_files, tmpdir):
-    with open("./config/test.yml", "r") as stream:
-        config = yaml.safe_load(stream)
-    config["general"]["data_dir"] = str(multiple_csv_files)
-    config["general"]["output_dir"] = str(Path(tmpdir, "output"))
-    return config
+def config(classify_config):
+    return classify_config
 
 
 @pytest.fixture
@@ -32,13 +26,6 @@ def config_with_tsfresh(config, multiple_csv_files):
     return config
 
 
-@pytest.fixture
-def multiple_csv_files(csv_folder, tmpdir):
-    for idx, csv_file in product(range(4), Path(csv_folder).glob("*.csv")):
-        copyfile(csv_file, Path(tmpdir, f"{csv_file.stem}{idx}.csv"))
-    return str(tmpdir)
-
-
 def test_classify_main(config, tmpdir):
     config["models-to-run"] = config["models-to-run"][0:2]
     config_filepath = Path(tmpdir, "config.yml")
@@ -49,7 +36,9 @@ def test_classify_main(config, tmpdir):
     result = runner.invoke(classify.main, [str(config_filepath)])
 
     assert result.exit_code == 0
-    assert Path(config["general"]["output_dir"], "models_all_bar.svg").exists()
+    assert Path(config["general"]["output_dir"], "train_val_scores.svg").exists()
+    assert Path(config["general"]["output_dir"], "accuracy.svg").exists()
+    assert Path(config["general"]["output_dir"], "top_3_accuracy.svg").exists()
 
 
 def test_classify_ClassificationHandler(config_with_tsfresh, tmpdir):
@@ -62,7 +51,9 @@ def test_classify_ClassificationHandler(config_with_tsfresh, tmpdir):
 
     handler = classify.ClassificationHandler(config)
     handler.run()
-    assert Path(output_dir, "models_all_bar.svg").exists()
+    assert Path(config["general"]["output_dir"], "train_val_scores.svg").exists()
+    assert Path(config["general"]["output_dir"], "accuracy.svg").exists()
+    assert Path(config["general"]["output_dir"], "top_3_accuracy.svg").exists()
 
     assert len(list(output_dir.rglob("confusion_matrix_*.svg"))) == num_of_models * (
         config["general"]["cv"] + 1
