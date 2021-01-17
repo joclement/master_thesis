@@ -5,7 +5,6 @@ from typing import Final, List
 
 import click
 from keras.wrappers.scikit_learn import KerasClassifier
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import sklearn
@@ -19,6 +18,17 @@ from tslearn.svm import TimeSeriesSVC
 import yaml
 
 from . import __version__, data, models, util
+from .constants import (
+    ACCURACY_SCORE,
+    CONFIG_FILENAME,
+    CONFIG_MODELS_RUN_ID,
+    METRIC_NAMES,
+    SCORES_FILENAME,
+    TOP_K_ACCURACY,
+    TRAIN_SCORE,
+    VAL_SCORE,
+)
+from .visualize_results import plot_results
 
 
 def _print_score(name: str, value: float) -> None:
@@ -51,13 +61,11 @@ class ClassificationHandler:
         self.cv = self.config["general"]["cv"]
         self.save_models = self.config["general"]["save_models"]
 
-        iterables = [
-            ["train", "val", "accuracy", "top_k_accuracy"],
-            list(range(self.cv)),
-        ]
+        all_score_names = {TRAIN_SCORE, VAL_SCORE, *METRIC_NAMES}
+        iterables = [all_score_names, list(range(self.cv))]
         score_columns = pd.MultiIndex.from_product(iterables, names=["metric", "index"])
         self.scores = pd.DataFrame(
-            index=self.config["models-to-run"], columns=score_columns
+            index=self.config[CONFIG_MODELS_RUN_ID], columns=score_columns, dtype=float
         )
 
         measurements, _ = data.read_recursive(self.config["general"]["data_dir"])
@@ -86,7 +94,7 @@ class ClassificationHandler:
         return measurements
 
     def _save_config(self):
-        with open(Path(self.output_dir, "config.yml"), "w") as outfile:
+        with open(Path(self.output_dir, CONFIG_FILENAME), "w") as outfile:
             yaml.dump(self.config, outfile)
 
     def _report_confusion_matrix(self, name: str, model_folder: Path, confusion_matrix):
@@ -112,8 +120,8 @@ class ClassificationHandler:
             val_proba_predictions = classifier.predict_proba(X_val)
             val_predictions = np.argmax(val_proba_predictions, axis=1)
             top_k_accuracy = top_k_accuracy_score(y_val, val_proba_predictions, k=3)
-            _print_score("Top 3 accuracy", top_k_accuracy)
-            self.scores.loc[model_name, ("top_k_accuracy", idx)] = top_k_accuracy
+            _print_score(TOP_K_ACCURACY, top_k_accuracy)
+            self.scores.loc[model_name, (TOP_K_ACCURACY, idx)] = top_k_accuracy
         return val_predictions
 
     def _cross_validate(self, model_name, model_folder, classifier, X):
@@ -145,14 +153,14 @@ class ClassificationHandler:
 
             train_score = self.metric(y_train, train_predictions)
             _print_score("Train score", train_score)
-            self.scores.loc[model_name, ("train", idx)] = train_score
+            self.scores.loc[model_name, (TRAIN_SCORE, idx)] = train_score
 
             val_score = self.metric(y_val, val_predictions)
             _print_score("Validation score", val_score)
-            self.scores.loc[model_name, ("val", idx)] = val_score
+            self.scores.loc[model_name, (VAL_SCORE, idx)] = val_score
             accuracy = accuracy_score(y_val, val_predictions)
             _print_score("Accuracy score", accuracy)
-            self.scores.loc[model_name, ("accuracy", idx)] = accuracy
+            self.scores.loc[model_name, (ACCURACY_SCORE, idx)] = accuracy
 
             if self.calc_cm:
                 confusion_matrix = metrics.confusion_matrix(y_val, val_predictions)
@@ -191,15 +199,9 @@ class ClassificationHandler:
     def _finish(self):
         click.echo(self.scores)
         click.echo(self.scores.loc[:, (VAL_SCORE, slice(None))].mean(axis=1))
-        self.scores.to_csv(Path(self.output_dir, "models_scores.csv"))
-        self._plot_results()
-
-    def _plot_results(self):
-        title = f"cv: {self.cv}, n: {len(self.y)}, n_defects: {len(set(self.y))}"
-        plt.figure(figsize=(20, 10))
-        ax = self.scores.plot.bar(rot=30, title=title, ylabel=self.metric)
-        ax.legend(loc=3)
-        util.finish_plot("models_all_bar", self.output_dir, False)
+        self.scores.to_csv(Path(self.output_dir, SCORES_FILENAME))
+        description = f"cv: {self.cv}, n: {len(self.y)}, n_defects: {len(set(self.y))}"
+        plot_results(self.scores, self.output_dir, description=description)
 
 
 @click.command()

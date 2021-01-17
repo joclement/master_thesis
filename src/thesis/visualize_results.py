@@ -1,19 +1,73 @@
+from pathlib import Path
+from typing import Optional
+
+import click
+import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
+import yaml
 
-from . import classify, data
+from . import __version__, util
+from .constants import (
+    CONFIG_FILENAME,
+    CONFIG_MODELS_RUN_ID,
+    METRIC_NAMES,
+    SCORES_FILENAME,
+    TRAIN_SCORE,
+    VAL_SCORE,
+)
 
 
-def main():
-    DATA_DIR = "./data/csv-files/prepared/for_debugging/longer"
-    RESULTS_DIR = "/tmp"
-    MEAN_RESULTS = f"{RESULTS_DIR}/classifiers_balanced_accuracy_means.csv"
-    STD_RESULTS = f"{RESULTS_DIR}/classifiers_balanced_accuracy_stds.csv"
-    OUTPUT_DIRECTORY = "./output/tmp"
+def plot_results(
+    scores: pd.DataFrame,
+    output_dir: Optional[Path] = None,
+    description: str = "",
+    show: bool = False,
+):
+    y_pos = np.arange(len(scores.index))
 
-    measurements, _ = data.read_recursive(DATA_DIR)
-    classificationHandler = classify.ClassificationHandler(
-        measurements, OUTPUT_DIRECTORY, False
-    )
-    classificationHandler.mean_accuracies = pd.read_csv(MEAN_RESULTS, index_col=0)
-    classificationHandler.std_accuracies = pd.read_csv(STD_RESULTS, index_col=0)
-    classificationHandler.plot_results()
+    train_val_scores = scores.loc[:, ([TRAIN_SCORE, VAL_SCORE], slice(None))]
+    train_val_scores.mean(axis=1, level=0).plot.barh(title=description)
+    util.finish_plot("train_val_scores", output_dir, show)
+
+    for metric in METRIC_NAMES:
+        metric_scores = scores.loc[:, (metric, slice(None))]
+
+        fig, ax = plt.subplots()
+        ax.barh(
+            y_pos,
+            metric_scores.mean(axis=1),
+            xerr=metric_scores.std(axis=1),
+            align="center",
+        )
+        ax.set_yticks(y_pos)
+        ax.set_yticklabels(scores.index)
+        ax.set_xlabel(metric)
+        ax.set_title(description)
+        util.finish_plot(metric, output_dir, show)
+
+
+@click.command()
+@click.version_option(version=__version__)
+@click.argument("result_dir", type=click.Path(exists=True))
+@click.option(
+    "-c",
+    "--config",
+    "config_file",
+    type=click.Path(exists=True),
+    help="Configuration for result plots",
+)
+@click.option("--show/--no-show", default=True)
+def main(result_dir, config_file, show):
+    with open(Path(result_dir, CONFIG_FILENAME), "r") as stream:
+        classify_config = yaml.safe_load(stream)
+    if config_file:
+        with open(config_file, "r") as stream:
+            config = yaml.safe_load(stream)
+        models = config["models"]
+    else:
+        models = classify_config[CONFIG_MODELS_RUN_ID]
+
+    scores = pd.read_csv(Path(result_dir, SCORES_FILENAME), header=[0, 1], index_col=0)
+    scores = scores.loc[scores.index.isin(models), :]
+    plot_results(scores, show=show)
