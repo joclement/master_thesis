@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
 def finish_plot(name: str, output_folder, show: bool = False):
@@ -7,3 +8,7 @@ def finish_plot(name: str, output_folder, show: bool = False):
     if show:
         plt.show()
     plt.close()
+
+
+def to_dataTIME(time: pd.Timedelta) -> int:
+    return int(time.value / 10 ** 6)

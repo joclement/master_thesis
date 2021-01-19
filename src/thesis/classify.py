@@ -28,6 +28,8 @@ from .constants import (
     TRAIN_SCORE,
     VAL_SCORE,
 )
+from .prepared_data import split_by_durations
+from .util import to_dataTIME
 from .visualize_results import plot_results
 
 
@@ -37,6 +39,20 @@ def _print_score(name: str, value: float) -> None:
 
 def isKeras(classifier: Pipeline) -> bool:
     return isinstance(list(classifier.named_steps.values())[-1], (KerasClassifier))
+
+
+def adapt_durations(
+    measurements: List[pd.DataFrame], min_duration: str, max_duration: str, split: bool
+):
+    min_duration = pd.Timedelta(min_duration)
+    long_enough_measurements = []
+    for df in measurements:
+        if df[data.TIME].iloc[-1] > to_dataTIME(min_duration):
+            long_enough_measurements.append(df)
+
+    if not split:
+        return long_enough_measurements
+    return split_by_durations(long_enough_measurements, pd.Timedelta(max_duration))
 
 
 class ClassificationHandler:
@@ -72,9 +88,15 @@ class ClassificationHandler:
         if len(measurements) == 0:
             raise ValueError(f"No data in: {self.config['general']['data_dir']}")
         measurements = self._keep_wanted_defects(measurements)
+        data.clip_neg_pd_values(measurements)
+        measurements = adapt_durations(
+            measurements,
+            config["general"]["min_duration"],
+            config["general"]["max_duration"],
+            config["general"]["split"],
+        )
         self.y: Final = pd.Series(data.get_defects(measurements))
         self.onehot_y = LabelBinarizer().fit_transform(self.y)
-        data.clip_neg_pd_values(measurements)
         measurements = [df.drop(data.CLASS, axis=1) for df in measurements]
         self.modelHandler = models.ModelHandler(
             measurements, self.y, self.config["models"]

@@ -15,7 +15,7 @@ def test_dt_seqfinger_ott_model(measurements):
         "dt-seqfinger_ott": {
             "duration": "30 seconds",
             "normalize": True,
-            "multiple_of_min_len": 2,
+            "step_duration": "10 seconds",
         }
     }
     y = pd.Series(data.get_defects(measurements))

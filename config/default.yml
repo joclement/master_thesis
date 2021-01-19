@@ -2,13 +2,15 @@ general:
   cv: 4
   data_dir: ./data/csv-files/prepared/dataset/train
   tsfresh_data: &tsfresh_data ./data/csv-files/prepared/dataset/train/minimal_extracted_tsfresh_features.data
-  multiple_of_min_len: &multiple_of_min_len 2
   calc_cm: True
   output_dir: ./output/tmp
   overwrite_output_dir: False
   save_models: False
   show_plots: False
   metric: "balanced_accuracy_score"
+  min_duration: "60 seconds"
+  max_duration: "60 seconds"
+  split: True
 
 defects:
   - free_particle
@@ -53,15 +55,16 @@ models-to-run:
   # - svm-finger_tugraz
   - dt-finger_own
 
+defaults:
+  step_duration: &step_duration "10 seconds"
+
 models:
   knn_dtw-oned:
     frequency: "5000ms"
-    multiple_of_min_len: *multiple_of_min_len
     classifier_hyperparameters:
       n_neighbors: 1
 
   knn_dtw-twod:
-    multiple_of_min_len: *multiple_of_min_len
     classifier_hyperparameters:
       n_neighbors: 1
 
@@ -96,37 +99,37 @@ models:
 
   knn_dtw-seqfinger_ott:
     duration: "30 seconds"
-    multiple_of_min_len: *multiple_of_min_len
     normalize: False
+    step_duration: *step_duration
     classifier_hyperparameters:
       n_neighbors: 1
 
   knn_dtw-seqfinger_own:
     duration: "30 seconds"
-    multiple_of_min_len: *multiple_of_min_len
     normalize: False
+    step_duration: *step_duration
     classifier_hyperparameters:
       n_neighbors: 1
 
   knn_dtw-seqfinger_tugraz:
     duration: "30 seconds"
-    multiple_of_min_len: *multiple_of_min_len
     normalize: True
+    step_duration: *step_duration
     classifier_hyperparameters:
       n_neighbors: 1
 
   knn_dtw-seqfinger_both:
     duration: "30 seconds"
-    multiple_of_min_len: *multiple_of_min_len
     normalize: True
+    step_duration: *step_duration
     classifier_hyperparameters:
       n_neighbors: 1
 
   knn_dtw-seqfinger_tsfresh:
     n_jobs: 3
     fdr_level: 0.23
+    step_duration: *step_duration
     duration: "30 seconds"
-    multiple_of_min_len: *multiple_of_min_len
     normalize: True
     tsfresh_data: *tsfresh_data
     classifier_hyperparameters:
@@ -207,23 +210,23 @@ models:
 
   svm_dtw-seqfinger_both:
     duration: "30 seconds"
-    multiple_of_min_len: *multiple_of_min_len
     normalize: True
+    step_duration: *step_duration
 
   svm_dtw-seqfinger_ott:
     duration: "30 seconds"
-    multiple_of_min_len: *multiple_of_min_len
     normalize: True
+    step_duration: *step_duration
 
   svm_dtw-seqfinger_own:
     duration: "30 seconds"
-    multiple_of_min_len: *multiple_of_min_len
     normalize: True
+    step_duration: *step_duration
 
   svm_dtw-seqfinger_tugraz:
     duration: "30 seconds"
-    multiple_of_min_len: *multiple_of_min_len
     normalize: True
+    step_duration: *step_duration
 
   dt-finger_ott:
     normalize: False

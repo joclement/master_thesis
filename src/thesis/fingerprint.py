@@ -161,7 +161,13 @@ def lukas(df: pd.DataFrame) -> pd.Series:
     assert data.TIME_UNIT == "ms"
     if df[data.TIME_DIFF].sum() <= 60000:
         finger[CORR_PD_DIFF_TO_PD], _ = stats.pearsonr(df[data.PD], df[data.PD_DIFF])
+        # FIXME workaround
+        if math.isnan(finger[CORR_PD_DIFF_TO_PD]):
+            finger[CORR_PD_DIFF_TO_PD] = 0.0
         finger[CORR_NEXT_PD_TO_PD], _ = stats.pearsonr(df[data.PD][:-1], next_pd)
+        # FIXME workaround
+        if math.isnan(finger[CORR_NEXT_PD_TO_PD]):
+            finger[CORR_NEXT_PD_TO_PD] = 0.0
     else:
         finger[CORR_PD_DIFF_TO_PD] = _correlate_with_bins(df[data.PD], df[data.PD_DIFF])
         finger[CORR_NEXT_PD_TO_PD] = _correlate_with_bins(df[data.PD][:-1], next_pd)
@@ -220,8 +226,14 @@ def own(df: pd.DataFrame) -> pd.Series:
     finger[PDS_PER_SEC] = len(df[data.TIME_DIFF]) / (df[data.TIME_DIFF].sum() / 1000)
 
     finger[CORR_PD_DIFF_TO_PD], _ = stats.pearsonr(df[data.PD], df[data.PD_DIFF])
+    # FIXME workaround
+    if math.isnan(finger[CORR_PD_DIFF_TO_PD]):
+        finger[CORR_PD_DIFF_TO_PD] = 0.0
     next_pd = df[data.PD][1:].reset_index(drop=True)
     finger[CORR_NEXT_PD_TO_PD], _ = stats.pearsonr(df[data.PD][:-1], next_pd)
+    # FIXME workaround
+    if math.isnan(finger[CORR_NEXT_PD_TO_PD]):
+        finger[CORR_NEXT_PD_TO_PD] = 0.0
 
     if finger.isnull().any() or finger.isin([np.inf, -np.inf]).any():
         raise ValueError(f"Incorrect finger: \n {finger}")
