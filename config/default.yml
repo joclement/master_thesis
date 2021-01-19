@@ -51,6 +51,7 @@ models-to-run:
   - svm-finger_own
   - svm-finger_tsfresh
   # - svm-finger_tugraz
+  - dt-finger_own
 
 models:
   knn_dtw-oned:
