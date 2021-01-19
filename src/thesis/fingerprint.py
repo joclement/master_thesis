@@ -49,6 +49,7 @@ PDS_PER_SEC = "Number of PDs/sec"
 PD_MEAN = f"{PD} Mean"
 PD_MAX = f"{PD} Max"
 PD_CV = f"{PD} std/mean"
+PD_SUM = f"{PD} Sum"
 
 PD_DIFF_MEAN = f"{PD_DIFF} Mean"
 PD_DIFF_SKEW = f"{PD_DIFF} Skewness"
@@ -194,6 +195,7 @@ def own(df: pd.DataFrame) -> pd.Series:
     finger[PD_MEAN] = df[data.PD].mean()
     finger[PD_CV] = df[data.PD].std() / df[data.PD].mean()
     finger[PD_MAX] = df[data.PD].max()
+    finger[PD_SUM] = df[data.PD].sum()
     finger[PD_VAR] = df[data.PD].var()
     finger[PD_WEIB_A], finger[PD_WEIB_B] = calc_weibull_params(df[data.PD])
 

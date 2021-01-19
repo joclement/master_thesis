@@ -75,7 +75,7 @@ def test_normalize_fingerprints(measurements):
 
 def test_fingerprint_own(measurements):
     dataset = fingerprint.build_set(measurements, fingerprint=fingerprint.own)
-    assert dataset.shape == (6, 17)
+    assert dataset.shape == (6, 18)
     assert fingerprint.POLARITY not in dataset
 
 
