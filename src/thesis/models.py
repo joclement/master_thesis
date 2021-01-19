@@ -52,13 +52,6 @@ def _finger_tsfresh(
     return X, tsfreshTransformer
 
 
-def _get_seqfinger_transformer(normalize: bool) -> Optional[TransformerMixin]:
-    if normalize:
-        return SeqFingerMinMaxScaler()
-    else:
-        return None
-
-
 class SeqFingerMinMaxScaler(TransformerMixin):
     def __init__(self, **kwargs):
         self._scaler = MinMaxScaler(**kwargs)
@@ -94,9 +87,15 @@ def _get_transformer(data_id: str, **config) -> Optional[TransformerMixin]:
     if data_id in ["oned", "twod"]:
         return None
     if "seqfinger_" in data_id:
-        return _get_seqfinger_transformer(config["normalize"])
+        if config["normalize"]:
+            return SeqFingerMinMaxScaler()
+        else:
+            return None
     if "finger_" in data_id:
-        return MinMaxScaler()
+        if config["normalize"]:
+            return MinMaxScaler()
+        else:
+            return None
     raise ValueError(f"Data Representation '{data_id}' not supported.")
 
 
