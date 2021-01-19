@@ -8,13 +8,15 @@ from tsfresh import feature_extraction
 from tsfresh.feature_selection.relevance import calculate_relevance_table
 from tsfresh.utilities.dataframe_functions import impute
 
-from . import __version__, data, models
+from . import __version__, data, models, prepared_data
+from .prepared_data import reset_times, split_by_durations
 
 
 def save_extract_features(
     measurements: List[pd.DataFrame],
     n_jobs: int,
     output_file,
+    splitted: bool,
     ParameterSet=feature_extraction.MinimalFCParameters,
 ):
     all_df = models.convert_to_tsfresh_dataset(measurements)
@@ -33,9 +35,12 @@ def save_extract_features(
     if output_file:
         paths = [Path(df.attrs[data.PATH]) for df in measurements]
         extracted_features[data.PATH] = paths
-        extracted_features.set_index(data.PATH, verify_integrity=True).to_csv(
-            output_file
-        )
+        index = [data.PATH]
+        if splitted:
+            parts = [df.attrs[prepared_data.PART] for df in measurements]
+            extracted_features[prepared_data.PART] = parts
+            index.append(prepared_data.PART)
+        extracted_features.set_index(index, verify_integrity=True).to_csv(output_file)
     extracted_features.drop(columns=data.PATH, inplace=True, errors="ignore")
     return extracted_features
 
@@ -90,15 +95,34 @@ def calc_relevant_features(
     show_default=True,
     help="Choose tsfresh parameter set",
 )
+@click.option(
+    "--duration",
+    "-d",
+    type=str,
+    help="Set duration to split measurement files by",
+)
 def main(
-    input_directory, n_jobs=1, output_file=None, parameter_set="MinimalFCParameters"
+    input_directory,
+    n_jobs=1,
+    output_file=None,
+    parameter_set="MinimalFCParameters",
+    duration="",
 ):
     measurements, _ = data.read_recursive(input_directory)
+
     data.clip_neg_pd_values(measurements)
+    if duration:
+        measurements = split_by_durations(measurements, pd.Timedelta(duration))
+        measurements = reset_times(measurements)
+
     y = pd.Series(data.get_defects(measurements))
 
     ParameterSet = getattr(feature_extraction, parameter_set)
     extracted_features = save_extract_features(
-        measurements, n_jobs, output_file, ParameterSet
+        measurements,
+        n_jobs,
+        output_file,
+        True if duration else False,
+        ParameterSet,
     )
     calc_relevant_features(extracted_features, y, n_jobs)

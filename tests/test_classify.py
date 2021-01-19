@@ -1,10 +1,12 @@
 from pathlib import Path
 
 import click.testing
+import pandas as pd
 import pytest
 import yaml
 
 from thesis import classify, data
+from thesis.prepared_data import split_by_durations
 from thesis.tsfresh_features import save_extract_features
 
 
@@ -17,7 +19,11 @@ def config(classify_config):
 def config_with_tsfresh(config, multiple_csv_files):
     data_dir = Path(config["general"]["data_dir"])
     extracted_features_path = Path(data_dir, "extracted_features.data")
-    save_extract_features(data.read_recursive(data_dir)[0], 1, extracted_features_path)
+    splitted = split_by_durations(
+        data.read_recursive(data_dir)[0],
+        pd.Timedelta(config["general"]["max_duration"]),
+    )
+    save_extract_features(splitted, 1, extracted_features_path, True)
     for model_config in config["models"]:
         if "tsfresh_data" in config["models"][model_config]:
             config["models"][model_config]["tsfresh_data"] = str(
