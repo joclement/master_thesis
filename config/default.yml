@@ -66,24 +66,29 @@ models:
       n_neighbors: 1
 
   knn-finger_ott:
+    normalize: True
     classifier_hyperparameters:
       n_neighbors: 1
 
   knn-finger_own:
+    normalize: True
     classifier_hyperparameters:
       n_neighbors: 1
 
   knn-finger_tugraz:
+    normalize: True
     classifier_hyperparameters:
       n_neighbors: 1
 
   knn-finger_both:
+    normalize: True
     classifier_hyperparameters:
       n_neighbors: 1
 
   knn-finger_tsfresh:
     default_fc_parameters: MinimalFCParameters
     n_jobs: 3
+    normalize: True
     fdr_level: 0.23
     tsfresh_data: *tsfresh_data
     classifier_hyperparameters:
@@ -127,9 +132,11 @@ models:
     classifier_hyperparameters:
       n_neighbors: 1
 
-  ott_algo-finger_ott: {}
+  ott_algo-finger_ott:
+    normalize: False
 
   mlp-finger_ott:
+    normalize: True
     classifier_hyperparameters:
       batch_size: 6
       hidden_layer_sizes:
@@ -138,6 +145,7 @@ models:
       epochs: 123
 
   mlp-finger_own:
+    normalize: True
     classifier_hyperparameters:
       hidden_layer_sizes:
         - 3
@@ -146,6 +154,7 @@ models:
       epochs: 123
 
   mlp-finger_tugraz:
+    normalize: True
     classifier_hyperparameters:
       batch_size: 6
       hidden_layer_sizes:
@@ -154,6 +163,7 @@ models:
       epochs: 123
 
   mlp-finger_both:
+    normalize: True
     classifier_hyperparameters:
       batch_size: 6
       hidden_layer_sizes:
@@ -215,15 +225,20 @@ models:
     multiple_of_min_len: *multiple_of_min_len
     normalize: True
 
-  dt-finger_ott: {}
+  dt-finger_ott:
+    normalize: False
 
-  dt-finger_own: {}
+  dt-finger_own:
+    normalize: False
 
-  dt-finger_tugraz: {}
+  dt-finger_tugraz:
+    normalize: False
 
-  dt-finger_both: {}
+  dt-finger_both:
+    normalize: False
 
   dt-finger_tsfresh:
+    normalize: True
     n_jobs: 3
     fdr_level: 0.23
     tsfresh_data: *tsfresh_data
