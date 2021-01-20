@@ -6,7 +6,7 @@ from thesis import data, prepared_data
 
 @pytest.fixture
 def simple_artificial_measurement():
-    df = pd.DataFrame(data={data.TIME: [10.1, 23.2, 100.3], data.PD: [1, 2, 3]})
+    df = pd.DataFrame(data={data.TIME_DIFF: [10.1, 13.1, 77.1], data.PD: [1, 2, 3]})
     return df
 
 
@@ -57,32 +57,17 @@ def test__split_by_duration(measurement):
     assert isinstance(splitted, list)
     assert len(splitted) == 12
     assert len(splitted[0]) == 14
-    assert splitted[0][data.TIME].iloc[-1] == 10000
-    assert splitted[6][data.TIME].iloc[1] == 62000
+    assert len(splitted[-1]) == 4
+    for df in splitted:
+        print("\n\n")
+        print(df)
+    assert all([df[data.TIME_DIFF][1:].sum() <= 10000 for df in splitted])
+    assert splitted[0][data.TIME_DIFF].iloc[-1] == 1000
+    assert splitted[6][data.TIME_DIFF].iloc[0] == 3000
 
     splitted = prepared_data._split_by_duration(
         measurement, pd.Timedelta("10 seconds"), False
     )
     assert len(splitted) == 13
-
-
-def test_reset_times_with_normal_measurements(measurements):
-    assert all(
-        [df[data.TIME].iloc[0] == df[data.TIME_DIFF].iloc[0] for df in measurements]
-    )
-    reseted = prepared_data.reset_times(measurements)
-    assert all([df[data.TIME].iloc[0] == df[data.TIME_DIFF].iloc[0] for df in reseted])
-    reseted = prepared_data.reset_times(measurements)
-    assert all([df[data.TIME].iloc[0] == df[data.TIME_DIFF].iloc[0] for df in reseted])
-
-
-def test_reset_times_with_splitted_measurements(measurements):
-    splitted = prepared_data.split_by_durations(
-        measurements, pd.Timedelta("20 seconds")
-    )
-    assert not all(
-        [df[data.TIME].iloc[0] == df[data.TIME_DIFF].iloc[0] for df in splitted]
-    )
-
-    reseted = prepared_data.reset_times(splitted)
-    assert all([df[data.TIME].iloc[0] == df[data.TIME_DIFF].iloc[0] for df in reseted])
+    assert len(splitted[0]) == 14
+    assert len(splitted[-1]) == 2

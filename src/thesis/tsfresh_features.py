@@ -9,14 +9,15 @@ from tsfresh.feature_selection.relevance import calculate_relevance_table
 from tsfresh.utilities.dataframe_functions import impute
 
 from . import __version__, data, prepared_data
-from .prepared_data import reset_times, split_by_durations
+from .prepared_data import split_by_durations
 
 
 def _convert_to_tsfresh_dataset(measurements: List[pd.DataFrame]) -> pd.DataFrame:
-    measurements = [m.loc[:, [data.TIME, data.PD]] for m in measurements]
+    measurements = [m.loc[:, [data.TIME_DIFF, data.PD]] for m in measurements]
     for index, df in enumerate(measurements):
         df["id"] = index
         df["kind"] = data.PD
+        df["sort"] = df[data.TIME_DIFF].cumsum()
     all_df = pd.concat(measurements)
     all_df = all_df.rename(columns={data.PD: "value"})
     return all_df
@@ -35,7 +36,7 @@ def save_extract_features(
         all_df,
         column_id="id",
         column_kind="kind",
-        column_sort=data.TIME,
+        column_sort="sort",
         column_value="value",
         default_fc_parameters=ParameterSet(),
         impute_function=impute,
@@ -123,7 +124,6 @@ def main(
     data.clip_neg_pd_values(measurements)
     if duration:
         measurements = split_by_durations(measurements, pd.Timedelta(duration))
-        measurements = reset_times(measurements)
 
     y = pd.Series(data.get_defects(measurements))
 

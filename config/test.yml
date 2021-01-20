@@ -40,7 +40,7 @@ models-to-run:
 
 defaults:
   step_duration: &step_duration "10 seconds"
-  tsfresh_data: &tsfresh_data ./data/csv-files/testdata_small/minimal_extracted_features.data
+  tsfresh_data: &tsfresh_data ./data/csv-files/testdata_small/tsfresh-features_0.5.0_minimal_60seconds.data
 
 models:
   knn_dtw-oned:
