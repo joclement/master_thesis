@@ -14,16 +14,16 @@ def test_data_read(csv_filepath):
     assert data.TIME_DIFF in df
     assert data.PD in df
 
-    assert data.CLASS in df
-    assert df[data.CLASS][0] == data.Defect.free_particle
-    assert len(set(df[data.CLASS])) == 1
+    assert data.CLASS in df.attrs
+    assert df.attrs[data.CLASS] == data.Defect.free_particle
+    assert isinstance(df.attrs[data.CLASS], int)
 
     assert data.VOLTAGE_SIGN in df.attrs
     assert df.attrs[data.VOLTAGE_SIGN] == data.VoltageSign.positive
 
     assert data.TEST_VOLTAGE not in df
     assert data.PD_DIFF in df
-    assert len(df.columns) == 5
+    assert len(df.columns) == 4
 
 
 def test_data_read_wrong_filename(csv_filepath, tmpdir):
@@ -61,8 +61,8 @@ def test_data_split_train_test(measurements):
     )
     assert len(train) == len(dataset) / 2
     assert len(test) == len(dataset) / 2
-    classes_in_train = [df[data.CLASS][0] for df in train]
-    classes_in_test = [df[data.CLASS][0] for df in test]
+    classes_in_train = [df.attrs[data.CLASS] for df in train]
+    classes_in_test = [df.attrs[data.CLASS] for df in test]
     assert set(classes_in_train) == set(classes_in_test) == set(data.Defect)
     assert all(
         [classes_in_train.count(d) == classes_in_test.count(d) for d in data.Defect]

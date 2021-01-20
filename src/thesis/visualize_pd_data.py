@@ -98,7 +98,7 @@ def _calc_duration_and_lengths(measurements):
         {
             _LENGTH_KEY: len(df.index) / 1000,
             _DURATION_KEY: df[data.TIME].max() / 1000,
-            data.CLASS: data.DEFECT_NAMES[df[data.CLASS][0]],
+            data.CLASS: data.DEFECT_NAMES[df.attrs[data.CLASS]],
         }
         for df in measurements
     ]
@@ -110,7 +110,7 @@ def _boxplot_lengths_of_pd_csvs_per_defect(measurements):
         data.Defect(d): list() for d in set(data.get_defects(measurements))
     }
     for df in measurements:
-        lengths_per_defect[data.Defect(df[data.CLASS][0])].append(len(df.index))
+        lengths_per_defect[data.Defect(df.attrs[data.CLASS])].append(len(df.index))
     fig, ax = plt.subplots()
     labels = [
         f"{data.DEFECT_NAMES[key]}: {len(value)}"
@@ -156,7 +156,7 @@ def _boxplot_duration_of_pd_csvs_per_defect(measurements):
         data.Defect(d): list() for d in set(data.get_defects(measurements))
     }
     for df in measurements:
-        duration_per_defect[data.Defect(df[data.CLASS][0])].append(df[data.TIME].max())
+        duration_per_defect[data.Defect(df.attrs[data.CLASS])].append(df[data.TIME].max())
     fig, ax = plt.subplots()
     labels = [
         f"{data.DEFECT_NAMES[key]}: {len(value)}"
