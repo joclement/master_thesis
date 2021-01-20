@@ -9,7 +9,7 @@ import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import make_pipeline, Pipeline
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from tsfresh.transformers import FeatureSelector
@@ -73,7 +73,9 @@ class SeqFingerMinMaxScaler(TransformerMixin):
         return X
 
 
-def _get_transformer(data_id: str, **config) -> Optional[TransformerMixin]:
+def _get_transformer(
+    classifier_id: str, data_id: str, **config
+) -> Optional[TransformerMixin]:
     if data_id in ["oned", "twod"]:
         return None
     if "seqfinger_" in data_id:
@@ -83,7 +85,10 @@ def _get_transformer(data_id: str, **config) -> Optional[TransformerMixin]:
             return None
     if "finger_" in data_id:
         if config["normalize"]:
-            return MinMaxScaler()
+            if classifier_id == "mlp":
+                return StandardScaler()
+            else:
+                return MinMaxScaler()
         else:
             return None
     raise ValueError(f"Data Representation '{data_id}' not supported.")
@@ -127,11 +132,11 @@ class ModelHandler:
             )
         elif data_id in self.cache:
             input_data = self.cache[data_id]
-            transformer = _get_transformer(data_id, **model_config)
+            transformer = _get_transformer(classifier_id, data_id, **model_config)
         else:
             get_input_data = getattr(prepared_data, data_id)
             input_data = get_input_data(self._get_measurements_copy(), **model_config)
-            transformer = _get_transformer(data_id, **model_config)
+            transformer = _get_transformer(classifier_id, data_id, **model_config)
             self.cache[data_id] = input_data
 
         if "classifier_hyperparameters" in model_config:
