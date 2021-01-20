@@ -19,6 +19,7 @@ def _convert_to_tsfresh_dataset(measurements: List[pd.DataFrame]) -> pd.DataFram
         df["kind"] = data.PD
         df["sort"] = df[data.TIME_DIFF].cumsum()
     all_df = pd.concat(measurements)
+    assert all_df["id"].nunique() == len(measurements)
     all_df = all_df.rename(columns={data.PD: "value"})
     return all_df
 
@@ -112,18 +113,22 @@ def calc_relevant_features(
     type=str,
     help="Set duration to split measurement files by",
 )
+@click.option("--drop/--no-drop", default=False, help="Drop empty frames")
 def main(
     input_directory,
     n_jobs=1,
     output_file=None,
     parameter_set="MinimalFCParameters",
     duration="",
+    drop: bool = False,
 ):
     measurements, _ = data.read_recursive(input_directory)
 
     data.clip_neg_pd_values(measurements)
     if duration:
-        measurements = split_by_durations(measurements, pd.Timedelta(duration))
+        measurements = split_by_durations(
+            measurements, pd.Timedelta(duration), drop_empty=drop
+        )
 
     y = pd.Series(data.get_defects(measurements))
 
