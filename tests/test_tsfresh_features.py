@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import click.testing
+import pandas as pd
 
 from thesis import tsfresh_features
 
@@ -26,3 +27,8 @@ def test_main_help_succeeds():
     runner = click.testing.CliRunner()
     result = runner.invoke(tsfresh_features.main, ["--help"])
     assert result.exit_code == 0
+
+
+def test__convert_to_tsfresh_dataset(measurements):
+    dataset = tsfresh_features._convert_to_tsfresh_dataset(measurements)
+    assert type(dataset) is pd.DataFrame

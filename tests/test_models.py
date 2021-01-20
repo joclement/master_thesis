@@ -5,11 +5,6 @@ import pytest
 from thesis import data, models
 
 
-def test_convert_to_tsfresh_dataset(measurements):
-    dataset = models.convert_to_tsfresh_dataset(measurements)
-    assert type(dataset) is pd.DataFrame
-
-
 def test_dt_seqfinger_ott_model(measurements):
     models_config = {
         "dt-seqfinger_ott": {
