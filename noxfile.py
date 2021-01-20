@@ -1,9 +1,17 @@
 import nox
 import nox_poetry.patch  # noqa F401
 
-nox.options.sessions = "lint", "mypy"
+nox.options.sessions = "lint", "mypy", "tests"
 
 LOCATIONS = "src", "tests", "noxfile.py"
+
+
+@nox.session(python="3.8")
+def tests(session):
+    args = session.posargs or ["tests", "-n", "3", "--cov", "-m", "not e2e"]
+    session.install(".")
+    session.install("coverage[toml]", "pytest", "pytest-cov", "pytest-xdist")
+    session.run("pytest", *args)
 
 
 @nox.session(python="3.8")
