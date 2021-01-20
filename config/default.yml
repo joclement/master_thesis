@@ -52,7 +52,6 @@ models-to-run:
   - svm-finger_own
   - svm-finger_tsfresh
   # - svm-finger_tugraz
-  - dt-finger_own
 
 defaults:
   step_duration: &step_duration "10 seconds"
