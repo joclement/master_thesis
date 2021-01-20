@@ -1,5 +1,6 @@
 import math
 from typing import List
+import warnings
 
 import pandas as pd
 from tslearn.utils import to_time_series_dataset
@@ -35,7 +36,7 @@ def twod(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
 
 
 def _split_by_duration(
-    df: pd.DataFrame, duration: pd.Timedelta, drop_last: bool
+    df: pd.DataFrame, duration: pd.Timedelta, drop_last: bool, drop_empty: bool = False
 ) -> List[pd.DataFrame]:
     if drop_last:
         end_edge = math.ceil(df[data.TIME_DIFF].sum())
@@ -47,18 +48,23 @@ def _split_by_duration(
     sequence = []
     for index, group in enumerate(groups):
         part = group[1]
-        part.attrs[PART] = index
-        sequence.append(part.reset_index(drop=True))
+        if len(part.index) == 0 and not drop_empty:
+            warnings.warn(f"Empty Part in data for duration {duration}.")
+        if not drop_empty or len(part.index) > 0:
+            part.attrs[PART] = index
+            sequence.append(part.reset_index(drop=True))
 
     return sequence
 
 
 def split_by_durations(
-    measurements: List[pd.DataFrame], max_duration: pd.Timedelta
+    measurements: List[pd.DataFrame], max_duration: pd.Timedelta, drop_empty=False
 ) -> List[pd.DataFrame]:
     splitted_measurements = []
     for df in measurements:
-        splitted_measurements.extend(_split_by_duration(df, max_duration, True))
+        splitted_measurements.extend(
+            _split_by_duration(df, max_duration, True, drop_empty=drop_empty)
+        )
     return splitted_measurements
 
 

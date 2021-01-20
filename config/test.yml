@@ -10,6 +10,7 @@ general:
   min_duration: "60 seconds"
   max_duration: "60 seconds"
   split: True
+  drop_empty: True
 
 defects:
   - free_particle

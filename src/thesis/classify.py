@@ -42,7 +42,11 @@ def isKeras(classifier: Pipeline) -> bool:
 
 
 def adapt_durations(
-    measurements: List[pd.DataFrame], min_duration: str, max_duration: str, split: bool
+    measurements: List[pd.DataFrame],
+    min_duration: str,
+    max_duration: str,
+    split: bool,
+    drop_empty: bool,
 ):
     min_duration = pd.Timedelta(min_duration)
     long_enough_measurements = []
@@ -52,7 +56,9 @@ def adapt_durations(
 
     if not split:
         return long_enough_measurements
-    return split_by_durations(long_enough_measurements, pd.Timedelta(max_duration))
+    return split_by_durations(
+        long_enough_measurements, pd.Timedelta(max_duration), drop_empty
+    )
 
 
 class ClassificationHandler:
@@ -94,6 +100,7 @@ class ClassificationHandler:
             config["general"]["min_duration"],
             config["general"]["max_duration"],
             config["general"]["split"],
+            config["general"]["drop_empty"],
         )
         self.y: Final = pd.Series(data.get_defects(measurements))
         self.onehot_y = LabelBinarizer().fit_transform(self.y)
