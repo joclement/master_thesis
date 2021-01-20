@@ -133,7 +133,7 @@ def read(filepath, labeled_file: bool = True) -> pd.DataFrame:
     filename = Path(filepath).stem
     if labeled_file:
         experiment.attrs[VOLTAGE_SIGN] = _get_voltage_sign(filename)
-        experiment[CLASS] = _get_defect(filename)
+        experiment.attrs[CLASS] = _get_defect(filename)
 
     return experiment.iloc[1:].reset_index(drop=True)
 
@@ -153,4 +153,4 @@ def read_recursive(dir_path) -> Tuple[List[pd.DataFrame], list]:
 
 
 def get_defects(measurements: List[pd.DataFrame]) -> List[Defect]:
-    return [measurement[CLASS][0] for measurement in measurements]
+    return [measurement.attrs[CLASS] for measurement in measurements]

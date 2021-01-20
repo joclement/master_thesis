@@ -97,7 +97,6 @@ class ClassificationHandler:
         )
         self.y: Final = pd.Series(data.get_defects(measurements))
         self.onehot_y = LabelBinarizer().fit_transform(self.y)
-        measurements = [df.drop(data.CLASS, axis=1) for df in measurements]
         self.modelHandler = models.ModelHandler(
             measurements, self.y, self.config["models"]
         )
@@ -110,7 +109,7 @@ class ClassificationHandler:
 
     def _keep_wanted_defects(self, measurements: List[pd.DataFrame]):
         defects = [data.Defect[defect] for defect in self.config["defects"]]
-        measurements = [df for df in measurements if df[data.CLASS][0] in defects]
+        measurements = [df for df in measurements if df.attrs[data.CLASS] in defects]
         if len(measurements) == 0:
             raise ValueError(f"No data matching these defects: {defects}")
         return measurements

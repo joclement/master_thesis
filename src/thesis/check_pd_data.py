@@ -167,6 +167,6 @@ def main(path, recursive, expensive):
 
         _info_on_unique_filenames(csv_filepaths)
         measurements = [
-            m.drop(columns=[data.TIME_DIFF, data.CLASS]) for m in measurements
+            m.drop(columns=data.TIME_DIFF) for m in measurements
         ]
         _check_similar_filenames_for_content(measurements, csv_filepaths)
