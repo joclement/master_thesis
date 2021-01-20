@@ -156,7 +156,9 @@ def _boxplot_duration_of_pd_csvs_per_defect(measurements):
         data.Defect(d): list() for d in set(data.get_defects(measurements))
     }
     for df in measurements:
-        duration_per_defect[data.Defect(df.attrs[data.CLASS])].append(df[data.TIME].max())
+        duration_per_defect[data.Defect(df.attrs[data.CLASS])].append(
+            df[data.TIME].max()
+        )
     fig, ax = plt.subplots()
     labels = [
         f"{data.DEFECT_NAMES[key]}: {len(value)}"

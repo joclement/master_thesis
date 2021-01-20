@@ -166,7 +166,5 @@ def main(path, recursive, expensive):
             _info_on_too_few_pds_per_sec(measurements, csv_filepaths)
 
         _info_on_unique_filenames(csv_filepaths)
-        measurements = [
-            m.drop(columns=data.TIME_DIFF) for m in measurements
-        ]
+        measurements = [m.drop(columns=data.TIME_DIFF) for m in measurements]
         _check_similar_filenames_for_content(measurements, csv_filepaths)
