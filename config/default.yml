@@ -241,7 +241,7 @@ models:
     normalize: False
 
   dt-finger_tsfresh:
-    normalize: True
+    normalize: False
     n_jobs: 3
     fdr_level: 0.23
     tsfresh_data: *tsfresh_data
