@@ -18,7 +18,7 @@ def _plot_pd_volts_over_time(df):
 
 
 def _plot_timediff_between_pds_over_time(df):
-    plt.scatter(df[data.TIME][1:], df[data.TIME_DIFF][1:], marker=".")
+    plt.scatter(df[data.TIME], df[data.TIME_DIFF], marker=".")
     plt.xlabel(f"t {data.TIME_UNIT}")
     plt.ylabel(f"Δt {data.TIME_UNIT}")
 
