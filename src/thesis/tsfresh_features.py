@@ -53,7 +53,9 @@ def save_extract_features(
             extracted_features[prepared_data.PART] = parts
             index.append(prepared_data.PART)
         extracted_features.set_index(index, verify_integrity=True).to_csv(output_file)
-    extracted_features.drop(columns=data.PATH, inplace=True, errors="ignore")
+    extracted_features.drop(
+        columns=[data.PATH, prepared_data.PART], inplace=True, errors="ignore"
+    )
     return extracted_features
 
 
