@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "thesis"
-version = "0.4.1"
+version = "0.5.0"
 description = ""
 authors = ["Joris Clement <j.clement@campus.tu-berlin.de>"]
 
