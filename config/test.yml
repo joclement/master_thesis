@@ -1,7 +1,6 @@
 general:
   cv: 2
   data_dir: ./data/csv-files/testdata_small
-  tsfresh_data: &tsfresh_data ./data/csv-files/testdata_small/minimal_extracted_features.data
   calc_cm: False
   output_dir: ./output/tmp
   overwrite_output_dir: True
@@ -41,6 +40,7 @@ models-to-run:
 
 defaults:
   step_duration: &step_duration "10 seconds"
+  tsfresh_data: &tsfresh_data ./data/csv-files/testdata_small/minimal_extracted_features.data
 
 models:
   knn_dtw-oned:
