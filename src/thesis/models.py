@@ -19,16 +19,6 @@ from tslearn.svm import TimeSeriesSVC
 from . import classifiers, data, prepared_data
 
 
-def convert_to_tsfresh_dataset(measurements: List[pd.DataFrame]) -> pd.DataFrame:
-    measurements = [m.loc[:, [data.TIME, data.PD]] for m in measurements]
-    for index, df in enumerate(measurements):
-        df["id"] = index
-        df["kind"] = data.PD
-    all_df = pd.concat(measurements)
-    all_df = all_df.rename(columns={data.PD: "value"})
-    return all_df
-
-
 def _seqfinger_tsfresh(
     measurements: List[pd.DataFrame], **config
 ) -> Tuple[pd.DataFrame, TransformerMixin]:
