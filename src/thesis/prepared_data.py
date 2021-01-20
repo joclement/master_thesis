@@ -50,7 +50,8 @@ def _split_by_duration(
         part = group[1]
         if len(part.index) == 0 and not drop_empty:
             warnings.warn(f"Empty Part in data for duration {duration}.")
-        if not drop_empty or len(part.index) > 0:
+        # TODO improve this workaround
+        if not drop_empty or len(part.index) > 2:
             part.attrs[PART] = index
             sequence.append(part.reset_index(drop=True))
 
