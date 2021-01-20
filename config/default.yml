@@ -55,6 +55,7 @@ models-to-run:
   # - svm-finger_tugraz
 
 defaults:
+  duration: &duration "30 seconds"
   step_duration: &step_duration "10 seconds"
   tsfresh_data: &tsfresh_data ./data/csv-files/prepared/dataset/train/tsfresh-features_0.5.0_minimal_60seconds.data
 
@@ -98,28 +99,28 @@ models:
       n_neighbors: 1
 
   knn_dtw-seqfinger_ott:
-    duration: "30 seconds"
+    duration: *duration
     normalize: False
     step_duration: *step_duration
     classifier_hyperparameters:
       n_neighbors: 1
 
   knn_dtw-seqfinger_own:
-    duration: "30 seconds"
+    duration: *duration
     normalize: False
     step_duration: *step_duration
     classifier_hyperparameters:
       n_neighbors: 1
 
   knn_dtw-seqfinger_tugraz:
-    duration: "30 seconds"
+    duration: *duration
     normalize: True
     step_duration: *step_duration
     classifier_hyperparameters:
       n_neighbors: 1
 
   knn_dtw-seqfinger_both:
-    duration: "30 seconds"
+    duration: *duration
     normalize: True
     step_duration: *step_duration
     classifier_hyperparameters:
@@ -129,7 +130,7 @@ models:
     n_jobs: 3
     fdr_level: 0.23
     step_duration: *step_duration
-    duration: "30 seconds"
+    duration: *duration
     normalize: True
     tsfresh_data: *tsfresh_data
     classifier_hyperparameters:
@@ -209,22 +210,22 @@ models:
       decision_function_shape: "ovr"
 
   svm_dtw-seqfinger_both:
-    duration: "30 seconds"
+    duration: *duration
     normalize: True
     step_duration: *step_duration
 
   svm_dtw-seqfinger_ott:
-    duration: "30 seconds"
+    duration: *duration
     normalize: True
     step_duration: *step_duration
 
   svm_dtw-seqfinger_own:
-    duration: "30 seconds"
+    duration: *duration
     normalize: True
     step_duration: *step_duration
 
   svm_dtw-seqfinger_tugraz:
-    duration: "30 seconds"
+    duration: *duration
     normalize: True
     step_duration: *step_duration
 
