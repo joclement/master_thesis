@@ -10,7 +10,7 @@ from thesis import data
 
 def test_data_read(csv_filepath):
     df = data.read(csv_filepath)
-    assert data.TIME in df
+    assert data.START_TIME in df.attrs
     assert data.TIME_DIFF in df
     assert data.PD in df
 
@@ -23,7 +23,7 @@ def test_data_read(csv_filepath):
 
     assert data.TEST_VOLTAGE not in df
     assert data.PD_DIFF in df
-    assert len(df.columns) == 4
+    assert len(df.columns) == 3
 
 
 def test_data_read_wrong_filename(csv_filepath, tmpdir):
@@ -72,12 +72,3 @@ def test_data_split_train_test(measurements):
 def test_data_Defect():
     assert data.Defect.free_particle == 0
     assert data.Defect.free_particle.name == "free_particle"
-
-
-def test_data_drop_columns_repeatively(csv_filepath):
-    df = data.read(csv_filepath)
-    assert data.TIME in df
-    df.drop(columns=data.TIME, inplace=True)
-    with pytest.raises(KeyError):
-        df.drop(columns=data.TIME, inplace=True)
-    df.drop(columns=data.TIME, inplace=True, errors="ignore")

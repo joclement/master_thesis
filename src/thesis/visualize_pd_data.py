@@ -12,20 +12,20 @@ from . import __version__, data, util
 
 
 def _plot_pd_volts_over_time(df):
-    plt.scatter(df[data.TIME], df[data.PD], marker=".")
+    plt.scatter(df[data.TIME_DIFF].cumsum(), df[data.PD], marker=".")
     plt.xlabel(f"t {data.TIME_UNIT}")
     plt.ylabel("PD in nV")
 
 
 def _plot_timediff_between_pds_over_time(df):
-    plt.scatter(df[data.TIME], df[data.TIME_DIFF], marker=".")
+    plt.scatter(df[data.TIME_DIFF].cumsum(), df[data.TIME_DIFF], marker=".")
     plt.xlabel(f"t {data.TIME_UNIT}")
     plt.ylabel(f"Δt {data.TIME_UNIT}")
 
 
 def _plot_number_of_pds_over_time(df):
-    bins = np.arange(0, df[data.TIME].max(), 1)
-    counts = df.groupby(pd.cut(df[data.TIME], bins=bins)).size()
+    bins = np.arange(0, df[data.TIME_DIFF].sum(), 1)
+    counts = df.groupby(pd.cut(df[data.TIME_DIFF].cumsum(), bins=bins)).size()
     fake = np.array([])
     for i in range(len(counts)):
         a, b = bins[i], bins[i + 1]
@@ -97,7 +97,7 @@ def _calc_duration_and_lengths(measurements):
     rows = [
         {
             _LENGTH_KEY: len(df.index) / 1000,
-            _DURATION_KEY: df[data.TIME].max() / 1000,
+            _DURATION_KEY: df[data.TIME_DIFF].sum() / 1000,
             data.CLASS: data.DEFECT_NAMES[df.attrs[data.CLASS]],
         }
         for df in measurements
@@ -157,7 +157,7 @@ def _boxplot_duration_of_pd_csvs_per_defect(measurements):
     }
     for df in measurements:
         duration_per_defect[data.Defect(df.attrs[data.CLASS])].append(
-            df[data.TIME].max()
+            df[data.TIME_DIFF].sum()
         )
     fig, ax = plt.subplots()
     labels = [
@@ -171,7 +171,7 @@ def _boxplot_duration_of_pd_csvs_per_defect(measurements):
 
 
 def _plot_histogram_duration_of_pd_csvs(measurements):
-    durations = [df[data.TIME].max() for df in measurements]
+    durations = [df[data.TIME_DIFF].sum() for df in measurements]
     fig, ax = plt.subplots()
     ax.hist(durations, 10)
     plt.xlabel(f"Duration {data.TIME_UNIT}")

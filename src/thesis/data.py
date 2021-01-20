@@ -12,8 +12,8 @@ TEST_VOLTAGE: Final = "Voltage [kV]"
 
 TIME_IN_FILE: Final = "Time [s]"
 TIME_UNIT: Final = "ms"
-TIME: Final = f"Time [{TIME_UNIT}]"
 TIME_DIFF: Final = f"TimeDiff [{TIME_UNIT}]"
+START_TIME: Final = f"Start time [{TIME_UNIT}]"
 
 SEPERATOR: Final = ";"
 DECIMAL_SIGN: Final = ","
@@ -124,8 +124,9 @@ def read(filepath, labeled_file: bool = True) -> pd.DataFrame:
 
     assert TIME_UNIT == "ms"
     experiment[TIME_IN_FILE] *= 1000
-    experiment.rename(columns={TIME_IN_FILE: TIME}, inplace=True)
-    experiment[TIME_DIFF] = experiment[TIME].diff()
+    experiment[TIME_DIFF] = experiment[TIME_IN_FILE].diff()
+    experiment.attrs[START_TIME] = experiment[TIME_IN_FILE].iloc[0]
+    experiment.drop(columns=TIME_IN_FILE, inplace=True)
 
     experiment[PD_DIFF] = experiment[PD].diff().abs()
 

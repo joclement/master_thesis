@@ -1,9 +1,11 @@
 import filecmp
 from itertools import combinations
 from pathlib import Path
+from typing import List
 
 import click
 import numpy as np
+import pandas as pd
 
 from . import __version__, data, fingerprint
 
@@ -59,6 +61,13 @@ def _check_similar_filenames_for_content(measurements: list, csv_filepaths: list
                 raise ValueError("Possibly duplicate content!")
             else:
                 click.echo("No.")
+
+
+def _check_time_starts_with_zero(measurements: List[pd.DataFrame]):
+    click.echo("Report files starting not with 0 time:")
+    for df in measurements:
+        if df.attrs[data.START_TIME] > 0:
+            print(f"    {df.attrs[data.PATH]}")
 
 
 def _info_on_test_voltage(measurements, csv_filepaths):
@@ -164,6 +173,8 @@ def main(path, recursive, expensive):
 
         if expensive:
             _info_on_too_few_pds_per_sec(measurements, csv_filepaths)
+
+        _check_time_starts_with_zero(measurements)
 
         _info_on_unique_filenames(csv_filepaths)
         measurements = [m.drop(columns=data.TIME_DIFF) for m in measurements]

@@ -47,7 +47,7 @@ def adapt_durations(
     min_duration = pd.Timedelta(min_duration)
     long_enough_measurements = []
     for df in measurements:
-        if df[data.TIME].iloc[-1] > to_dataTIME(min_duration):
+        if df[data.TIME_DIFF].sum() > to_dataTIME(min_duration):
             long_enough_measurements.append(df)
 
     if not split:

@@ -13,14 +13,15 @@ PART = "part"
 
 
 def _convert_to_time_series(df: pd.DataFrame, frequency) -> pd.Series:
-    df["DateTimeIndex"] = pd.to_datetime(df[data.TIME], unit=data.TIME_UNIT)
+    df["DateTimeIndex"] = pd.to_datetime(
+        df[data.TIME_DIFF].cumsum(), unit=data.TIME_UNIT
+    )
     df.set_index("DateTimeIndex", inplace=True)
     time_series = df[data.PD]
     return time_series.asfreq(MAX_FREQUENCY, fill_value=0.0).resample(frequency).max()
 
 
 def oned(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
-    measurements = reset_times(measurements)
     time_serieses = [
         _convert_to_time_series(df, config["frequency"]) for df in measurements
     ]
@@ -33,23 +34,16 @@ def twod(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     return to_time_series_dataset(measurements)
 
 
-def reset_times(measurements: List[pd.DataFrame]) -> List[pd.DataFrame]:
-    for df in measurements:
-        if df[data.TIME].iloc[0] > 0:
-            df[data.TIME] = df[data.TIME_DIFF].cumsum()
-    return measurements
-
-
 def _split_by_duration(
     df: pd.DataFrame, duration: pd.Timedelta, drop_last: bool
 ) -> List[pd.DataFrame]:
     if drop_last:
-        end_edge = math.ceil(df[data.TIME].iloc[-1])
+        end_edge = math.ceil(df[data.TIME_DIFF].sum())
     else:
-        ratio = df[data.TIME].iloc[-1] / to_dataTIME(duration)
+        ratio = df[data.TIME_DIFF].sum() / to_dataTIME(duration)
         end_edge = math.floor((ratio + 1) * to_dataTIME(duration))
     bins = range(0, end_edge, to_dataTIME(duration))
-    groups = df.groupby(pd.cut(df[data.TIME], bins))
+    groups = df.groupby(pd.cut(df[data.TIME_DIFF].cumsum(), bins))
     sequence = []
     for index, group in enumerate(groups):
         part = group[1]
@@ -98,7 +92,6 @@ def seqfinger_ott(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     duration = pd.Timedelta(config["duration"])
     step_duration = pd.Timedelta(config["step_duration"])
 
-    measurements = reset_times(measurements)
     X = to_time_series_dataset(
         [
             _build_fingerprint_sequence(df, fingerprint.lukas, duration, step_duration)
@@ -112,7 +105,6 @@ def seqfinger_own(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     duration = pd.Timedelta(config["duration"])
     step_duration = pd.Timedelta(config["step_duration"])
 
-    measurements = reset_times(measurements)
     X = to_time_series_dataset(
         [
             _build_fingerprint_sequence(df, fingerprint.own, duration, step_duration)
@@ -126,7 +118,6 @@ def seqfinger_tugraz(measurements: List[pd.DataFrame], **config) -> pd.DataFrame
     duration = pd.Timedelta(config["duration"])
     step_duration = pd.Timedelta(config["step_duration"])
 
-    measurements = reset_times(measurements)
     X = to_time_series_dataset(
         [
             _build_fingerprint_sequence(
@@ -142,7 +133,6 @@ def seqfinger_both(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     duration = pd.Timedelta(config["duration"])
     step_duration = pd.Timedelta(config["step_duration"])
 
-    measurements = reset_times(measurements)
     X = to_time_series_dataset(
         [
             _build_fingerprint_sequence(
