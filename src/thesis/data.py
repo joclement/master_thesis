@@ -6,7 +6,7 @@ import pandas as pd
 
 
 PD: Final = "A [nV]"
-PD_DIFF: Final = "PDDiff [nV]"
+PD_DIFF: Final = "PDAbsDiff [nV]"
 
 TEST_VOLTAGE: Final = "Voltage [kV]"
 
