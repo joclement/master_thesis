@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 import sklearn
 from sklearn import metrics
+from sklearn.base import BaseEstimator
 from sklearn.metrics import accuracy_score, top_k_accuracy_score
 from sklearn.model_selection import StratifiedKFold
 from sklearn.pipeline import Pipeline
@@ -37,8 +38,12 @@ def _print_score(name: str, value: float) -> None:
     click.echo(f"{name}: {value:.2f}")
 
 
+def get_classifier(pipeline: Pipeline) -> BaseEstimator:
+    return list(pipeline.named_steps.values())[-1]
+
+
 def is_keras(pipeline: Pipeline) -> bool:
-    return isinstance(list(pipeline.named_steps.values())[-1], (KerasClassifier))
+    return isinstance(get_classifier(pipeline), (KerasClassifier))
 
 
 def adapt_durations(
@@ -142,7 +147,7 @@ class ClassificationHandler:
         util.finish_plot(f"confusion_matrix_{name}", model_folder)
 
     def _do_val_predictions(self, model_name, idx, pipeline, X_val, y_val):
-        if isinstance(list(pipeline.named_steps.values())[-1], (SVC, TimeSeriesSVC)):
+        if isinstance(get_classifier(pipeline), (SVC, TimeSeriesSVC)):
             val_predictions = pipeline.predict(X_val)
         else:
             val_proba_predictions = pipeline.predict_proba(X_val)
@@ -209,9 +214,7 @@ class ClassificationHandler:
                 pipeline.fit(X, self.y)
                 model_folder.mkdir(exist_ok=True)
                 if is_keras(pipeline):
-                    list(pipeline.named_steps.values())[-1].model.save(
-                        Path(model_folder, "model.h5")
-                    )
+                    get_classifier(pipeline).model.save(Path(model_folder, "model.h5"))
                 else:
                     pickle.dump(pipeline, open(Path(model_folder, "model.p"), "wb"))
 
