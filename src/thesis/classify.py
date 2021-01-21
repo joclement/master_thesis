@@ -156,6 +156,7 @@ class ClassificationHandler:
         all_val_correct = []
         all_val_predictions = []
         for idx, split_indexes in enumerate(self.cv_splits):
+            click.echo(f"cv: {idx}")
             train_index, val_index = split_indexes
             if isinstance(X, pd.DataFrame):
                 X_train = X.loc[train_index, :]
@@ -197,6 +198,7 @@ class ClassificationHandler:
                 all_val_correct.extend(y_val)
 
         if self.calc_cm:
+            click.echo()
             confusion_matrix = metrics.confusion_matrix(
                 all_val_correct, all_val_predictions
             )
