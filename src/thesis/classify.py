@@ -166,13 +166,7 @@ class ClassificationHandler:
                 X_val = X[val_index]
             y_train = self.y[train_index]
             y_val = self.y[val_index]
-            if isKeras(classifier):
-                classifier.fit(
-                    X_train,
-                    self.onehot_y[train_index],
-                )
-            else:
-                classifier.fit(X_train, y_train)
+            classifier.fit(X_train, y_train)
 
             train_predictions = classifier.predict(X_train)
             val_predictions = self._do_val_predictions(
