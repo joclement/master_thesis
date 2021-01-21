@@ -85,7 +85,7 @@ def _get_transformer(
             return None
     if "finger_" in data_id:
         if config["normalize"]:
-            if classifier_id == "mlp":
+            if classifier_id in ["mlp", "svm"]:
                 return StandardScaler()
             else:
                 return MinMaxScaler()
