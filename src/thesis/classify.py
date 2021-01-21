@@ -37,8 +37,8 @@ def _print_score(name: str, value: float) -> None:
     click.echo(f"{name}: {value:.2f}")
 
 
-def isKeras(classifier: Pipeline) -> bool:
-    return isinstance(list(classifier.named_steps.values())[-1], (KerasClassifier))
+def isKeras(pipeline: Pipeline) -> bool:
+    return isinstance(list(pipeline.named_steps.values())[-1], (KerasClassifier))
 
 
 def adapt_durations(
@@ -141,18 +141,18 @@ class ClassificationHandler:
         model_folder.mkdir(exist_ok=True)
         util.finish_plot(f"confusion_matrix_{name}", model_folder)
 
-    def _do_val_predictions(self, model_name, idx, classifier, X_val, y_val):
-        if isinstance(list(classifier.named_steps.values())[-1], (SVC, TimeSeriesSVC)):
-            val_predictions = classifier.predict(X_val)
+    def _do_val_predictions(self, model_name, idx, pipeline, X_val, y_val):
+        if isinstance(list(pipeline.named_steps.values())[-1], (SVC, TimeSeriesSVC)):
+            val_predictions = pipeline.predict(X_val)
         else:
-            val_proba_predictions = classifier.predict_proba(X_val)
+            val_proba_predictions = pipeline.predict_proba(X_val)
             val_predictions = np.argmax(val_proba_predictions, axis=1)
             top_k_accuracy = top_k_accuracy_score(y_val, val_proba_predictions, k=3)
             _print_score(TOP_K_ACCURACY, top_k_accuracy)
             self.scores.loc[model_name, (TOP_K_ACCURACY, idx)] = top_k_accuracy
         return val_predictions
 
-    def _cross_validate(self, model_name, model_folder, classifier, X):
+    def _cross_validate(self, model_name, model_folder, pipeline, X):
         all_val_correct = []
         all_val_predictions = []
         for idx, split_indexes in enumerate(self.cv_splits):
@@ -166,13 +166,13 @@ class ClassificationHandler:
                 X_val = X[val_index]
             y_train = self.y[train_index]
             y_val = self.y[val_index]
-            classifier.fit(X_train, y_train)
+            pipeline.fit(X_train, y_train)
 
-            train_predictions = classifier.predict(X_train)
+            train_predictions = pipeline.predict(X_train)
             val_predictions = self._do_val_predictions(
-                model_name, idx, classifier, X_val, y_val
+                model_name, idx, pipeline, X_val, y_val
             )
-            assert np.array_equal(val_predictions, classifier.predict(X_val))
+            assert np.array_equal(val_predictions, pipeline.predict(X_val))
 
             train_score = self.metric(y_train, train_predictions)
             _print_score("Train score", train_score)
@@ -201,19 +201,19 @@ class ClassificationHandler:
     def run(self):
         for model_name in self.config["models-to-run"]:
             click.echo(f"Model: {model_name}")
-            classifier, X = self.modelHandler.get_model_with_data(model_name)
+            pipeline, X = self.modelHandler.get_model_with_data(model_name)
             model_folder = Path(self.output_dir, model_name)
-            self._cross_validate(model_name, model_folder, classifier, X)
+            self._cross_validate(model_name, model_folder, pipeline, X)
 
             if self.save_models:
-                classifier.fit(X, self.y)
+                pipeline.fit(X, self.y)
                 model_folder.mkdir(exist_ok=True)
-                if isKeras(classifier):
-                    list(classifier.named_steps.values())[-1].model.save(
+                if isKeras(pipeline):
+                    list(pipeline.named_steps.values())[-1].model.save(
                         Path(model_folder, "model.h5")
                     )
                 else:
-                    pickle.dump(classifier, open(Path(model_folder, "model.p"), "wb"))
+                    pickle.dump(pipeline, open(Path(model_folder, "model.p"), "wb"))
 
             click.echo(
                 "\n ============================================================ \n"
