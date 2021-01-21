@@ -32,6 +32,7 @@ models-to-run:
   - knn-finger_own
   - knn-finger_tsfresh
   - mlp-finger_own
+  - mlp-finger_tsfresh
   - mlp-finger_tugraz
   - ott_algo-finger_ott
   - svm_dtw-seqfinger_ott
