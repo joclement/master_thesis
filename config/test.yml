@@ -130,7 +130,7 @@ models:
       hidden_layer_sizes:
         - 4
       optimizer: "adam"
-      epochs: 123
+      epochs: 12
 
   mlp-finger_own:
     normalize: True
@@ -141,7 +141,7 @@ models:
       optimizer: "adam"
       max_iter: 300
       max_fun:  20000
-      epochs: 123
+      epochs: 13
 
 
   mlp-finger_tugraz:
@@ -160,7 +160,7 @@ models:
       hidden_layer_sizes:
         - 6
       optimizer: "adam"
-      epochs: 123
+      epochs: 13
 
   mlp-finger_tsfresh:
     normalize: True
@@ -172,7 +172,7 @@ models:
       hidden_layer_sizes:
         - 9
       optimizer: "adam"
-      epochs: 123
+      epochs: 11
 
   svm-finger_ott:
     normalize: True
