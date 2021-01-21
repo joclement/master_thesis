@@ -1,5 +1,5 @@
 general:
-  cv: 4
+  cv: 5
   data_dir: ./data/csv-files/prepared/dataset/train
   calc_cm: True
   output_dir: ./output/tmp
