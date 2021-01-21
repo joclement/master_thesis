@@ -41,8 +41,10 @@ models-to-run:
   - svm-finger_tsfresh
 
 defaults:
+  duration: &duration "30 seconds"
   step_duration: &step_duration "10 seconds"
   tsfresh_data: &tsfresh_data ./data/csv-files/testdata_small/tsfresh-features-0.6.1_minimal_60seconds.data
+  normalize: &normalize True
 
 models:
   knn_dtw-oned:
@@ -75,36 +77,37 @@ models:
       n_neighbors: 1
 
   knn-finger_tsfresh:
-    normalize: True
+    default_fc_parameters: MinimalFCParameters
     n_jobs: 3
+    normalize: True
     fdr_level: 0.23
     tsfresh_data: *tsfresh_data
     classifier_hyperparameters:
       n_neighbors: 1
 
   knn_dtw-seqfinger_ott:
-    duration: "30 seconds"
+    duration: *duration
     normalize: False
     step_duration: *step_duration
     classifier_hyperparameters:
       n_neighbors: 1
 
   knn_dtw-seqfinger_own:
-    duration: "30 seconds"
+    duration: *duration
     normalize: False
     step_duration: *step_duration
     classifier_hyperparameters:
       n_neighbors: 1
 
   knn_dtw-seqfinger_tugraz:
-    duration: "30 seconds"
+    duration: *duration
     normalize: True
     step_duration: *step_duration
     classifier_hyperparameters:
       n_neighbors: 1
 
   knn_dtw-seqfinger_both:
-    duration: "30 seconds"
+    duration: *duration
     normalize: True
     step_duration: *step_duration
     classifier_hyperparameters:
@@ -113,15 +116,15 @@ models:
   knn_dtw-seqfinger_tsfresh:
     n_jobs: 3
     fdr_level: 0.23
-    duration: "30 seconds"
-    normalize: True
     step_duration: *step_duration
+    duration: *duration
+    normalize: True
     tsfresh_data: *tsfresh_data
     classifier_hyperparameters:
       n_neighbors: 1
 
   ott_algo-finger_ott:
-    normalize: True
+    normalize: False
 
   mlp-finger_ott:
     normalize: True
@@ -130,19 +133,16 @@ models:
       hidden_layer_sizes:
         - 4
       optimizer: "adam"
-      epochs: 12
+      epochs: 123
 
   mlp-finger_own:
     normalize: True
     classifier_hyperparameters:
-      batch_size: 6
       hidden_layer_sizes:
         - 3
       optimizer: "adam"
-      max_iter: 300
-      max_fun:  20000
-      epochs: 13
-
+      batch_size: 6
+      epochs: 123
 
   mlp-finger_tugraz:
     normalize: True
@@ -160,19 +160,19 @@ models:
       hidden_layer_sizes:
         - 6
       optimizer: "adam"
-      epochs: 13
+      epochs: 123
 
   mlp-finger_tsfresh:
-    normalize: True
+    normalize: *normalize
     n_jobs: 3
     fdr_level: 0.23
     tsfresh_data: *tsfresh_data
     classifier_hyperparameters:
-      batch_size: 5
+      batch_size: 6
       hidden_layer_sizes:
         - 9
       optimizer: "adam"
-      epochs: 11
+      epochs: 123
 
   svm-finger_ott:
     normalize: True
@@ -203,39 +203,39 @@ models:
       decision_function_shape: "ovr"
 
   svm_dtw-seqfinger_both:
-    duration: "30 seconds"
-    step_duration: *step_duration
+    duration: *duration
     normalize: True
+    step_duration: *step_duration
 
   svm_dtw-seqfinger_ott:
-    duration: "30 seconds"
-    step_duration: *step_duration
+    duration: *duration
     normalize: True
+    step_duration: *step_duration
 
   svm_dtw-seqfinger_own:
-    duration: "30 seconds"
-    step_duration: *step_duration
+    duration: *duration
     normalize: True
+    step_duration: *step_duration
 
   svm_dtw-seqfinger_tugraz:
-    duration: "30 seconds"
-    step_duration: *step_duration
+    duration: *duration
     normalize: True
+    step_duration: *step_duration
 
   dt-finger_ott:
-    normalize: True
+    normalize: False
 
   dt-finger_own:
-    normalize: True
+    normalize: False
 
   dt-finger_tugraz:
-    normalize: True
+    normalize: False
 
   dt-finger_both:
-    normalize: True
+    normalize: False
 
   dt-finger_tsfresh:
-    normalize: True
+    normalize: False
     n_jobs: 3
     fdr_level: 0.23
     tsfresh_data: *tsfresh_data
