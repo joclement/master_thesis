@@ -204,6 +204,6 @@ def get_mlp(
         hidden_layer_sizes=classifier_config["hidden_layer_sizes"],
         epochs=classifier_config["epochs"],
         batch_size=classifier_config["batch_size"],
-        verbose=3,
+        verbose=0,
     )
     return model
