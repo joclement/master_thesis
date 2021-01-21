@@ -167,7 +167,7 @@ def get_classifier(
     **classifier_config: dict,
 ) -> BaseEstimator:
     if classifier_id == "dt":
-        return DecisionTreeClassifier()
+        return DecisionTreeClassifier(**classifier_config)
     if classifier_id == "knn":
         return KNeighborsClassifier(**classifier_config)
     if classifier_id == "knn_dtw":

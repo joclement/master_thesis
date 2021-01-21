@@ -249,7 +249,9 @@ models:
     normalize: False
 
   dt-finger_tsfresh:
-    normalize: False
+    normalize: True
     n_jobs: 3
     fdr_level: 0.23
     tsfresh_data: *tsfresh_data
+    classifier_hyperparameters:
+      min_samples_split: 5
