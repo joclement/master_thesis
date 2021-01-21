@@ -187,22 +187,27 @@ models:
       epochs: 123
 
   svm-finger_ott:
+    normalize: True
     classifier_hyperparameters:
       decision_function_shape: "ovr"
 
   svm-finger_own:
+    normalize: True
     classifier_hyperparameters:
       decision_function_shape: "ovr"
 
   svm-finger_tugraz:
+    normalize: True
     classifier_hyperparameters:
       decision_function_shape: "ovr"
 
   svm-finger_both:
+    normalize: True
     classifier_hyperparameters:
       decision_function_shape: "ovr"
 
   svm-finger_tsfresh:
+    normalize: True
     n_jobs: 3
     fdr_level: 0.23
     tsfresh_data: *tsfresh_data
