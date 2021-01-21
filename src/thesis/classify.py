@@ -37,7 +37,7 @@ def _print_score(name: str, value: float) -> None:
     click.echo(f"{name}: {value:.2f}")
 
 
-def isKeras(pipeline: Pipeline) -> bool:
+def is_keras(pipeline: Pipeline) -> bool:
     return isinstance(list(pipeline.named_steps.values())[-1], (KerasClassifier))
 
 
@@ -208,7 +208,7 @@ class ClassificationHandler:
             if self.save_models:
                 pipeline.fit(X, self.y)
                 model_folder.mkdir(exist_ok=True)
-                if isKeras(pipeline):
+                if is_keras(pipeline):
                     list(pipeline.named_steps.values())[-1].model.save(
                         Path(model_folder, "model.h5")
                     )
