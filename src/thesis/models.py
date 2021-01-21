@@ -130,18 +130,20 @@ class ModelHandler:
         classifier_id = parts[0]
         data_id = parts[1]
 
+        pipeline = []
         if "tsfresh" in data_id:
             input_data, transformer = self._get_tsfresh_data_and_transformer(
                 data_id, **model_config
             )
+            pipeline.append(transformer)
         elif data_id in self.cache:
             input_data = self.cache[data_id]
-            transformer = _get_transformer(classifier_id, data_id, **model_config)
         else:
             get_input_data = getattr(prepared_data, data_id)
             input_data = get_input_data(self._get_measurements_copy(), **model_config)
-            transformer = _get_transformer(classifier_id, data_id, **model_config)
             self.cache[data_id] = input_data
+        scaler = _get_transformer(classifier_id, data_id, **model_config)
+        pipeline.append(scaler)
 
         if "classifier_hyperparameters" in model_config:
             classifier_config = model_config["classifier_hyperparameters"]
@@ -153,12 +155,9 @@ class ModelHandler:
             set(self.y),
             **classifier_config,
         )
+        pipeline.append(classifier)
 
-        if transformer:
-            pipeline = make_pipeline(transformer, classifier)
-        else:
-            pipeline = make_pipeline(classifier)
-        return pipeline, input_data
+        return make_pipeline(*pipeline), input_data
 
 
 def get_classifier(

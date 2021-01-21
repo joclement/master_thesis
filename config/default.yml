@@ -58,6 +58,7 @@ defaults:
   duration: &duration "30 seconds"
   step_duration: &step_duration "10 seconds"
   tsfresh_data: &tsfresh_data ./data/csv-files/prepared/dataset/train/tsfresh-features_0.5.0_minimal_60seconds.data
+  normalize: &normalize True
 
 models:
   knn_dtw-oned:
@@ -176,6 +177,7 @@ models:
       epochs: 123
 
   mlp-finger_tsfresh:
+    normalize: *normalize
     n_jobs: 3
     fdr_level: 0.23
     tsfresh_data: *tsfresh_data
