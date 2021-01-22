@@ -12,6 +12,8 @@ MAX_FREQUENCY = pd.tseries.frequencies.to_offset("50us")
 
 PART = "part"
 
+ONEPD_DURATION = pd.Timedelta("10 seconds")
+
 
 def _convert_to_time_series(df: pd.DataFrame, frequency) -> pd.Series:
     df["DateTimeIndex"] = pd.to_datetime(
@@ -50,8 +52,7 @@ def _split_by_duration(
         part = group[1]
         if len(part.index) == 0 and not drop_empty:
             warnings.warn(f"Empty Part in data for duration {duration}.")
-        # TODO improve this workaround
-        if not drop_empty or len(part.index) > 2:
+        if not drop_empty or len(part.index) >= duration / ONEPD_DURATION:
             part.attrs[PART] = index
             sequence.append(part.reset_index(drop=True))
 
