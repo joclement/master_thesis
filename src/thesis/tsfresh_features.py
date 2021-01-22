@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List
+from typing import Final, List
 
 import click
 import pandas as pd
@@ -11,52 +11,95 @@ from tsfresh.utilities.dataframe_functions import impute
 from . import __version__, data, prepared_data
 from .prepared_data import split_by_durations
 
+INDEX: Final = [data.PATH, prepared_data.PART]
+CHUNK_SIZE: Final = 4
 
-def _convert_to_tsfresh_dataset(measurements: List[pd.DataFrame]) -> pd.DataFrame:
+
+def _convert_to_tsfresh_dataset(measurements: List[pd.DataFrame]) -> List[pd.DataFrame]:
     measurements = [m.loc[:, [data.TIME_DIFF, data.PD]] for m in measurements]
+    dfs = []
     for index, df in enumerate(measurements):
         df["id"] = index
         df["kind"] = data.PD
         df["sort"] = df[data.TIME_DIFF].cumsum()
-    all_df = pd.concat(measurements)
-    assert all_df["id"].nunique() == len(measurements)
-    all_df = all_df.rename(columns={data.PD: "value"})
-    return all_df
+        df.rename(columns={data.PD: "value"}, inplace=True)
+    for i in range(0, len(measurements), CHUNK_SIZE):
+        dfs.append(pd.concat(measurements[i : i + CHUNK_SIZE]))
+    assert sum([df["id"].nunique() for df in dfs]) == len(measurements)
+    return dfs
+
+
+def _load(output_file: Path) -> pd.DataFrame:
+    return pd.read_csv(output_file, index_col=INDEX)
+
+
+def _save(
+    paths: List[Path],
+    parts: List[int],
+    extracted_features: pd.DataFrame,
+    output_file: Path,
+) -> None:
+    extracted_features[data.PATH] = paths
+    extracted_features[prepared_data.PART] = parts
+    extracted_features.set_index(INDEX, verify_integrity=True, inplace=True)
+    if output_file.exists():
+        existing_extracted_features = _load(output_file)
+        pd.concat([existing_extracted_features, extracted_features]).to_csv(output_file)
+    else:
+        extracted_features.to_csv(output_file)
 
 
 def save_extract_features(
     measurements: List[pd.DataFrame],
     n_jobs: int,
-    output_file,
-    splitted: bool,
+    output_file: Path,
     ParameterSet=feature_extraction.MinimalFCParameters,
 ):
-    all_df = _convert_to_tsfresh_dataset(measurements)
+    dfs = _convert_to_tsfresh_dataset(measurements)
 
-    extracted_features = extract_features(
-        all_df,
-        column_id="id",
-        column_kind="kind",
-        column_sort="sort",
-        column_value="value",
-        default_fc_parameters=ParameterSet(),
-        impute_function=impute,
-        show_warnings=True,
-        n_jobs=n_jobs,
-    )
-    if output_file:
-        paths = [Path(df.attrs[data.PATH]) for df in measurements]
-        extracted_features[data.PATH] = paths
-        index = [data.PATH]
-        if splitted:
-            parts = [df.attrs[prepared_data.PART] for df in measurements]
-            extracted_features[prepared_data.PART] = parts
-            index.append(prepared_data.PART)
-        extracted_features.set_index(index, verify_integrity=True).to_csv(output_file)
+    paths = [Path(df.attrs[data.PATH]) for df in measurements]
+    if all([prepared_data.PART in df.attrs for df in measurements]):
+        parts = [df.attrs[prepared_data.PART] for df in measurements]
+    elif not any([prepared_data.PART in df.attrs for df in measurements]):
+        parts = [0 for df in measurements]
+    else:
+        raise ValueError("Invalid measurements.")
+
+    index = 0
+    for df in dfs:
+        click.echo("Process:")
+        for path, part in zip(
+            paths[index : index + CHUNK_SIZE], parts[index : index + CHUNK_SIZE]
+        ):
+            click.echo(path)
+            click.echo(part)
+        click.echo(f"len df: {len(df.index)}")
+        extracted_features = extract_features(
+            df,
+            column_id="id",
+            column_kind="kind",
+            column_sort="sort",
+            column_value="value",
+            default_fc_parameters=ParameterSet(),
+            impute_function=impute,
+            show_warnings=False,
+            chunksize=1,
+            n_jobs=n_jobs,
+        )
+        assert len(extracted_features.index) == CHUNK_SIZE or df.equals(dfs[-1])
+        if output_file:
+            _save(
+                paths[index : index + CHUNK_SIZE],
+                parts[index : index + CHUNK_SIZE],
+                extracted_features,
+                output_file,
+            )
+        index += CHUNK_SIZE
+    extracted_features = _load(output_file)
     extracted_features.drop(
         columns=[data.PATH, prepared_data.PART], inplace=True, errors="ignore"
     )
-    return extracted_features
+    return extracted_features.reset_index(drop=True)
 
 
 def calc_relevant_features(
@@ -99,6 +142,7 @@ def calc_relevant_features(
 @click.option(
     "--output-file",
     "-o",
+    required=True,
     type=click.Path(exists=False),
     help="Save extracted features",
 )
@@ -124,6 +168,9 @@ def main(
     duration="",
     drop: bool = False,
 ):
+    output_file = Path(output_file)
+    if output_file.exists():
+        raise ValueError("output_file exists.")
     measurements, _ = data.read_recursive(input_directory)
 
     data.clip_neg_pd_values(measurements)
@@ -139,7 +186,6 @@ def main(
         measurements,
         n_jobs,
         output_file,
-        True if duration else False,
         ParameterSet,
     )
     calc_relevant_features(extracted_features, y, n_jobs)

@@ -17,6 +17,7 @@ from tslearn.neighbors import KNeighborsTimeSeriesClassifier
 from tslearn.svm import TimeSeriesSVC
 
 from . import classifiers, data, prepared_data
+from .tsfresh_features import INDEX
 
 
 def _seqfinger_tsfresh(
@@ -30,7 +31,7 @@ def _finger_tsfresh(
     measurements: List[pd.DataFrame], **config
 ) -> Tuple[pd.DataFrame, TransformerMixin]:
     extracted_features = pd.read_csv(
-        config["tsfresh_data"], index_col=[data.PATH, prepared_data.PART]
+        config["tsfresh_data"], index_col=INDEX
     )
     indexes = [
         (df.attrs[data.PATH], df.attrs[prepared_data.PART]) for df in measurements
