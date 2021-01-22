@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.pipeline import make_pipeline, Pipeline
+from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
@@ -136,7 +136,7 @@ class ModelHandler:
             input_data, transformer = self._get_tsfresh_data_and_transformer(
                 data_id, **model_config
             )
-            pipeline.append(transformer)
+            pipeline.append(("tsfresh_feature_selector", transformer))
         elif data_id in self.cache:
             input_data = self.cache[data_id]
         else:
@@ -144,7 +144,8 @@ class ModelHandler:
             input_data = get_input_data(self._get_measurements_copy(), **model_config)
             self.cache[data_id] = input_data
         scaler = _get_transformer(classifier_id, data_id, **model_config)
-        pipeline.append(scaler)
+        if scaler:
+            pipeline.append(("scaler", scaler))
 
         if "classifier_hyperparameters" in model_config:
             classifier_config = model_config["classifier_hyperparameters"]
@@ -156,9 +157,9 @@ class ModelHandler:
             set(self.y),
             **classifier_config,
         )
-        pipeline.append(classifier)
+        pipeline.append(("classifier", classifier))
 
-        return make_pipeline(*pipeline), input_data
+        return Pipeline(pipeline), input_data
 
 
 def get_classifier(
