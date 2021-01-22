@@ -74,6 +74,7 @@ def calc_relevant_features(
         y,
         ml_task="classification",
         multiclass=True,
+        n_significant=3,
         n_jobs=n_jobs,
     )
     relevance_table = relevance_table[relevance_table.relevant]
@@ -82,7 +83,7 @@ def calc_relevant_features(
     relevance_table.sort_values("p_value", inplace=True)
     click.echo("relevant_features:")
     relevant_columns = [c for c in relevance_table.columns if "relevant_" in c]
-    click.echo(relevance_table[["p_value", *relevant_columns]])
+    click.echo(relevance_table[["p_value"]].to_string())
     return relevance_table[["p_value", *relevant_columns]]
 
 
