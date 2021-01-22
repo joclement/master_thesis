@@ -1,3 +1,4 @@
+from keras.wrappers.scikit_learn import KerasClassifier
 import pandas as pd
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils.multiclass import unique_labels
@@ -33,3 +34,9 @@ class LukasMeanDist(KNeighborsClassifier):
 
     def _more_tags(self):
         return {"multioutput": False, "requires_y": True}
+
+
+class InputDimPredictingKerasClassifier(KerasClassifier):
+    def fit(self, X, y):
+        super().set_params(**{"input_dim": X.shape[1]})
+        return super().fit(X, y)

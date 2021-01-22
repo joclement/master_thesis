@@ -17,6 +17,7 @@ from tslearn.neighbors import KNeighborsTimeSeriesClassifier
 from tslearn.svm import TimeSeriesSVC
 
 from . import classifiers, data, prepared_data
+from .classifiers import InputDimPredictingKerasClassifier
 
 
 def _seqfinger_tsfresh(
@@ -173,7 +174,7 @@ def get_classifier(
     if classifier_id == "knn_dtw":
         return KNeighborsTimeSeriesClassifier(**classifier_config)
     if classifier_id == "mlp":
-        return get_mlp(input_data, defects, **classifier_config)
+        return get_mlp(defects, **classifier_config)
     if classifier_id == "ott_algo":
         return classifiers.LukasMeanDist()
     if classifier_id == "svm":
@@ -196,12 +197,9 @@ def build_mlp(
     return model
 
 
-def get_mlp(
-    input_data: pd.DataFrame, defects: set, **classifier_config: dict
-) -> KerasClassifier:
-    model = KerasClassifier(
+def get_mlp(defects: set, **classifier_config: dict) -> KerasClassifier:
+    model = InputDimPredictingKerasClassifier(
         build_fn=build_mlp,
-        input_dim=len(input_data.columns),
         optimizer=classifier_config["optimizer"],
         output_dim=len(defects),
         hidden_layer_sizes=classifier_config["hidden_layer_sizes"],
