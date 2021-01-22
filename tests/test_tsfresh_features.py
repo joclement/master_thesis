@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import click.testing
-import pandas as pd
 
 from thesis import tsfresh_features
 
@@ -30,5 +29,5 @@ def test_main_help_succeeds():
 
 
 def test__convert_to_tsfresh_dataset(measurements):
-    dataset = tsfresh_features._convert_to_tsfresh_dataset(measurements)
-    assert type(dataset) is pd.DataFrame
+    dfs = tsfresh_features._convert_to_tsfresh_dataset(measurements)
+    assert type(dfs) is list
