@@ -16,18 +16,21 @@ def _convert_to_tsfresh_dataset(measurements: List[pd.DataFrame]) -> pd.DataFram
     measurements = [m.loc[:, [data.TIME_DIFF, data.PD]] for m in measurements]
     dfs = []
     for index, df in enumerate(measurements):
-        df["id"] = index
-        df["sort"] = df[data.TIME_DIFF].cumsum()
+        pd_df_data = {
+            "id": [index] * len(df.index),
+            "sort": df[data.TIME_DIFF].cumsum(),
+            "kind": [data.PD] * len(df.index),
+            "value": df[data.PD],
+        }
+        dfs.append(pd.DataFrame(data=pd_df_data))
 
-        pd_df = df.copy()
-        pd_df["kind"] = data.PD
-        pd_df = df.rename(columns={data.PD: "value"})
-        dfs.append(pd_df.drop(columns=data.TIME_DIFF))
-
-        tdiff_df = df.copy()
-        tdiff_df["kind"] = data.TIME_DIFF
-        tdiff_df = df.rename(columns={data.TIME_DIFF: "value"})
-        dfs.append(tdiff_df.drop(columns=data.PD))
+        pd_df_data = {
+            "id": [index] * len(df.index),
+            "sort": df[data.TIME_DIFF].cumsum(),
+            "kind": [data.TIME_DIFF] * len(df.index),
+            "value": df[data.TIME_DIFF],
+        }
+        dfs.append(pd.DataFrame(data=pd_df_data))
 
     all_df = pd.concat(dfs)
     assert all_df["id"].nunique() == len(measurements)
