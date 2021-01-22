@@ -23,7 +23,7 @@ def config_with_tsfresh(config, multiple_csv_files):
         data.read_recursive(data_dir)[0],
         pd.Timedelta(config["general"]["max_duration"]),
     )
-    save_extract_features(splitted, 1, extracted_features_path)
+    save_extract_features(splitted, 1, extracted_features_path, True)
     for model_config in config["models"]:
         if "tsfresh_data" in config["models"][model_config]:
             config["models"][model_config]["tsfresh_data"] = str(
