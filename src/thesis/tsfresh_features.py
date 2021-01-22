@@ -41,7 +41,7 @@ def save_extract_features(
         column_value="value",
         default_fc_parameters=ParameterSet(),
         impute_function=impute,
-        show_warnings=True,
+        show_warnings=False,
         n_jobs=n_jobs,
     )
     if output_file:
