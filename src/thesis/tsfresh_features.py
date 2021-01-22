@@ -159,6 +159,13 @@ def calc_relevant_features(
     type=str,
     help="Set duration to split measurement files by",
 )
+@click.option(
+    "--max_len",
+    "-m",
+    type=int,
+    default=100000,
+    help="Set max length for measurement files",
+)
 @click.option("--drop/--no-drop", default=False, help="Drop empty frames")
 def main(
     input_directory,
@@ -167,12 +174,14 @@ def main(
     parameter_set="MinimalFCParameters",
     duration="",
     drop: bool = False,
+    max_len: int = 100000,
 ):
     output_file = Path(output_file)
     if output_file.exists():
         raise ValueError("output_file exists.")
     measurements, _ = data.read_recursive(input_directory)
 
+    measurements = [df for df in measurements if len(df.index) <= max_len]
     data.clip_neg_pd_values(measurements)
     if duration:
         measurements = split_by_durations(
