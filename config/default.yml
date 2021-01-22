@@ -54,35 +54,42 @@ defaults:
   step_duration: &step_duration "10 seconds"
   tsfresh_data: &tsfresh_data ./data/csv-files/prepared/dataset/train/tsfresh-features_0.5.0_minimal_60seconds.data
   normalize: &normalize True
+  n_jobs: &n_jobs 3
 
 models:
   knn_dtw-oned:
     frequency: "5000ms"
     classifier_hyperparameters:
+      n_jobs: *n_jobs
       n_neighbors: 1
 
   knn_dtw-twod:
     classifier_hyperparameters:
+      n_jobs: *n_jobs
       n_neighbors: 1
 
   knn-finger_ott:
     normalize: True
     classifier_hyperparameters:
+      n_jobs: *n_jobs
       n_neighbors: 1
 
   knn-finger_own:
     normalize: True
     classifier_hyperparameters:
+      n_jobs: *n_jobs
       n_neighbors: 1
 
   knn-finger_tugraz:
     normalize: True
     classifier_hyperparameters:
+      n_jobs: *n_jobs
       n_neighbors: 1
 
   knn-finger_both:
     normalize: True
     classifier_hyperparameters:
+      n_jobs: *n_jobs
       n_neighbors: 1
 
   knn-finger_tsfresh:
@@ -92,6 +99,7 @@ models:
     fdr_level: 0.23
     tsfresh_data: *tsfresh_data
     classifier_hyperparameters:
+      n_jobs: *n_jobs
       n_neighbors: 1
 
   knn_dtw-seqfinger_ott:
@@ -99,6 +107,7 @@ models:
     normalize: False
     step_duration: *step_duration
     classifier_hyperparameters:
+      n_jobs: *n_jobs
       n_neighbors: 1
 
   knn_dtw-seqfinger_own:
@@ -106,6 +115,7 @@ models:
     normalize: False
     step_duration: *step_duration
     classifier_hyperparameters:
+      n_jobs: *n_jobs
       n_neighbors: 1
 
   knn_dtw-seqfinger_tugraz:
@@ -113,6 +123,7 @@ models:
     normalize: True
     step_duration: *step_duration
     classifier_hyperparameters:
+      n_jobs: *n_jobs
       n_neighbors: 1
 
   knn_dtw-seqfinger_both:
@@ -120,6 +131,7 @@ models:
     normalize: True
     step_duration: *step_duration
     classifier_hyperparameters:
+      n_jobs: *n_jobs
       n_neighbors: 1
 
   knn_dtw-seqfinger_tsfresh:
@@ -130,6 +142,7 @@ models:
     normalize: True
     tsfresh_data: *tsfresh_data
     classifier_hyperparameters:
+      n_jobs: *n_jobs
       n_neighbors: 1
 
   ott_algo-finger_ott:
