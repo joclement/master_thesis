@@ -14,13 +14,23 @@ from .prepared_data import split_by_durations
 
 def _convert_to_tsfresh_dataset(measurements: List[pd.DataFrame]) -> pd.DataFrame:
     measurements = [m.loc[:, [data.TIME_DIFF, data.PD]] for m in measurements]
+    dfs = []
     for index, df in enumerate(measurements):
         df["id"] = index
-        df["kind"] = data.PD
         df["sort"] = df[data.TIME_DIFF].cumsum()
-    all_df = pd.concat(measurements)
+
+        pd_df = df.copy()
+        pd_df["kind"] = data.PD
+        pd_df = df.rename(columns={data.PD: "value"})
+        dfs.append(pd_df.drop(columns=data.TIME_DIFF))
+
+        tdiff_df = df.copy()
+        tdiff_df["kind"] = data.TIME_DIFF
+        tdiff_df = df.rename(columns={data.TIME_DIFF: "value"})
+        dfs.append(tdiff_df.drop(columns=data.PD))
+
+    all_df = pd.concat(dfs)
     assert all_df["id"].nunique() == len(measurements)
-    all_df = all_df.rename(columns={data.PD: "value"})
     return all_df
 
 
