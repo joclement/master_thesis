@@ -30,9 +30,7 @@ def _seqfinger_tsfresh(
 def _finger_tsfresh(
     measurements: List[pd.DataFrame], **config
 ) -> Tuple[pd.DataFrame, TransformerMixin]:
-    extracted_features = pd.read_csv(
-        config["tsfresh_data"], index_col=INDEX
-    )
+    extracted_features = pd.read_csv(config["tsfresh_data"], index_col=INDEX)
     indexes = [
         (df.attrs[data.PATH], df.attrs[prepared_data.PART]) for df in measurements
     ]
