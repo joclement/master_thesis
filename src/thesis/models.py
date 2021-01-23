@@ -20,13 +20,6 @@ from . import classifiers, data, prepared_data
 from .classifiers import InputDimPredictingKerasClassifier
 
 
-def _seqfinger_tsfresh(
-    measurements: List[pd.DataFrame], **config
-) -> Tuple[pd.DataFrame, TransformerMixin]:
-    # TODO do own implementation
-    return None, None
-
-
 def _finger_tsfresh(
     measurements: List[pd.DataFrame], **config
 ) -> Tuple[pd.DataFrame, TransformerMixin]:
@@ -119,8 +112,8 @@ class ModelHandler:
     ) -> Tuple[pd.DataFrame, TransformerMixin]:
         if data_id == "finger_tsfresh":
             data, transformer = _finger_tsfresh(self.measurements, **config)
-        elif data_id == "seqfinger_tsfresh":
-            data, transformer = _seqfinger_tsfresh(self.measurements, **config)
+        else:
+            raise ValueError(f"model with {data_id} not supported.")
         return data, transformer
 
     def get_model_with_data(self, model_name: str) -> Tuple[Pipeline, pd.DataFrame]:

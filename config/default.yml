@@ -134,17 +134,6 @@ models:
       n_jobs: *n_jobs
       n_neighbors: 1
 
-  knn_dtw-seqfinger_tsfresh:
-    n_jobs: *n_jobs
-    fdr_level: 0.23
-    step_duration: *step_duration
-    duration: *duration
-    normalize: True
-    tsfresh_data: *tsfresh_data
-    classifier:
-      n_jobs: *n_jobs
-      n_neighbors: 1
-
   ott_algo-finger_ott:
     normalize: False
 
