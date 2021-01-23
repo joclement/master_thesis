@@ -13,7 +13,6 @@ def test_LukasMeanDistance_checks_sklearn():
 def test_DummyClassifier(measurements):
     y = data.get_defects(measurements)
     y.append(y[0])
-    print(y)
     X = pd.DataFrame({"value": list(range(len(y)))})
 
     dummy_classifier = DummyClassifier(strategy="most_frequent")
