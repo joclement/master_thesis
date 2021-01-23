@@ -147,8 +147,8 @@ class ModelHandler:
         if scaler:
             pipeline.append(("scaler", scaler))
 
-        if "classifier_hyperparameters" in model_config:
-            classifier_config = model_config["classifier_hyperparameters"]
+        if "classifier" in model_config:
+            classifier_config = model_config["classifier"]
         else:
             classifier_config = {}
         classifier = get_classifier(
