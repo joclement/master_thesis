@@ -50,36 +50,36 @@ defaults:
 models:
   knn_dtw-oned:
     frequency: "5000ms"
-    classifier_hyperparameters:
+    classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
 
   knn_dtw-twod:
-    classifier_hyperparameters:
+    classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
 
   knn-finger_ott:
     normalize: True
-    classifier_hyperparameters:
+    classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
 
   knn-finger_own:
     normalize: True
-    classifier_hyperparameters:
+    classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
 
   knn-finger_tugraz:
     normalize: True
-    classifier_hyperparameters:
+    classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
 
   knn-finger_both:
     normalize: True
-    classifier_hyperparameters:
+    classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
 
@@ -89,14 +89,14 @@ models:
     normalize: True
     fdr_level: 0.23
     tsfresh_data: *tsfresh_data
-    classifier_hyperparameters:
+    classifier:
       n_neighbors: 1
 
   knn_dtw-seqfinger_ott:
     duration: *duration
     normalize: False
     step_duration: *step_duration
-    classifier_hyperparameters:
+    classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
 
@@ -104,7 +104,7 @@ models:
     duration: *duration
     normalize: False
     step_duration: *step_duration
-    classifier_hyperparameters:
+    classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
 
@@ -112,7 +112,7 @@ models:
     duration: *duration
     normalize: True
     step_duration: *step_duration
-    classifier_hyperparameters:
+    classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
 
@@ -120,7 +120,7 @@ models:
     duration: *duration
     normalize: True
     step_duration: *step_duration
-    classifier_hyperparameters:
+    classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
 
@@ -131,7 +131,7 @@ models:
     duration: *duration
     normalize: True
     tsfresh_data: *tsfresh_data
-    classifier_hyperparameters:
+    classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
 
@@ -140,7 +140,7 @@ models:
 
   mlp-finger_ott:
     normalize: True
-    classifier_hyperparameters:
+    classifier:
       n_jobs: *n_jobs
       batch_size: 6
       hidden_layer_sizes:
@@ -150,7 +150,7 @@ models:
 
   mlp-finger_own:
     normalize: True
-    classifier_hyperparameters:
+    classifier:
       n_jobs: *n_jobs
       hidden_layer_sizes:
         - 3
@@ -160,7 +160,7 @@ models:
 
   mlp-finger_tugraz:
     normalize: True
-    classifier_hyperparameters:
+    classifier:
       n_jobs: *n_jobs
       batch_size: 6
       hidden_layer_sizes:
@@ -170,7 +170,7 @@ models:
 
   mlp-finger_both:
     normalize: True
-    classifier_hyperparameters:
+    classifier:
       n_jobs: *n_jobs
       batch_size: 6
       hidden_layer_sizes:
@@ -183,7 +183,7 @@ models:
     n_jobs: *n_jobs
     fdr_level: 0.23
     tsfresh_data: *tsfresh_data
-    classifier_hyperparameters:
+    classifier:
       n_jobs: *n_jobs
       batch_size: 6
       hidden_layer_sizes:
@@ -193,22 +193,22 @@ models:
 
   svm-finger_ott:
     normalize: True
-    classifier_hyperparameters:
+    classifier:
       decision_function_shape: "ovr"
 
   svm-finger_own:
     normalize: True
-    classifier_hyperparameters:
+    classifier:
       decision_function_shape: "ovr"
 
   svm-finger_tugraz:
     normalize: True
-    classifier_hyperparameters:
+    classifier:
       decision_function_shape: "ovr"
 
   svm-finger_both:
     normalize: True
-    classifier_hyperparameters:
+    classifier:
       decision_function_shape: "ovr"
 
   svm-finger_tsfresh:
@@ -216,7 +216,7 @@ models:
     n_jobs: *n_jobs
     fdr_level: 0.23
     tsfresh_data: *tsfresh_data
-    classifier_hyperparameters:
+    classifier:
       decision_function_shape: "ovr"
 
   svm_dtw-seqfinger_both:
