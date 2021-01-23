@@ -58,7 +58,7 @@ defaults:
 
 models:
   knn_dtw-oned:
-    frequency: "5000ms"
+    frequency: "50ms"
     classifier_hyperparameters:
       n_jobs: *n_jobs
       n_neighbors: 1
