@@ -85,7 +85,7 @@ models:
 
   knn-finger_tsfresh:
     default_fc_parameters: MinimalFCParameters
-    n_jobs: 3
+    n_jobs: *n_jobs
     normalize: True
     fdr_level: 0.23
     tsfresh_data: *tsfresh_data
@@ -125,7 +125,7 @@ models:
       n_neighbors: 1
 
   knn_dtw-seqfinger_tsfresh:
-    n_jobs: 3
+    n_jobs: *n_jobs
     fdr_level: 0.23
     step_duration: *step_duration
     duration: *duration
@@ -180,7 +180,7 @@ models:
 
   mlp-finger_tsfresh:
     normalize: *normalize
-    n_jobs: 3
+    n_jobs: *n_jobs
     fdr_level: 0.23
     tsfresh_data: *tsfresh_data
     classifier_hyperparameters:
@@ -213,7 +213,7 @@ models:
 
   svm-finger_tsfresh:
     normalize: True
-    n_jobs: 3
+    n_jobs: *n_jobs
     fdr_level: 0.23
     tsfresh_data: *tsfresh_data
     classifier_hyperparameters:
@@ -253,6 +253,6 @@ models:
 
   dt-finger_tsfresh:
     normalize: False
-    n_jobs: 3
+    n_jobs: *n_jobs
     fdr_level: 0.23
     tsfresh_data: *tsfresh_data
