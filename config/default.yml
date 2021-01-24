@@ -58,7 +58,8 @@ defaults:
 
 models:
   knn_dtw-oned:
-    frequency: "50ms"
+    data:
+      frequency: "50ms"
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
@@ -103,36 +104,40 @@ models:
       n_neighbors: 1
 
   knn_dtw-seqfinger_ott:
-    duration: *duration
     normalize: False
-    step_duration: *step_duration
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
+    data:
+      duration: *duration
+      step_duration: *step_duration
 
   knn_dtw-seqfinger_own:
-    duration: *duration
     normalize: False
-    step_duration: *step_duration
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
+    data:
+      duration: *duration
+      step_duration: *step_duration
 
   knn_dtw-seqfinger_tugraz:
-    duration: *duration
     normalize: True
-    step_duration: *step_duration
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
+    data:
+      duration: *duration
+      step_duration: *step_duration
 
   knn_dtw-seqfinger_both:
-    duration: *duration
     normalize: True
-    step_duration: *step_duration
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
+    data:
+      duration: *duration
+      step_duration: *step_duration
 
   ott_algo-finger_ott:
     normalize: False
@@ -214,24 +219,28 @@ models:
       decision_function_shape: "ovr"
 
   svm_dtw-seqfinger_both:
-    duration: *duration
     normalize: True
-    step_duration: *step_duration
+    data:
+      duration: *duration
+      step_duration: *step_duration
 
   svm_dtw-seqfinger_ott:
-    duration: *duration
     normalize: True
-    step_duration: *step_duration
+    data:
+      duration: *duration
+      step_duration: *step_duration
 
   svm_dtw-seqfinger_own:
-    duration: *duration
     normalize: True
-    step_duration: *step_duration
+    data:
+      duration: *duration
+      step_duration: *step_duration
 
   svm_dtw-seqfinger_tugraz:
-    duration: *duration
     normalize: True
-    step_duration: *step_duration
+    data:
+      duration: *duration
+      step_duration: *step_duration
 
   dt-finger_ott:
     normalize: False
