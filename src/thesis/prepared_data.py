@@ -25,6 +25,8 @@ def _convert_to_time_series(df: pd.DataFrame, frequency) -> pd.Series:
 
 
 def oned(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
+    for df in measurements:
+        df.drop(df.columns.difference([data.TIME_DIFF, data.PD]), axis=1, inplace=True)
     time_serieses = [
         _convert_to_time_series(df, config["frequency"]) for df in measurements
     ]
