@@ -74,9 +74,14 @@ def test__split_by_duration(measurement):
 
 
 def test_oned(measurements):
-    config = {"frequency": "500ms"}
+    config = {"fix_duration": "200 seconds", "frequency": "500ms"}
     dataset = prepared_data.oned(measurements, **config)
 
     assert len(dataset.shape) == 3
-    assert np.isnan(dataset).any()
-    assert not np.isnan(dataset).all()
+    # FIXME assert not np.isnan(dataset).any()
+
+
+def test_oned_throws_for_too_long_data(measurements):
+    config = {"fix_duration": "23 seconds", "frequency": "500ms"}
+    with pytest.warns(Warning):
+        prepared_data.oned(measurements, **config)
