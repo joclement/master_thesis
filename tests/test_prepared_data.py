@@ -71,3 +71,12 @@ def test__split_by_duration(measurement):
     assert len(splitted) == 13
     assert len(splitted[0]) == 14
     assert len(splitted[-1]) == 2
+
+
+def test_oned(measurements):
+    config = {"frequency": "500ms"}
+    dataset = prepared_data.oned(measurements, **config)
+
+    assert len(dataset.shape) == 3
+    assert np.isnan(dataset).any()
+    assert not np.isnan(dataset).all()
