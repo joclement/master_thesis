@@ -7,7 +7,7 @@ general:
   save_models: False
   show_plots: False
   metric: "balanced_accuracy_score"
-  min_duration: "60 seconds"
+  min_duration: &min_duration "60 seconds"
   max_duration: "60 seconds"
   split: True
   drop_empty: True
@@ -59,6 +59,7 @@ defaults:
 models:
   knn_dtw-oned:
     data:
+      fix_duration: *min_duration
       frequency: "50ms"
     classifier:
       n_jobs: *n_jobs
