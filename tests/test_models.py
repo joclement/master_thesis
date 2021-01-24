@@ -8,9 +8,11 @@ from thesis import data, models
 def test_dt_seqfinger_ott_model(measurements):
     models_config = {
         "dt-seqfinger_ott": {
-            "duration": "30 seconds",
             "normalize": True,
-            "step_duration": "10 seconds",
+            "data": {
+                "duration": "30 seconds",
+                "step_duration": "10 seconds",
+            },
         }
     }
     y = pd.Series(data.get_defects(measurements))

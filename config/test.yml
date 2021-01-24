@@ -49,7 +49,8 @@ defaults:
 
 models:
   knn_dtw-oned:
-    frequency: "5000ms"
+    data:
+      frequency: "5000ms"
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
@@ -93,33 +94,37 @@ models:
       n_neighbors: 1
 
   knn_dtw-seqfinger_ott:
-    duration: *duration
     normalize: False
-    step_duration: *step_duration
+    data:
+      duration: *duration
+      step_duration: *step_duration
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
 
   knn_dtw-seqfinger_own:
-    duration: *duration
     normalize: False
-    step_duration: *step_duration
+    data:
+      duration: *duration
+      step_duration: *step_duration
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
 
   knn_dtw-seqfinger_tugraz:
-    duration: *duration
     normalize: True
-    step_duration: *step_duration
+    data:
+      duration: *duration
+      step_duration: *step_duration
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
 
   knn_dtw-seqfinger_both:
-    duration: *duration
     normalize: True
-    step_duration: *step_duration
+    data:
+      duration: *duration
+      step_duration: *step_duration
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
@@ -209,19 +214,22 @@ models:
       decision_function_shape: "ovr"
 
   svm_dtw-seqfinger_both:
-    duration: *duration
     normalize: True
-    step_duration: *step_duration
+    data:
+      duration: *duration
+      step_duration: *step_duration
 
   svm_dtw-seqfinger_ott:
-    duration: *duration
     normalize: True
-    step_duration: *step_duration
+    data:
+      duration: *duration
+      step_duration: *step_duration
 
   svm_dtw-seqfinger_own:
-    duration: *duration
     normalize: True
-    step_duration: *step_duration
+    data:
+      duration: *duration
+      step_duration: *step_duration
 
   svm_dtw-seqfinger_tugraz:
     duration: *duration

@@ -134,7 +134,8 @@ class ModelHandler:
             input_data = self.cache[data_id]
         else:
             get_input_data = getattr(prepared_data, data_id)
-            input_data = get_input_data(self._get_measurements_copy(), **model_config)
+            data_config = model_config["data"] if "data" in model_config else {}
+            input_data = get_input_data(self._get_measurements_copy(), **data_config)
             self.cache[data_id] = input_data
         scaler = _get_transformer(classifier_id, data_id, **model_config)
         if scaler:
