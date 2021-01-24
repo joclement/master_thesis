@@ -3,7 +3,7 @@ import pandas as pd
 from thesis import data, util
 
 
-def test_todataTime():
+def test_to_dataTime():
     assert data.TIME_UNIT == "ms"
 
     duration = pd.Timedelta("30 seconds")
