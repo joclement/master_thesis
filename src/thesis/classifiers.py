@@ -36,7 +36,8 @@ class LukasMeanDist(KNeighborsClassifier):
         return {"multioutput": False, "requires_y": True}
 
 
-class InputDimPredictingKerasClassifier(KerasClassifier):
+class MyKerasClassifier(KerasClassifier):
     def fit(self, X, y, **kwargs):
         super().set_params(**{"input_dim": X.shape[1]})
-        return super().fit(X, y, **kwargs)
+        self.history = super().fit(X, y, **kwargs)
+        return self
