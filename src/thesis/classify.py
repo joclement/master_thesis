@@ -18,6 +18,7 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelBinarizer
 from sklearn.svm import SVC
+from sklearn.utils.class_weight import compute_class_weight
 from tslearn.svm import TimeSeriesSVC
 import yaml
 
@@ -183,11 +184,18 @@ class ClassificationHandler:
                     mode="auto",
                     restore_best_weights=True,
                 )
+
+                class_weights = dict(
+                    enumerate(
+                        compute_class_weight("balanced", np.unique(y_train), y_train)
+                    )
+                )
                 pipeline.fit(
                     X_train,
                     self.onehot_y[train_index],
                     classifier__validation_data=(X_val, self.onehot_y[val_index]),
                     classifier__callbacks=[earlyStopping],
+                    classifier__class_weight=class_weights,
                 )
                 if self.config["general"]["show_plots"]:
                     sns.lineplot(data=get_classifier(pipeline).history.history)
