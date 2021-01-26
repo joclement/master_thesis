@@ -147,7 +147,6 @@ class ModelHandler:
             classifier_config = {}
         classifier = get_classifier(
             classifier_id,
-            input_data,
             set(self.y),
             **classifier_config,
         )
@@ -158,7 +157,6 @@ class ModelHandler:
 
 def get_classifier(
     classifier_id: str,
-    input_data: pd.DataFrame,
     defects: set,
     **classifier_config: dict,
 ) -> BaseEstimator:
