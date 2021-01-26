@@ -39,9 +39,7 @@ def oned(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     for df in measurements:
         if df[data.TIME_DIFF].sum() > fix_duration:
             df = df[df[data.TIME_DIFF].cumsum() <= fix_duration]
-            shortened_dfs.append(df)
-        else:
-            shortened_dfs.append(df)
+        shortened_dfs.append(df)
     measurements = shortened_dfs
 
     time_serieses = [
