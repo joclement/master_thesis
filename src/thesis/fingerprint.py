@@ -9,6 +9,7 @@ from tsfresh.feature_extraction.feature_calculators import (
     change_quantiles,
     count_above_mean,
     count_below_mean,
+    longest_strike_below_mean,
     number_peaks,
     percentage_of_reoccurring_datapoints_to_all_datapoints,
     ratio_value_number_to_time_series_length,
@@ -214,6 +215,7 @@ def own(df: pd.DataFrame) -> pd.Series:
         df[data.PD].var(),
         len(df.index),
         number_peaks(df[data.PD], 50),
+        number_peaks(df[data.PD], 10),
         ratio_value_number_to_time_series_length(df[data.PD]),
         percentage_of_reoccurring_datapoints_to_all_datapoints(df[data.PD]),
         count_below_mean(df[data.PD]),
@@ -222,7 +224,7 @@ def own(df: pd.DataFrame) -> pd.Series:
         df[data.TIME_DIFF].kurt(),
         df[data.TIME_DIFF].skew(),
         df[data.TIME_DIFF].median(),
-        number_peaks(df[data.TIME_DIFF], 50),
+        longest_strike_below_mean(df[data.TIME_DIFF]),
         change_quantiles(df[data.TIME_DIFF], 0.0, 0.3, True, "var"),
     ]
 
