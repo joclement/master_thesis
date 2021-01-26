@@ -5,6 +5,14 @@ from typing import Callable, List, Tuple, Union
 import numpy as np
 import pandas as pd
 import scipy.stats as stats
+from tsfresh.feature_extraction.feature_calculators import (
+    change_quantiles,
+    count_above_mean,
+    count_below_mean,
+    number_peaks,
+    percentage_of_reoccurring_datapoints_to_all_datapoints,
+    ratio_value_number_to_time_series_length,
+)
 
 from . import data
 
@@ -196,44 +204,29 @@ def build_set(
 
 
 def own(df: pd.DataFrame) -> pd.Series:
-    finger = pd.Series(dtype=float)
+    own = [
+        df[data.PD].mean(),
+        df[data.PD].std(),
+        df[data.PD].median(),
+        df[data.PD].max(),
+        df[data.PD].min(),
+        df[data.PD].sum(),
+        df[data.PD].var(),
+        len(df.index),
+        number_peaks(df[data.PD], 50),
+        ratio_value_number_to_time_series_length(df[data.PD]),
+        percentage_of_reoccurring_datapoints_to_all_datapoints(df[data.PD]),
+        count_below_mean(df[data.PD]),
+        count_above_mean(df[data.PD]),
+        change_quantiles(df[data.PD], 0.0, 0.7, True, "mean"),
+        df[data.TIME_DIFF].kurt(),
+        df[data.TIME_DIFF].skew(),
+        df[data.TIME_DIFF].median(),
+        number_peaks(df[data.TIME_DIFF], 50),
+        change_quantiles(df[data.TIME_DIFF], 0.0, 0.3, True, "var"),
+    ]
 
-    finger[PD_MEAN] = df[data.PD].mean()
-    finger[PD_CV] = df[data.PD].std() / df[data.PD].mean()
-    finger[PD_MAX] = df[data.PD].max()
-    finger[PD_SUM] = df[data.PD].sum()
-    finger[PD_VAR] = df[data.PD].var()
-    finger[PD_WEIB_A], finger[PD_WEIB_B] = calc_weibull_params(df[data.PD])
-
-    finger[PD_DIFF_MEAN] = df[data.PD_DIFF].mean()
-    finger[PD_DIFF_SKEW] = df[data.PD_DIFF].skew()
-    # FIXME workaround
-    if math.isnan(finger[PD_DIFF_SKEW]):
-        finger[PD_DIFF_SKEW] = 0.0
-    finger[PD_DIFF_KURT] = df[data.PD_DIFF].kurt()
-    # FIXME workaround
-    if math.isnan(finger[PD_DIFF_KURT]):
-        finger[PD_DIFF_KURT] = 0.0
-    finger[PD_DIFF_WEIB_A], _ = calc_weibull_params(df[data.PD_DIFF])
-
-    finger[TD_MEAN] = df[data.TIME_DIFF].mean()
-    finger[TD_MEDIAN] = df[data.TIME_DIFF].median()
-    finger[TD_SKEW] = df[data.TIME_DIFF].skew()
-    finger[TD_KURT] = df[data.TIME_DIFF].kurt()
-    if math.isnan(finger[TD_KURT]):
-        finger[TD_KURT] = 0.0
-
-    finger[PDS_PER_SEC] = len(df[data.TIME_DIFF]) / (df[data.TIME_DIFF].sum() / 1000)
-
-    finger[CORR_PD_DIFF_TO_PD], _ = stats.pearsonr(df[data.PD], df[data.PD_DIFF])
-    # FIXME workaround
-    if math.isnan(finger[CORR_PD_DIFF_TO_PD]):
-        finger[CORR_PD_DIFF_TO_PD] = 0.0
-    next_pd = df[data.PD][1:].reset_index(drop=True)
-    finger[CORR_NEXT_PD_TO_PD], _ = stats.pearsonr(df[data.PD][:-1], next_pd)
-    # FIXME workaround
-    if math.isnan(finger[CORR_NEXT_PD_TO_PD]):
-        finger[CORR_NEXT_PD_TO_PD] = 0.0
+    finger = pd.Series(data=own, dtype=float)
 
     if finger.isnull().any() or finger.isin([np.inf, -np.inf]).any():
         raise ValueError(f"Incorrect finger: \n {finger}")
