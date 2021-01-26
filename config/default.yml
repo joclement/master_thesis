@@ -156,10 +156,10 @@ models:
     normalize: True
     classifier:
       hidden_layer_sizes:
-        - 3
+        - 8
       optimizer: "adam"
-      batch_size: 6
-      epochs: 200
+      batch_size: 5
+      epochs: 23
 
   mlp-finger_tugraz:
     normalize: True
