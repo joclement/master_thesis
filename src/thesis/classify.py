@@ -6,8 +6,10 @@ from typing import Final, List
 import click
 from keras.callbacks import EarlyStopping
 from keras.wrappers.scikit_learn import KerasClassifier
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import seaborn as sns
 import sklearn
 from sklearn import metrics
 from sklearn.base import BaseEstimator
@@ -182,6 +184,9 @@ class ClassificationHandler:
                     classifier__validation_data=(X_val, self.onehot_y[val_index]),
                     classifier__callbacks=[earlyStopping],
                 )
+                if self.config["general"]["show_plots"]:
+                    sns.lineplot(data=get_classifier(pipeline).history.history)
+                    plt.show()
             else:
                 pipeline.fit(X_train, y_train)
 

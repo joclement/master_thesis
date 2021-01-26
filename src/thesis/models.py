@@ -17,7 +17,7 @@ from tslearn.neighbors import KNeighborsTimeSeriesClassifier
 from tslearn.svm import TimeSeriesSVC
 
 from . import classifiers, data, prepared_data
-from .classifiers import InputDimPredictingKerasClassifier
+from .classifiers import MyKerasClassifier
 
 
 def _finger_tsfresh(
@@ -191,7 +191,7 @@ def build_mlp(
 
 
 def get_mlp(defects: set, **classifier_config: dict) -> KerasClassifier:
-    model = InputDimPredictingKerasClassifier(
+    model = MyKerasClassifier(
         build_fn=build_mlp,
         optimizer=classifier_config["optimizer"],
         output_dim=len(defects),
