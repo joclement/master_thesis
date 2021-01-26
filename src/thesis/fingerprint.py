@@ -231,3 +231,24 @@ def own(df: pd.DataFrame) -> pd.Series:
     if finger.isnull().any() or finger.isin([np.inf, -np.inf]).any():
         raise ValueError(f"Incorrect finger: \n {finger}")
     return finger
+
+
+def seqown(df: pd.DataFrame) -> pd.Series:
+    own = [
+        df[data.PD].mean(),
+        df[data.PD].std(),
+        df[data.PD].median(),
+        df[data.PD].max(),
+        df[data.PD].sum(),
+        df[data.PD].var(),
+        len(df.index),
+        df[data.TIME_DIFF].skew(),
+        df[data.TIME_DIFF].median(),
+        number_peaks(df[data.TIME_DIFF], 3),
+    ]
+
+    finger = pd.Series(data=own, dtype=float)
+
+    if finger.isnull().any() or finger.isin([np.inf, -np.inf]).any():
+        raise ValueError(f"Incorrect finger: \n {finger}")
+    return finger
