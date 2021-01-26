@@ -247,7 +247,9 @@ models:
     normalize: False
 
   dt-finger_own:
-    normalize: False
+    normalize: True
+    classifier:
+      min_samples_split: 8
 
   dt-finger_tugraz:
     normalize: False
