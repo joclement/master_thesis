@@ -38,7 +38,6 @@ def oned(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     shortened_dfs = []
     for df in measurements:
         if df[data.TIME_DIFF].sum() > fix_duration:
-            warnings.warn("data not shortened correctly, to be fixed.")
             df = df[df[data.TIME_DIFF].cumsum() <= fix_duration]
             shortened_dfs.append(df)
         else:
@@ -76,8 +75,6 @@ def _split_by_duration(
         if not drop_empty or len(part.index) >= duration / ONEPD_DURATION:
             part.attrs[PART] = index
             sequence.append(part.reset_index(drop=True))
-        if part[data.TIME_DIFF].sum() > to_dataTIME(duration):
-            warnings.warn("data not shortened correctly, to be fixed.")
 
     return sequence
 
