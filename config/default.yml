@@ -159,7 +159,7 @@ models:
         - 3
       optimizer: "adam"
       batch_size: 6
-      epochs: 123
+      epochs: 200
 
   mlp-finger_tugraz:
     normalize: True
@@ -176,18 +176,6 @@ models:
       batch_size: 6
       hidden_layer_sizes:
         - 6
-      optimizer: "adam"
-      epochs: 123
-
-  mlp-finger_tsfresh:
-    normalize: *normalize
-    n_jobs: *n_jobs
-    fdr_level: 0.23
-    tsfresh_data: *tsfresh_data
-    classifier:
-      batch_size: 6
-      hidden_layer_sizes:
-        - 9
       optimizer: "adam"
       epochs: 123
 

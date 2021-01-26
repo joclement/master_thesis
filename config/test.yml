@@ -32,7 +32,6 @@ models-to-run:
   - knn-finger_own
   - knn-finger_tsfresh
   - mlp-finger_own
-  - mlp-finger_tsfresh
   - mlp-finger_tugraz
   - ott_algo-finger_ott
   - svm_dtw-seqfinger_ott
@@ -170,19 +169,6 @@ models:
       batch_size: 6
       hidden_layer_sizes:
         - 6
-      optimizer: "adam"
-      epochs: 123
-
-  mlp-finger_tsfresh:
-    normalize: *normalize
-    n_jobs: *n_jobs
-    fdr_level: 0.23
-    tsfresh_data: *tsfresh_data
-    classifier:
-      n_jobs: *n_jobs
-      batch_size: 6
-      hidden_layer_sizes:
-        - 9
       optimizer: "adam"
       epochs: 123
 
