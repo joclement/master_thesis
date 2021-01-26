@@ -27,7 +27,7 @@ models-to-run:
   - knn_dtw-oned
   - knn_dtw-twod
   - knn_dtw-seqfinger_both
-  - knn_dtw-seqfinger_own
+  - knn_dtw-seqfinger_seqown
   - knn-finger_both
   - knn-finger_own
   - knn-finger_tsfresh
@@ -36,7 +36,7 @@ models-to-run:
   - mlp-finger_tugraz
   - ott_algo-finger_ott
   - svm_dtw-seqfinger_ott
-  - svm_dtw-seqfinger_own
+  - svm_dtw-seqfinger_seqown
   - svm-finger_both
   - svm-finger_tsfresh
 
@@ -103,7 +103,7 @@ models:
       n_jobs: *n_jobs
       n_neighbors: 1
 
-  knn_dtw-seqfinger_own:
+  knn_dtw-seqfinger_seqown:
     normalize: False
     data:
       duration: *duration
@@ -226,7 +226,7 @@ models:
       duration: *duration
       step_duration: *step_duration
 
-  svm_dtw-seqfinger_own:
+  svm_dtw-seqfinger_seqown:
     normalize: True
     data:
       duration: *duration

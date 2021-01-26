@@ -132,13 +132,13 @@ def seqfinger_ott(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     return X
 
 
-def seqfinger_own(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
+def seqfinger_seqown(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     duration = pd.Timedelta(config["duration"])
     step_duration = pd.Timedelta(config["step_duration"])
 
     X = to_time_series_dataset(
         [
-            _build_fingerprint_sequence(df, fingerprint.own, duration, step_duration)
+            _build_fingerprint_sequence(df, fingerprint.seqown, duration, step_duration)
             for df in measurements
         ]
     )
