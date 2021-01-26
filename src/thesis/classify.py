@@ -4,6 +4,7 @@ import shutil
 from typing import Final, List
 
 import click
+from keras.callbacks import EarlyStopping
 from keras.wrappers.scikit_learn import KerasClassifier
 import numpy as np
 import pandas as pd
@@ -171,7 +172,18 @@ class ClassificationHandler:
                 X_val = X[val_index]
             y_train = self.y[train_index]
             y_val = self.y[val_index]
-            pipeline.fit(X_train, y_train)
+            if is_keras(pipeline):
+                earlyStopping = EarlyStopping(
+                    monitor="val_loss", min_delta=0, patience=11, verbose=0, mode="auto"
+                )
+                pipeline.fit(
+                    X_train,
+                    self.onehot_y[train_index],
+                    classifier__validation_data=(X_val, self.onehot_y[val_index]),
+                    classifier__callbacks=[earlyStopping],
+                )
+            else:
+                pipeline.fit(X_train, y_train)
 
             train_predictions = pipeline.predict(X_train)
             val_predictions = self._do_val_predictions(
