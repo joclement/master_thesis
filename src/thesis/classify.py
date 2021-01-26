@@ -176,7 +176,7 @@ class ClassificationHandler:
             y_val = self.y[val_index]
             if is_keras(pipeline):
                 earlyStopping = EarlyStopping(
-                    monitor="val_loss", min_delta=0, patience=11, verbose=0, mode="auto"
+                    monitor="val_loss", min_delta=0, patience=8, verbose=0, mode="auto"
                 )
                 pipeline.fit(
                     X_train,
