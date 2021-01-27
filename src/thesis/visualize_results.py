@@ -27,7 +27,9 @@ def plot_results(
     y_pos = np.arange(len(scores.index))
 
     train_val_scores = scores.loc[:, ([TRAIN_SCORE, VAL_SCORE], slice(None))]
-    train_val_scores.mean(axis=1, level=0).plot.barh(title=description)
+    train_val_scores.mean(axis=1, level=0).plot.barh(
+        title=description, xerr=train_val_scores.std(axis=1, level=0)
+    )
     util.finish_plot("train_val_scores", output_dir, show)
 
     for metric in METRIC_NAMES:
