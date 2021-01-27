@@ -29,6 +29,7 @@ from .constants import (
     METRIC_NAMES,
     SCORES_FILENAME,
     TOP_K_ACCURACY,
+    TRAIN_ACCURACY,
     TRAIN_SCORE,
     VAL_SCORE,
 )
@@ -201,6 +202,9 @@ class ClassificationHandler:
             train_score = self.metric(y_train, train_predictions)
             _print_score("Train score", train_score)
             self.scores.loc[model_name, (TRAIN_SCORE, idx)] = train_score
+            train_accuracy = accuracy_score(y_train, train_predictions)
+            _print_score("Train Accuracy score", train_accuracy)
+            self.scores.loc[model_name, (TRAIN_ACCURACY, idx)] = train_accuracy
 
             val_score = self.metric(y_val, val_predictions)
             _print_score("Validation score", val_score)

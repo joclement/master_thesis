@@ -4,6 +4,7 @@ SCORES_FILENAME: Final = "models_scores.csv"
 CONFIG_FILENAME: Final = "config.yml"
 CONFIG_MODELS_RUN_ID: Final = "models-to-run"
 
+TRAIN_ACCURACY = "train_accuracy"
 TRAIN_SCORE = "train"
 VAL_SCORE = "val"
 ACCURACY_SCORE = "accuracy"
