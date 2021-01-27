@@ -11,6 +11,8 @@ general:
   max_duration: "60 seconds"
   split: True
   drop_empty: True
+  write_cache: True
+  cache_path: ./output/own-mlp-cache.p
 
 defects:
   - free_particle

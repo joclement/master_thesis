@@ -17,7 +17,7 @@ def test_dt_seqfinger_ott_model(measurements):
     }
     y = pd.Series(data.get_defects(measurements))
 
-    modelHandler = models.ModelHandler(measurements, y, models_config)
+    modelHandler = models.ModelHandler(measurements, y, models_config, False, None)
     pipeline, X = modelHandler.get_model_with_data("dt-seqfinger_ott")
 
     scaler = list(pipeline.named_steps.values())[0]
