@@ -101,11 +101,22 @@ class ModelHandler:
         measurements: List[pd.DataFrame],
         y: Union[pd.Series, np.array],
         models_config: dict,
+        write_cache: bool,
+        cache_path: Optional[Path],
     ):
         self.measurements: Final = measurements
         self.y: Final = y
         self.models_config: Final = models_config
+        self.write_cache = write_cache
         self.cache: Dict[str, pd.DataFrame] = {}
+        if cache_path:
+            self.cache_path = cache_path
+            if self.cache_path.exists():
+                self.cache = pickle.load(open(self.cache_path, "rb"))
+
+    def __del__(self):
+        if self.write_cache and hasattr(self, "cache_path"):
+            pickle.dump(self.cache, open(self.cache_path, "wb"))
 
     def _get_measurements_copy(self):
         return [df.copy() for df in self.measurements]

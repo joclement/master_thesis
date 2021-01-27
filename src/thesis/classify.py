@@ -1,7 +1,7 @@
 from pathlib import Path
 import pickle
 import shutil
-from typing import Final, List
+from typing import Final, List, Optional
 
 import click
 from keras.wrappers.scikit_learn import KerasClassifier
@@ -114,7 +114,11 @@ class ClassificationHandler:
         self.y: Final = pd.Series(data.get_defects(measurements))
         self.onehot_y = LabelBinarizer().fit_transform(self.y)
         self.modelHandler = models.ModelHandler(
-            measurements, self.y, self.config["models"]
+            measurements,
+            self.y,
+            self.config["models"],
+            self.config["general"]["write_cache"],
+            self.get_cache_path(),
         )
 
         self.defect_names = [
@@ -122,6 +126,13 @@ class ClassificationHandler:
         ]
         skfold = StratifiedKFold(n_splits=self.cv)
         self.cv_splits = list(skfold.split(np.zeros(len(self.y)), self.y))
+
+    def get_cache_path(self) -> Optional[Path]:
+        return (
+            Path(self.config["general"]["cache_path"])
+            if "cache_path" in self.config["general"]
+            else None
+        )
 
     def _keep_wanted_defects(self, measurements: List[pd.DataFrame]):
         defects = [data.Defect[defect] for defect in self.config["defects"]]

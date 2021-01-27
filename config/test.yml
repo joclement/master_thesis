@@ -11,6 +11,8 @@ general:
   max_duration: "60 seconds"
   split: True
   drop_empty: True
+  write_cache: False
+  # cache_path: /tmp/testdata-cache.p
 
 defects:
   - free_particle
