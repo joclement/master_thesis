@@ -5,6 +5,7 @@ from typing import Dict, Final, List, Optional, Tuple, Union
 import keras
 from keras.callbacks import EarlyStopping
 from keras.layers import Dense
+from keras.metrics import TopKCategoricalAccuracy
 from keras.models import Sequential
 from keras.wrappers.scikit_learn import KerasClassifier
 import numpy as np
@@ -21,6 +22,7 @@ from tslearn.svm import TimeSeriesSVC
 
 from . import classifiers, data, prepared_data
 from .classifiers import MyKerasClassifier
+from .constants import TOP_K_ACCURACY
 
 
 def _finger_tsfresh(
@@ -200,7 +202,12 @@ def build_mlp(
     model.add(
         Dense(output_dim, activation="softmax"),
     )
-    model.compile(loss="categorical_crossentropy", optimizer=optimizer)
+    top_3_accuracy = TopKCategoricalAccuracy(k=3, name=TOP_K_ACCURACY)
+    model.compile(
+        loss="categorical_crossentropy",
+        optimizer=optimizer,
+        metrics=["accuracy", top_3_accuracy],
+    )
     return model
 
 
