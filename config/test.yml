@@ -45,6 +45,8 @@ defaults:
   tsfresh_data: &tsfresh_data ./data/csv-files/testdata_small/tsfresh-features-0.6.1_minimal_60seconds.data
   normalize: &normalize True
   n_jobs: &n_jobs 1
+  stop_early: &stop_early True
+  patience: &patience 1
 
 models:
   knn_dtw-oned:
@@ -141,6 +143,8 @@ models:
         - 4
       optimizer: "adam"
       epochs: 123
+      stop_early: *stop_early
+      patience: *patience
 
   mlp-finger_own:
     normalize: True
@@ -151,6 +155,8 @@ models:
       optimizer: "adam"
       batch_size: 6
       epochs: 123
+      stop_early: *stop_early
+      patience: *patience
 
   mlp-finger_tugraz:
     normalize: True
@@ -161,6 +167,8 @@ models:
         - 4
       optimizer: "adam"
       epochs: 123
+      stop_early: *stop_early
+      patience: *patience
 
   mlp-finger_both:
     normalize: True
@@ -171,6 +179,8 @@ models:
         - 6
       optimizer: "adam"
       epochs: 123
+      stop_early: *stop_early
+      patience: *patience
 
   svm-finger_ott:
     normalize: True

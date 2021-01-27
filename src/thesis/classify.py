@@ -4,7 +4,6 @@ import shutil
 from typing import Final, List
 
 import click
-from keras.callbacks import EarlyStopping
 from keras.wrappers.scikit_learn import KerasClassifier
 import matplotlib.pyplot as plt
 import numpy as np
@@ -176,15 +175,6 @@ class ClassificationHandler:
             y_train = self.y[train_index]
             y_val = self.y[val_index]
             if is_keras(pipeline):
-                earlyStopping = EarlyStopping(
-                    monitor="val_loss",
-                    min_delta=0,
-                    patience=8,
-                    verbose=0,
-                    mode="auto",
-                    restore_best_weights=True,
-                )
-
                 class_weights = dict(
                     enumerate(
                         compute_class_weight("balanced", np.unique(y_train), y_train)
@@ -194,7 +184,6 @@ class ClassificationHandler:
                     X_train,
                     self.onehot_y[train_index],
                     classifier__validation_data=(X_val, self.onehot_y[val_index]),
-                    classifier__callbacks=[earlyStopping],
                     classifier__class_weight=class_weights,
                 )
                 if self.config["general"]["show_plots"]:
