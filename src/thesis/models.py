@@ -1,6 +1,9 @@
+from pathlib import Path
+import pickle
 from typing import Dict, Final, List, Optional, Tuple, Union
 
 import keras
+from keras.callbacks import EarlyStopping
 from keras.layers import Dense
 from keras.models import Sequential
 from keras.wrappers.scikit_learn import KerasClassifier
@@ -191,6 +194,17 @@ def build_mlp(
 
 
 def get_mlp(defects: set, **classifier_config: dict) -> KerasClassifier:
+    callbacks = []
+    if classifier_config["stop_early"]:
+        earlyStopping = EarlyStopping(
+            monitor="loss",
+            min_delta=0,
+            patience=classifier_config["patience"],
+            verbose=0,
+            mode="auto",
+            restore_best_weights=True,
+        )
+        callbacks.append([earlyStopping])
     model = MyKerasClassifier(
         build_fn=build_mlp,
         optimizer=classifier_config["optimizer"],
@@ -199,5 +213,6 @@ def get_mlp(defects: set, **classifier_config: dict) -> KerasClassifier:
         epochs=classifier_config["epochs"],
         batch_size=classifier_config["batch_size"],
         verbose=0,
+        callbacks=callbacks,
     )
     return model
