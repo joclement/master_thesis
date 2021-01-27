@@ -16,7 +16,7 @@ ONEPD_DURATION = pd.Timedelta("10 seconds")
 
 
 def _convert_to_time_series(df: pd.DataFrame, frequency) -> pd.Series:
-    df["DateTimeIndex"] = pd.to_datetime(
+    df.loc[:, "DateTimeIndex"] = pd.to_datetime(
         df[data.TIME_DIFF].cumsum(), unit=data.TIME_UNIT
     )
     df.set_index("DateTimeIndex", inplace=True)
