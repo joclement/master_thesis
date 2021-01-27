@@ -188,6 +188,7 @@ models:
     normalize: True
     classifier:
       decision_function_shape: "ovr"
+      class_weight: "balanced"
 
   svm-finger_tugraz:
     normalize: True
