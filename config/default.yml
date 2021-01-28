@@ -23,30 +23,24 @@ defects:
   - cavity
 
 models-to-run:
-  # - dt-finger_both
   # - dt-finger_ott
   - dt-finger_own
   # - dt-finger_tugraz
   - knn_dtw-oned
   - knn_dtw-twod
-  # - knn_dtw-seqfinger_both
   # - knn_dtw-seqfinger_ott
   - knn_dtw-seqfinger_seqown
   # - knn_dtw-seqfinger_tugraz
-  # - knn-finger_both
   # - knn-finger_ott
   - knn-finger_own
   # - knn-finger_tugraz
-  # - mlp-finger_both
   # - mlp-finger_ott
   - mlp-finger_own
   # - mlp-finger_tugraz
   # - ott_algo-finger_ott
-  # - svm_dtw-seqfinger_both
   # - svm_dtw-seqfinger_ott
   - svm_dtw-seqfinger_seqown
   # - svm_dtw-seqfinger_tugraz
-  # - svm-finger_both
   # - svm-finger_ott
   - svm-finger_own
   # - svm-finger_tugraz
@@ -93,12 +87,6 @@ models:
       n_jobs: *n_jobs
       n_neighbors: 1
 
-  knn-finger_both:
-    normalize: True
-    classifier:
-      n_jobs: *n_jobs
-      n_neighbors: 1
-
   knn-finger_tsfresh:
     default_fc_parameters: MinimalFCParameters
     n_jobs: *n_jobs
@@ -128,15 +116,6 @@ models:
       step_duration: *step_duration
 
   knn_dtw-seqfinger_tugraz:
-    normalize: True
-    classifier:
-      n_jobs: *n_jobs
-      n_neighbors: 1
-    data:
-      duration: *duration
-      step_duration: *step_duration
-
-  knn_dtw-seqfinger_both:
     normalize: True
     classifier:
       n_jobs: *n_jobs
@@ -184,18 +163,6 @@ models:
       stop_early: *stop_early
       patience: *patience
 
-  mlp-finger_both:
-    normalize: True
-    classifier:
-      batch_size: 6
-      hidden_layer_sizes:
-        - 6
-      dropout: 0.05
-      optimizer: "adam"
-      epochs: *epochs
-      stop_early: *stop_early
-      patience: *patience
-
   svm-finger_ott:
     normalize: True
     classifier:
@@ -212,11 +179,6 @@ models:
     classifier:
       decision_function_shape: "ovr"
 
-  svm-finger_both:
-    normalize: True
-    classifier:
-      decision_function_shape: "ovr"
-
   svm-finger_tsfresh:
     normalize: True
     n_jobs: *n_jobs
@@ -224,12 +186,6 @@ models:
     tsfresh_data: *tsfresh_data
     classifier:
       decision_function_shape: "ovr"
-
-  svm_dtw-seqfinger_both:
-    normalize: True
-    data:
-      duration: *duration
-      step_duration: *step_duration
 
   svm_dtw-seqfinger_ott:
     normalize: True
@@ -258,9 +214,6 @@ models:
       min_samples_split: 8
 
   dt-finger_tugraz:
-    normalize: False
-
-  dt-finger_both:
     normalize: False
 
   dt-finger_tsfresh:
