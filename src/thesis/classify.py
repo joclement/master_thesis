@@ -131,7 +131,7 @@ class ClassificationHandler:
         self.finished = False
 
     def __del__(self):
-        if not self.finished:
+        if hasattr(self, "finished") and not self.finished:
             self.scores.to_csv(Path(self.output_dir, SCORES_FILENAME))
 
     def get_cache_path(self) -> Optional[Path]:
