@@ -58,7 +58,7 @@ defaults:
   normalize: &normalize True
   n_jobs: &n_jobs 3
   stop_early: &stop_early True
-  patience: &patience 7
+  patience: &patience 11
 
 models:
   knn_dtw-oned:
@@ -163,11 +163,11 @@ models:
     normalize: True
     classifier:
       hidden_layer_sizes:
-        - 8
+        - 5
       dropout: 0.05
       optimizer: "adam"
       batch_size: 1
-      epochs: 23
+      epochs: 250
       stop_early: *stop_early
       patience: *patience
 
