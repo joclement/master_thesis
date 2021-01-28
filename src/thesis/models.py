@@ -114,11 +114,13 @@ class ModelHandler:
         if cache_path:
             self.cache_path = cache_path
             if self.cache_path.exists():
-                self.cache = pickle.load(open(self.cache_path, "rb"))
+                with open(self.cache_path, "rb") as cache_file:
+                    self.cache = pickle.load(cache_file)
 
     def __del__(self):
         if self.write_cache and hasattr(self, "cache_path"):
-            pickle.dump(self.cache, open(self.cache_path, "wb"))
+            with open(self.cache_path, "wb") as cache_file:
+                pickle.dump(self.cache, cache_file)
 
     def _get_measurements_copy(self):
         return [df.copy() for df in self.measurements]
