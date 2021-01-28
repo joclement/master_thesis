@@ -59,6 +59,7 @@ defaults:
   n_jobs: &n_jobs 3
   stop_early: &stop_early True
   patience: &patience 11
+  epochs: 250 &epochs
 
 models:
   knn_dtw-oned:
@@ -155,7 +156,7 @@ models:
         - 4
       dropout: 0.05
       optimizer: "adam"
-      epochs: 123
+      epochs: *epochs
       stop_early: *stop_early
       patience: *patience
 
@@ -167,7 +168,7 @@ models:
       dropout: 0.05
       optimizer: "adam"
       batch_size: 1
-      epochs: 250
+      epochs: *epochs
       stop_early: *stop_early
       patience: *patience
 
@@ -179,7 +180,7 @@ models:
         - 4
       dropout: 0.05
       optimizer: "adam"
-      epochs: 123
+      epochs: *epochs
       stop_early: *stop_early
       patience: *patience
 
@@ -191,7 +192,7 @@ models:
         - 6
       dropout: 0.05
       optimizer: "adam"
-      epochs: 123
+      epochs: *epochs
       stop_early: *stop_early
       patience: *patience
 
