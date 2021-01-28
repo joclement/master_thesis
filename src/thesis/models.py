@@ -4,7 +4,7 @@ from typing import Dict, Final, List, Optional, Tuple, Union
 
 import keras
 from keras.callbacks import EarlyStopping
-from keras.layers import Dense
+from keras.layers import Dense, Dropout
 from keras.metrics import TopKCategoricalAccuracy
 from keras.models import Sequential
 from keras.wrappers.scikit_learn import KerasClassifier
@@ -195,12 +195,17 @@ def get_classifier(
 
 
 def build_mlp(
-    input_dim: int, output_dim: int, hidden_layer_sizes: List[int], optimizer: str
+    input_dim: int,
+    output_dim: int,
+    hidden_layer_sizes: List[int],
+    optimizer: str,
+    dropout: float,
 ) -> KerasClassifier:
     model = Sequential()
     neurons_per_layer = hidden_layer_sizes
     model.add(keras.Input(shape=(input_dim,)))
     model.add(Dense(neurons_per_layer[0], activation="relu"))
+    model.add(Dropout(dropout))
     model.add(
         Dense(output_dim, activation="softmax"),
     )
@@ -230,6 +235,7 @@ def get_mlp(defects: set, **classifier_config: dict) -> KerasClassifier:
         optimizer=classifier_config["optimizer"],
         output_dim=len(defects),
         hidden_layer_sizes=classifier_config["hidden_layer_sizes"],
+        dropout=classifier_config["dropout"],
         epochs=classifier_config["epochs"],
         batch_size=classifier_config["batch_size"],
         verbose=0,
