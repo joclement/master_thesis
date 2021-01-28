@@ -2,6 +2,7 @@ from pathlib import Path
 import pickle
 import shutil
 from typing import Final, List, Optional
+import warnings
 
 import click
 from keras.wrappers.scikit_learn import KerasClassifier
@@ -275,7 +276,8 @@ class ClassificationHandler:
 @click.command()
 @click.version_option(version=__version__)
 @click.argument("config_path", type=click.Path(exists=True))
-def main(config_path):
+@click.option("--warn/--no-warn", default=False)
+def main(config_path, warn):
     """Print measurement info on given measurement file or folder
 
     INPUT_DIRECTORY folder containing csv files for classification
@@ -284,5 +286,7 @@ def main(config_path):
     with open(config_path, "r") as stream:
         config = yaml.safe_load(stream)
 
+    if not warn:
+        warnings.simplefilter("ignore")
     classificationHandler = ClassificationHandler(config)
     classificationHandler.run()
