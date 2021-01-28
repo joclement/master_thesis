@@ -52,7 +52,7 @@ defaults:
   n_jobs: &n_jobs 3
   stop_early: &stop_early True
   patience: &patience 11
-  epochs: 250 &epochs
+  epochs: &epochs 250
 
 models:
   knn_dtw-oned:
