@@ -27,7 +27,6 @@ models-to-run:
   - dt-finger_own
   - dt-finger_tugraz
   - knn_dtw-oned
-  - knn_dtw-twod
   - knn_dtw-seqfinger_ott
   - knn_dtw-seqfinger_seqown
   - knn_dtw-seqfinger_tugraz
