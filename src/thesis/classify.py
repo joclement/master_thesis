@@ -221,14 +221,14 @@ class ClassificationHandler:
             _print_score("Train score", train_score)
             self.scores.loc[model_name, (TRAIN_SCORE, idx)] = train_score
             train_accuracy = accuracy_score(y_train, train_predictions)
-            _print_score("Train Accuracy score", train_accuracy)
+            _print_score("Train accuracy score", train_accuracy)
             self.scores.loc[model_name, (TRAIN_ACCURACY, idx)] = train_accuracy
 
             val_score = self.metric(y_val, val_predictions)
-            _print_score("Validation score", val_score)
+            _print_score("Val score", val_score)
             self.scores.loc[model_name, (VAL_SCORE, idx)] = val_score
             accuracy = accuracy_score(y_val, val_predictions)
-            _print_score("Accuracy score", accuracy)
+            _print_score("Val accuracy score", accuracy)
             self.scores.loc[model_name, (ACCURACY_SCORE, idx)] = accuracy
 
             if self.calc_cm:
