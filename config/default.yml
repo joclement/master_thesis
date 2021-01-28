@@ -153,6 +153,7 @@ models:
       batch_size: 6
       hidden_layer_sizes:
         - 4
+      dropout: 0.05
       optimizer: "adam"
       epochs: 123
       stop_early: *stop_early
@@ -163,6 +164,7 @@ models:
     classifier:
       hidden_layer_sizes:
         - 8
+      dropout: 0.05
       optimizer: "adam"
       batch_size: 1
       epochs: 23
@@ -175,6 +177,7 @@ models:
       batch_size: 6
       hidden_layer_sizes:
         - 4
+      dropout: 0.05
       optimizer: "adam"
       epochs: 123
       stop_early: *stop_early
@@ -186,6 +189,7 @@ models:
       batch_size: 6
       hidden_layer_sizes:
         - 6
+      dropout: 0.05
       optimizer: "adam"
       epochs: 123
       stop_early: *stop_early
