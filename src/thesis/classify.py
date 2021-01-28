@@ -127,6 +127,12 @@ class ClassificationHandler:
         skfold = StratifiedKFold(n_splits=self.cv)
         self.cv_splits = list(skfold.split(np.zeros(len(self.y)), self.y))
 
+        self.finished = False
+
+    def __del__(self):
+        if not self.finished:
+            self.scores.to_csv(Path(self.output_dir, SCORES_FILENAME))
+
     def get_cache_path(self) -> Optional[Path]:
         return (
             Path(self.config["general"]["cache_path"])
@@ -261,6 +267,7 @@ class ClassificationHandler:
         click.echo(self.scores)
         click.echo(self.scores.loc[:, (VAL_SCORE, slice(None))].mean(axis=1))
         self.scores.to_csv(Path(self.output_dir, SCORES_FILENAME))
+        self.finished = True
         description = f"cv: {self.cv}, n: {len(self.y)}, n_defects: {len(set(self.y))}"
         plot_results(self.scores, self.output_dir, description=description)
 
