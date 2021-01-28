@@ -237,6 +237,17 @@ class ClassificationHandler:
                 all_val_predictions.extend(val_predictions)
                 all_val_correct.extend(y_val)
 
+        _print_score(
+            "Val score", self.scores.loc[model_name, (VAL_SCORE, slice(None))].mean()
+        )
+        _print_score(
+            "Val accuracy",
+            self.scores.loc[model_name, (ACCURACY_SCORE, slice(None))].mean(),
+        )
+        _print_score(
+            "Val top 3 accuracy",
+            self.scores.loc[model_name, (TOP_K_ACCURACY, slice(None))].mean(),
+        )
         if self.calc_cm:
             click.echo()
             confusion_matrix = metrics.confusion_matrix(
