@@ -183,6 +183,7 @@ class ClassificationHandler:
         all_val_correct = []
         all_val_predictions = []
         for idx, split_indexes in enumerate(self.cv_splits):
+            click.echo()
             click.echo(f"cv: {idx}")
             train_index, val_index = split_indexes
             if isinstance(X, pd.DataFrame):
@@ -232,11 +233,13 @@ class ClassificationHandler:
             self.scores.loc[model_name, (ACCURACY_SCORE, idx)] = accuracy
 
             if self.calc_cm:
+                click.echo()
                 confusion_matrix = metrics.confusion_matrix(y_val, val_predictions)
                 self._report_confusion_matrix(str(idx), model_folder, confusion_matrix)
                 all_val_predictions.extend(val_predictions)
                 all_val_correct.extend(y_val)
 
+        click.echo()
         _print_score(
             "Val score", self.scores.loc[model_name, (VAL_SCORE, slice(None))].mean()
         )
