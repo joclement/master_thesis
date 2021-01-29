@@ -135,8 +135,9 @@ class ClassificationHandler:
             self.get_cache_path(),
         )
 
+        self.defects = sorted(set(self.y))
         self.defect_names = [
-            data.DEFECT_NAMES[data.Defect(d)] for d in sorted(set(self.y))
+            data.DEFECT_NAMES[data.Defect(d)] for d in self.defects
         ]
 
         all_score_names = {TRAIN_SCORE, VAL_SCORE, *METRIC_NAMES}
@@ -208,7 +209,7 @@ class ClassificationHandler:
             val_proba_predictions = pipeline.predict_proba(X_val)
             val_predictions = np.argmax(val_proba_predictions, axis=1)
             top_k_accuracy = top_k_accuracy_score(
-                y_val, val_proba_predictions, k=3, labels=sorted(set(self.y))
+                y_val, val_proba_predictions, k=3, labels=self.defects
             )
             _print_score(TOP_K_ACCURACY, top_k_accuracy)
             self.scores.loc[model_name, (TOP_K_ACCURACY, idx)] = top_k_accuracy
@@ -337,7 +338,7 @@ class ClassificationHandler:
         description = (
             f"cv: {len(self.cv_splits)}"
             f", n: {len(self.y)}"
-            f", n_defects: {len(set(self.y))}"
+            f", n_defects: {len(self.defects)}"
         )
         plot_results(self.scores, self.output_dir, description=description)
 
