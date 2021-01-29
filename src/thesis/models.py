@@ -45,9 +45,9 @@ def _finger_tsfresh(
     return X, tsfreshTransformer
 
 
-class SeqFingerMinMaxScaler(TransformerMixin):
-    def __init__(self, **kwargs):
-        self._scaler = MinMaxScaler(**kwargs)
+class SeqFingerScaler(TransformerMixin):
+    def __init__(self, Scaler, **kwargs):
+        self._scaler = Scaler(**kwargs)
 
     def fit(self, X, y=None, **kwargs):
         X = np.array(X)
@@ -83,7 +83,12 @@ def _get_transformer(
         return None
     if "seqfinger_" in data_id:
         if config["normalize"]:
-            return SeqFingerMinMaxScaler()
+            if classifier_id == "knn_dtw":
+                return SeqFingerScaler(MinMaxScaler)
+            elif classifier_id == "svm_dtw":
+                return SeqFingerScaler(StandardScaler)
+            else:
+                raise ValueError(f"classifier {classifier_id} not supported.")
         else:
             return None
     if "finger_" in data_id:
