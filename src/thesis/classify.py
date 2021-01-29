@@ -191,7 +191,9 @@ class ClassificationHandler:
         model_folder.mkdir(exist_ok=True)
         util.finish_plot(f"confusion_matrix_{name}", model_folder)
 
-    def _do_val_predictions(self, model_name, idx, pipeline, X_val, y_val):
+    def _do_val_predictions(
+        self, model_name: str, idx: int, pipeline: Pipeline, X_val, y_val
+    ) -> np.array:
         if isinstance(get_classifier(pipeline), (SVC, TimeSeriesSVC)):
             val_predictions = pipeline.predict(X_val)
         else:
