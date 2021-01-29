@@ -9,7 +9,7 @@ def file_score(
     predictions: Union[pd.Series, np.array, list],
 ) -> float:
     if len(set(y_true)) != 1:
-        raise ValueError("Multiple defects detected.")
+        raise ValueError(f"Multiple defects detected: {y_true}")
     if isinstance(y_true, pd.Series):
         correct_defect = y_true.iloc[0]
     else:

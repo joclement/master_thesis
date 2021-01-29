@@ -73,16 +73,20 @@ def adapt_durations(
     )
 
 
-def group_by_file(measurements: List[pd.DataFrame]):
-    filenames = sorted([df.attrs[data.PATH] for df in measurements])
+def group_by_file(measurements: List[pd.DataFrame]) -> List[int]:
+    filenames = [df.attrs[data.PATH] for df in measurements]
     groups = []
     index = 0
     current_filename = filenames[0]
+    seen = []
     for filename in filenames:
+        assert filename not in seen
         if filename != current_filename:
+            seen.append(current_filename)
             index += 1
             current_filename = filename
         groups.append(index)
+
     return groups
 
 
@@ -119,8 +123,10 @@ class ClassificationHandler:
             config["general"]["split"],
             config["general"]["drop_empty"],
         )
+
         self.y: Final = pd.Series(data.get_defects(measurements))
         self.onehot_y = LabelBinarizer().fit_transform(self.y)
+        self.cv_splits = self._generate_cv_splits(measurements)
         self.modelHandler = models.ModelHandler(
             measurements,
             self.y,
@@ -132,7 +138,7 @@ class ClassificationHandler:
         self.defect_names = [
             data.DEFECT_NAMES[data.Defect(d)] for d in sorted(set(self.y))
         ]
-        self.cv_splits = self._generate_cv_splits(measurements)
+
         all_score_names = {TRAIN_SCORE, VAL_SCORE, *METRIC_NAMES}
         iterables = [all_score_names, list(range(len(self.cv_splits)))]
         score_columns = pd.MultiIndex.from_product(iterables, names=["metric", "index"])
@@ -262,9 +268,9 @@ class ClassificationHandler:
             self.scores.loc[model_name, (ACCURACY_SCORE, idx)] = accuracy
 
             if self.config["general"]["cv"] == "logo":
-                self.scores.loc[model_name, (FILE_SCORE, idx)] = file_score(
-                    y_val, val_predictions
-                )
+                file_score_num = file_score(y_val, val_predictions)
+                _print_score("File score", file_score_num)
+                self.scores.loc[model_name, (FILE_SCORE, idx)] = file_score_num
 
             if self.calc_cm:
                 if self.config["general"]["cv"] != "logo":
