@@ -109,8 +109,6 @@ class ClassificationHandler:
         self.calc_cm = self.config["general"]["calc_cm"]
         self.metric = getattr(sklearn.metrics, self.config["general"]["metric"])
 
-        self.save_models = self.config["general"]["save_models"]
-
         measurements, _ = data.read_recursive(self.config["general"]["data_dir"])
         if len(measurements) == 0:
             raise ValueError(f"No data in: {self.config['general']['data_dir']}")
@@ -314,18 +312,20 @@ class ClassificationHandler:
             model_folder = Path(self.output_dir, model_name)
             self._cross_validate(model_name, model_folder, pipeline, X)
 
-            if self.save_models:
-                pipeline.fit(X, self.y)
-                model_folder.mkdir(exist_ok=True)
-                if is_keras(pipeline):
-                    get_classifier(pipeline).model.save(Path(model_folder, "model.h5"))
-                else:
-                    pickle.dump(pipeline, open(Path(model_folder, "model.p"), "wb"))
-
+            if self.config["general"]["save_models"]:
+                self._save_models(pipeline, X, model_folder)
             click.echo(
                 "\n ============================================================ \n"
             )
         self._finish()
+
+    def _save_models(self, pipeline: Pipeline, X, model_folder: Path) -> None:
+        pipeline.fit(X, self.y)
+        model_folder.mkdir(exist_ok=True)
+        if is_keras(pipeline):
+            get_classifier(pipeline).model.save(Path(model_folder, "model.h5"))
+        else:
+            pickle.dump(pipeline, open(Path(model_folder, "model.p"), "wb"))
 
     def _save_scores(self) -> None:
         self.scores.to_csv(Path(self.output_dir, SCORES_FILENAME))
