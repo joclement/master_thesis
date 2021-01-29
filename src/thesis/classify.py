@@ -27,6 +27,7 @@ from .constants import (
     ACCURACY_SCORE,
     CONFIG_FILENAME,
     CONFIG_MODELS_RUN_ID,
+    FILE_SCORE,
     METRIC_NAMES,
     SCORES_FILENAME,
     TOP_K_ACCURACY,
@@ -34,6 +35,7 @@ from .constants import (
     TRAIN_SCORE,
     VAL_SCORE,
 )
+from .metrics import file_score
 from .prepared_data import split_by_durations
 from .util import to_dataTIME
 from .visualize_results import plot_results
@@ -259,6 +261,11 @@ class ClassificationHandler:
             _print_score("Val accuracy score", accuracy)
             self.scores.loc[model_name, (ACCURACY_SCORE, idx)] = accuracy
 
+            if self.config["general"]["cv"] == "logo":
+                self.scores.loc[model_name, (FILE_SCORE, idx)] = file_score(
+                    y_val, val_predictions
+                )
+
             if self.calc_cm:
                 if self.config["general"]["cv"] != "logo":
                     click.echo()
@@ -281,6 +288,11 @@ class ClassificationHandler:
             "Val top 3 accuracy",
             self.scores.loc[model_name, (TOP_K_ACCURACY, slice(None))].mean(),
         )
+        if self.config["general"]["cv"] == "logo":
+            _print_score(
+                "File score",
+                self.scores.loc[model_name, (FILE_SCORE, slice(None))].mean(),
+            )
         if self.calc_cm:
             click.echo()
             confusion_matrix = metrics.confusion_matrix(
