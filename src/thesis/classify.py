@@ -125,8 +125,8 @@ class ClassificationHandler:
         )
 
         self.y: Final = pd.Series(data.get_defects(measurements))
-        self.onehot_y = LabelBinarizer().fit_transform(self.y)
-        self.cv_splits = self._generate_cv_splits(measurements)
+        self.onehot_y: Final = LabelBinarizer().fit_transform(self.y)
+        self.cv_splits: Final = self._generate_cv_splits(measurements)
         self.modelHandler = models.ModelHandler(
             measurements,
             self.y,
@@ -135,8 +135,8 @@ class ClassificationHandler:
             self.get_cache_path(),
         )
 
-        self.defects = sorted(set(self.y))
-        self.defect_names = [
+        self.defects: Final = sorted(set(self.y))
+        self.defect_names: Final = [
             data.DEFECT_NAMES[data.Defect(d)] for d in self.defects
         ]
 
