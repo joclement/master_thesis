@@ -14,7 +14,7 @@ import sklearn
 from sklearn import metrics
 from sklearn.base import BaseEstimator
 from sklearn.metrics import accuracy_score, top_k_accuracy_score
-from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import LeaveOneGroupOut, StratifiedKFold
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelBinarizer
 from sklearn.svm import SVC
@@ -71,6 +71,19 @@ def adapt_durations(
     )
 
 
+def group_by_file(measurements: List[pd.DataFrame]):
+    filenames = sorted([df.attrs[data.PATH] for df in measurements])
+    groups = []
+    index = 0
+    current_filename = filenames[0]
+    for filename in filenames:
+        if filename != current_filename:
+            index += 1
+            current_filename = filename
+        groups.append(index)
+    return groups
+
+
 class ClassificationHandler:
     def __init__(self, config):
         pd.set_option("precision", 2)
@@ -90,15 +103,7 @@ class ClassificationHandler:
         self.calc_cm = self.config["general"]["calc_cm"]
         self.metric = getattr(sklearn.metrics, self.config["general"]["metric"])
 
-        self.cv = self.config["general"]["cv"]
         self.save_models = self.config["general"]["save_models"]
-
-        all_score_names = {TRAIN_SCORE, VAL_SCORE, *METRIC_NAMES}
-        iterables = [all_score_names, list(range(self.cv))]
-        score_columns = pd.MultiIndex.from_product(iterables, names=["metric", "index"])
-        self.scores = pd.DataFrame(
-            index=self.config[CONFIG_MODELS_RUN_ID], columns=score_columns, dtype=float
-        )
 
         measurements, _ = data.read_recursive(self.config["general"]["data_dir"])
         if len(measurements) == 0:
@@ -125,14 +130,32 @@ class ClassificationHandler:
         self.defect_names = [
             data.DEFECT_NAMES[data.Defect(d)] for d in sorted(set(self.y))
         ]
-        skfold = StratifiedKFold(n_splits=self.cv)
-        self.cv_splits = list(skfold.split(np.zeros(len(self.y)), self.y))
+        self.cv_splits = self._generate_cv_splits(measurements)
+        all_score_names = {TRAIN_SCORE, VAL_SCORE, *METRIC_NAMES}
+        iterables = [all_score_names, list(range(len(self.cv_splits)))]
+        score_columns = pd.MultiIndex.from_product(iterables, names=["metric", "index"])
+        self.scores = pd.DataFrame(
+            index=self.config[CONFIG_MODELS_RUN_ID], columns=score_columns, dtype=float
+        )
 
         self.finished = False
 
     def __del__(self):
         if hasattr(self, "finished") and not self.finished:
             self.scores.to_csv(Path(self.output_dir, SCORES_FILENAME))
+
+    def _generate_cv_splits(self, measurements: List[pd.DataFrame]):
+        cv = self.config["general"]["cv"]
+        if isinstance(cv, int):
+            cross_validator = StratifiedKFold(n_splits=cv)
+            groups = None
+        elif self.config["general"]["cv"] == "logo":
+            cross_validator = LeaveOneGroupOut()
+            groups = group_by_file(measurements)
+        else:
+            raise ValueError("Invalid cv.")
+
+        return list(cross_validator.split(np.zeros(len(self.y)), self.y, groups))
 
     def get_cache_path(self) -> Optional[Path]:
         return (
@@ -174,7 +197,9 @@ class ClassificationHandler:
         else:
             val_proba_predictions = pipeline.predict_proba(X_val)
             val_predictions = np.argmax(val_proba_predictions, axis=1)
-            top_k_accuracy = top_k_accuracy_score(y_val, val_proba_predictions, k=3)
+            top_k_accuracy = top_k_accuracy_score(
+                y_val, val_proba_predictions, k=3, labels=sorted(set(self.y))
+            )
             _print_score(TOP_K_ACCURACY, top_k_accuracy)
             self.scores.loc[model_name, (TOP_K_ACCURACY, idx)] = top_k_accuracy
         return val_predictions
@@ -233,9 +258,12 @@ class ClassificationHandler:
             self.scores.loc[model_name, (ACCURACY_SCORE, idx)] = accuracy
 
             if self.calc_cm:
-                click.echo()
-                confusion_matrix = metrics.confusion_matrix(y_val, val_predictions)
-                self._report_confusion_matrix(str(idx), model_folder, confusion_matrix)
+                if self.config["general"]["cv"] != "logo":
+                    click.echo()
+                    confusion_matrix = metrics.confusion_matrix(y_val, val_predictions)
+                    self._report_confusion_matrix(
+                        str(idx), model_folder, confusion_matrix
+                    )
                 all_val_predictions.extend(val_predictions)
                 all_val_correct.extend(y_val)
 
@@ -283,7 +311,11 @@ class ClassificationHandler:
         click.echo(self.scores.loc[:, (VAL_SCORE, slice(None))].mean(axis=1))
         self.scores.to_csv(Path(self.output_dir, SCORES_FILENAME))
         self.finished = True
-        description = f"cv: {self.cv}, n: {len(self.y)}, n_defects: {len(set(self.y))}"
+        description = (
+            f"cv: {len(self.cv_splits)}"
+            f", n: {len(self.y)}"
+            f", n_defects: {len(set(self.y))}"
+        )
         plot_results(self.scores, self.output_dir, description=description)
 
 
