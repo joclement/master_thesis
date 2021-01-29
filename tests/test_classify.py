@@ -51,9 +51,7 @@ def test_classify_ClassificationHandler(config_with_tsfresh, tmpdir):
     config = config_with_tsfresh
     output_dir = Path(config["general"]["output_dir"])
     config["general"]["calc_cm"] = True
-    config["general"]["save_models"] = True
-
-    num_of_models = len(config["models-to-run"])
+    config["general"]["save_models"] = False
 
     handler = classify.ClassificationHandler(config)
     handler.run()
@@ -61,11 +59,24 @@ def test_classify_ClassificationHandler(config_with_tsfresh, tmpdir):
     assert Path(config["general"]["output_dir"], "accuracy.svg").exists()
     assert Path(config["general"]["output_dir"], "top_3_accuracy.svg").exists()
 
+    num_of_models = len(config["models-to-run"])
     assert len(list(output_dir.rglob("confusion_matrix_*.svg"))) == num_of_models * (
         config["general"]["cv"] + 1
     )
+
+
+def test_classify_ClassificationHandler_save_models(config):
+    config["models-to-run"] = ["mlp-finger_own", "dt-finger_ott"]
+    config["general"]["save_models"] = True
+
+    handler = classify.ClassificationHandler(config)
+    handler.run()
+
+    output_dir = Path(config["general"]["output_dir"])
+    num_of_models = len(config["models-to-run"])
     num_of_mlp_models = len([m for m in config["models-to-run"] if "mlp-" in m])
     assert len(list(output_dir.rglob("model.p"))) == num_of_models - num_of_mlp_models
+    assert len(list(output_dir.rglob("pipeline_step*.p"))) == num_of_mlp_models
 
 
 def test_classify_ClassificationHandler_no_defects(config):

@@ -323,9 +323,19 @@ class ClassificationHandler:
         pipeline.fit(X, self.y)
         model_folder.mkdir(exist_ok=True)
         if is_keras(pipeline):
+            pipeline_steps = list(
+                zip(pipeline.named_steps.keys(), pipeline.named_steps.values())
+            )
+            for index, named_step in enumerate(pipeline_steps[:-1]):
+                name, transformer = named_step
+                with open(
+                    Path(model_folder, f"pipeline_step{index}_{name}.p"), "wb"
+                ) as file:
+                    pickle.dump(transformer, file)
             get_classifier(pipeline).model.save(Path(model_folder, "model.h5"))
         else:
-            pickle.dump(pipeline, open(Path(model_folder, "model.p"), "wb"))
+            with open(Path(model_folder, "model.p"), "wb") as file:
+                pickle.dump(pipeline, file)
 
     def _save_scores(self) -> None:
         self.scores.to_csv(Path(self.output_dir, SCORES_FILENAME))
