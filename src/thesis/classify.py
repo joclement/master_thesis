@@ -142,7 +142,7 @@ class ClassificationHandler:
 
     def __del__(self):
         if hasattr(self, "finished") and not self.finished:
-            self.scores.to_csv(Path(self.output_dir, SCORES_FILENAME))
+            self._save_scores()
 
     def _generate_cv_splits(self, measurements: List[pd.DataFrame]):
         cv = self.config["general"]["cv"]
@@ -305,6 +305,9 @@ class ClassificationHandler:
                 "\n ============================================================ \n"
             )
         self._finish()
+
+    def _save_scores(self) -> None:
+        self.scores.to_csv(Path(self.output_dir, SCORES_FILENAME))
 
     def _finish(self):
         click.echo(self.scores)
