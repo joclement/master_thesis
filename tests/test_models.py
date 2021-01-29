@@ -5,9 +5,9 @@ import pytest
 from thesis import data, models
 
 
-def test_dt_seqfinger_ott_model(measurements):
+def test_svm_dtw_seqfinger_ott_model(measurements):
     models_config = {
-        "dt-seqfinger_ott": {
+        "svm_dtw-seqfinger_ott": {
             "normalize": True,
             "data": {
                 "duration": "30 seconds",
