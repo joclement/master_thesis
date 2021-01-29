@@ -210,7 +210,9 @@ models:
   dt-finger_own:
     normalize: True
     classifier:
-      min_samples_split: 8
+      min_samples_split: 10
+      class_weight: "balanced"
+      min_samples_leaf: 3
 
   dt-finger_tugraz:
     normalize: False
