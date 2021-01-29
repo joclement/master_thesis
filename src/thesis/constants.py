@@ -10,3 +10,4 @@ VAL_SCORE = "val"
 ACCURACY_SCORE = "accuracy"
 TOP_K_ACCURACY = "top_3_accuracy"
 METRIC_NAMES = {ACCURACY_SCORE, TOP_K_ACCURACY}
+FILE_SCORE = "file_score"
