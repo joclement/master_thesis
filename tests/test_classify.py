@@ -75,6 +75,24 @@ def test_classify_ClassificationHandler_no_defects(config):
         classify.ClassificationHandler(config)
 
 
+def test_classify_ClassificationHandler_logo_cv(config):
+    config["general"]["cv"] = "logo"
+    config["models-to-run"] = config["models-to-run"][0:1]
+    config["general"]["calc_cm"] = True
+
+    handler = classify.ClassificationHandler(config)
+    handler.run()
+    output_dir = Path(config["general"]["output_dir"])
+    assert len(list(output_dir.rglob("confusion_matrix_*.svg"))) == 1
+
+
+def test_classify_ClassificationHandler_invalid_cv(config):
+    config["general"]["cv"] = "invalid"
+
+    with pytest.raises(ValueError):
+        classify.ClassificationHandler(config)
+
+
 def test_main_version_succeeds():
     runner = click.testing.CliRunner()
     result = runner.invoke(classify.main, ["--version"])
