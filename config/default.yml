@@ -54,6 +54,7 @@ defaults:
   stop_early: &stop_early True
   patience: &patience 11
   epochs: &epochs 250
+  verbose: &verbose 1
 
 models:
   knn_dtw-oned:
@@ -138,6 +139,7 @@ models:
       epochs: *epochs
       stop_early: *stop_early
       patience: *patience
+      verbose: *verbose
 
   mlp-finger_own:
     normalize: True
@@ -150,6 +152,7 @@ models:
       epochs: *epochs
       stop_early: *stop_early
       patience: *patience
+      verbose: *verbose
 
   mlp-finger_tugraz:
     normalize: True
@@ -162,6 +165,7 @@ models:
       epochs: *epochs
       stop_early: *stop_early
       patience: *patience
+      verbose: *verbose
 
   svm-finger_ott:
     normalize: True
