@@ -1,3 +1,4 @@
+from datetime import datetime
 from pathlib import Path
 import pickle
 import shutil
@@ -104,6 +105,7 @@ class ClassificationHandler:
                 "Non matching version {self.config['version']}, wanted {__version__}"
             )
         self.config["version"] = __version__
+        self.config["datetime"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self._save_config()
 
         self.calc_cm = self.config["general"]["calc_cm"]
