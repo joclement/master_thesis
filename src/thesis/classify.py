@@ -36,6 +36,7 @@ from .constants import (
     TRAIN_SCORE,
     VAL_SCORE,
 )
+from .data import TreatNegValues
 from .metrics import file_score
 from .prepared_data import split_by_durations
 from .util import to_dataTIME
@@ -111,11 +112,13 @@ class ClassificationHandler:
         self.calc_cm = self.config["general"]["calc_cm"]
         self.metric = getattr(sklearn.metrics, self.config["general"]["metric"])
 
-        measurements, _ = data.read_recursive(self.config["general"]["data_dir"])
+        measurements, _ = data.read_recursive(
+            self.config["general"]["data_dir"],
+            TreatNegValues(self.config["general"]["treat_negative_values"]),
+        )
         if len(measurements) == 0:
             raise ValueError(f"No data in: {self.config['general']['data_dir']}")
         measurements = self._keep_wanted_defects(measurements)
-        data.clip_neg_pd_values(measurements)
         measurements = adapt_durations(
             measurements,
             config["general"]["min_duration"],

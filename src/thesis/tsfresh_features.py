@@ -9,6 +9,7 @@ from tsfresh.feature_selection.relevance import calculate_relevance_table
 from tsfresh.utilities.dataframe_functions import impute
 
 from . import __version__, data, prepared_data
+from .data import TreatNegValues
 from .prepared_data import split_by_durations
 
 
@@ -146,10 +147,9 @@ def main(
     drop: bool = False,
     max_len: int = 100000,
 ):
-    measurements, _ = data.read_recursive(input_directory)
+    measurements, _ = data.read_recursive(input_directory, TreatNegValues.zero)
 
     measurements = [df for df in measurements if len(df.index) <= max_len]
-    data.clip_neg_pd_values(measurements)
     if duration:
         measurements = split_by_durations(
             measurements, pd.Timedelta(duration), drop_empty=drop
