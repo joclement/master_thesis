@@ -230,7 +230,7 @@ def get_mlp(defects: set, **classifier_config: dict) -> KerasClassifier:
             monitor="loss",
             min_delta=0,
             patience=classifier_config["patience"],
-            verbose=2,
+            verbose=classifier_config["verbose"],
             mode="auto",
             restore_best_weights=True,
         )
@@ -243,7 +243,7 @@ def get_mlp(defects: set, **classifier_config: dict) -> KerasClassifier:
         dropout=classifier_config["dropout"],
         epochs=classifier_config["epochs"],
         batch_size=classifier_config["batch_size"],
-        verbose=2,
+        verbose=classifier_config["verbose"],
         callbacks=callbacks,
     )
     return model
