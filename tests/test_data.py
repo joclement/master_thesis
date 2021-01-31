@@ -47,11 +47,19 @@ def test_data_read_recursive(csv_folder):
     )
 
 
-def test_data_clip_neg_values(measurement):
-    measurement.loc[0, data.PD] = -0.01
-    assert measurement[data.PD].min() == -0.01
-    data.clip_neg_pd_values([measurement])
+def test_treat_negative_values_nothing(csv_filepath):
+    measurement = data.read(csv_filepath, data.TreatNegValues.nothing)
+    assert measurement[data.PD].min() < 0.0
+
+
+def test_treat_negative_values_zero(csv_filepath):
+    measurement = data.read(csv_filepath, data.TreatNegValues.zero)
     assert measurement[data.PD].min() == 0.0
+
+
+def test_treat_negative_values_absolute(csv_filepath):
+    measurement = data.read(csv_filepath, data.TreatNegValues.absolute)
+    assert measurement[data.PD].min() > 0.0
 
 
 def test_data_split_train_test(measurements):

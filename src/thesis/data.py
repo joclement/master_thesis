@@ -1,4 +1,4 @@
-from enum import IntEnum
+from enum import Enum, IntEnum
 from pathlib import Path
 from typing import Final, List, Tuple, Union
 
@@ -56,6 +56,12 @@ DEFECT_NAMES: Final = {
     Defect.floating: "Floating",
     Defect.cavity: "Void",
 }
+
+
+class TreatNegValues(Enum):
+    nothing = "nothing"
+    zero = "zero"
+    absolute = "absolute"
 
 
 def get_names(defects: Union[List[Defect], pd.Series]) -> List[str]:
@@ -116,7 +122,11 @@ def _do_sanity_test(df: pd.DataFrame, filepath):
         raise ValueError(f"Time values are corrupt in file: {filepath}")
 
 
-def read(filepath, labeled_file: bool = True) -> pd.DataFrame:
+def read(
+    filepath,
+    treat_neg_values: TreatNegValues = TreatNegValues.nothing,
+    labeled_file: bool = True,
+) -> pd.DataFrame:
     experiment = pd.read_csv(filepath, sep=SEPERATOR, decimal=DECIMAL_SIGN)
     _do_sanity_test(experiment, filepath)
 
@@ -127,6 +137,11 @@ def read(filepath, labeled_file: bool = True) -> pd.DataFrame:
     experiment[TIME_DIFF] = experiment[TIME_IN_FILE].diff()
     experiment.attrs[START_TIME] = experiment[TIME_IN_FILE].iloc[0]
     experiment.drop(columns=TIME_IN_FILE, inplace=True)
+
+    if treat_neg_values is TreatNegValues.zero:
+        experiment.loc[:, PD].clip(lower=0, inplace=True)
+    elif treat_neg_values is TreatNegValues.absolute:
+        experiment.loc[:, PD] = experiment[PD].abs()
 
     experiment[PD_DIFF] = experiment[PD].diff().abs()
 
@@ -139,16 +154,13 @@ def read(filepath, labeled_file: bool = True) -> pd.DataFrame:
     return experiment.iloc[1:].reset_index(drop=True)
 
 
-def clip_neg_pd_values(measurements: List[pd.DataFrame]):
-    for measurement in measurements:
-        measurement[PD].clip(lower=0, inplace=True)
-
-
-def read_recursive(dir_path) -> Tuple[List[pd.DataFrame], list]:
+def read_recursive(
+    dir_path, treat_neg_values: TreatNegValues = TreatNegValues.nothing
+) -> Tuple[List[pd.DataFrame], list]:
     measurements = []
     csv_filepaths = list(Path(dir_path).rglob("*.csv"))
     for csv_filepath in csv_filepaths:
-        measurements.append(read(csv_filepath))
+        measurements.append(read(csv_filepath, treat_neg_values))
 
     return measurements, csv_filepaths
 
