@@ -143,7 +143,7 @@ def read(
     elif treat_neg_values is TreatNegValues.absolute:
         experiment.loc[:, PD] = experiment[PD].abs()
 
-    experiment[PD_DIFF] = experiment[PD].diff().abs()
+    experiment[PD_DIFF] = experiment[PD].diff()
 
     experiment.attrs[PATH] = str(filepath)
     filename = Path(filepath).stem
