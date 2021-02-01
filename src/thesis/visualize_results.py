@@ -18,8 +18,17 @@ from .constants import (
 )
 
 
+def make_pandas_plot(scores: pd.DataFrame, config: dict, description: str):
+    if config["general"]["cv"] == "logo":
+        xerr = None
+    else:
+        xerr = scores.std(axis=1, level=0)
+    scores.mean(axis=1, level=0).plot.barh(title=description, xerr=xerr)
+
+
 def plot_results(
     scores: pd.DataFrame,
+    config: dict,
     output_dir: Optional[Path] = None,
     description: str = "",
     show: bool = False,
@@ -27,19 +36,25 @@ def plot_results(
     y_pos = np.arange(len(scores.index))
 
     train_val_scores = scores.loc[:, ([TRAIN_SCORE, VAL_SCORE], slice(None))]
-    train_val_scores.mean(axis=1, level=0).plot.barh(
-        title=description, xerr=train_val_scores.std(axis=1, level=0)
-    )
+    make_pandas_plot(train_val_scores, config, description)
     util.finish_plot("train_val_scores", output_dir, show)
+
+    val_scores = scores.loc[:, (VAL_SCORE, slice(None))]
+    make_pandas_plot(val_scores, config, description)
+    util.finish_plot("val_scores", output_dir, show)
 
     for metric in METRIC_NAMES:
         metric_scores = scores.loc[:, (metric, slice(None))]
 
         fig, ax = plt.subplots()
+        if config["general"]["cv"] == "logo":
+            xerr = None
+        else:
+            xerr = metric_scores.std(axis=1)
         ax.barh(
             y_pos,
             metric_scores.mean(axis=1),
-            xerr=metric_scores.std(axis=1),
+            xerr=xerr,
             align="center",
         )
         ax.set_yticks(y_pos)
@@ -72,4 +87,4 @@ def main(result_dir, config_file, show):
 
     scores = pd.read_csv(Path(result_dir, SCORES_FILENAME), header=[0, 1], index_col=0)
     scores = scores.loc[scores.index.isin(models), :]
-    plot_results(scores, show=show)
+    plot_results(scores, classify_config, show=show)
