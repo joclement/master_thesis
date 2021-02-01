@@ -102,7 +102,7 @@ def test_lukas_fingerprint_results_with_master_thesis_values(real_data_folder):
     assert pd.max() == approx(9.914, abs=1e-3)
     assert pd.std() / pd.mean() == approx(0.154, abs=1e-3)
 
-    pd_diff = df[data.PD_DIFF]
+    pd_diff = df[data.PD_DIFF].abs()
     assert pd_diff.mean() == approx(0.388, abs=1e-3)
     assert pd_diff.skew() == approx(5.381, abs=1e-3)
     # @note: the Matlab implementation of kurtosis done by Lukas is biased,
