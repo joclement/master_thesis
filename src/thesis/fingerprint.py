@@ -226,6 +226,7 @@ def own(df: pd.DataFrame) -> pd.Series:
         df[data.TIME_DIFF].median(),
         longest_strike_below_mean(df[data.TIME_DIFF]),
         change_quantiles(df[data.TIME_DIFF], 0.0, 0.3, True, "var"),
+        *calc_weibull_params(df[data.PD].sort_values() / df[data.PD].max()),
     ]
 
     finger = pd.Series(data=own, dtype=float)
