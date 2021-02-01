@@ -355,7 +355,7 @@ class ClassificationHandler:
             f", n: {len(self.y)}"
             f", n_defects: {len(self.defects)}"
         )
-        plot_results(self.scores, self.output_dir, description=description)
+        plot_results(self.scores, self.config, self.output_dir, description=description)
 
 
 @click.command()
