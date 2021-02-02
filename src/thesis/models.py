@@ -18,6 +18,7 @@ from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from tsfresh.transformers import FeatureSelector
 from tslearn.neighbors import KNeighborsTimeSeriesClassifier
+from tslearn.preprocessing import TimeSeriesScalerMinMax
 from tslearn.svm import TimeSeriesSVC
 
 from . import classifiers, data, prepared_data
@@ -79,26 +80,24 @@ class SeqFingerScaler(TransformerMixin):
 def _get_transformer(
     classifier_id: str, data_id: str, **config
 ) -> Optional[TransformerMixin]:
-    if data_id in ["oned", "twod"]:
+    if data_id == "twod" or not config["normalize"]:
         return None
     if "seqfinger_" in data_id:
-        if config["normalize"]:
-            if classifier_id == "knn_dtw":
-                return SeqFingerScaler(MinMaxScaler)
-            elif classifier_id == "svm_dtw":
-                return SeqFingerScaler(StandardScaler)
-            else:
-                raise ValueError(f"classifier {classifier_id} not supported.")
+        if classifier_id == "knn_dtw":
+            return SeqFingerScaler(MinMaxScaler)
+        elif classifier_id == "svm_dtw":
+            return SeqFingerScaler(StandardScaler)
         else:
-            return None
+            raise ValueError(f"classifier {classifier_id} not supported.")
     if "finger_" in data_id:
-        if config["normalize"]:
-            if classifier_id in ["mlp", "svm"]:
-                return StandardScaler()
-            else:
-                return MinMaxScaler()
+        if classifier_id in ["mlp", "svm"]:
+            return StandardScaler()
+        elif classifier_id in ["knn", "dt"]:
+            return MinMaxScaler()
         else:
-            return None
+            raise ValueError(f"classifier {classifier_id} not supported.")
+    if data_id == "oned":
+        return TimeSeriesScalerMinMax()
     raise ValueError(f"Data Representation '{data_id}' not supported.")
 
 
