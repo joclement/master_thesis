@@ -31,6 +31,7 @@ from .constants import (
     DataPart,
     FILE_SCORE,
     K,
+    MODEL_ID,
     SCORES_FILENAME,
     TOP_K_ACCURACY_SCORE,
 )
@@ -331,13 +332,15 @@ class ClassificationHandler:
             self._cross_validate(model_name, model_folder, pipeline, X)
 
             if self.config["general"]["save_models"]:
-                self._save_models(pipeline, X, model_folder)
+                self._save_models(pipeline, X, model_folder, model_name)
             click.echo(
                 "\n ============================================================ \n"
             )
         self._finish()
 
-    def _save_models(self, pipeline: Pipeline, X, model_folder: Path) -> None:
+    def _save_models(
+        self, pipeline: Pipeline, X, model_folder: Path, model_name: str
+    ) -> None:
         pipeline.fit(X, self.y)
         model_folder.mkdir(exist_ok=True)
         if is_keras(pipeline):
@@ -352,7 +355,7 @@ class ClassificationHandler:
                     pickle.dump(transformer, file)
             get_classifier(pipeline).model.save(Path(model_folder, "model.h5"))
         else:
-            with open(Path(model_folder, "model.p"), "wb") as file:
+            with open(Path(model_folder, f"{MODEL_ID}-{model_name}.p"), "wb") as file:
                 pickle.dump(pipeline, file)
 
     def _save_scores(self) -> None:

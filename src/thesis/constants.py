@@ -17,3 +17,5 @@ ACCURACY_SCORE: Final = "accuracy"
 K: Final = 3
 TOP_K_ACCURACY_SCORE: Final = f"top_{K}_accuracy"
 FILE_SCORE: Final = "file_score"
+
+MODEL_ID = "model"

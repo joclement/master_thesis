@@ -79,7 +79,7 @@ def test_classify_ClassificationHandler_save_models(config):
     output_dir = Path(config["general"]["output_dir"])
     num_of_models = len(config["models-to-run"])
     num_of_mlp_models = len([m for m in config["models-to-run"] if "mlp-" in m])
-    assert len(list(output_dir.rglob("model.p"))) == num_of_models - num_of_mlp_models
+    assert len(list(output_dir.rglob("model-*.p"))) == num_of_models - num_of_mlp_models
     assert len(list(output_dir.rglob("pipeline_step*.p"))) == num_of_mlp_models
 
 
