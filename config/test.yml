@@ -68,25 +68,25 @@ models:
       n_neighbors: 1
 
   knn-finger_ott:
-    normalize: True
+    normalize: *normalize
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
 
   knn-finger_own:
-    normalize: True
+    normalize: *normalize
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
 
   knn-finger_tugraz:
-    normalize: True
+    normalize: *normalize
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
 
   knn-finger_both:
-    normalize: True
+    normalize: *normalize
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
@@ -94,7 +94,7 @@ models:
   knn-finger_tsfresh:
     default_fc_parameters: MinimalFCParameters
     n_jobs: *n_jobs
-    normalize: True
+    normalize: *normalize
     fdr_level: 0.23
     tsfresh_data: *tsfresh_data
     classifier:
@@ -119,7 +119,7 @@ models:
       n_neighbors: 1
 
   knn_dtw-seqfinger_tugraz:
-    normalize: True
+    normalize: *normalize
     data:
       duration: *duration
       step_duration: *step_duration
@@ -128,7 +128,7 @@ models:
       n_neighbors: 1
 
   knn_dtw-seqfinger_both:
-    normalize: True
+    normalize: *normalize
     data:
       duration: *duration
       step_duration: *step_duration
@@ -140,7 +140,7 @@ models:
     normalize: False
 
   mlp-finger_ott:
-    normalize: True
+    normalize: *normalize
     classifier:
       n_jobs: *n_jobs
       batch_size: 6
@@ -154,7 +154,7 @@ models:
       verbose: *verbose
 
   mlp-finger_own:
-    normalize: True
+    normalize: *normalize
     classifier:
       n_jobs: *n_jobs
       hidden_layer_sizes:
@@ -168,7 +168,7 @@ models:
       verbose: *verbose
 
   mlp-finger_tugraz:
-    normalize: True
+    normalize: *normalize
     classifier:
       n_jobs: *n_jobs
       batch_size: 6
@@ -182,7 +182,7 @@ models:
       verbose: *verbose
 
   mlp-finger_both:
-    normalize: True
+    normalize: *normalize
     classifier:
       n_jobs: *n_jobs
       batch_size: 6
@@ -196,27 +196,27 @@ models:
       verbose: *verbose
 
   svm-finger_ott:
-    normalize: True
+    normalize: *normalize
     classifier:
       decision_function_shape: "ovr"
 
   svm-finger_own:
-    normalize: True
+    normalize: *normalize
     classifier:
       decision_function_shape: "ovr"
 
   svm-finger_tugraz:
-    normalize: True
+    normalize: *normalize
     classifier:
       decision_function_shape: "ovr"
 
   svm-finger_both:
-    normalize: True
+    normalize: *normalize
     classifier:
       decision_function_shape: "ovr"
 
   svm-finger_tsfresh:
-    normalize: True
+    normalize: *normalize
     n_jobs: *n_jobs
     fdr_level: 0.23
     tsfresh_data: *tsfresh_data
@@ -224,26 +224,26 @@ models:
       decision_function_shape: "ovr"
 
   svm_dtw-seqfinger_both:
-    normalize: True
+    normalize: *normalize
     data:
       duration: *duration
       step_duration: *step_duration
 
   svm_dtw-seqfinger_ott:
-    normalize: True
+    normalize: *normalize
     data:
       duration: *duration
       step_duration: *step_duration
 
   svm_dtw-seqfinger_seqown:
-    normalize: True
+    normalize: *normalize
     data:
       duration: *duration
       step_duration: *step_duration
 
   svm_dtw-seqfinger_tugraz:
     duration: *duration
-    normalize: True
+    normalize: *normalize
     step_duration: *step_duration
 
   dt-finger_ott:
