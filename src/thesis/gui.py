@@ -77,7 +77,7 @@ class ClassifierGui(tk.Toplevel):
         self._check_classification_readiness()
 
     def _predict(self):
-        X, _ = self.prepare_data([self.csv_data], **self.model_config)
+        X = self.prepare_data([self.csv_data], **self.model_config)
         prediction = data.Defect(self.classifier.predict(X)[0])
         probabilities_list = self.classifier.predict_proba(X)[0]
         probabilities_dict = {
