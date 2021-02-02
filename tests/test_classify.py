@@ -42,9 +42,11 @@ def test_classify_main(config, tmpdir):
     result = runner.invoke(classify.main, [str(config_filepath)])
 
     assert result.exit_code == 0
-    assert Path(config["general"]["output_dir"], "train_val_scores.svg").exists()
-    assert Path(config["general"]["output_dir"], "accuracy.svg").exists()
-    assert Path(config["general"]["output_dir"], "top_3_accuracy.svg").exists()
+    assert Path(
+        config["general"]["output_dir"], "val_balanced_accuracy_score.svg"
+    ).exists()
+    assert Path(config["general"]["output_dir"], "val_accuracy.svg").exists()
+    assert Path(config["general"]["output_dir"], "val_top_3_accuracy.svg").exists()
 
 
 def test_classify_ClassificationHandler(config_with_tsfresh, tmpdir):
@@ -55,9 +57,11 @@ def test_classify_ClassificationHandler(config_with_tsfresh, tmpdir):
 
     handler = classify.ClassificationHandler(config)
     handler.run()
-    assert Path(config["general"]["output_dir"], "train_val_scores.svg").exists()
-    assert Path(config["general"]["output_dir"], "accuracy.svg").exists()
-    assert Path(config["general"]["output_dir"], "top_3_accuracy.svg").exists()
+    assert Path(
+        config["general"]["output_dir"], "val_balanced_accuracy_score.svg"
+    ).exists()
+    assert Path(config["general"]["output_dir"], "val_accuracy.svg").exists()
+    assert Path(config["general"]["output_dir"], "val_top_3_accuracy.svg").exists()
 
     num_of_models = len(config["models-to-run"])
     assert len(list(output_dir.rglob("confusion_matrix_*.svg"))) == num_of_models * (

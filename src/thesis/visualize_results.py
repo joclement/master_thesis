@@ -11,10 +11,7 @@ from . import __version__, util
 from .constants import (
     CONFIG_FILENAME,
     CONFIG_MODELS_RUN_ID,
-    METRIC_NAMES,
     SCORES_FILENAME,
-    TRAIN_SCORE,
-    VAL_SCORE,
 )
 
 
@@ -35,17 +32,7 @@ def plot_results(
 ):
     y_pos = np.arange(len(scores.index))
 
-    train_val_scores = scores.loc[:, ([TRAIN_SCORE, VAL_SCORE], slice(None))]
-    make_pandas_plot(train_val_scores, config, description)
-    util.finish_plot("train_val_scores", output_dir, show)
-
-    val_scores = scores.loc[:, (VAL_SCORE, slice(None))]
-    make_pandas_plot(val_scores, config, description)
-    util.finish_plot("val_scores", output_dir, show)
-
-    for metric in METRIC_NAMES:
-        metric_scores = scores.loc[:, (metric, slice(None))]
-
+    for metric, metric_scores in scores.groupby(axis=1, level=0):
         fig, ax = plt.subplots()
         if config["general"]["cv"] == "logo":
             xerr = None
