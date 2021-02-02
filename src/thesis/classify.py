@@ -29,6 +29,7 @@ from .constants import (
     CONFIG_FILENAME,
     CONFIG_MODELS_RUN_ID,
     FILE_SCORE,
+    K,
     METRIC_NAMES,
     SCORES_FILENAME,
     TOP_K_ACCURACY,
@@ -212,7 +213,7 @@ class ClassificationHandler:
             val_proba_predictions = pipeline.predict_proba(X_val)
             val_predictions = np.argmax(val_proba_predictions, axis=1)
             top_k_accuracy = top_k_accuracy_score(
-                y_val, val_proba_predictions, k=3, labels=self.defects
+                y_val, val_proba_predictions, k=K, labels=self.defects
             )
             _print_score(TOP_K_ACCURACY, top_k_accuracy)
             self.scores.loc[model_name, (TOP_K_ACCURACY, idx)] = top_k_accuracy
