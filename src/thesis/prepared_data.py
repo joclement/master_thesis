@@ -51,7 +51,7 @@ def oned(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
 def twod(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     for df in measurements:
         df.drop(df.columns.difference([data.TIME_DIFF, data.PD]), axis=1, inplace=True)
-    return to_time_series_dataset(measurements)
+    return to_time_series_dataset([m[: config["max_len"]] for m in measurements])
 
 
 # FIXME _split_by_duration does not work properly, e.g. for oned

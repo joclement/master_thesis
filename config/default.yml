@@ -66,6 +66,8 @@ models:
       n_neighbors: 1
 
   knn_dtw-twod:
+    data:
+      max_len: 100000
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
