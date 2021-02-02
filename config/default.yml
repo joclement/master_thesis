@@ -21,7 +21,6 @@ defects:
   - protrusion_earth
   - protrusion_hv
   - floating
-  - cavity
 
 models-to-run:
   - dt-finger_ott
