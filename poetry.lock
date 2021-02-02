@@ -890,12 +890,6 @@ numpy = ">=1.13.3"
 scipy = ">=0.19.1"
 threadpoolctl = ">=2.0.0"
 
-[package.extras]
-benchmark = ["matplotlib (>=2.1.1)", "pandas (>=0.25.0)", "memory_profiler (>=0.57.0)"]
-docs = ["matplotlib (>=2.1.1)", "scikit-image (>=0.13)", "pandas (>=0.25.0)", "seaborn (>=0.9.0)", "memory_profiler (>=0.57.0)", "sphinx (>=3.2.0)", "sphinx-gallery (>=0.7.0)", "numpydoc (>=1.0.0)", "Pillow (>=7.1.2)", "sphinx-prompt (>=1.3.0)"]
-examples = ["matplotlib (>=2.1.1)", "scikit-image (>=0.13)", "pandas (>=0.25.0)", "seaborn (>=0.9.0)"]
-tests = ["matplotlib (>=2.1.1)", "scikit-image (>=0.13)", "pandas (>=0.25.0)", "pytest (>=5.0.1)", "pytest-cov (>=2.9.0)", "flake8 (>=3.8.2)", "mypy (>=0.770)", "pyamg (>=4.0.0)"]
-
 [package.source]
 type = "git"
 url = "https://github.com/flyingdutchman23/scikit-learn"
@@ -1108,7 +1102,7 @@ tqdm = ">=4.10.0"
 
 [[package]]
 name = "tslearn"
-version = "0.4.1"
+version = "0.5.0.5"
 description = "A machine learning toolkit dedicated to time-series data"
 category = "main"
 optional = false
@@ -1188,7 +1182,7 @@ heapdict = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "a050dcf6a923b915205950f24f6b7e879f5828b949c8566ded90d42398281a36"
+content-hash = "8116b76d5de4d654ded69814b5f16ef400e4b62ff3b72330d763070fd1f0a0d0"
 
 [metadata.files]
 absl-py = [
@@ -2098,38 +2092,28 @@ tsfresh = [
     {file = "tsfresh-0.17.0.tar.gz", hash = "sha256:f3db06063116c3cca6ef1ad30dcd50a0cc4a4d0688cc34cc8843d9bd400da969"},
 ]
 tslearn = [
-    {file = "tslearn-0.4.1-cp35-cp35m-macosx_10_9_x86_64.whl", hash = "sha256:715e776d98410663af58eb0d783fbf9f8fd4a22a85489914a2ee0e1718853b3b"},
-    {file = "tslearn-0.4.1-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:a3769a8c7a352a342235eb012a01605fe583bff210feb7ae1cfdecc697cda178"},
-    {file = "tslearn-0.4.1-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:43d2ebbe08f77e060e2eb72dcf10f81f9cb85b278955e5f9d638e21c95b22a70"},
-    {file = "tslearn-0.4.1-cp35-cp35m-manylinux2010_i686.whl", hash = "sha256:f508660d8543871ce4c63676c12efde696595a1f679ba7e76e7cd6d0a5f3009a"},
-    {file = "tslearn-0.4.1-cp35-cp35m-manylinux2010_x86_64.whl", hash = "sha256:e4747de2606400bece85b1b0e82969f5e149ca3241610c94664ac3d5a42af894"},
-    {file = "tslearn-0.4.1-cp35-cp35m-win32.whl", hash = "sha256:1f7d859e9b00199c8e71273166bc7ce634dd2e87fb685cfdfc7ddc7a2e634fb9"},
-    {file = "tslearn-0.4.1-cp35-cp35m-win_amd64.whl", hash = "sha256:e86c3e488fbe8a29b7c66012bc21ac771958b5566f4357943ffbc07402f74341"},
-    {file = "tslearn-0.4.1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:6b2661f1632810e512bfb81bd1dc043c318448b725e635c3bcaa21d70dedc730"},
-    {file = "tslearn-0.4.1-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:41de5b883e33239df005b0c57aa51774d5f539a4266102cfbb5348a155bbf0b5"},
-    {file = "tslearn-0.4.1-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:b837bf522c61f061af15d548ea2e877ccca48cf40724685580fd6fb90b3e5c42"},
-    {file = "tslearn-0.4.1-cp36-cp36m-manylinux2010_i686.whl", hash = "sha256:901e126ca2c94db3954f37010c99ee72819afb077197f7304f989c1c2b738252"},
-    {file = "tslearn-0.4.1-cp36-cp36m-manylinux2010_x86_64.whl", hash = "sha256:4b1648c22dda265ef9653a5f742e86dc2e00f672eebd4138265153eaf4f79fb6"},
-    {file = "tslearn-0.4.1-cp36-cp36m-win32.whl", hash = "sha256:c688d1a0dec15ced16d34a0320064d29801092b55cfd0539f1bdb4ca5b68ba63"},
-    {file = "tslearn-0.4.1-cp36-cp36m-win_amd64.whl", hash = "sha256:240a8f37c026284252cb60b2ee421e8e8ffeb82c00a84af6c1a139ca5008a236"},
-    {file = "tslearn-0.4.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:e5e7cb3616b536314920d113a90c289e68f00efdfa8a3cadf7345048c7d16928"},
-    {file = "tslearn-0.4.1-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:86eb309f8f66ad2d48e22ed2ebd2e04c04dfea131e7ec31fa491a1db6420a4e0"},
-    {file = "tslearn-0.4.1-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:f1a8e143b3320a45d5aba7ca8750d9ac93bc3b0fdfa51357b4559e11ff320db5"},
-    {file = "tslearn-0.4.1-cp37-cp37m-manylinux2010_i686.whl", hash = "sha256:c65079e9a0b5347c47719496976c94a76570dc340f14f30ab72df25513563a03"},
-    {file = "tslearn-0.4.1-cp37-cp37m-manylinux2010_x86_64.whl", hash = "sha256:f5f624e416721979fdcbfaaf553e2708084e0a649857a86e95e1e9e0872a77eb"},
-    {file = "tslearn-0.4.1-cp37-cp37m-win32.whl", hash = "sha256:97fa1cdaac1ae51238ac1243de5978bc5a4fad22c541f470a9624e92fe8f162e"},
-    {file = "tslearn-0.4.1-cp37-cp37m-win_amd64.whl", hash = "sha256:c9e41f5c0d63fdc1a8cf4a9b780809ef60dc178ca8be8d983df7bf5f0b78204f"},
-    {file = "tslearn-0.4.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:a7329e082598d0d3cc89cad37612074d83b52bb75badf459fc7a336315393e9c"},
-    {file = "tslearn-0.4.1-cp38-cp38-manylinux1_i686.whl", hash = "sha256:a0d7e272075a757f723a12fc6a679ca08764e05299bf5f1e968b6bc6a877e258"},
-    {file = "tslearn-0.4.1-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:0731b5191230b6468679a37858d46a1e982404395666a7600d3fae85da585dc1"},
-    {file = "tslearn-0.4.1-cp38-cp38-manylinux2010_i686.whl", hash = "sha256:d3f28df9e51b8ca2e9567241909d9b9273cbe1672168d852f1bee85127f0aeb5"},
-    {file = "tslearn-0.4.1-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:e51c38337ecfaf152dc0df35dacf6730ca666b0a8054a580c330e1d4b0b2a807"},
-    {file = "tslearn-0.4.1-cp38-cp38-win32.whl", hash = "sha256:be81c6f6a72fe966c25cda80595614ce3bd5c761488d547bfaa867450a2d342c"},
-    {file = "tslearn-0.4.1-cp38-cp38-win_amd64.whl", hash = "sha256:2b96e0fa7be605ae3f5d74cd45c86dc6f8bc22f6bacb922a06820e7b6c8449f7"},
-    {file = "tslearn-0.4.1-pp36-pypy36_pp73-macosx_10_7_x86_64.whl", hash = "sha256:9b90d67723a972673d8a756519e005f93fb7335a4ceaa4f1bb5e4ef7858c7f87"},
-    {file = "tslearn-0.4.1-pp36-pypy36_pp73-manylinux1_x86_64.whl", hash = "sha256:a8d0a9cfc885956ca2dab15670863fb9d89ef3382ed1ce280072ba0cd3bf0c24"},
-    {file = "tslearn-0.4.1-pp36-pypy36_pp73-manylinux2010_x86_64.whl", hash = "sha256:4af7a52c433a568eb306fa30e5955e281d38dc3f1526dead50e55fb951bcc9cc"},
-    {file = "tslearn-0.4.1.tar.gz", hash = "sha256:f4fdc830d18e24a99bd9f97639e0a9c6b732474473cccd8878c37c61f578b376"},
+    {file = "tslearn-0.5.0.5-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:cf87ccf2617ef713ce018382882fc5d021804cf16ccb0af1718e28fa89192261"},
+    {file = "tslearn-0.5.0.5-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:caece99a10970bf7a344ad4e72280bf585bef0352e82b6daaa5eea25d97ca294"},
+    {file = "tslearn-0.5.0.5-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:accf0a46802882658e137dc3ba7b817c9f04a4269f9b38dace857e651f50649f"},
+    {file = "tslearn-0.5.0.5-cp36-cp36m-manylinux2010_i686.whl", hash = "sha256:ab97cd5100d0e7ade9634f9f8993a9201d7db1fad340cac05c5b2ed2a958a853"},
+    {file = "tslearn-0.5.0.5-cp36-cp36m-manylinux2010_x86_64.whl", hash = "sha256:c95c3f98a1d03a4f70a21d455bc1e0ef242137e28d2704c00229efba3140a400"},
+    {file = "tslearn-0.5.0.5-cp36-cp36m-win32.whl", hash = "sha256:2bb139c5ff58b11333143ef88ebea045919ad02fbc3717fdcbbc12d9d12e3463"},
+    {file = "tslearn-0.5.0.5-cp36-cp36m-win_amd64.whl", hash = "sha256:8c94c54f60d8ab0bfed42191dc991d3742160dfc0013b58e505c724456ea9723"},
+    {file = "tslearn-0.5.0.5-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:99d1cf274c0756b95aae50c4f0fcc7aa27c2557c1c9554f1338533959b452cf1"},
+    {file = "tslearn-0.5.0.5-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:b871ad65b4dd0970fac51a2e7419d7ce4d38b994cdc775f8817f7beabdc53b38"},
+    {file = "tslearn-0.5.0.5-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:432ef57914851cfa0f4ef927133766148b09ddae0be8cb06d34d233e8364b403"},
+    {file = "tslearn-0.5.0.5-cp37-cp37m-manylinux2010_i686.whl", hash = "sha256:4270727ae840d09b0158c5c45747a3eebaafc879ad4ef6eb90d6dc5f0a3b4f0f"},
+    {file = "tslearn-0.5.0.5-cp37-cp37m-manylinux2010_x86_64.whl", hash = "sha256:e37b03cf720ae287a9d991adb1faaaf9e99278569803b74ca5ee63d10e87b384"},
+    {file = "tslearn-0.5.0.5-cp37-cp37m-win32.whl", hash = "sha256:55f7c3429f6b90c481a874298a98a1fd635444bf22245a1746aa059fe1a35420"},
+    {file = "tslearn-0.5.0.5-cp37-cp37m-win_amd64.whl", hash = "sha256:ad4232ddd24ef7233bd5614114c84c8a987abe9d2cd15c0c1a2dda6557c51ed8"},
+    {file = "tslearn-0.5.0.5-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:844b70900444c22683da95dafa2362c0986805bc93fba888a47a66c60e640651"},
+    {file = "tslearn-0.5.0.5-cp38-cp38-manylinux1_i686.whl", hash = "sha256:06ec2c52df3e1bcb1138710d42779c3704216af6fe30ff81267da88577153f04"},
+    {file = "tslearn-0.5.0.5-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:e9a2f17d4ba9a6805e566b64e299735ad9e42f6e014c1875bf65f1d8e3925ae5"},
+    {file = "tslearn-0.5.0.5-cp38-cp38-manylinux2010_i686.whl", hash = "sha256:2ee5558938f21d39458a0420e2dab4fae815fae76bf2528bca62846b6c4965ea"},
+    {file = "tslearn-0.5.0.5-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:d173f17591a77db7a9dddf66d57eb759983446aaf25f9293f46a79bcb4f00d81"},
+    {file = "tslearn-0.5.0.5-cp38-cp38-win32.whl", hash = "sha256:f9a345bc3be9c0978914c2a74cad8ac063290c86a1c24dfb678d5c5ef445e005"},
+    {file = "tslearn-0.5.0.5-cp38-cp38-win_amd64.whl", hash = "sha256:e352e9f5c76098460b7d4c2fbac48cf660124aec143b727340c41b1f105e417a"},
+    {file = "tslearn-0.5.0.5.tar.gz", hash = "sha256:256927990402164ad419cb3436a8e7cab6ee7e63344393d61d941b750a0ca5cc"},
 ]
 typed-ast = [
     {file = "typed_ast-1.4.2-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:7703620125e4fb79b64aa52427ec192822e9f45d37d4b6625ab37ef403e1df70"},
