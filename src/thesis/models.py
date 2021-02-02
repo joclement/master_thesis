@@ -23,7 +23,7 @@ from tslearn.svm import TimeSeriesSVC
 
 from . import classifiers, data, prepared_data
 from .classifiers import MyKerasClassifier
-from .constants import TOP_K_ACCURACY
+from .constants import K, TOP_K_ACCURACY_SCORE
 
 
 def _finger_tsfresh(
@@ -213,11 +213,11 @@ def build_mlp(
     model.add(
         Dense(output_dim, activation="softmax"),
     )
-    top_3_accuracy = TopKCategoricalAccuracy(k=3, name=TOP_K_ACCURACY)
+    top_k_accuracy = TopKCategoricalAccuracy(k=K, name=TOP_K_ACCURACY_SCORE)
     model.compile(
         loss="categorical_crossentropy",
         optimizer=optimizer,
-        metrics=["accuracy", top_3_accuracy],
+        metrics=["accuracy", top_k_accuracy],
     )
     return model
 

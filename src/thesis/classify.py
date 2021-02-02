@@ -2,7 +2,7 @@ from datetime import datetime
 from pathlib import Path
 import pickle
 import shutil
-from typing import Final, List, Optional
+from typing import Final, List, Optional, Tuple
 import warnings
 
 import click
@@ -28,20 +28,21 @@ from .constants import (
     ACCURACY_SCORE,
     CONFIG_FILENAME,
     CONFIG_MODELS_RUN_ID,
+    DataPart,
     FILE_SCORE,
     K,
-    METRIC_NAMES,
     SCORES_FILENAME,
-    TOP_K_ACCURACY,
-    TRAIN_ACCURACY,
-    TRAIN_SCORE,
-    VAL_SCORE,
+    TOP_K_ACCURACY_SCORE,
 )
 from .data import TreatNegValues
 from .metrics import file_score
 from .prepared_data import split_by_durations
 from .util import to_dataTIME
 from .visualize_results import plot_results
+
+
+def combine(dataPart: DataPart, metric_name: str):
+    return f"{dataPart}_{metric_name}"
 
 
 def _print_score(name: str, value: float) -> None:
@@ -144,7 +145,21 @@ class ClassificationHandler:
             data.DEFECT_NAMES[data.Defect(d)] for d in self.defects
         ]
 
-        all_score_names = {TRAIN_SCORE, VAL_SCORE, *METRIC_NAMES}
+        metric_names = sorted(
+            [
+                self.config["general"]["metric"],
+                ACCURACY_SCORE,
+                TOP_K_ACCURACY_SCORE,
+            ]
+        )
+        all_score_names = sorted(
+            [
+                combine(p, m)
+                for p in [DataPart.train, DataPart.val]
+                for m in metric_names
+            ]
+        )
+        all_score_names.append(combine(DataPart.val, FILE_SCORE))
         iterables = [all_score_names, list(range(len(self.cv_splits)))]
         score_columns = pd.MultiIndex.from_product(iterables, names=["metric", "index"])
         self.scores = pd.DataFrame(
@@ -204,27 +219,18 @@ class ClassificationHandler:
         model_folder.mkdir(exist_ok=True)
         util.finish_plot(f"confusion_matrix_{name}", model_folder)
 
-    def _do_val_predictions(
-        self, model_name: str, idx: int, pipeline: Pipeline, X_val, y_val
-    ) -> np.array:
-        if isinstance(get_classifier(pipeline), (SVC, TimeSeriesSVC)):
-            val_predictions = pipeline.predict(X_val)
-        else:
-            val_proba_predictions = pipeline.predict_proba(X_val)
-            val_predictions = np.argmax(val_proba_predictions, axis=1)
-            top_k_accuracy = top_k_accuracy_score(
-                y_val, val_proba_predictions, k=K, labels=self.defects
-            )
-            _print_score(TOP_K_ACCURACY, top_k_accuracy)
-            self.scores.loc[model_name, (TOP_K_ACCURACY, idx)] = top_k_accuracy
-        return val_predictions
-
-    def _train(self, Pipeline: pipeline, X_train, y_train, X_val, val_index):
+    def _train(
+        self,
+        pipeline: Pipeline,
+        X_train,
+        y_train: pd.Series,
+        train_index: range,
+        X_val,
+        val_index: range,
+    ):
         if is_keras(pipeline):
             class_weights = dict(
-                enumerate(
-                    compute_class_weight("balanced", np.unique(y_train), y_train)
-                )
+                enumerate(compute_class_weight("balanced", np.unique(y_train), y_train))
             )
             pipeline.fit(
                 X_train,
@@ -238,9 +244,47 @@ class ClassificationHandler:
         else:
             pipeline.fit(X_train, y_train)
 
+    def _calc_scores(self, y_true, predictions) -> pd.Series:
+        return pd.Series(
+            data={
+                self.config["general"]["metric"]: self.metric(y_true, predictions),
+                ACCURACY_SCORE: accuracy_score(y_true, predictions),
+            },
+        )
+
+    def calc_scores(
+        self, pipeline: Pipeline, X, y_true: pd.Series, dataPart: DataPart
+    ) -> Tuple[pd.Series, np.ndarray]:
+        if isinstance(get_classifier(pipeline), (SVC, TimeSeriesSVC)):
+            predictions = pipeline.predict(X)
+            scores = self._calc_scores(y_true, predictions)
+        else:
+            proba_predictions = pipeline.predict_proba(X)
+            predictions = np.argmax(proba_predictions, axis=1)
+            scores = self._calc_scores(y_true, predictions)
+            scores[TOP_K_ACCURACY_SCORE] = top_k_accuracy_score(
+                y_true, proba_predictions, k=K, labels=self.defects
+            )
+        if self.config["general"]["cv"] == "logo" and dataPart is DataPart.val:
+            scores[FILE_SCORE] = file_score(y_true, predictions)
+        if dataPart is DataPart.val and self.calc_cm:
+            self._all_val_predictions.extend(predictions)
+            self._all_val_correct.extend(y_true)
+        return scores.sort_index(), metrics.confusion_matrix(y_true, predictions)
+
+    def assign_and_print_scores(
+        self, model_name: str, dataPart: DataPart, idx: int, scores: pd.Series
+    ):
+        scores = scores.rename(lambda score_name: combine(dataPart, score_name))
+        click.echo()
+        click.echo(scores)
+        self.scores.loc[
+            model_name, pd.IndexSlice[scores.index.tolist(), idx]
+        ] = scores.values
+
     def _cross_validate(self, model_name, model_folder, pipeline, X):
-        all_val_correct = []
-        all_val_predictions = []
+        self._all_val_correct = []
+        self._all_val_predictions = []
         for idx, split_indexes in enumerate(self.cv_splits):
             click.echo()
             click.echo(f"cv: {idx}")
@@ -254,64 +298,28 @@ class ClassificationHandler:
             y_train = self.y[train_index]
             y_val = self.y[val_index]
 
-            self._train(pipeline, X_train, y_train, X_val, val_index)
+            self._train(pipeline, X_train, y_train, train_index, X_val, val_index)
 
-            train_predictions = pipeline.predict(X_train)
-            val_predictions = self._do_val_predictions(
-                model_name, idx, pipeline, X_val, y_val
+            train_scores, _ = self.calc_scores(
+                pipeline, X_train, y_train, DataPart.train
             )
-            assert np.array_equal(val_predictions, pipeline.predict(X_val))
+            self.assign_and_print_scores(model_name, DataPart.train, idx, train_scores)
 
-            train_score = self.metric(y_train, train_predictions)
-            _print_score("Train score", train_score)
-            self.scores.loc[model_name, (TRAIN_SCORE, idx)] = train_score
-            train_accuracy = accuracy_score(y_train, train_predictions)
-            _print_score("Train accuracy score", train_accuracy)
-            self.scores.loc[model_name, (TRAIN_ACCURACY, idx)] = train_accuracy
-
-            val_score = self.metric(y_val, val_predictions)
-            _print_score("Val score", val_score)
-            self.scores.loc[model_name, (VAL_SCORE, idx)] = val_score
-            accuracy = accuracy_score(y_val, val_predictions)
-            _print_score("Val accuracy score", accuracy)
-            self.scores.loc[model_name, (ACCURACY_SCORE, idx)] = accuracy
-
-            if self.config["general"]["cv"] == "logo":
-                file_score_num = file_score(y_val, val_predictions)
-                _print_score("File score", file_score_num)
-                self.scores.loc[model_name, (FILE_SCORE, idx)] = file_score_num
-
-            if self.calc_cm:
-                if self.config["general"]["cv"] != "logo":
-                    click.echo()
-                    confusion_matrix = metrics.confusion_matrix(y_val, val_predictions)
-                    self._report_confusion_matrix(
-                        str(idx), model_folder, confusion_matrix
-                    )
-                all_val_predictions.extend(val_predictions)
-                all_val_correct.extend(y_val)
-
-        click.echo()
-        _print_score(
-            "Val score", self.scores.loc[model_name, (VAL_SCORE, slice(None))].mean()
-        )
-        _print_score(
-            "Val accuracy",
-            self.scores.loc[model_name, (ACCURACY_SCORE, slice(None))].mean(),
-        )
-        _print_score(
-            "Val top 3 accuracy",
-            self.scores.loc[model_name, (TOP_K_ACCURACY, slice(None))].mean(),
-        )
-        if self.config["general"]["cv"] == "logo":
-            _print_score(
-                "File score",
-                self.scores.loc[model_name, (FILE_SCORE, slice(None))].mean(),
+            val_scores, confusion_matrix = self.calc_scores(
+                pipeline, X_val, y_val, DataPart.val
             )
+            self.assign_and_print_scores(model_name, DataPart.val, idx, val_scores)
+            if self.calc_cm and self.config["general"]["cv"] != "logo":
+                click.echo()
+                self._report_confusion_matrix(str(idx), model_folder, confusion_matrix)
+
+        click.echo("\nMean scores:")
+        click.echo(self.scores.loc[model_name].groupby(level=0).mean())
+
         if self.calc_cm:
             click.echo()
             confusion_matrix = metrics.confusion_matrix(
-                all_val_correct, all_val_predictions
+                self._all_val_correct, self._all_val_predictions
             )
             self._report_confusion_matrix(model_name, model_folder, confusion_matrix)
 
@@ -351,8 +359,12 @@ class ClassificationHandler:
         self.scores.to_csv(Path(self.output_dir, SCORES_FILENAME))
 
     def _finish(self):
-        click.echo(self.scores)
-        click.echo(self.scores.loc[:, (VAL_SCORE, slice(None))].mean(axis=1))
+        click.echo(
+            self.scores.loc[
+                :,
+                (combine(DataPart.val, self.config["general"]["metric"]), slice(None)),
+            ].mean(axis=1)
+        )
         self.scores.to_csv(Path(self.output_dir, SCORES_FILENAME))
         self.finished = True
         description = (
