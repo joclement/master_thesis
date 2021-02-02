@@ -59,7 +59,7 @@ models:
   knn_dtw-oned:
     data:
       fix_duration: *min_duration
-      frequency: "50ms"
+      frequency: "20ms"
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
