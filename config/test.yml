@@ -55,6 +55,7 @@ defaults:
 
 models:
   knn_dtw-oned:
+    normalize: *normalize
     data:
       fix_duration: *min_duration
       frequency: "5000ms"
