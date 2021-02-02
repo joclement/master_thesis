@@ -219,6 +219,25 @@ class ClassificationHandler:
             self.scores.loc[model_name, (TOP_K_ACCURACY, idx)] = top_k_accuracy
         return val_predictions
 
+    def _train(self, Pipeline: pipeline, X_train, y_train, X_val, val_index):
+        if is_keras(pipeline):
+            class_weights = dict(
+                enumerate(
+                    compute_class_weight("balanced", np.unique(y_train), y_train)
+                )
+            )
+            pipeline.fit(
+                X_train,
+                self.onehot_y[train_index],
+                classifier__validation_data=(X_val, self.onehot_y[val_index]),
+                classifier__class_weight=class_weights,
+            )
+            if self.config["general"]["show_plots"]:
+                sns.lineplot(data=get_classifier(pipeline).history.history)
+                plt.show()
+        else:
+            pipeline.fit(X_train, y_train)
+
     def _cross_validate(self, model_name, model_folder, pipeline, X):
         all_val_correct = []
         all_val_predictions = []
@@ -234,23 +253,8 @@ class ClassificationHandler:
                 X_val = X[val_index]
             y_train = self.y[train_index]
             y_val = self.y[val_index]
-            if is_keras(pipeline):
-                class_weights = dict(
-                    enumerate(
-                        compute_class_weight("balanced", np.unique(y_train), y_train)
-                    )
-                )
-                pipeline.fit(
-                    X_train,
-                    self.onehot_y[train_index],
-                    classifier__validation_data=(X_val, self.onehot_y[val_index]),
-                    classifier__class_weight=class_weights,
-                )
-                if self.config["general"]["show_plots"]:
-                    sns.lineplot(data=get_classifier(pipeline).history.history)
-                    plt.show()
-            else:
-                pipeline.fit(X_train, y_train)
+
+            self._train(pipeline, X_train, y_train, X_val, val_index)
 
             train_predictions = pipeline.predict(X_train)
             val_predictions = self._do_val_predictions(
