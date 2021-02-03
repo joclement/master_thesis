@@ -13,7 +13,7 @@ import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
+from sklearn.preprocessing import FunctionTransformer, MinMaxScaler, StandardScaler
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from tsfresh.transformers import FeatureSelector
@@ -157,7 +157,9 @@ class ModelHandler:
         else:
             get_input_data = getattr(prepared_data, data_id)
             data_config = model_config["data"] if "data" in model_config else {}
-            input_data = get_input_data(self._get_measurements_copy(), **data_config)
+            feature_generator = FunctionTransformer(get_input_data)
+            feature_generator.set_params(kw_args=data_config)
+            input_data = feature_generator.fit_transform(self._get_measurements_copy())
             self.cache[data_id] = input_data
         scaler = _get_transformer(classifier_id, data_id, **model_config)
         if scaler:
