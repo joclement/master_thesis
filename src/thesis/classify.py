@@ -1,6 +1,8 @@
 from datetime import datetime
+import os
 from pathlib import Path
 import pickle
+import random
 import shutil
 from typing import Final, List, Tuple
 import warnings
@@ -21,6 +23,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer, LabelBinarizer
 from sklearn.svm import SVC
 from sklearn.utils.class_weight import compute_class_weight
+import tensorflow
 from tslearn.svm import TimeSeriesSVC
 import yaml
 
@@ -42,6 +45,13 @@ from .metrics import file_score
 from .prepared_data import split_by_durations
 from .util import to_dataTIME
 from .visualize_results import plot_results
+
+
+SEED: Final = 23
+random.seed(SEED)
+os.environ["PYTHONHASHSEED"] = str(SEED)
+np.random.seed(SEED)
+tensorflow.random.set_seed(SEED)
 
 
 def combine(dataPart: DataPart, metric_name: str):
