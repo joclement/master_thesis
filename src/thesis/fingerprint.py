@@ -1,5 +1,4 @@
 from enum import Enum
-import math
 from typing import Callable, List, Tuple, Union
 
 import numpy as np
@@ -101,10 +100,6 @@ def tu_graz(df: pd.DataFrame) -> pd.Series:
     finger[PD_VAR] = df[data.PD].var()
     finger[PD_SKEW] = df[data.PD].skew()
     finger[PD_KURT] = df[data.PD].kurt()
-    # FIXME workaround
-    if math.isnan(finger[PD_KURT]):
-        finger[PD_KURT] = 0.0
-
     finger[PD_DIFF_WEIB_A], finger[PD_DIFF_WEIB_B] = calc_weibull_params(
         df[data.PD_DIFF]
     )
@@ -115,9 +110,6 @@ def tu_graz(df: pd.DataFrame) -> pd.Series:
     finger[TD_VAR] = df[data.TIME_DIFF].var()
     finger[TD_SKEW] = df[data.TIME_DIFF].skew()
     finger[TD_KURT] = df[data.TIME_DIFF].kurt()
-    # FIXME workaround
-    if math.isnan(finger[TD_KURT]):
-        finger[TD_KURT] = 0.0
     finger[TD_WEIB_A], finger[TD_WEIB_B] = calc_weibull_params(df[data.TIME_DIFF][1:])
 
     finger[PDS_PER_SEC] = len(df[data.TIME_DIFF]) / (df[data.TIME_DIFF].sum() / 1000)
@@ -154,32 +146,14 @@ def lukas(df: pd.DataFrame) -> pd.Series:
 
     finger[PD_DIFF_MEAN] = df[data.PD_DIFF].mean()
     finger[PD_DIFF_SKEW] = df[data.PD_DIFF].skew()
-    # FIXME workaround
-    if math.isnan(finger[PD_DIFF_SKEW]):
-        finger[PD_DIFF_SKEW] = 0.0
     finger[PD_DIFF_KURT] = df[data.PD_DIFF].kurt()
-    # FIXME workaround
-    if math.isnan(finger[PD_DIFF_KURT]):
-        finger[PD_DIFF_KURT] = 0.0
     finger[PD_DIFF_WEIB_A], _ = calc_weibull_params(df[data.PD_DIFF])
 
     finger[TD_MEDIAN] = df[data.TIME_DIFF].median()
 
     next_pd = df[data.PD][1:].reset_index(drop=True)
-    # FIXME workaround
-    assert data.TIME_UNIT == "ms"
-    if df[data.TIME_DIFF].sum() <= 60000:
-        finger[CORR_PD_DIFF_TO_PD], _ = stats.pearsonr(df[data.PD], df[data.PD_DIFF])
-        # FIXME workaround
-        if math.isnan(finger[CORR_PD_DIFF_TO_PD]):
-            finger[CORR_PD_DIFF_TO_PD] = 0.0
-        finger[CORR_NEXT_PD_TO_PD], _ = stats.pearsonr(df[data.PD][:-1], next_pd)
-        # FIXME workaround
-        if math.isnan(finger[CORR_NEXT_PD_TO_PD]):
-            finger[CORR_NEXT_PD_TO_PD] = 0.0
-    else:
-        finger[CORR_PD_DIFF_TO_PD] = _correlate_with_bins(df[data.PD], df[data.PD_DIFF])
-        finger[CORR_NEXT_PD_TO_PD] = _correlate_with_bins(df[data.PD][:-1], next_pd)
+    finger[CORR_PD_DIFF_TO_PD] = _correlate_with_bins(df[data.PD], df[data.PD_DIFF])
+    finger[CORR_NEXT_PD_TO_PD] = _correlate_with_bins(df[data.PD][:-1], next_pd)
 
     if finger.isnull().any() or finger.isin([np.inf, -np.inf]).any():
         raise ValueError(f"Incorrect finger: \n {finger}")

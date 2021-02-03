@@ -114,19 +114,6 @@ def _build_fingerprint_sequence(
     return fingerprint.build_set(sequence, finger_algo).to_numpy()
 
 
-def seqfinger_ott(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
-    duration = pd.Timedelta(config["duration"])
-    step_duration = pd.Timedelta(config["step_duration"])
-
-    X = to_time_series_dataset(
-        [
-            _build_fingerprint_sequence(df, fingerprint.lukas, duration, step_duration)
-            for df in measurements
-        ]
-    )
-    return X
-
-
 def seqfinger_seqown(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     duration = pd.Timedelta(config["duration"])
     step_duration = pd.Timedelta(config["step_duration"])
@@ -134,36 +121,6 @@ def seqfinger_seqown(measurements: List[pd.DataFrame], **config) -> pd.DataFrame
     X = to_time_series_dataset(
         [
             _build_fingerprint_sequence(df, fingerprint.seqown, duration, step_duration)
-            for df in measurements
-        ]
-    )
-    return X
-
-
-def seqfinger_tugraz(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
-    duration = pd.Timedelta(config["duration"])
-    step_duration = pd.Timedelta(config["step_duration"])
-
-    X = to_time_series_dataset(
-        [
-            _build_fingerprint_sequence(
-                df, fingerprint.tu_graz, duration, step_duration
-            )
-            for df in measurements
-        ]
-    )
-    return X
-
-
-def seqfinger_both(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
-    duration = pd.Timedelta(config["duration"])
-    step_duration = pd.Timedelta(config["step_duration"])
-
-    X = to_time_series_dataset(
-        [
-            _build_fingerprint_sequence(
-                df, fingerprint.lukas_plus_tu_graz, duration, step_duration
-            )
             for df in measurements
         ]
     )

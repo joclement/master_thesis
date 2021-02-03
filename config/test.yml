@@ -28,7 +28,6 @@ models-to-run:
   - dt-finger_tsfresh
   - knn_dtw-oned
   - knn_dtw-twod
-  - knn_dtw-seqfinger_both
   - knn_dtw-seqfinger_seqown
   - knn-finger_both
   - knn-finger_own
@@ -36,7 +35,6 @@ models-to-run:
   - mlp-finger_own
   - mlp-finger_tugraz
   - ott_algo-finger_ott
-  - svm_dtw-seqfinger_ott
   - svm_dtw-seqfinger_seqown
   - svm-finger_both
   - svm-finger_tsfresh
