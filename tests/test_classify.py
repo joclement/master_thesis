@@ -55,9 +55,6 @@ def test_classify_ClassificationHandler(config_with_tsfresh, tmpdir):
 
     handler = classify.ClassificationHandler(config)
     handler.run()
-    assert Path(output_dir, "val_balanced_accuracy.svg").exists()
-    assert Path(output_dir, "val_accuracy.svg").exists()
-    assert Path(output_dir, "val_top_3_accuracy.svg").exists()
 
     num_of_models = len(config["models-to-run"])
     assert len(list(output_dir.rglob("confusion_matrix_*.svg"))) == num_of_models * (
