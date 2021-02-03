@@ -7,10 +7,8 @@ import warnings
 
 import click
 from keras.wrappers.scikit_learn import KerasClassifier
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import seaborn as sns
 from sklearn import metrics
 from sklearn.base import BaseEstimator
 from sklearn.metrics import (
@@ -235,8 +233,6 @@ class ClassificationHandler:
         X_train,
         y_train: pd.Series,
         train_index: range,
-        X_val,
-        val_index: range,
     ):
         if is_keras(pipeline):
             class_weights = dict(
@@ -245,12 +241,8 @@ class ClassificationHandler:
             pipeline.fit(
                 X_train,
                 self.onehot_y[train_index],
-                classifier__validation_data=(X_val, self.onehot_y[val_index]),
                 classifier__class_weight=class_weights,
             )
-            if self.config["general"]["show_plots"]:
-                sns.lineplot(data=get_classifier(pipeline).history.history)
-                plt.show()
         else:
             pipeline.fit(X_train, y_train)
 
@@ -308,7 +300,7 @@ class ClassificationHandler:
             y_train = self.y[train_index]
             y_val = self.y[val_index]
 
-            self._train(pipeline, X_train, y_train, train_index, X_val, val_index)
+            self._train(pipeline, X_train, y_train, train_index)
 
             train_scores, _ = self.calc_scores(
                 pipeline, X_train, y_train, DataPart.train
