@@ -15,23 +15,6 @@ def config(classify_config):
     return classify_config
 
 
-@pytest.fixture
-def config_with_tsfresh(config, multiple_csv_files):
-    data_dir = Path(config["general"]["data_dir"])
-    extracted_features_path = Path(data_dir, "extracted_features.data")
-    splitted = split_by_durations(
-        data.read_recursive(data_dir)[0],
-        pd.Timedelta(config["general"]["max_duration"]),
-    )
-    save_extract_features(splitted, 1, extracted_features_path, True)
-    for model_config in config["models"]:
-        if "tsfresh_data" in config["models"][model_config]:
-            config["models"][model_config]["tsfresh_data"] = str(
-                extracted_features_path
-            )
-    return config
-
-
 def test_classify_main(config, tmpdir):
     config["models-to-run"] = config["models-to-run"][0:2]
     config_filepath = Path(tmpdir, "config.yml")
@@ -47,8 +30,7 @@ def test_classify_main(config, tmpdir):
     assert Path(config["general"]["output_dir"], "val_top_3_accuracy.svg").exists()
 
 
-def test_classify_ClassificationHandler(config_with_tsfresh, tmpdir):
-    config = config_with_tsfresh
+def test_classify_ClassificationHandler(config, tmpdir):
     output_dir = Path(config["general"]["output_dir"])
     config["general"]["calc_cm"] = True
     config["general"]["save_models"] = False
