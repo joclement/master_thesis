@@ -6,7 +6,6 @@ general:
   overwrite_output_dir: True
   save_models: False
   show_plots: False
-  metric: "balanced_accuracy_score"
   min_duration: &min_duration "60 seconds"
   max_duration: "60 seconds"
   split: True

@@ -11,10 +11,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import sklearn
 from sklearn import metrics
 from sklearn.base import BaseEstimator
-from sklearn.metrics import accuracy_score, top_k_accuracy_score
+from sklearn.metrics import (
+    accuracy_score,
+    balanced_accuracy_score,
+    top_k_accuracy_score,
+)
 from sklearn.model_selection import LeaveOneGroupOut, StratifiedKFold
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer, LabelBinarizer
@@ -26,6 +29,7 @@ import yaml
 from . import __version__, data, models, util
 from .constants import (
     ACCURACY_SCORE,
+    BALANCED_ACCURACY_SCORE,
     CONFIG_FILENAME,
     CONFIG_MODELS_RUN_ID,
     DataPart,
@@ -113,7 +117,6 @@ class ClassificationHandler:
         self._save_config()
 
         self.calc_cm = self.config["general"]["calc_cm"]
-        self.metric = getattr(sklearn.metrics, self.config["general"]["metric"])
 
         measurements, _ = data.read_recursive(
             self.config["general"]["data_dir"],
@@ -153,7 +156,7 @@ class ClassificationHandler:
 
         metric_names = sorted(
             [
-                self.config["general"]["metric"],
+                BALANCED_ACCURACY_SCORE,
                 ACCURACY_SCORE,
                 TOP_K_ACCURACY_SCORE,
             ]
@@ -253,7 +256,7 @@ class ClassificationHandler:
     def _calc_scores(self, y_true, predictions) -> pd.Series:
         return pd.Series(
             data={
-                self.config["general"]["metric"]: self.metric(y_true, predictions),
+                BALANCED_ACCURACY_SCORE: balanced_accuracy_score(y_true, predictions),
                 ACCURACY_SCORE: accuracy_score(y_true, predictions),
             },
         )
@@ -370,7 +373,7 @@ class ClassificationHandler:
         click.echo(
             self.scores.loc[
                 :,
-                (combine(DataPart.val, self.config["general"]["metric"]), slice(None)),
+                (combine(DataPart.val, BALANCED_ACCURACY_SCORE), slice(None)),
             ].mean(axis=1)
         )
         self.scores.to_csv(Path(self.output_dir, SCORES_FILENAME))
