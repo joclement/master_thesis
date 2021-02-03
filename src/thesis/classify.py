@@ -17,7 +17,7 @@ from sklearn.base import BaseEstimator
 from sklearn.metrics import accuracy_score, top_k_accuracy_score
 from sklearn.model_selection import LeaveOneGroupOut, StratifiedKFold
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import LabelBinarizer
+from sklearn.preprocessing import FunctionTransformer, LabelBinarizer
 from sklearn.svm import SVC
 from sklearn.utils.class_weight import compute_class_weight
 from tslearn.svm import TimeSeriesSVC
@@ -60,10 +60,10 @@ def is_keras(pipeline: Pipeline) -> bool:
 
 def adapt_durations(
     measurements: List[pd.DataFrame],
-    min_duration: str,
-    max_duration: str,
-    split: bool,
-    drop_empty: bool,
+    min_duration: str = "60 seconds",
+    max_duration: str = "60 seconds",
+    split: bool = True,
+    drop_empty: bool = True,
 ):
     min_duration = pd.Timedelta(min_duration)
     long_enough_measurements = []
@@ -119,16 +119,21 @@ class ClassificationHandler:
             self.config["general"]["data_dir"],
             TreatNegValues(self.config["general"]["treat_negative_values"]),
         )
-        if len(measurements) == 0:
-            raise ValueError(f"No data in: {self.config['general']['data_dir']}")
         measurements = self._keep_wanted_defects(measurements)
-        measurements = adapt_durations(
-            measurements,
-            config["general"]["min_duration"],
-            config["general"]["max_duration"],
-            config["general"]["split"],
-            config["general"]["drop_empty"],
-        )
+
+        durationAdapter = FunctionTransformer(adapt_durations)
+        preprocessor = Pipeline([("adapt_durations", durationAdapter)])
+        measurements = preprocessor.set_params(
+            adapt_durations__kw_args={
+                "min_duration": self.config["general"]["min_duration"],
+                "max_duration": self.config["general"]["max_duration"],
+                "split": self.config["general"]["split"],
+                "drop_empty": self.config["general"]["drop_empty"],
+            },
+        ).fit_transform(measurements)
+        if self.config["general"]["save_models"]:
+            with open(Path(self.output_dir, "preprocessor.p"), "wb") as file:
+                pickle.dump(preprocessor, file)
 
         self.y: Final = pd.Series(data.get_defects(measurements))
         self.onehot_y: Final = LabelBinarizer().fit_transform(self.y)
