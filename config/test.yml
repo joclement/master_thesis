@@ -11,8 +11,8 @@ general:
   split: True
   drop_empty: True
   treat_negative_values: "zero"
-  write_cache: False
-  # cache_path: /tmp/testdata-cache.p
+  use_cache: True
+  cache_dir: ./cache
 
 defects:
   - free_particle

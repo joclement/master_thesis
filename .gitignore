@@ -128,4 +128,6 @@ dmypy.json
 
 report.html
 
+### Own
 *.png
+cache/
