@@ -79,9 +79,3 @@ def test_oned(measurements):
 
     assert len(dataset.shape) == 3
     # FIXME assert not np.isnan(dataset).any()
-
-
-def test_oned_throws_for_too_long_data(measurements):
-    config = {"fix_duration": "23 seconds", "frequency": "500ms"}
-    with pytest.warns(Warning):
-        prepared_data.oned(measurements, **config)
