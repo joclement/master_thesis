@@ -1,7 +1,7 @@
 from pathlib import Path
-import pickle
-from typing import Dict, Final, List, Optional, Tuple, Union
+from typing import Final, List, Optional, Union
 
+from joblib import Memory
 import keras
 from keras.callbacks import EarlyStopping
 from keras.layers import Dense, Dropout
@@ -20,7 +20,7 @@ from tslearn.neighbors import KNeighborsTimeSeriesClassifier
 from tslearn.preprocessing import TimeSeriesScalerMinMax
 from tslearn.svm import TimeSeriesSVC
 
-from . import classifiers, data, prepared_data
+from . import classifiers, prepared_data
 from .classifiers import MyKerasClassifier
 from .constants import K, TOP_K_ACCURACY_SCORE
 
@@ -101,46 +101,36 @@ def split_model_name(model_name: str):
 class ModelHandler:
     def __init__(
         self,
-        measurements: List[pd.DataFrame],
         y: Union[pd.Series, np.array],
         models_config: dict,
-        write_cache: bool,
-        cache_path: Optional[Path],
+        use_cache: bool,
+        cache_dir: Path,
     ):
-        self.measurements: Final = measurements
         self.y: Final = y
         self.models_config: Final = models_config
-        self.write_cache = write_cache
-        self.cache: Dict[str, pd.DataFrame] = {}
-        if cache_path:
-            self.cache_path = cache_path
-            if self.cache_path.exists():
-                with open(self.cache_path, "rb") as cache_file:
-                    self.cache = pickle.load(cache_file)
+        self.use_cache = use_cache
+        if self.use_cache:
+            self.memory = Memory(cache_dir)
+            self.memory.cache(prepared_data.finger_own)
+            self.memory.cache(prepared_data.finger_tugraz)
+            self.memory.cache(prepared_data.finger_ott)
+            self.memory.cache(prepared_data.seqfinger_seqown)
+        else:
+            self.memory = None
 
-    def __del__(self):
-        if self.write_cache and hasattr(self, "cache_path"):
-            with open(self.cache_path, "wb") as cache_file:
-                pickle.dump(self.cache, cache_file)
-
-    def _get_measurements_copy(self):
-        return [df.copy() for df in self.measurements]
-
-    def get_model_with_data(self, model_name: str) -> Tuple[Pipeline, pd.DataFrame]:
+    def get_model(self, model_name: str) -> Pipeline:
         model_config = self.models_config[model_name]
 
         classifier_id, data_id = split_model_name(model_name)
 
         pipeline = []
-        if data_id in self.cache:
-            input_data = self.cache[data_id]
-        else:
-            get_input_data = getattr(prepared_data, data_id)
-            data_config = model_config["data"] if "data" in model_config else {}
-            feature_generator = FunctionTransformer(get_input_data)
-            feature_generator.set_params(kw_args=data_config)
-            input_data = feature_generator.fit_transform(self._get_measurements_copy())
-            self.cache[data_id] = input_data
+
+        get_input_data = getattr(prepared_data, data_id)
+        data_config = model_config["data"] if "data" in model_config else {}
+        feature_generator = FunctionTransformer(get_input_data)
+        feature_generator.set_params(kw_args=data_config)
+        pipeline.append(("feature_generator", feature_generator))
+
         scaler = _get_transformer(classifier_id, data_id, **model_config)
         if scaler:
             pipeline.append(("scaler", scaler))
@@ -156,7 +146,7 @@ class ModelHandler:
         )
         pipeline.append(("classifier", classifier))
 
-        return Pipeline(pipeline), input_data
+        return Pipeline(pipeline, memory=self.memory if self.use_cache else None)
 
 
 def get_classifier(

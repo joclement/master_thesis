@@ -2,7 +2,7 @@ from datetime import datetime
 from pathlib import Path
 import pickle
 import shutil
-from typing import Final, List, Optional, Tuple
+from typing import Final, List, Tuple
 import warnings
 
 import click
@@ -116,35 +116,28 @@ class ClassificationHandler:
 
         self.calc_cm = self.config["general"]["calc_cm"]
 
-        measurements, _ = data.read_recursive(
-            self.config["general"]["data_dir"],
-            TreatNegValues(self.config["general"]["treat_negative_values"]),
-        )
-        measurements = self._keep_wanted_defects(measurements)
-
         durationAdapter = FunctionTransformer(adapt_durations)
         preprocessor = Pipeline([("adapt_durations", durationAdapter)])
-        measurements = preprocessor.set_params(
+        self.measurements: Final = preprocessor.set_params(
             adapt_durations__kw_args={
                 "min_duration": self.config["general"]["min_duration"],
                 "max_duration": self.config["general"]["max_duration"],
                 "split": self.config["general"]["split"],
                 "drop_empty": self.config["general"]["drop_empty"],
             },
-        ).fit_transform(measurements)
+        ).fit_transform(self.get_measurements())
         if self.config["general"]["save_models"]:
             with open(Path(self.output_dir, "preprocessor.p"), "wb") as file:
                 pickle.dump(preprocessor, file)
 
-        self.y: Final = pd.Series(data.get_defects(measurements))
+        self.y: Final = pd.Series(data.get_defects(self.measurements))
         self.onehot_y: Final = LabelBinarizer().fit_transform(self.y)
-        self.cv_splits: Final = self._generate_cv_splits(measurements)
+        self.cv_splits: Final = self._generate_cv_splits()
         self.modelHandler = models.ModelHandler(
-            measurements,
             self.y,
             self.config["models"],
-            self.config["general"]["write_cache"],
-            self.get_cache_path(),
+            self.config["general"]["use_cache"],
+            self.config["general"]["cache_dir"],
         )
 
         self.defects: Final = sorted(set(self.y))
@@ -180,25 +173,25 @@ class ClassificationHandler:
         if hasattr(self, "finished") and not self.finished:
             self._save_scores()
 
-    def _generate_cv_splits(self, measurements: List[pd.DataFrame]):
+    def get_measurements(self) -> List[pd.DataFrame]:
+        measurements, _ = data.read_recursive(
+            self.config["general"]["data_dir"],
+            TreatNegValues(self.config["general"]["treat_negative_values"]),
+        )
+        return self._keep_wanted_defects(measurements)
+
+    def _generate_cv_splits(self):
         cv = self.config["general"]["cv"]
         if isinstance(cv, int):
             cross_validator = StratifiedKFold(n_splits=cv)
             groups = None
         elif self.config["general"]["cv"] == "logo":
             cross_validator = LeaveOneGroupOut()
-            groups = group_by_file(measurements)
+            groups = group_by_file(self.measurements)
         else:
             raise ValueError("Invalid cv.")
 
         return list(cross_validator.split(np.zeros(len(self.y)), self.y, groups))
-
-    def get_cache_path(self) -> Optional[Path]:
-        return (
-            Path(self.config["general"]["cache_path"])
-            if "cache_path" in self.config["general"]
-            else None
-        )
 
     def _keep_wanted_defects(self, measurements: List[pd.DataFrame]):
         defects = [data.Defect[defect] for defect in self.config["defects"]]
@@ -284,19 +277,17 @@ class ClassificationHandler:
             model_name, pd.IndexSlice[scores.index.tolist(), idx]
         ] = scores.values
 
-    def _cross_validate(self, model_name, model_folder, pipeline, X):
+    def _cross_validate(
+        self, model_name, model_folder, pipeline, measurements: List[pd.DataFrame]
+    ):
         self._all_val_correct: List[data.Defect] = []
         self._all_val_predictions: List[data.Defect] = []
         for idx, split_indexes in enumerate(self.cv_splits):
             click.echo()
             click.echo(f"cv: {idx}")
             train_index, val_index = split_indexes
-            if isinstance(X, pd.DataFrame):
-                X_train = X.loc[train_index, :]
-                X_val = X.loc[val_index, :]
-            else:
-                X_train = X[train_index]
-                X_val = X[val_index]
+            X_train = [measurements[idx] for idx in train_index]
+            X_val = [measurements[idx] for idx in val_index]
             y_train = self.y[train_index]
             y_val = self.y[val_index]
 
@@ -328,21 +319,21 @@ class ClassificationHandler:
     def run(self):
         for model_name in self.config["models-to-run"]:
             click.echo(f"Model: {model_name}")
-            pipeline, X = self.modelHandler.get_model_with_data(model_name)
+            pipeline = self.modelHandler.get_model(model_name)
             model_folder = Path(self.output_dir, model_name)
-            self._cross_validate(model_name, model_folder, pipeline, X)
+            self._cross_validate(model_name, model_folder, pipeline, self.measurements)
 
             if self.config["general"]["save_models"]:
-                self._save_models(pipeline, X, model_folder, model_name)
+                self._save_models(pipeline, model_folder, model_name)
             click.echo(
                 "\n ============================================================ \n"
             )
         self._finish()
 
     def _save_models(
-        self, pipeline: Pipeline, X, model_folder: Path, model_name: str
+        self, pipeline: Pipeline, model_folder: Path, model_name: str
     ) -> None:
-        pipeline.fit(X, self.y)
+        pipeline.fit(self.measurements, self.y)
         model_folder.mkdir(exist_ok=True)
         if is_keras(pipeline):
             pipeline_steps = list(
