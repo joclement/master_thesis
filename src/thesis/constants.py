@@ -14,6 +14,7 @@ class DataPart(str, Enum):
 
 
 ACCURACY_SCORE: Final = "accuracy"
+BALANCED_ACCURACY_SCORE: Final = "balanced_accuracy"
 K: Final = 3
 TOP_K_ACCURACY_SCORE: Final = f"top_{K}_accuracy"
 FILE_SCORE: Final = "file_score"
