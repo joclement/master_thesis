@@ -25,9 +25,10 @@ from .classifiers import MyKerasClassifier
 from .constants import K, TOP_K_ACCURACY_SCORE
 
 
-class SeqFingerScaler(TransformerMixin):
+class SeqFingerScaler(TransformerMixin, BaseEstimator):
     def __init__(self, Scaler, **kwargs):
-        self._scaler = Scaler(**kwargs)
+        self.Scaler = Scaler
+        self._scaler = self.Scaler()
 
     def fit(self, X, y=None, **kwargs):
         X = np.array(X)
@@ -54,6 +55,15 @@ class SeqFingerScaler(TransformerMixin):
         if len(X.shape) >= 2:
             X = X.reshape(-1, *self._orig_shape)
         return X
+
+    def get_params(self, deep=True):
+        return {"Scaler": self.Scaler}
+
+    def set_params(self, **parameters):
+        if "Scaler" in parameters:
+            self.Scaler = parameters["Scaler"]
+            self._scaler = self.Scaler()
+        return self
 
 
 def _get_transformer(
