@@ -74,12 +74,7 @@ POLARITY = "+DC/-DC"
 
 
 def keep_needed_columns(measurements: List[pd.DataFrame]):
-    for df in measurements:
-        df.drop(
-            df.columns.difference([data.TIME_DIFF, data.PD_DIFF, data.PD]),
-            axis=1,
-            inplace=True,
-        )
+    return [df[[data.TIME_DIFF, data.PD_DIFF, data.PD]] for df in measurements]
 
 
 def get_parameter_group(df: pd.DataFrame, group: Group) -> pd.DataFrame:

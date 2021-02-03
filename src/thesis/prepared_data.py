@@ -19,15 +19,19 @@ def _convert_to_time_series(df: pd.DataFrame, frequency) -> pd.Series:
     df.loc[:, "DateTimeIndex"] = pd.to_datetime(
         df[data.TIME_DIFF].cumsum(), unit=data.TIME_UNIT
     )
-    df.set_index("DateTimeIndex", inplace=True)
+    df = df.set_index("DateTimeIndex")
     time_series = df[data.PD]
     return time_series.asfreq(MAX_FREQUENCY, fill_value=0.0).resample(frequency).max()
 
 
+def keep_needed_columns(measurements: List[pd.DataFrame]):
+    return [df[[data.TIME_DIFF, data.PD]] for df in measurements]
+
+
 def oned(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     fix_duration = to_dataTIME(pd.Timedelta(config["fix_duration"]))
+    measurements = keep_needed_columns(measurements)
     for df in measurements:
-        df.drop(df.columns.difference([data.TIME_DIFF, data.PD]), axis=1, inplace=True)
         duration = df[data.TIME_DIFF].sum()
         if duration < fix_duration:
             df.loc[len(df.index), :] = {
@@ -49,8 +53,7 @@ def oned(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
 
 
 def twod(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
-    for df in measurements:
-        df.drop(df.columns.difference([data.TIME_DIFF, data.PD]), axis=1, inplace=True)
+    measurements = keep_needed_columns(measurements)
     return to_time_series_dataset([m[: config["max_len"]] for m in measurements])
 
 
@@ -110,7 +113,7 @@ def _build_fingerprint_sequence(
     assert all([not sub_df.index.isnull().any() for sub_df in sequence])
     assert len(sequence) >= 3
 
-    fingerprint.keep_needed_columns(sequence)
+    sequence = fingerprint.keep_needed_columns(sequence)
     return fingerprint.build_set(sequence, finger_algo).to_numpy()
 
 
@@ -128,20 +131,20 @@ def seqfinger_seqown(measurements: List[pd.DataFrame], **config) -> pd.DataFrame
 
 
 def finger_ott(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
-    fingerprint.keep_needed_columns(measurements)
+    measurements = fingerprint.keep_needed_columns(measurements)
     return fingerprint.build_set(measurements, fingerprint.lukas)
 
 
 def finger_own(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
-    fingerprint.keep_needed_columns(measurements)
+    measurements = fingerprint.keep_needed_columns(measurements)
     return fingerprint.build_set(measurements, fingerprint.own)
 
 
 def finger_tugraz(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
-    fingerprint.keep_needed_columns(measurements)
+    measurements = fingerprint.keep_needed_columns(measurements)
     return fingerprint.build_set(measurements, fingerprint.tu_graz)
 
 
 def finger_both(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
-    fingerprint.keep_needed_columns(measurements)
+    measurements = fingerprint.keep_needed_columns(measurements)
     return fingerprint.build_set(measurements, fingerprint.lukas_plus_tu_graz)
