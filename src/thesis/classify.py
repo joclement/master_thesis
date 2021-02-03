@@ -285,8 +285,8 @@ class ClassificationHandler:
         ] = scores.values
 
     def _cross_validate(self, model_name, model_folder, pipeline, X):
-        self._all_val_correct = []
-        self._all_val_predictions = []
+        self._all_val_correct: List[data.Defect] = []
+        self._all_val_predictions: List[data.Defect] = []
         for idx, split_indexes in enumerate(self.cv_splits):
             click.echo()
             click.echo(f"cv: {idx}")
