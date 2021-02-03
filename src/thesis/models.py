@@ -101,6 +101,14 @@ def _get_transformer(
     raise ValueError(f"Data Representation '{data_id}' not supported.")
 
 
+def split_model_name(model_name: str):
+    parts = model_name.split("-")
+    assert len(parts) == 2
+    classifier_id = parts[0]
+    data_id = parts[1]
+    return classifier_id, data_id
+
+
 class ModelHandler:
     def __init__(
         self,
@@ -141,10 +149,7 @@ class ModelHandler:
     def get_model_with_data(self, model_name: str) -> Tuple[Pipeline, pd.DataFrame]:
         model_config = self.models_config[model_name]
 
-        parts = model_name.split("-")
-        assert len(parts) == 2
-        classifier_id = parts[0]
-        data_id = parts[1]
+        classifier_id, data_id = split_model_name(model_name)
 
         pipeline = []
         if "tsfresh" in data_id:
