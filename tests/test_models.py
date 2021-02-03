@@ -5,9 +5,9 @@ import pytest
 from thesis import data, models
 
 
-def test_svm_dtw_seqfinger_ott_model(measurements):
+def test_knn_dtw_seqfinger_seqown_model(measurements):
     models_config = {
-        "knn_dtw-seqfinger_ott": {
+        "knn_dtw-seqfinger_seqown": {
             "normalize": True,
             "data": {
                 "duration": "30 seconds",
@@ -18,7 +18,7 @@ def test_svm_dtw_seqfinger_ott_model(measurements):
     y = pd.Series(data.get_defects(measurements))
 
     modelHandler = models.ModelHandler(measurements, y, models_config, False, None)
-    pipeline, X = modelHandler.get_model_with_data("knn_dtw-seqfinger_ott")
+    pipeline, X = modelHandler.get_model_with_data("knn_dtw-seqfinger_seqown")
 
     scaler = list(pipeline.named_steps.values())[0]
     X_transformed = scaler.fit_transform(X)
