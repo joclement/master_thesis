@@ -16,7 +16,6 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer, MinMaxScaler, StandardScaler
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
-from tsfresh.transformers import FeatureSelector
 from tslearn.neighbors import KNeighborsTimeSeriesClassifier
 from tslearn.preprocessing import TimeSeriesScalerMinMax
 from tslearn.svm import TimeSeriesSVC
@@ -24,26 +23,6 @@ from tslearn.svm import TimeSeriesSVC
 from . import classifiers, data, prepared_data
 from .classifiers import MyKerasClassifier
 from .constants import K, TOP_K_ACCURACY_SCORE
-
-
-def _finger_tsfresh(
-    measurements: List[pd.DataFrame], **config
-) -> Tuple[pd.DataFrame, TransformerMixin]:
-    extracted_features = pd.read_csv(
-        config["tsfresh_data"], index_col=[data.PATH, prepared_data.PART]
-    )
-    indexes = [
-        (df.attrs[data.PATH], df.attrs[prepared_data.PART]) for df in measurements
-    ]
-    X = extracted_features[extracted_features.index.isin(indexes)]
-    X = X.reset_index(drop=True)
-    tsfreshTransformer = FeatureSelector(
-        fdr_level=config["fdr_level"],
-        ml_task="classification",
-        multiclass=True,
-        n_jobs=config["n_jobs"],
-    )
-    return X, tsfreshTransformer
 
 
 class SeqFingerScaler(TransformerMixin):
@@ -137,27 +116,13 @@ class ModelHandler:
     def _get_measurements_copy(self):
         return [df.copy() for df in self.measurements]
 
-    def _get_tsfresh_data_and_transformer(
-        self, data_id: str, **config
-    ) -> Tuple[pd.DataFrame, TransformerMixin]:
-        if data_id == "finger_tsfresh":
-            data, transformer = _finger_tsfresh(self.measurements, **config)
-        else:
-            raise ValueError(f"model with {data_id} not supported.")
-        return data, transformer
-
     def get_model_with_data(self, model_name: str) -> Tuple[Pipeline, pd.DataFrame]:
         model_config = self.models_config[model_name]
 
         classifier_id, data_id = split_model_name(model_name)
 
         pipeline = []
-        if "tsfresh" in data_id:
-            input_data, transformer = self._get_tsfresh_data_and_transformer(
-                data_id, **model_config
-            )
-            pipeline.append(("tsfresh_feature_selector", transformer))
-        elif data_id in self.cache:
+        if data_id in self.cache:
             input_data = self.cache[data_id]
         else:
             get_input_data = getattr(prepared_data, data_id)
