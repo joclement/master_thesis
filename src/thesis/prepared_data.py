@@ -31,20 +31,22 @@ def keep_needed_columns(measurements: List[pd.DataFrame]):
 def oned(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     fix_duration = to_dataTIME(pd.Timedelta(config["fix_duration"]))
     measurements = keep_needed_columns(measurements)
+
+    # FIXME workaround due to _split_by_durations bug
+    equal_lenghted_dfs = []
     for df in measurements:
         duration = df[data.TIME_DIFF].sum()
-        if duration < fix_duration:
-            df.loc[len(df.index), :] = {
-                data.PD: 0.0,
-                data.TIME_DIFF: fix_duration - duration,
-            }
-    # FIXME workaround due to _split_by_durations bug
-    shortened_dfs = []
-    for df in measurements:
-        if df[data.TIME_DIFF].sum() > fix_duration:
+        if duration > fix_duration:
             df = df[df[data.TIME_DIFF].cumsum() <= fix_duration]
-        shortened_dfs.append(df)
-    measurements = shortened_dfs
+        elif duration < fix_duration:
+            df = df.append(
+                pd.DataFrame(
+                    data={data.PD: [0.0], data.TIME_DIFF: [fix_duration - duration]},
+                    index=[len(df.index)],
+                )
+            )
+        equal_lenghted_dfs.append(df)
+    measurements = equal_lenghted_dfs
 
     time_serieses = [
         _convert_to_time_series(df, config["frequency"]) for df in measurements
