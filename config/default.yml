@@ -1,5 +1,6 @@
 general:
   cv: "logo"
+  # cv: 9
   data_dir: ./data/csv-files/prepared/dataset/train
   calc_cm: True
   output_dir: ./output/tmp
