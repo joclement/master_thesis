@@ -31,14 +31,14 @@ flake8-black = "^0.2.1"
 pytest-xdist = "^2.1.0"
 
 [tool.poetry.scripts]
-visualize-pd-data = "thesis.visualize_pd_data:main"
-visualize-fingerprints = "thesis.visualize_fingerprints:main"
 check-pd-data = "thesis.check_pd_data:main"
-mat2csv = "thesis.convert:mat2csv"
 classify = "thesis.classify:main"
-visualize-results = "thesis.visualize_results:main"
-tsfresh-features = "thesis.tsfresh_features:main"
 gui = "thesis.gui:main"
+mat2csv = "thesis.convert:mat2csv"
+tsfresh-features = "thesis.tsfresh_features:main"
+visualize-fingerprints = "thesis.visualize_fingerprints:main"
+visualize-pd-data = "thesis.visualize_pd_data:main"
+visualize-results = "thesis.visualize_results:main"
 
 [tool.coverage.paths]
 source = ["src", "*/site-packages"]
