@@ -26,7 +26,7 @@ def _echo_fingerprint_info(df):
     click.echo(fingerprint.tu_graz(df))
     click.echo("")
     click.echo("Fingerprint Lukas:")
-    click.echo(fingerprint.lukas(df))
+    click.echo(fingerprint.ott(df))
 
 
 def _ensure_unique(csv_filepaths: list):

@@ -23,7 +23,7 @@ def two_measurements(folder_with_two_csv_files) -> List[pd.DataFrame]:
 
 @pytest.fixture
 def fingerprints(two_measurements):
-    return fingerprint.build_set(two_measurements, fingerprint.lukas, add_class=True)
+    return fingerprint.build_set(two_measurements, fingerprint.ott, add_class=True)
 
 
 def test__generate_heatmap(fingerprints, tmpdir):

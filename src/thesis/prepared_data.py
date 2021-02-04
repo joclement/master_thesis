@@ -134,7 +134,7 @@ def seqfinger_seqown(measurements: List[pd.DataFrame], **config) -> pd.DataFrame
 
 def finger_ott(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     measurements = fingerprint.keep_needed_columns(measurements)
-    return fingerprint.build_set(measurements, fingerprint.lukas)
+    return fingerprint.build_set(measurements, fingerprint.ott)
 
 
 def finger_own(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:

@@ -23,8 +23,8 @@ def test_fingerprint_tu_graz(measurement):
     assert finger[fingerprint.PDS_PER_SEC] > 0
 
 
-def test_fingerprint_lukas(large_df):
-    finger = fingerprint.lukas(large_df)
+def test_fingerprint_ott(large_df):
+    finger = fingerprint.ott(large_df)
     assert type(finger) is pd.Series
     assert len(finger) == 12
     assert all([not math.isnan(value) for value in finger])
@@ -38,8 +38,8 @@ def test_fingerprint_lukas(large_df):
     assert -1 <= finger[fingerprint.CORR_NEXT_PD_TO_PD] <= 1
 
 
-def test_fingerprint_build_set_lukas(large_df):
-    dataset = fingerprint.build_set([large_df], fingerprint=fingerprint.lukas)
+def test_fingerprint_build_set_ott(large_df):
+    dataset = fingerprint.build_set([large_df], fingerprint=fingerprint.ott)
     assert type(dataset) is pd.DataFrame
     assert dataset.shape == (1, 12)
 
@@ -72,7 +72,7 @@ def real_data_folder() -> Path:
 
 @mark.expensive
 @mark.e2e
-def test_lukas_fingerprint_results_with_master_thesis_values(real_data_folder):
+def test_ott_fingerprint_results_with_master_thesis_values(real_data_folder):
     df = data.read(
         Path(real_data_folder, "(-DC) Partikel 6mm d=0,5mm 0,6 MPa 1,2Uab.csv")
     )
@@ -91,7 +91,7 @@ def test_lukas_fingerprint_results_with_master_thesis_values(real_data_folder):
     #        so slightly different from pandas.
     assert pd_diff.kurt() == approx(50.985, rel=1e-1)
 
-    finger = fingerprint.lukas(df)
+    finger = fingerprint.ott(df)
 
     assert finger[fingerprint.PD_MEAN] == approx(7.457, abs=1e-3)
     assert finger[fingerprint.PD_MAX] == approx(9.914, abs=1e-3)
