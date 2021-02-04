@@ -216,6 +216,7 @@ def seqown(df: pd.DataFrame) -> pd.Series:
         df[data.TIME_DIFF].skew(),
         df[data.TIME_DIFF].median(),
         number_peaks(df[data.TIME_DIFF], 3),
+        df[data.TIME_DIFF].sum(),
     ]
 
     finger = pd.Series(data=own, dtype=float)
