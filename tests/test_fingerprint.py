@@ -9,8 +9,8 @@ from sklearn.preprocessing import MinMaxScaler
 from thesis import data, fingerprint
 
 
-def test_fingerprint_tu_graz(measurement):
-    finger = fingerprint.tu_graz(measurement)
+def test_fingerprint_tugraz(measurement):
+    finger = fingerprint.tugraz(measurement)
     assert type(finger) is pd.Series
     assert len(finger) == 14
     assert all([not math.isnan(value) for value in finger])

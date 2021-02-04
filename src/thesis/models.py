@@ -66,6 +66,31 @@ class SeqFingerScaler(TransformerMixin, BaseEstimator):
         return self
 
 
+class FingerprintCleaner(TransformerMixin, BaseEstimator):
+    def fit(self, X, y=None, **kwargs):
+        return self
+
+    def transform(self, X, y=None, **kwargs):
+        return fingerprint.keep_needed_columns(X)
+
+    def _more_tags(self):
+        return {"no_validation": True, "requires_fit": False}
+
+
+class FingerprintBuilder(TransformerMixin, BaseEstimator):
+    def __init__(self, finger, **kwargs):
+        self.finger = finger
+
+    def fit(self, X, y=None, **kwargs):
+        return self
+
+    def transform(self, X, y=None, **kwargs):
+        return fingerprint.build_set(X, self.finger)
+
+    def _more_tags(self):
+        return {"no_validation": True, "requires_fit": False}
+
+
 def _get_transformer(
     classifier_id: str, data_id: str, **config
 ) -> Optional[TransformerMixin]:
@@ -111,9 +136,6 @@ class ModelHandler:
         self.use_cache = use_cache
         if self.use_cache:
             self.memory = Memory(cache_dir)
-            self.memory.cache(prepared_data.finger_own)
-            self.memory.cache(prepared_data.finger_tugraz)
-            self.memory.cache(prepared_data.finger_ott)
             self.memory.cache(prepared_data.seqfinger_seqown)
             self.memory.cache(fingerprint.calc_weibull_params)
         else:
@@ -126,11 +148,23 @@ class ModelHandler:
 
         pipeline = []
 
-        get_input_data = getattr(prepared_data, data_id)
         data_config = model_config["data"] if "data" in model_config else {}
-        feature_generator = FunctionTransformer(get_input_data)
-        feature_generator.set_params(kw_args=data_config)
-        pipeline.append(("feature_generator", feature_generator))
+        if "finger_" in data_id and "seqfinger_" not in data_id:
+            pipeline.append(("finger_clean", FingerprintCleaner()))
+            _, finger_name = data_id.split("_")
+            pipeline.append(
+                (
+                    data_id,
+                    FingerprintBuilder(
+                        getattr(fingerprint, finger_name), **data_config
+                    ),
+                )
+            )
+        else:
+            get_feature_builder = getattr(prepared_data, data_id)
+            feature_generator = FunctionTransformer(get_feature_builder)
+            feature_generator.set_params(kw_args=data_config)
+            pipeline.append(("feature_generator", feature_generator))
 
         scaler = _get_transformer(classifier_id, data_id, **model_config)
         if scaler:
