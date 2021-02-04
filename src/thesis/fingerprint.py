@@ -4,6 +4,8 @@ from typing import Callable, List, Tuple, Union
 import numpy as np
 import pandas as pd
 import scipy.stats as stats
+from sklearn.pipeline import FeatureUnion
+from sklearn.preprocessing import FunctionTransformer
 from tsfresh.feature_extraction.feature_calculators import (
     change_quantiles,
     count_above_mean,
@@ -89,7 +91,7 @@ def calc_weibull_params(data: Union[list, pd.Series]) -> Tuple[float, float]:
 
 
 # Based on https://doi.org/10.5324/nordis.v0i26.3268
-def tu_graz(df: pd.DataFrame) -> pd.Series:
+def tugraz(df: pd.DataFrame) -> pd.Series:
     finger = pd.Series(dtype=float)
 
     finger[PD_VAR] = df[data.PD].var()
@@ -168,35 +170,176 @@ def build_set(
     return fingers
 
 
-def own(df: pd.DataFrame) -> pd.Series:
-    own = [
-        df[data.PD].mean(),
-        df[data.PD].std(),
-        df[data.PD].median(),
-        df[data.PD].max(),
-        df[data.PD].min(),
-        df[data.PD].sum(),
-        df[data.PD].var(),
-        len(df.index),
-        number_peaks(df[data.PD], 50),
-        number_peaks(df[data.PD], 10),
-        ratio_value_number_to_time_series_length(df[data.PD]),
-        percentage_of_reoccurring_datapoints_to_all_datapoints(df[data.PD]),
-        count_below_mean(df[data.PD]),
-        count_above_mean(df[data.PD]),
-        change_quantiles(df[data.PD], 0.0, 0.7, True, "mean"),
-        df[data.TIME_DIFF].kurt(),
-        df[data.TIME_DIFF].skew(),
-        df[data.TIME_DIFF].median(),
-        longest_strike_below_mean(df[data.TIME_DIFF]),
-        change_quantiles(df[data.TIME_DIFF], 0.0, 0.3, True, "var"),
-        *calc_weibull_params(df[data.PD].sort_values() / df[data.PD].max()),
-        calc_weibull_params(
-            df[data.TIME_DIFF].sort_values() / df[data.TIME_DIFF].max()
-        )[0],
-        df[data.PD_DIFF].sum(),
-    ]
+def pd_mean(measurements: List[pd.DataFrame]) -> np.array:
+    return np.array([df[data.PD].mean() for df in measurements])
 
+
+def pd_std(measurements: List[pd.DataFrame]) -> np.array:
+    return np.array([df[data.PD].std() for df in measurements])
+
+
+def pd_median(measurements: List[pd.DataFrame]) -> np.array:
+    return np.array([df[data.PD].median() for df in measurements])
+
+
+def pd_max(measurements: List[pd.DataFrame]) -> np.array:
+    return np.array([df[data.PD].max() for df in measurements])
+
+
+def pd_min(measurements: List[pd.DataFrame]) -> np.array:
+    return np.array([df[data.PD].min() for df in measurements])
+
+
+def pd_sum(measurements: List[pd.DataFrame]) -> np.array:
+    return np.array([df[data.PD].sum() for df in measurements])
+
+
+def pd_var(measurements: List[pd.DataFrame]) -> np.array:
+    return np.array([df[data.PD].var() for df in measurements])
+
+
+def data_len(measurements: List[pd.DataFrame]) -> np.array:
+    return np.array([len(df.index) for df in measurements])
+
+
+def pd_number_peaks_50(measurements: List[pd.DataFrame]) -> np.array:
+    return np.array([number_peaks(df[data.PD], 50) for df in measurements])
+
+
+def pd_number_peaks_10(measurements: List[pd.DataFrame]) -> np.array:
+    return np.array([number_peaks(df[data.PD], 10) for df in measurements])
+
+
+def pd_ratio_value_number_to_time_series_length(
+    measurements: List[pd.DataFrame],
+) -> np.array:
+    return np.array(
+        [ratio_value_number_to_time_series_length(df[data.PD]) for df in measurements]
+    )
+
+
+def pd_percentage_of_reoccurring_datapoints_to_all_datapoints(
+    measurements: List[pd.DataFrame],
+) -> np.array:
+    return np.array(
+        [
+            percentage_of_reoccurring_datapoints_to_all_datapoints(df[data.PD])
+            for df in measurements
+        ]
+    )
+
+
+def pd_count_below_mean(measurements: List[pd.DataFrame]) -> np.array:
+    return np.array([count_below_mean(df[data.PD]) for df in measurements])
+
+
+def pd_count_above_mean(measurements: List[pd.DataFrame]) -> np.array:
+    return np.array([count_above_mean(df[data.PD]) for df in measurements])
+
+
+def pd_change_quantiles(measurements: List[pd.DataFrame]) -> np.array:
+    return np.array(
+        [change_quantiles(df[data.PD], 0.0, 0.7, True, "mean") for df in measurements]
+    )
+
+
+def pd_normed_weibull_a(measurements: List[pd.DataFrame]) -> np.array:
+    return np.array(
+        [
+            calc_weibull_params(df[data.PD].sort_values() / df[data.PD].max())[0]
+            for df in measurements
+        ]
+    )
+
+
+def pd_normed_weibull_b(measurements: List[pd.DataFrame]) -> np.array:
+    return np.array(
+        [
+            calc_weibull_params(df[data.PD].sort_values() / df[data.PD].max())[1]
+            for df in measurements
+        ]
+    )
+
+
+def td_kurt(measurements: List[pd.DataFrame]) -> np.array:
+    return np.array([df[data.TIME_DIFF].kurt() for df in measurements])
+
+
+def td_skew(measurements: List[pd.DataFrame]) -> np.array:
+    return np.array([df[data.TIME_DIFF].skew() for df in measurements])
+
+
+def td_median(measurements: List[pd.DataFrame]) -> np.array:
+    return np.array([df[data.TIME_DIFF].median() for df in measurements])
+
+
+def td_longest_strike_below_mean(measurements: List[pd.DataFrame]) -> np.array:
+    return np.array(
+        [longest_strike_below_mean(df[data.TIME_DIFF]) for df in measurements]
+    )
+
+
+def td_change_quantiles(measurements: List[pd.DataFrame]) -> np.array:
+    return np.array(
+        [
+            change_quantiles(df[data.TIME_DIFF], 0.0, 0.3, True, "var")
+            for df in measurements
+        ]
+    )
+
+
+def td_weibull_a(measurements: List[pd.DataFrame]) -> np.array:
+    return np.array(
+        [
+            calc_weibull_params(df[data.TIME_DIFF].cumsum() / df[data.TIME_DIFF].sum())[
+                0
+            ]
+            for df in measurements
+        ]
+    )
+
+
+def td_sum(measurements: List[pd.DataFrame]) -> np.array:
+    return np.array([df[data.PD_DIFF].sum() for df in measurements])
+
+
+def feature(feature: Callable):
+    return feature.__name__, FunctionTransformer(feature)
+
+
+def own_feature_union() -> FeatureUnion:
+    return FeatureUnion(
+        [
+            feature(pd_mean),
+            feature(pd_std),
+            feature(pd_median),
+            feature(pd_max),
+            feature(pd_min),
+            feature(pd_sum),
+            feature(pd_var),
+            feature(data_len),
+            feature(pd_number_peaks_50),
+            feature(pd_number_peaks_10),
+            feature(pd_ratio_value_number_to_time_series_length),
+            feature(pd_percentage_of_reoccurring_datapoints_to_all_datapoints),
+            feature(pd_count_below_mean),
+            feature(pd_count_above_mean),
+            feature(pd_change_quantiles),
+            feature(pd_normed_weibull_a),
+            feature(pd_normed_weibull_b),
+            feature(td_kurt),
+            feature(td_skew),
+            feature(td_median),
+            feature(td_longest_strike_below_mean),
+            feature(td_change_quantiles),
+            feature(td_weibull_a),
+            feature(td_sum),
+        ]
+    )
+
+
+def own(df: pd.DataFrame) -> pd.Series:
+    own = own_feature_union().transform([df])
     finger = pd.Series(data=own, dtype=float)
 
     if finger.isnull().any() or finger.isin([np.inf, -np.inf]).any():

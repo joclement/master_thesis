@@ -23,7 +23,7 @@ def _echo_measurement_info(df):
 
 def _echo_fingerprint_info(df):
     click.echo("Fingerprint TU Graz:")
-    click.echo(fingerprint.tu_graz(df))
+    click.echo(fingerprint.tugraz(df))
     click.echo("")
     click.echo("Fingerprint Lukas:")
     click.echo(fingerprint.ott(df))

@@ -130,18 +130,3 @@ def seqfinger_seqown(measurements: List[pd.DataFrame], **config) -> pd.DataFrame
         ]
     )
     return X
-
-
-def finger_ott(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
-    measurements = fingerprint.keep_needed_columns(measurements)
-    return fingerprint.build_set(measurements, fingerprint.ott)
-
-
-def finger_own(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
-    measurements = fingerprint.keep_needed_columns(measurements)
-    return fingerprint.build_set(measurements, fingerprint.own)
-
-
-def finger_tugraz(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
-    measurements = fingerprint.keep_needed_columns(measurements)
-    return fingerprint.build_set(measurements, fingerprint.tu_graz)
