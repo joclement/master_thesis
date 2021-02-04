@@ -1,17 +1,16 @@
 from pathlib import Path
-import pickle
 import sys
 import tkinter as tk
 from tkinter.filedialog import askopenfilename
 import traceback
-from typing import Any, Dict, Final
+from typing import Final
 
-from . import data, prepared_data
+from . import data
+from .predict import PredictionHandler
 
 
-CLASSIFIER_PATH: Final = Path("./output/refactored2/dt-finger_both/model.p")
-PREPARE_DATA_FUNCTION: Final = prepared_data.finger_both
-MODEL_CONFIG: Final[Dict[str, Any]] = {}
+PREPROCESSOR_PATH: Final = Path("./preprocessor.p")
+MODEL_PATH: Final = Path("./model.p")
 
 
 class ClassifierGui(tk.Toplevel):
@@ -52,17 +51,15 @@ class ClassifierGui(tk.Toplevel):
         self.text_field = tk.Text(parent, height=10, width=90)
         self.text_field.grid(column=1, row=5)
 
-        self.csv_data = None
-        self.classifier = pickle.load(open(CLASSIFIER_PATH, "rb"))
-        self.prepare_data = PREPARE_DATA_FUNCTION
-        self.model_config = MODEL_CONFIG
+        self.df = None
+        self.predictionHandler = PredictionHandler(PREPROCESSOR_PATH, [MODEL_PATH])
 
     def _polarity_chosen(self, value):
         self.polarity = value
         self._check_classification_readiness()
 
     def _check_classification_readiness(self):
-        if self.csv_data is not None and self.polarity != self.polarity_options[0]:
+        if self.df is not None and self.polarity != self.polarity_options[0]:
             self.text_field.delete(1.0, tk.END)
             self.button_classify["state"] = "normal"
 
@@ -72,14 +69,12 @@ class ClassifierGui(tk.Toplevel):
             title="Select the measurement file",
             filetypes=(("csv files", "*.csv*"),),
         )
-        self.csv_data = data.read(filepath, labeled_file=False)
+        self.df = data.read(filepath, labeled_file=False)
         self.label_file_explorer.configure(text="File valid: " + filepath)
         self._check_classification_readiness()
 
     def _predict(self):
-        X = self.prepare_data([self.csv_data], **self.model_config)
-        prediction = data.Defect(self.classifier.predict(X)[0])
-        probabilities_list = self.classifier.predict_proba(X)[0]
+        prediction, probabilities_list = self.predictionHandler.predict_one(self.df)
         probabilities_dict = {
             data.Defect(idx): prob for idx, prob in enumerate(probabilities_list)
         }
@@ -98,7 +93,7 @@ class ClassifierGui(tk.Toplevel):
         )
         self.button_classify["state"] = "disabled"
         self.label_file_explorer.configure(text="")
-        self.csv_data = None
+        self.df = None
 
     def _handle_error(self, *args):
         error = traceback.format_exception(*args)
