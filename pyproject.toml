@@ -31,6 +31,7 @@ flake8-black = "^0.2.1"
 pytest-xdist = "^2.1.0"
 
 [tool.poetry.scripts]
+calc-test-scores = "thesis.calc_test_scores:click_command"
 check-pd-data = "thesis.check_pd_data:main"
 classify = "thesis.classify:main"
 gui = "thesis.gui:main"
