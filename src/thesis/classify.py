@@ -58,10 +58,6 @@ def combine(dataPart: DataPart, metric_name: str):
     return f"{dataPart}_{metric_name}"
 
 
-def _print_score(name: str, value: float) -> None:
-    click.echo(f"{name}: {value:.2f}")
-
-
 def get_classifier(pipeline: Pipeline) -> BaseEstimator:
     return list(pipeline.named_steps.values())[-1]
 
