@@ -162,7 +162,7 @@ def lukas_plus_tu_graz(df: pd.DataFrame) -> pd.Series:
 
 def build_set(
     measurements: List[pd.DataFrame],
-    fingerprint: Callable = tu_graz,
+    fingerprint: Callable,
     add_class: bool = False,
 ) -> pd.DataFrame:
     fingers = pd.DataFrame([fingerprint(measurement) for measurement in measurements])
