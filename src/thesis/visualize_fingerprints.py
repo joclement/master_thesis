@@ -11,7 +11,7 @@ from . import __version__, data, fingerprint, util
 def _generate_heatmap(fingerprints: pd.DataFrame, output_folder, show):
     corr = fingerprints.corr()
     sns.heatmap(corr, center=0)
-    util.finish_plot("correlation_fingerprint_lukas+tu_graz", output_folder, show)
+    util.finish_plot("correlation_fingerprint_ott+tu_graz", output_folder, show)
 
 
 def _generate_pairplots(fingerprints: pd.DataFrame, output_folder, show):
@@ -29,7 +29,7 @@ def _generate_pairplots(fingerprints: pd.DataFrame, output_folder, show):
 
 def _generate_dendogram(measurements: List[pd.DataFrame], output_folder, show):
     fingerprints = fingerprint.build_set(
-        measurements, fingerprint.lukas, add_class=True
+        measurements, fingerprint.ott, add_class=True
     )
     Z = hierarchy.linkage(fingerprints.drop(data.CLASS, axis=1), "single")
     hierarchy.dendrogram(

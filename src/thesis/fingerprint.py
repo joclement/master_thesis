@@ -131,7 +131,7 @@ def _correlate_with_bins(x: pd.Series, y: pd.Series, num_of_boxes: int = 100):
     return correlation_coefficiient
 
 
-def lukas(df: pd.DataFrame) -> pd.Series:
+def ott(df: pd.DataFrame) -> pd.Series:
     finger = pd.Series(dtype=float)
 
     finger[PD_MEAN] = df[data.PD].mean()
