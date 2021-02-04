@@ -148,7 +148,7 @@ class ModelHandler:
         )
         pipeline.append(("classifier", classifier))
 
-        return Pipeline(pipeline, memory=self.memory if self.use_cache else None)
+        return Pipeline(pipeline, memory=self.memory)
 
 
 def get_classifier(
