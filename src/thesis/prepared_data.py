@@ -145,8 +145,3 @@ def finger_own(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
 def finger_tugraz(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     measurements = fingerprint.keep_needed_columns(measurements)
     return fingerprint.build_set(measurements, fingerprint.tu_graz)
-
-
-def finger_both(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
-    measurements = fingerprint.keep_needed_columns(measurements)
-    return fingerprint.build_set(measurements, fingerprint.lukas_plus_tu_graz)

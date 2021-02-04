@@ -155,11 +155,6 @@ def lukas(df: pd.DataFrame) -> pd.Series:
     return finger
 
 
-def lukas_plus_tu_graz(df: pd.DataFrame) -> pd.Series:
-    lukas_finger = lukas(df)
-    return lukas_finger.combine_first(tu_graz(df))
-
-
 def build_set(
     measurements: List[pd.DataFrame],
     fingerprint: Callable,
