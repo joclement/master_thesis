@@ -20,7 +20,7 @@ from tslearn.neighbors import KNeighborsTimeSeriesClassifier
 from tslearn.preprocessing import TimeSeriesScalerMinMax
 from tslearn.svm import TimeSeriesSVC
 
-from . import classifiers, prepared_data
+from . import classifiers, fingerprint, prepared_data
 from .classifiers import MyKerasClassifier
 from .constants import K, TOP_K_ACCURACY_SCORE
 
@@ -115,6 +115,7 @@ class ModelHandler:
             self.memory.cache(prepared_data.finger_tugraz)
             self.memory.cache(prepared_data.finger_ott)
             self.memory.cache(prepared_data.seqfinger_seqown)
+            self.memory.cache(fingerprint.calc_weibull_params)
         else:
             self.memory = None
 
