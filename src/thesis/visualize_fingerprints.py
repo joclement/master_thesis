@@ -11,7 +11,7 @@ from . import __version__, data, fingerprint, util
 def _generate_heatmap(fingerprints: pd.DataFrame, output_folder, show):
     corr = fingerprints.corr()
     sns.heatmap(corr, center=0)
-    util.finish_plot("correlation_fingerprint_ott+tu_graz", output_folder, show)
+    util.finish_plot("correlation_fingerprint_ott", output_folder, show)
 
 
 def _generate_pairplots(fingerprints: pd.DataFrame, output_folder, show):
