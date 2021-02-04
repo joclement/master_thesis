@@ -10,7 +10,7 @@ general:
   max_duration: "60 seconds"
   split: True
   drop_empty: True
-  treat_negative_values: "zero"
+  treat_negative_values: "absolute"
   use_cache: True
   cache_dir: ./cache
 
