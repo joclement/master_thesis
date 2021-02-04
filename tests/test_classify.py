@@ -1,13 +1,10 @@
 from pathlib import Path
 
 import click.testing
-import pandas as pd
 import pytest
 import yaml
 
-from thesis import classify, data
-from thesis.prepared_data import split_by_durations
-from thesis.tsfresh_features import save_extract_features
+from thesis import classify
 
 
 @pytest.fixture
