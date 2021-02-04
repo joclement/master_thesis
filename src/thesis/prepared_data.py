@@ -115,7 +115,6 @@ def _build_fingerprint_sequence(
     assert all([not sub_df.index.isnull().any() for sub_df in sequence])
     assert len(sequence) >= 3
 
-    sequence = fingerprint.keep_needed_columns(sequence)
     return fingerprint.build_set(sequence, finger_algo).to_numpy()
 
 
@@ -123,6 +122,7 @@ def seqfinger_seqown(measurements: List[pd.DataFrame], **config) -> pd.DataFrame
     duration = pd.Timedelta(config["duration"])
     step_duration = pd.Timedelta(config["step_duration"])
 
+    measurements = fingerprint.keep_needed_columns(measurements)
     X = to_time_series_dataset(
         [
             _build_fingerprint_sequence(df, fingerprint.seqown, duration, step_duration)
