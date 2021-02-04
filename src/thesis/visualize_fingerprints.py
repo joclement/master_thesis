@@ -28,9 +28,7 @@ def _generate_pairplots(fingerprints: pd.DataFrame, output_folder, show):
 
 
 def _generate_dendogram(measurements: List[pd.DataFrame], output_folder, show):
-    fingerprints = fingerprint.build_set(
-        measurements, fingerprint.ott, add_class=True
-    )
+    fingerprints = fingerprint.build_set(measurements, fingerprint.ott, add_class=True)
     Z = hierarchy.linkage(fingerprints.drop(data.CLASS, axis=1), "single")
     hierarchy.dendrogram(
         Z, labels=data.get_names(fingerprints[data.CLASS]), leaf_rotation=90.0
@@ -52,9 +50,7 @@ def main(path, output_folder, show):
     "Plot visualization of measurement file csv"
     measurements, _ = data.read_recursive(path)
 
-    fingerprints = fingerprint.build_set(
-        measurements, fingerprint.ott, add_class=True
-    )
+    fingerprints = fingerprint.build_set(measurements, fingerprint.ott, add_class=True)
     _generate_heatmap(fingerprints, output_folder, show)
     _generate_pairplots(fingerprints, output_folder, show)
 
