@@ -53,7 +53,7 @@ def main(path, output_folder, show):
     measurements, _ = data.read_recursive(path)
 
     fingerprints = fingerprint.build_set(
-        measurements, fingerprint.lukas_plus_tu_graz, add_class=True
+        measurements, fingerprint.ott, add_class=True
     )
     _generate_heatmap(fingerprints, output_folder, show)
     _generate_pairplots(fingerprints, output_folder, show)
