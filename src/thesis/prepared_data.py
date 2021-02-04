@@ -3,6 +3,7 @@ from typing import List
 import warnings
 
 import pandas as pd
+from sklearn.base import BaseEstimator, TransformerMixin
 from tslearn.utils import to_time_series_dataset
 
 from . import data, fingerprint
@@ -130,3 +131,40 @@ def seqfinger_seqown(measurements: List[pd.DataFrame], **config) -> pd.DataFrame
         ]
     )
     return X
+
+
+def finger_ott(**config) -> pd.DataFrame:
+    return FingerprintBuilder(fingerprint.ott, **config)
+
+
+def finger_own(**config) -> pd.DataFrame:
+    return fingerprint.own_feature_union()
+
+
+def finger_tugraz(**config) -> pd.DataFrame:
+    return FingerprintBuilder(fingerprint.tugraz, **config)
+
+
+class FingerprintCleaner(TransformerMixin, BaseEstimator):
+    def fit(self, X, y=None, **kwargs):
+        return self
+
+    def transform(self, X, y=None, **kwargs):
+        return fingerprint.keep_needed_columns(X)
+
+    def _more_tags(self):
+        return {"no_validation": True, "requires_fit": False}
+
+
+class FingerprintBuilder(TransformerMixin, BaseEstimator):
+    def __init__(self, finger, **kwargs):
+        self.finger = finger
+
+    def fit(self, X, y=None, **kwargs):
+        return self
+
+    def transform(self, X, y=None, **kwargs):
+        return fingerprint.build_set(X, self.finger)
+
+    def _more_tags(self):
+        return {"no_validation": True, "requires_fit": False}

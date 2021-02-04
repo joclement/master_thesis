@@ -66,31 +66,6 @@ class SeqFingerScaler(TransformerMixin, BaseEstimator):
         return self
 
 
-class FingerprintCleaner(TransformerMixin, BaseEstimator):
-    def fit(self, X, y=None, **kwargs):
-        return self
-
-    def transform(self, X, y=None, **kwargs):
-        return fingerprint.keep_needed_columns(X)
-
-    def _more_tags(self):
-        return {"no_validation": True, "requires_fit": False}
-
-
-class FingerprintBuilder(TransformerMixin, BaseEstimator):
-    def __init__(self, finger, **kwargs):
-        self.finger = finger
-
-    def fit(self, X, y=None, **kwargs):
-        return self
-
-    def transform(self, X, y=None, **kwargs):
-        return fingerprint.build_set(X, self.finger)
-
-    def _more_tags(self):
-        return {"no_validation": True, "requires_fit": False}
-
-
 def _get_transformer(
     classifier_id: str, data_id: str, **config
 ) -> Optional[TransformerMixin]:
@@ -149,22 +124,14 @@ class ModelHandler:
         pipeline = []
 
         data_config = model_config["data"] if "data" in model_config else {}
+        get_feature_builder = getattr(prepared_data, data_id)
         if "finger_" in data_id and "seqfinger_" not in data_id:
-            pipeline.append(("finger_clean", FingerprintCleaner()))
-            _, finger_name = data_id.split("_")
-            pipeline.append(
-                (
-                    data_id,
-                    FingerprintBuilder(
-                        getattr(fingerprint, finger_name), **data_config
-                    ),
-                )
-            )
+            pipeline.append(("finger_clean", prepared_data.FingerprintCleaner()))
+            pipeline.append((data_id, get_feature_builder(**data_config)))
         else:
-            get_feature_builder = getattr(prepared_data, data_id)
             feature_generator = FunctionTransformer(get_feature_builder)
             feature_generator.set_params(kw_args=data_config)
-            pipeline.append(("feature_generator", feature_generator))
+            pipeline.append((data_id, feature_generator))
 
         scaler = _get_transformer(classifier_id, data_id, **model_config)
         if scaler:
