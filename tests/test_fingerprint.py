@@ -23,12 +23,6 @@ def test_fingerprint_tu_graz(measurement):
     assert finger[fingerprint.PDS_PER_SEC] > 0
 
 
-def test_fingerprint_build_set(measurements):
-    dataset = fingerprint.build_set(measurements)
-    assert type(dataset) is pd.DataFrame
-    assert dataset.shape == (len(measurements), 14)
-
-
 def test_fingerprint_lukas(large_df):
     finger = fingerprint.lukas(large_df)
     assert type(finger) is pd.Series
@@ -63,7 +57,7 @@ def test_fingerprint_lukas_plus_tu_graz(measurement):
 
 
 def test_normalize_fingerprints(measurements):
-    fingerprints = fingerprint.build_set(measurements)
+    fingerprints = fingerprint.build_set(measurements, fingerprint.own)
     scaler = MinMaxScaler()
     scaler.fit(fingerprints)
     normalized_fingers = scaler.transform(fingerprints)
