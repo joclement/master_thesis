@@ -1,6 +1,9 @@
+from joblib import Memory
 import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
+
+from .constants import CACHE_DIR
 
 
 def finish_plot(name: str, output_folder, show: bool = False):
@@ -23,3 +26,7 @@ class Debug(BaseEstimator, TransformerMixin):
 
     def fit(self, X, y=None, **fit_params):
         return self
+
+
+def get_memory():
+    return Memory(location=CACHE_DIR, verbose=0)

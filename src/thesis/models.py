@@ -1,7 +1,6 @@
 from pathlib import Path
 from typing import Final, List, Optional, Union
 
-from joblib import Memory
 import keras
 from keras.callbacks import EarlyStopping
 from keras.layers import Dense, Dropout
@@ -20,9 +19,10 @@ from tslearn.neighbors import KNeighborsTimeSeriesClassifier
 from tslearn.preprocessing import TimeSeriesScalerMinMax
 from tslearn.svm import TimeSeriesSVC
 
-from . import classifiers, fingerprint, prepared_data
+from . import classifiers, prepared_data
 from .classifiers import MyKerasClassifier
 from .constants import K, TOP_K_ACCURACY_SCORE
+from .util import get_memory
 
 
 class SeqFingerScaler(TransformerMixin, BaseEstimator):
@@ -110,9 +110,7 @@ class ModelHandler:
         self.models_config: Final = models_config
         self.use_cache = use_cache
         if self.use_cache:
-            self.memory = Memory(cache_dir)
-            self.memory.cache(prepared_data.seqfinger_seqown)
-            self.memory.cache(fingerprint.calc_weibull_params)
+            self.memory = get_memory()
         else:
             self.memory = None
 

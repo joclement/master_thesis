@@ -7,13 +7,15 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from tslearn.utils import to_time_series_dataset
 
 from . import data, fingerprint
-from .util import to_dataTIME
+from .util import get_memory, to_dataTIME
 
 MAX_FREQUENCY = pd.tseries.frequencies.to_offset("50us")
 
 PART = "part"
 
 ONEPD_DURATION = pd.Timedelta("10 seconds")
+
+mem = get_memory()
 
 
 def _convert_to_time_series(df: pd.DataFrame, frequency) -> pd.Series:

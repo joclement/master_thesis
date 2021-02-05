@@ -17,6 +17,9 @@ from tsfresh.feature_extraction.feature_calculators import (
 )
 
 from . import data
+from .util import get_memory
+
+memory = get_memory()
 
 PD = "PD-Value"
 PD_DIFF = "PD-Diff"
@@ -85,6 +88,7 @@ def get_parameter_group(df: pd.DataFrame, group: Group) -> pd.DataFrame:
 
 
 # TODO Issue #22: ensure that weibull fit is correct
+@memory.cache
 def calc_weibull_params(data: Union[list, pd.Series]) -> Tuple[float, float]:
     weibull_a, _, weibull_b = stats.weibull_min.fit(data, floc=0.0)
     return weibull_a, weibull_b
@@ -171,43 +175,47 @@ def build_set(
 
 
 def pd_mean(measurements: List[pd.DataFrame]) -> np.array:
-    return np.array([df[data.PD].mean() for df in measurements])
+    return np.array([df[data.PD].mean() for df in measurements]).reshape(-1, 1)
 
 
 def pd_std(measurements: List[pd.DataFrame]) -> np.array:
-    return np.array([df[data.PD].std() for df in measurements])
+    return np.array([df[data.PD].std() for df in measurements]).reshape(-1, 1)
 
 
 def pd_median(measurements: List[pd.DataFrame]) -> np.array:
-    return np.array([df[data.PD].median() for df in measurements])
+    return np.array([df[data.PD].median() for df in measurements]).reshape(-1, 1)
 
 
 def pd_max(measurements: List[pd.DataFrame]) -> np.array:
-    return np.array([df[data.PD].max() for df in measurements])
+    return np.array([df[data.PD].max() for df in measurements]).reshape(-1, 1)
 
 
 def pd_min(measurements: List[pd.DataFrame]) -> np.array:
-    return np.array([df[data.PD].min() for df in measurements])
+    return np.array([df[data.PD].min() for df in measurements]).reshape(-1, 1)
 
 
 def pd_sum(measurements: List[pd.DataFrame]) -> np.array:
-    return np.array([df[data.PD].sum() for df in measurements])
+    return np.array([df[data.PD].sum() for df in measurements]).reshape(-1, 1)
 
 
 def pd_var(measurements: List[pd.DataFrame]) -> np.array:
-    return np.array([df[data.PD].var() for df in measurements])
+    return np.array([df[data.PD].var() for df in measurements]).reshape(-1, 1)
 
 
 def data_len(measurements: List[pd.DataFrame]) -> np.array:
-    return np.array([len(df.index) for df in measurements])
+    return np.array([len(df.index) for df in measurements]).reshape(-1, 1)
 
 
 def pd_number_peaks_50(measurements: List[pd.DataFrame]) -> np.array:
-    return np.array([number_peaks(df[data.PD], 50) for df in measurements])
+    return np.array([number_peaks(df[data.PD], 50) for df in measurements]).reshape(
+        -1, 1
+    )
 
 
 def pd_number_peaks_10(measurements: List[pd.DataFrame]) -> np.array:
-    return np.array([number_peaks(df[data.PD], 10) for df in measurements])
+    return np.array([number_peaks(df[data.PD], 10) for df in measurements]).reshape(
+        -1, 1
+    )
 
 
 def pd_ratio_value_number_to_time_series_length(
@@ -215,7 +223,7 @@ def pd_ratio_value_number_to_time_series_length(
 ) -> np.array:
     return np.array(
         [ratio_value_number_to_time_series_length(df[data.PD]) for df in measurements]
-    )
+    ).reshape(-1, 1)
 
 
 def pd_percentage_of_reoccurring_datapoints_to_all_datapoints(
@@ -226,21 +234,25 @@ def pd_percentage_of_reoccurring_datapoints_to_all_datapoints(
             percentage_of_reoccurring_datapoints_to_all_datapoints(df[data.PD])
             for df in measurements
         ]
-    )
+    ).reshape(-1, 1)
 
 
 def pd_count_below_mean(measurements: List[pd.DataFrame]) -> np.array:
-    return np.array([count_below_mean(df[data.PD]) for df in measurements])
+    return np.array([count_below_mean(df[data.PD]) for df in measurements]).reshape(
+        -1, 1
+    )
 
 
 def pd_count_above_mean(measurements: List[pd.DataFrame]) -> np.array:
-    return np.array([count_above_mean(df[data.PD]) for df in measurements])
+    return np.array([count_above_mean(df[data.PD]) for df in measurements]).reshape(
+        -1, 1
+    )
 
 
 def pd_change_quantiles(measurements: List[pd.DataFrame]) -> np.array:
     return np.array(
         [change_quantiles(df[data.PD], 0.0, 0.7, True, "mean") for df in measurements]
-    )
+    ).reshape(-1, 1)
 
 
 def pd_normed_weibull_a(measurements: List[pd.DataFrame]) -> np.array:
@@ -249,7 +261,7 @@ def pd_normed_weibull_a(measurements: List[pd.DataFrame]) -> np.array:
             calc_weibull_params(df[data.PD].sort_values() / df[data.PD].max())[0]
             for df in measurements
         ]
-    )
+    ).reshape(-1, 1)
 
 
 def pd_normed_weibull_b(measurements: List[pd.DataFrame]) -> np.array:
@@ -258,25 +270,25 @@ def pd_normed_weibull_b(measurements: List[pd.DataFrame]) -> np.array:
             calc_weibull_params(df[data.PD].sort_values() / df[data.PD].max())[1]
             for df in measurements
         ]
-    )
+    ).reshape(-1, 1)
 
 
 def td_kurt(measurements: List[pd.DataFrame]) -> np.array:
-    return np.array([df[data.TIME_DIFF].kurt() for df in measurements])
+    return np.array([df[data.TIME_DIFF].kurt() for df in measurements]).reshape(-1, 1)
 
 
 def td_skew(measurements: List[pd.DataFrame]) -> np.array:
-    return np.array([df[data.TIME_DIFF].skew() for df in measurements])
+    return np.array([df[data.TIME_DIFF].skew() for df in measurements]).reshape(-1, 1)
 
 
 def td_median(measurements: List[pd.DataFrame]) -> np.array:
-    return np.array([df[data.TIME_DIFF].median() for df in measurements])
+    return np.array([df[data.TIME_DIFF].median() for df in measurements]).reshape(-1, 1)
 
 
 def td_longest_strike_below_mean(measurements: List[pd.DataFrame]) -> np.array:
     return np.array(
         [longest_strike_below_mean(df[data.TIME_DIFF]) for df in measurements]
-    )
+    ).reshape(-1, 1)
 
 
 def td_change_quantiles(measurements: List[pd.DataFrame]) -> np.array:
@@ -285,7 +297,7 @@ def td_change_quantiles(measurements: List[pd.DataFrame]) -> np.array:
             change_quantiles(df[data.TIME_DIFF], 0.0, 0.3, True, "var")
             for df in measurements
         ]
-    )
+    ).reshape(-1, 1)
 
 
 def td_weibull_a(measurements: List[pd.DataFrame]) -> np.array:
@@ -296,11 +308,11 @@ def td_weibull_a(measurements: List[pd.DataFrame]) -> np.array:
             ]
             for df in measurements
         ]
-    )
+    ).reshape(-1, 1)
 
 
 def td_sum(measurements: List[pd.DataFrame]) -> np.array:
-    return np.array([df[data.PD_DIFF].sum() for df in measurements])
+    return np.array([df[data.PD_DIFF].sum() for df in measurements]).reshape(-1, 1)
 
 
 def feature(feature: Callable):
