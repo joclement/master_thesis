@@ -140,7 +140,7 @@ def finger_ott(**config) -> pd.DataFrame:
 
 
 def finger_own(**config) -> pd.DataFrame:
-    return fingerprint.own_feature_union()
+    return fingerprint.own_feature_union(**config)
 
 
 def finger_tugraz(**config) -> pd.DataFrame:

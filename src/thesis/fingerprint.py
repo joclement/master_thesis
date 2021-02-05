@@ -319,7 +319,7 @@ def feature(feature: Callable):
     return feature.__name__, FunctionTransformer(feature)
 
 
-def own_feature_union() -> FeatureUnion:
+def own_feature_union(**data_config) -> FeatureUnion:
     return FeatureUnion(
         [
             feature(pd_mean),
@@ -346,7 +346,8 @@ def own_feature_union() -> FeatureUnion:
             feature(td_change_quantiles),
             feature(td_weibull_a),
             feature(td_sum),
-        ]
+        ],
+        **data_config,
     )
 
 

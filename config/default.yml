@@ -216,6 +216,8 @@ models:
       min_samples_split: 10
       class_weight: "balanced"
       min_samples_leaf: 3
+    data:
+      verbose: True
 
   dt-finger_tugraz:
     normalize: False
