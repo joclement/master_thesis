@@ -20,3 +20,5 @@ TOP_K_ACCURACY_SCORE: Final = f"top_{K}_accuracy"
 FILE_SCORE: Final = "file_score"
 
 MODEL_ID = "model"
+
+CACHE_DIR = "./cache"
