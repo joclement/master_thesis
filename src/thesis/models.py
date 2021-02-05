@@ -146,7 +146,7 @@ class ModelHandler:
         )
         pipeline.append(("classifier", classifier))
 
-        return Pipeline(pipeline, memory=self.memory)
+        return Pipeline(pipeline, memory=self.memory, verbose=True)
 
 
 def get_classifier(
