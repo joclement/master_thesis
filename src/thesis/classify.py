@@ -46,7 +46,6 @@ from .prepared_data import split_by_durations
 from .util import to_dataTIME
 from .visualize_results import plot_results
 
-
 SEED: Final = 23
 random.seed(SEED)
 os.environ["PYTHONHASHSEED"] = str(SEED)
