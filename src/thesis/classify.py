@@ -177,12 +177,6 @@ class ClassificationHandler:
             index=self.config[CONFIG_MODELS_RUN_ID], columns=score_columns, dtype=float
         )
 
-        self.finished = False
-
-    def __del__(self):
-        if hasattr(self, "finished") and not self.finished:
-            self._save_scores()
-
     def get_measurements(self) -> List[pd.DataFrame]:
         measurements, _ = data.read_recursive(
             self.config["general"]["data_dir"],
@@ -340,6 +334,7 @@ class ClassificationHandler:
                 model_name, model_folder, pipeline, self.get_X(model_name)
             )
 
+            self.scores.to_csv(Path(self.output_dir, SCORES_FILENAME))
             if self.config["general"]["save_models"]:
                 self._save_models(pipeline, model_folder, model_name)
             click.echo(
@@ -373,9 +368,6 @@ class ClassificationHandler:
             with open(Path(model_folder, f"{MODEL_ID}-{model_name}.p"), "wb") as file:
                 pickle.dump(pipeline, file)
 
-    def _save_scores(self) -> None:
-        self.scores.to_csv(Path(self.output_dir, SCORES_FILENAME))
-
     def _finish(self):
         click.echo(
             self.scores.loc[
@@ -383,7 +375,6 @@ class ClassificationHandler:
                 (combine(DataPart.val, BALANCED_ACCURACY_SCORE), slice(None)),
             ].mean(axis=1)
         )
-        self.scores.to_csv(Path(self.output_dir, SCORES_FILENAME))
         self.finished = True
         description = (
             f"cv: {len(self.cv_splits)}"
