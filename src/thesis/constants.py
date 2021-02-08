@@ -22,3 +22,5 @@ FILE_SCORE: Final = "file_score"
 MODEL_ID = "model"
 
 CACHE_DIR = "./cache"
+
+PART = "part"

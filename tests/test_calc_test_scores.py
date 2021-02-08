@@ -18,13 +18,20 @@ def test_main(csv_folder, results_dir_with_saved_models, tmpdir):
     runner = click.testing.CliRunner()
     results_dir = Path(results_dir_with_saved_models)
     preprocessor_file = Path(results_dir, "preprocessor.p")
+    finger_preprocessor_file = Path(results_dir, "finger_preprocessor.p")
     model_files = list(results_dir.rglob("model-*.p"))
     assert len(model_files) == 1
     model_file = model_files[0]
 
     result = runner.invoke(
         calc_test_scores.click_command,
-        [str(csv_folder), str(preprocessor_file), str(model_file)],
+        [
+            str(csv_folder),
+            str(preprocessor_file),
+            str(model_file),
+            "-f",
+            str(finger_preprocessor_file),
+        ],
     )
 
     assert result.exit_code == 0

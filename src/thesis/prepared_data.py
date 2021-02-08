@@ -1,21 +1,19 @@
 import math
-from typing import List
+from typing import List, Tuple
 import warnings
 
 import pandas as pd
-from sklearn.base import BaseEstimator, TransformerMixin
 from tslearn.utils import to_time_series_dataset
 
 from . import data, fingerprint
+from .constants import PART
 from .util import get_memory, to_dataTIME
 
 MAX_FREQUENCY = pd.tseries.frequencies.to_offset("50us")
 
-PART = "part"
-
 ONEPD_DURATION = pd.Timedelta("10 seconds")
 
-mem = get_memory()
+memory = get_memory()
 
 
 def _convert_to_time_series(df: pd.DataFrame, frequency) -> pd.Series:
@@ -118,7 +116,7 @@ def _build_fingerprint_sequence(
     assert all([not sub_df.index.isnull().any() for sub_df in sequence])
     assert len(sequence) >= 3
 
-    return fingerprint.build_set(sequence, finger_algo).to_numpy()
+    return pd.DataFrame([finger_algo(part) for part in sequence])
 
 
 def seqfinger_seqown(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
@@ -136,7 +134,7 @@ def seqfinger_seqown(measurements: List[pd.DataFrame], **config) -> pd.DataFrame
 
 
 def finger_ott(**config) -> pd.DataFrame:
-    return FingerprintBuilder(fingerprint.ott, **config)
+    return fingerprint.ott_feature_union(**config)
 
 
 def finger_own(**config) -> pd.DataFrame:
@@ -144,29 +142,15 @@ def finger_own(**config) -> pd.DataFrame:
 
 
 def finger_tugraz(**config) -> pd.DataFrame:
-    return FingerprintBuilder(fingerprint.tugraz, **config)
+    return fingerprint.tugraz_feature_union(**config)
 
 
-class FingerprintCleaner(TransformerMixin, BaseEstimator):
-    def fit(self, X, y=None, **kwargs):
-        return self
-
-    def transform(self, X, y=None, **kwargs):
-        return fingerprint.keep_needed_columns(X)
-
-    def _more_tags(self):
-        return {"no_validation": True, "requires_fit": False}
-
-
-class FingerprintBuilder(TransformerMixin, BaseEstimator):
-    def __init__(self, finger, **kwargs):
-        self.finger = finger
-
-    def fit(self, X, y=None, **kwargs):
-        return self
-
-    def transform(self, X, y=None, **kwargs):
-        return fingerprint.build_set(X, self.finger)
-
-    def _more_tags(self):
-        return {"no_validation": True, "requires_fit": False}
+def extract_features(
+    measurements: List[pd.DataFrame],
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    X = []
+    features = []
+    for df in measurements:
+        X.append(fingerprint.get_X_index(df))
+        features.append(fingerprint.extract_features(df))
+    return pd.concat(features)

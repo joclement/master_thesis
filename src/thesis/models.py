@@ -1,5 +1,4 @@
-from pathlib import Path
-from typing import Final, List, Optional, Union
+from typing import Final, List, Optional
 
 import keras
 from keras.callbacks import EarlyStopping
@@ -8,7 +7,6 @@ from keras.metrics import TopKCategoricalAccuracy
 from keras.models import Sequential
 from keras.wrappers.scikit_learn import KerasClassifier
 import numpy as np
-import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
@@ -22,7 +20,14 @@ from tslearn.svm import TimeSeriesSVC
 from . import classifiers, prepared_data
 from .classifiers import MyKerasClassifier
 from .constants import K, TOP_K_ACCURACY_SCORE
-from .util import get_memory
+
+
+def is_data_finger(data_id: str):
+    return "finger_" in data_id and "seqfinger" not in data_id
+
+
+def is_model_finger(model_name: str):
+    return is_data_finger(split_model_name(model_name)[1])
 
 
 class SeqFingerScaler(TransformerMixin, BaseEstimator):
@@ -101,18 +106,11 @@ def split_model_name(model_name: str):
 class ModelHandler:
     def __init__(
         self,
-        y: Union[pd.Series, np.array],
+        defects: set,
         models_config: dict,
-        use_cache: bool,
-        cache_dir: Path,
     ):
-        self.y: Final = y
+        self.defects: Final = defects
         self.models_config: Final = models_config
-        self.use_cache = use_cache
-        if self.use_cache:
-            self.memory = get_memory()
-        else:
-            self.memory = None
 
     def get_model(self, model_name: str) -> Pipeline:
         model_config = self.models_config[model_name]
@@ -124,7 +122,6 @@ class ModelHandler:
         data_config = model_config["data"] if "data" in model_config else {}
         get_feature_builder = getattr(prepared_data, data_id)
         if "finger_" in data_id and "seqfinger_" not in data_id:
-            pipeline.append(("finger_clean", prepared_data.FingerprintCleaner()))
             pipeline.append((data_id, get_feature_builder(**data_config)))
         else:
             feature_generator = FunctionTransformer(get_feature_builder)
@@ -141,12 +138,12 @@ class ModelHandler:
             classifier_config = {}
         classifier = get_classifier(
             classifier_id,
-            set(self.y),
+            self.defects,
             **classifier_config,
         )
         pipeline.append(("classifier", classifier))
 
-        return Pipeline(pipeline, memory=self.memory, verbose=True)
+        return Pipeline(pipeline, verbose=True)
 
 
 def get_classifier(

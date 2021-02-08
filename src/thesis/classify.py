@@ -27,7 +27,7 @@ import tensorflow
 from tslearn.svm import TimeSeriesSVC
 import yaml
 
-from . import __version__, data, models, util
+from . import __version__, data, util
 from .constants import (
     ACCURACY_SCORE,
     BALANCED_ACCURACY_SCORE,
@@ -42,7 +42,8 @@ from .constants import (
 )
 from .data import TreatNegValues
 from .metrics import file_score
-from .prepared_data import split_by_durations
+from .models import is_model_finger, ModelHandler
+from .prepared_data import extract_features, split_by_durations
 from .util import to_dataTIME
 from .visualize_results import plot_results
 
@@ -136,19 +137,23 @@ class ClassificationHandler:
                 pickle.dump(preprocessor, file)
 
         self.y: Final = pd.Series(data.get_defects(self.measurements))
-        self.onehot_y: Final = LabelBinarizer().fit_transform(self.y)
-        self.cv_splits: Final = self._generate_cv_splits()
-        self.modelHandler = models.ModelHandler(
-            self.y,
-            self.config["models"],
-            self.config["general"]["use_cache"],
-            self.config["general"]["cache_dir"],
-        )
-
         self.defects: Final = sorted(set(self.y))
         self.defect_names: Final = [
             data.DEFECT_NAMES[data.Defect(d)] for d in self.defects
         ]
+        self.onehot_y: Final = LabelBinarizer().fit_transform(self.y)
+        self.cv_splits: Final = self._generate_cv_splits()
+
+        finger_preprocessor = Pipeline(
+            [
+                ("extract_features", FunctionTransformer(extract_features)),
+            ]
+        )
+        self.finger_X = finger_preprocessor.fit_transform(self.measurements)
+        if self.config["general"]["save_models"]:
+            with open(Path(self.output_dir, "finger_preprocessor.p"), "wb") as file:
+                pickle.dump(finger_preprocessor, file)
+        self.modelHandler = ModelHandler(self.defects, self.config["models"])
 
         metric_names = sorted(
             [
@@ -283,7 +288,7 @@ class ClassificationHandler:
         ] = scores.values
 
     def _cross_validate(
-        self, model_name, model_folder, pipeline, measurements: List[pd.DataFrame]
+        self, model_name, model_folder, pipeline, X: List[pd.DataFrame]
     ):
         self._all_val_correct: List[data.Defect] = []
         self._all_val_predictions: List[data.Defect] = []
@@ -291,8 +296,12 @@ class ClassificationHandler:
             click.echo()
             click.echo(f"cv: {idx}")
             train_index, val_index = split_indexes
-            X_train = [measurements[idx] for idx in train_index]
-            X_val = [measurements[idx] for idx in val_index]
+            if isinstance(X, pd.DataFrame):
+                X_train = X.iloc[train_index]
+                X_val = X.iloc[val_index]
+            else:
+                X_train = [X[idx] for idx in train_index]
+                X_val = [X[idx] for idx in val_index]
             y_train = self.y[train_index]
             y_val = self.y[val_index]
 
@@ -326,7 +335,10 @@ class ClassificationHandler:
             click.echo(f"Model: {model_name}")
             pipeline = self.modelHandler.get_model(model_name)
             model_folder = Path(self.output_dir, model_name)
-            self._cross_validate(model_name, model_folder, pipeline, self.measurements)
+
+            self._cross_validate(
+                model_name, model_folder, pipeline, self.get_X(model_name)
+            )
 
             if self.config["general"]["save_models"]:
                 self._save_models(pipeline, model_folder, model_name)
@@ -335,10 +347,16 @@ class ClassificationHandler:
             )
         self._finish()
 
+    def get_X(self, model_name: str):
+        if is_model_finger(model_name):
+            return self.finger_X
+        else:
+            return self.measurements
+
     def _save_models(
         self, pipeline: Pipeline, model_folder: Path, model_name: str
     ) -> None:
-        pipeline.fit(self.measurements, self.y)
+        pipeline.fit(self.get_X(model_name), self.y)
         model_folder.mkdir(exist_ok=True)
         if is_keras(pipeline):
             pipeline_steps = list(
