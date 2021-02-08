@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Final
+from typing import Final, Optional
 
 import click
 import pandas as pd
@@ -18,11 +18,18 @@ def print_score(name: str, value: float) -> None:
     click.echo(f"{name}: {value:.2f}")
 
 
-def main(test_folder: Path, preprocessor_file: Path, model_file: Path):
+def main(
+    test_folder: Path,
+    preprocessor_file: Path,
+    model_file: Path,
+    finger_preprocessor_file: Optional[Path],
+):
     measurements, _ = data.read_recursive(test_folder, data.TreatNegValues.absolute)
     y: Final = pd.Series(data.get_defects(measurements))
 
-    predictionHandler = PredictionHandler(preprocessor_file, [model_file])
+    predictionHandler = PredictionHandler(
+        preprocessor_file, [model_file], finger_preprocessor_file
+    )
     predictions = []
     proba_predictions = []
     for df in measurements:
@@ -42,9 +49,16 @@ def main(test_folder: Path, preprocessor_file: Path, model_file: Path):
 @click.argument("test_folder", type=click.Path(exists=True, dir_okay=True))
 @click.argument("preprocessor_file", type=click.Path(exists=True, file_okay=True))
 @click.argument("model_file", type=click.Path(exists=True, file_okay=True))
+@click.option(
+    "-f",
+    "--finger-preprocessor",
+    type=click.Path(exists=True, file_okay=True),
+    help="Pickled finger preprocessor path",
+)
 def click_command(
     test_folder,
     preprocessor_file,
     model_file,
+    finger_preprocessor,
 ):
-    main(test_folder, preprocessor_file, model_file)
+    main(test_folder, preprocessor_file, model_file, finger_preprocessor)

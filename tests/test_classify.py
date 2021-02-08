@@ -46,15 +46,16 @@ def test_classify_ClassificationHandler_save_models(config):
     config["general"]["save_models"] = True
 
     handler = classify.ClassificationHandler(config)
-    handler.run()
-
     output_dir = Path(config["general"]["output_dir"])
     assert Path(output_dir, "preprocessor.p").exists()
+    assert Path(output_dir, "finger_preprocessor.p").exists()
+
+    handler.run()
 
     num_of_models = len(config["models-to-run"])
     num_of_mlp_models = len([m for m in config["models-to-run"] if "mlp-" in m])
     assert len(list(output_dir.rglob("model-*.p"))) == num_of_models - num_of_mlp_models
-    assert len(list(output_dir.rglob("pipeline_step*.p"))) == num_of_mlp_models * 3
+    assert len(list(output_dir.rglob("pipeline_step*.p"))) == num_of_mlp_models * 2
 
 
 def test_classify_ClassificationHandler_no_defects(config):
