@@ -46,9 +46,9 @@ def main(
 
 @click.command()
 @click.version_option(version=__version__)
-@click.argument("test_folder", type=click.Path(exists=True, dir_okay=True))
-@click.argument("preprocessor_file", type=click.Path(exists=True, file_okay=True))
-@click.argument("model_file", type=click.Path(exists=True, file_okay=True))
+@click.argument("test-folder", type=click.Path(exists=True, dir_okay=True))
+@click.argument("preprocessor", type=click.Path(exists=True, file_okay=True))
+@click.argument("model", type=click.Path(exists=True, file_okay=True))
 @click.option(
     "-f",
     "--finger-preprocessor",
@@ -57,8 +57,8 @@ def main(
 )
 def click_command(
     test_folder,
-    preprocessor_file,
-    model_file,
+    preprocessor,
+    model,
     finger_preprocessor,
 ):
-    main(test_folder, preprocessor_file, model_file, finger_preprocessor)
+    main(test_folder, preprocessor, model, finger_preprocessor)
