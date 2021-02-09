@@ -98,7 +98,7 @@ models:
       n_neighbors: 1
 
   knn_dtw-seqfinger_ott:
-    normalize: False
+    normalize: *normalize
     data:
       duration: *duration
       step_duration: *step_duration
@@ -107,7 +107,7 @@ models:
       n_neighbors: 1
 
   knn_dtw-seqfinger_seqown:
-    normalize: False
+    normalize: *normalize
     data:
       duration: *duration
       step_duration: *step_duration
@@ -244,19 +244,19 @@ models:
     step_duration: *step_duration
 
   dt-finger_ott:
-    normalize: False
+    normalize: *normalize
 
   dt-finger_own:
-    normalize: False
+    normalize: *normalize
 
   dt-finger_tugraz:
-    normalize: False
+    normalize: *normalize
 
   dt-finger_both:
-    normalize: False
+    normalize: *normalize
 
   dt-finger_tsfresh:
-    normalize: False
+    normalize: *normalize
     n_jobs: *n_jobs
     fdr_level: 0.23
     tsfresh_data: *tsfresh_data
