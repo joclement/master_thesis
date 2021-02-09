@@ -294,9 +294,11 @@ class ClassificationHandler:
             if isinstance(X, pd.DataFrame):
                 X_train = X.iloc[train_index]
                 X_val = X.iloc[val_index]
-            else:
+            elif isinstance(X, list):
                 X_train = [X[idx] for idx in train_index]
                 X_val = [X[idx] for idx in val_index]
+            else:
+                raise ValueError("Invalid X.")
             y_train = self.y[train_index]
             y_val = self.y[val_index]
 
