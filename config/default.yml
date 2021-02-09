@@ -1,4 +1,5 @@
 general:
+  n_jobs: 3
   cv: "logo"
   # cv: 9
   data_dir: ./data/csv-files/prepared/dataset/train
@@ -51,6 +52,32 @@ defaults:
   patience: &patience 11
   epochs: &epochs 250
   verbose: &verbose 1
+
+  dt_grid: &dt_grid
+    min_samples_split:
+      - 2
+      - 3
+      - 4
+      - 5
+      - 10
+      - 15
+      - 20
+    class_weight:
+      - "balanced"
+      - null
+    max_features:
+      - null
+      - 5
+    min_samples_leaf:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 10
 
 models:
   knn_dtw-oned:
@@ -184,11 +211,14 @@ models:
   dt-finger_own:
     normalize: *normalize
     classifier:
-      min_samples_split: 10
+      min_samples_leaf: 4
+      min_samples_split: 4
       class_weight: "balanced"
-      min_samples_leaf: 3
+      max_features: null
     data:
       verbose: True
+    grid:
+      classifier: *dt_grid
 
   dt-finger_tugraz:
     normalize: *normalize
