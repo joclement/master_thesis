@@ -144,15 +144,16 @@ class ClassificationHandler:
         self.onehot_y: Final = LabelBinarizer().fit_transform(self.y)
         self.cv_splits: Final = self._generate_cv_splits()
 
-        finger_preprocessor = Pipeline(
-            [
-                ("extract_features", FunctionTransformer(extract_features)),
-            ]
-        )
-        self.finger_X = finger_preprocessor.fit_transform(self.measurements)
-        if self.config["general"]["save_models"]:
-            with open(Path(self.output_dir, "finger_preprocessor.p"), "wb") as file:
-                pickle.dump(finger_preprocessor, file)
+        if any([is_model_finger(m) for m in self.config["models-to-run"]]):
+            finger_preprocessor = Pipeline(
+                [
+                    ("extract_features", FunctionTransformer(extract_features)),
+                ]
+            )
+            self.finger_X = finger_preprocessor.fit_transform(self.measurements)
+            if self.config["general"]["save_models"]:
+                with open(Path(self.output_dir, "finger_preprocessor.p"), "wb") as file:
+                    pickle.dump(finger_preprocessor, file)
         self.modelHandler = ModelHandler(self.defects, self.config["models"])
 
         metric_names = sorted(
