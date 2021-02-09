@@ -55,7 +55,7 @@ def _check_similar_filenames_for_content(measurements: list, csv_filepaths: list
         str1 = file1.name.replace(" ", "")
         str2 = file2.name.replace(" ", "")
         if sum(1 for a, b in zip(str1, str2) if a != b) <= 1 or set(str1) == set(str2):
-            click.echo(f"Check similar filenames: '{str1}' and '{str1}':")
+            click.echo(f"Check similar filenames: '{str(file1)}' and '{str(file2)}':")
             print(df1.isin(df2).all())
             if df1.isin(df2).all().any() or df2.isin(df1).all().any():
                 raise ValueError("Possibly duplicate content!")
