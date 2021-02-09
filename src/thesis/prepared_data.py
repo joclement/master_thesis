@@ -7,6 +7,7 @@ from tslearn.utils import to_time_series_dataset
 
 from . import data, fingerprint
 from .constants import PART
+from .data import START_TIME, TIME_DIFF
 from .util import get_memory, to_dataTIME
 
 MAX_FREQUENCY = pd.tseries.frequencies.to_offset("50us")
@@ -64,21 +65,31 @@ def twod(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
 def _split_by_duration(
     df: pd.DataFrame, duration: pd.Timedelta, drop_last: bool, drop_empty: bool = False
 ) -> List[pd.DataFrame]:
+    df = df.assign(**{"tmp_time": df[TIME_DIFF].cumsum()})
+    int_dur = to_dataTIME(duration)
     if drop_last:
-        end_edge = math.ceil(df[data.TIME_DIFF].sum())
+        end_edge = math.ceil(df["tmp_time"].iloc[-1])
     else:
-        ratio = df[data.TIME_DIFF].sum() / to_dataTIME(duration)
-        end_edge = math.floor((ratio + 1) * to_dataTIME(duration))
-    bins = range(0, end_edge, to_dataTIME(duration))
-    groups = df.groupby(pd.cut(df[data.TIME_DIFF].cumsum(), bins))
+        ratio = df["tmp_time"].iloc[-1] / int_dur
+        end_edge = math.floor((ratio + 1) * int_dur)
+    bins = range(0, end_edge, int_dur)
+    groups = df.groupby(pd.cut(df["tmp_time"], bins))
     sequence = []
     for index, group in enumerate(groups):
         part = group[1]
         if len(part.index) == 0 and not drop_empty:
             warnings.warn(f"Empty Part in data for duration {duration}.")
         if not drop_empty or len(part.index) >= duration / ONEPD_DURATION:
+            part = part.reset_index(drop=True)
             part.attrs[PART] = index
-            sequence.append(part.reset_index(drop=True))
+            if (
+                len(part) > 0
+                and part[TIME_DIFF].iloc[0] > part["tmp_time"][0] % int_dur
+            ):
+                correct_timediff = part["tmp_time"][0] % int_dur
+                part.loc[0, TIME_DIFF] = correct_timediff
+            part.attrs[START_TIME] = index * int_dur + df.attrs[START_TIME]
+            sequence.append(part.drop(columns="tmp_time"))
 
     return sequence
 
