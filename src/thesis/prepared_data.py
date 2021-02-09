@@ -110,9 +110,6 @@ def _build_fingerprint_sequence(
         sub_df = pd.concat(step_sequence[idx : idx + length])
         sequence.append(sub_df)
 
-    # FIXME workaround
-    if len(sequence[-1].index) < 3:
-        del sequence[-1]
     assert all([len(sub_df.index) >= 3 for sub_df in sequence])
     assert all([not sub_df.index.isnull().any() for sub_df in sequence])
     assert len(sequence) >= 3
