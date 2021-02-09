@@ -97,7 +97,8 @@ def _get_transformer(
 
 def split_model_name(model_name: str):
     parts = model_name.split("-")
-    assert len(parts) == 2
+    if len(parts) != 2:
+        raise ValueError("Invalid input: {model_name}.")
     classifier_id = parts[0]
     data_id = parts[1]
     return classifier_id, data_id
