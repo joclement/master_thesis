@@ -122,7 +122,7 @@ class ModelHandler:
 
         data_config = model_config["data"] if "data" in model_config else {}
         get_feature_builder = getattr(prepared_data, data_id)
-        if "finger_" in data_id and "seqfinger_" not in data_id:
+        if is_data_finger(data_id):
             pipeline.append((data_id, get_feature_builder(**data_config)))
         else:
             feature_generator = FunctionTransformer(get_feature_builder)
