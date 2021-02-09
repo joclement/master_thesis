@@ -94,6 +94,7 @@ def split_by_durations(
     return splitted_measurements
 
 
+@memory.cache
 def _build_fingerprint_sequence(
     df: pd.DataFrame, finger_algo, duration: pd.Timedelta, step_duration: pd.Timedelta
 ):
