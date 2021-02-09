@@ -20,7 +20,7 @@ from sklearn.metrics import (
 )
 from sklearn.model_selection import LeaveOneGroupOut, StratifiedKFold
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import FunctionTransformer, LabelBinarizer
+from sklearn.preprocessing import FunctionTransformer
 from sklearn.svm import SVC
 from sklearn.utils.class_weight import compute_class_weight
 import tensorflow
@@ -141,7 +141,6 @@ class ClassificationHandler:
         self.defect_names: Final = [
             data.DEFECT_NAMES[data.Defect(d)] for d in self.defects
         ]
-        self.onehot_y: Final = LabelBinarizer().fit_transform(self.y)
         self.cv_splits: Final = self._generate_cv_splits()
 
         if any([is_model_finger(m) for m in self.config["models-to-run"]]):
@@ -238,7 +237,7 @@ class ClassificationHandler:
             )
             pipeline.fit(
                 X_train,
-                self.onehot_y[train_index],
+                y_train,
                 classifier__class_weight=class_weights,
             )
         else:
