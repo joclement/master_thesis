@@ -96,25 +96,7 @@ models:
       n_jobs: *n_jobs
       n_neighbors: 1
 
-  knn_dtw-seqfinger_ott:
-    normalize: *normalize
-    classifier:
-      n_jobs: *n_jobs
-      n_neighbors: 1
-    data:
-      duration: *duration
-      step_duration: *step_duration
-
   knn_dtw-seqfinger_seqown:
-    normalize: *normalize
-    classifier:
-      n_jobs: *n_jobs
-      n_neighbors: 1
-    data:
-      duration: *duration
-      step_duration: *step_duration
-
-  knn_dtw-seqfinger_tugraz:
     normalize: *normalize
     classifier:
       n_jobs: *n_jobs
@@ -189,19 +171,7 @@ models:
     classifier:
       decision_function_shape: "ovr"
 
-  svm_dtw-seqfinger_ott:
-    normalize: *normalize
-    data:
-      duration: *duration
-      step_duration: *step_duration
-
   svm_dtw-seqfinger_seqown:
-    normalize: *normalize
-    data:
-      duration: *duration
-      step_duration: *step_duration
-
-  svm_dtw-seqfinger_tugraz:
     normalize: *normalize
     data:
       duration: *duration
