@@ -97,7 +97,7 @@ models:
       n_neighbors: 1
 
   knn_dtw-seqfinger_ott:
-    normalize: False
+    normalize: *normalize
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
@@ -106,7 +106,7 @@ models:
       step_duration: *step_duration
 
   knn_dtw-seqfinger_seqown:
-    normalize: False
+    normalize: *normalize
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
@@ -208,7 +208,7 @@ models:
       step_duration: *step_duration
 
   dt-finger_ott:
-    normalize: False
+    normalize: *normalize
 
   dt-finger_own:
     normalize: *normalize
@@ -220,7 +220,7 @@ models:
       verbose: True
 
   dt-finger_tugraz:
-    normalize: False
+    normalize: *normalize
 
   dt-finger_tsfresh:
     normalize: *normalize
