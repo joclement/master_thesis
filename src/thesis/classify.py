@@ -120,6 +120,7 @@ class ClassificationHandler:
         self.config["datetime"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self._save_config()
 
+        self.n_jobs = self.config["general"]["n_jobs"]
         self.calc_cm = self.config["general"]["calc_cm"]
 
         durationAdapter = FunctionTransformer(adapt_durations)
