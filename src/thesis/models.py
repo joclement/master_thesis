@@ -1,4 +1,4 @@
-from typing import Final, List, Optional
+from typing import Final, Optional, Tuple
 
 import keras
 from keras.callbacks import EarlyStopping
@@ -171,7 +171,7 @@ def get_classifier(
 def build_mlp(
     input_dim: int,
     output_dim: int,
-    hidden_layer_sizes: List[int],
+    hidden_layer_sizes: Tuple[int],
     optimizer: str,
     dropout: float,
 ) -> KerasClassifier:
@@ -213,6 +213,6 @@ def get_mlp(defects: set, **classifier_config: dict) -> KerasClassifier:
         epochs=classifier_config["epochs"],
         batch_size=classifier_config["batch_size"],
         verbose=classifier_config["verbose"],
-        callbacks=callbacks,
+        callbacks=tuple(callbacks),
     )
     return model
