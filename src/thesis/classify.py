@@ -154,7 +154,9 @@ class ClassificationHandler:
             if self.config["general"]["save_models"]:
                 with open(Path(self.output_dir, "finger_preprocessor.p"), "wb") as file:
                     pickle.dump(finger_preprocessor, file)
-        self.modelHandler = ModelHandler(self.defects, self.config["models"])
+        self.modelHandler = ModelHandler(
+            self.defects, self.config["models"], self.config["general"]["verbose"]
+        )
 
         metric_names = sorted(
             [
