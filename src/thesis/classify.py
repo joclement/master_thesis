@@ -398,7 +398,7 @@ def main(config_path, warn):
     OUTPUT_DIRECTORY folder where plot(s) will be saved
     """
     with open(config_path, "r") as stream:
-        config = yaml.safe_load(stream)
+        config = yaml.load(stream)
 
     if not warn:
         warnings.simplefilter("ignore")
