@@ -109,9 +109,11 @@ class ModelHandler:
         self,
         defects: set,
         models_config: dict,
+        verbose: bool,
     ):
         self.defects: Final = defects
         self.models_config: Final = models_config
+        self.verbose = verbose
 
     def get_model(self, model_name: str) -> Pipeline:
         model_config = self.models_config[model_name]
@@ -144,7 +146,7 @@ class ModelHandler:
         )
         pipeline.append(("classifier", classifier))
 
-        return Pipeline(pipeline, verbose=True)
+        return Pipeline(pipeline, verbose=self.verbose)
 
 
 def get_classifier(
