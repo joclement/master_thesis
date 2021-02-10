@@ -77,11 +77,16 @@ def _has_voltage_sign(voltage_sign: VoltageSign, filename: str) -> bool:
 
 
 def _get_voltage_sign(filename: str) -> VoltageSign:
+    detected_voltages_signs = []
     if _has_voltage_sign(VoltageSign.positive, filename):
-        return VoltageSign.positive
+        detected_voltages_signs.append(VoltageSign.positive)
     if _has_voltage_sign(VoltageSign.negative, filename):
-        return VoltageSign.negative
-    raise ValueError(f"No voltage sign found: {filename}")
+        detected_voltages_signs.append(VoltageSign.negative)
+    if len(detected_voltages_signs) == 0:
+        raise ValueError(f"No voltage sign found: {filename}")
+    if len(detected_voltages_signs) > 1:
+        raise ValueError(f"Both voltage signs found: {filename}")
+    return detected_voltages_signs[0]
 
 
 def _get_defect(filename: str) -> Defect:
