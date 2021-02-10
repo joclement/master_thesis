@@ -29,6 +29,7 @@ class MyGridSearch(ClassificationHandler):
                 scoring="balanced_accuracy",
                 n_jobs=self.n_jobs,
                 error_score="raise",
+                verbose=1,
             )
             grid_search.fit(self.get_X(model_name), self.y)
             click.echo("Best params:")
