@@ -50,7 +50,7 @@ defaults:
   n_jobs: &n_jobs 1
   stop_early: &stop_early False
   patience: &patience 11
-  epochs: &epochs 60
+  epochs: &epochs 40
   verbose: &verbose 0
 
   dt_grid: &dt_grid
@@ -178,7 +178,7 @@ models:
     normalize: *normalize
     classifier:
       hidden_layer_sizes: !!python/tuple [15,3]
-      dropout: 0.1
+      dropout: 0.01
       optimizer: "adam"
       batch_size: 1
       epochs: *epochs
