@@ -158,6 +158,7 @@ def extract_features(df: pd.DataFrame):
         TD_SKEW: df[data.TIME_DIFF].skew(),
         TD_SUM: df[data.TIME_DIFF].sum(),
         TD_VAR: df[data.TIME_DIFF].var(),
+        POLARITY: df.attrs[data.VOLTAGE_SIGN],
     }
 
     (
@@ -280,6 +281,7 @@ def feature(feature_id) -> Tuple[str, Feature]:
 def own_feature_union(**data_config) -> FeatureUnion:
     return FeatureUnion(
         [
+            feature(POLARITY),
             feature(PD_CHANGE_QUANTILES),
             feature(PD_COUNT_ABOVE_MEAN),
             feature(PD_COUNT_BELOW_MEAN),
