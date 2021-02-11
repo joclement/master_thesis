@@ -71,8 +71,8 @@ def get_names(defects: Union[List[Defect], pd.Series]) -> List[str]:
 def _has_voltage_sign(voltage_sign: VoltageSign, filename: str) -> bool:
     volt_name = VOLTAGE_NAMES[voltage_sign]
     return (
-        filename[1 : 1 + len(volt_name)] == volt_name
-        or filename[11 : 11 + len(volt_name)] == volt_name
+        filename[1:].startswith(volt_name)
+        or filename[11:].startswith(volt_name)
     )
 
 
