@@ -64,10 +64,10 @@ def plot_results(
 @click.option("--show/--no-show", default=True)
 def main(result_dir, config_file, show):
     with open(Path(result_dir, CONFIG_FILENAME), "r") as stream:
-        classify_config = yaml.safe_load(stream)
+        classify_config = yaml.load(stream)
     if config_file:
         with open(config_file, "r") as stream:
-            config = yaml.safe_load(stream)
+            config = yaml.load(stream)
         models = config["models"]
     else:
         models = classify_config[CONFIG_MODELS_RUN_ID]

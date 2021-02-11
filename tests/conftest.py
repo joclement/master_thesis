@@ -63,7 +63,7 @@ def tiny_csv_filepath(tiny_csv_folder):
 @pytest.fixture
 def classify_config(multiple_csv_files, tmpdir):
     with open("./config/test.yml", "r") as stream:
-        config = yaml.safe_load(stream)
+        config = yaml.load(stream)
     config["general"]["data_dir"] = str(multiple_csv_files)
     config["general"]["output_dir"] = str(Path(tmpdir, "output"))
     return config
