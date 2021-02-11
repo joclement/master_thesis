@@ -73,6 +73,7 @@ def _has_voltage_sign(voltage_sign: VoltageSign, filename: str) -> bool:
     return (
         filename[1:].startswith(volt_name)
         or filename[11:].startswith(volt_name)
+        or filename[17:].startswith(volt_name)
     )
 
 
