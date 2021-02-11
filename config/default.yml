@@ -83,6 +83,11 @@ defaults:
       - 10
 
   mlp_grid: &mlp_grid
+    batch_size:
+      - 1
+      - 2
+      - 5
+      - 10
     dropout:
       - 0.01
       - 0.05
