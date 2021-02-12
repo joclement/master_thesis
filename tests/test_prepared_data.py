@@ -51,7 +51,7 @@ def test_split_by_durations(measurement):
 
 def test__split_by_duration(measurement):
     splitted = prepared_data._split_by_duration(
-        measurement, pd.Timedelta("10 seconds"), True
+        measurement, pd.Timedelta("10 seconds"), True, drop_empty=True
     )
 
     assert isinstance(splitted, list)
@@ -64,6 +64,11 @@ def test__split_by_duration(measurement):
     assert all([df[data.TIME_DIFF][1:].sum() <= 10000 for df in splitted])
     assert splitted[0][data.TIME_DIFF].iloc[-1] == 1000
     assert splitted[6][data.TIME_DIFF].iloc[0] == 1000
+
+    splitted = prepared_data._split_by_duration(
+        measurement, pd.Timedelta("10 seconds"), True, drop_empty=False
+    )
+    assert splitted[6][data.TIME_DIFF].iloc[0] == 3000
 
     splitted = prepared_data._split_by_duration(
         measurement, pd.Timedelta("10 seconds"), False
