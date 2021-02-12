@@ -7,7 +7,7 @@ from tslearn.utils import to_time_series_dataset
 
 from . import data, fingerprint
 from .constants import PART
-from .data import START_TIME, TIME_DIFF
+from .data import PATH, START_TIME, TIME_DIFF
 from .util import get_memory, to_dataTIME
 
 MAX_FREQUENCY = pd.tseries.frequencies.to_offset("50us")
@@ -88,6 +88,7 @@ def _split_by_duration(
                 correct_timediff = part["tmp_time"][0] % int_dur
                 part.loc[0, TIME_DIFF] = correct_timediff
             part.attrs[PART] = index
+            part.attrs[PATH] = df.attrs[PATH]
             part.attrs[START_TIME] = index * int_dur + df.attrs[START_TIME]
             sequence.append(part.drop(columns="tmp_time"))
 
