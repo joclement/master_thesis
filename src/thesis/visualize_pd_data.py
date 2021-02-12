@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-from . import __version__, data, util
+from . import __version__, data, prepared_data, util
 
 
 def _plot_pd_volts_over_time(df):
@@ -194,13 +194,16 @@ def _plot_histogram_duration_of_pd_csvs(measurements):
     help="Generate plots for every file in folder",
 )
 @click.option("--show", "-s", is_flag=True, help="Show plots")
-def main(path, output_folder, recursive, show):
+@click.option("--split", "-s", is_flag=True, help="Split data into 60 seconds samples")
+def main(path, output_folder, recursive, show, split):
     "Plot visualization of measurement file csv"
 
     if Path(path).is_file():
         _generate_plots_for_single_csv(data.read(path), output_folder, show)
     else:
         measurements, csv_filepaths = data.read_recursive(path)
+        if split and not recursive:
+            measurements = prepared_data.adapt_durations(measurements)
         if recursive:
             for measurement, csv_filepath in zip(measurements, csv_filepaths):
                 single_csv_folder = Path(output_folder, Path(csv_filepath).name)

@@ -105,6 +105,26 @@ def split_by_durations(
     return splitted_measurements
 
 
+def adapt_durations(
+    measurements: List[pd.DataFrame],
+    min_duration: str = "60 seconds",
+    max_duration: str = "60 seconds",
+    split: bool = True,
+    drop_empty: bool = True,
+):
+    min_duration = pd.Timedelta(min_duration)
+    long_enough_measurements = []
+    for df in measurements:
+        if df[data.TIME_DIFF].sum() > to_dataTIME(min_duration):
+            long_enough_measurements.append(df)
+
+    if not split:
+        return long_enough_measurements
+    return split_by_durations(
+        long_enough_measurements, pd.Timedelta(max_duration), drop_empty
+    )
+
+
 @memory.cache
 def _build_fingerprint_sequence(
     df: pd.DataFrame, finger_algo, duration: pd.Timedelta, step_duration: pd.Timedelta

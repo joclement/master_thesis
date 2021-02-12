@@ -43,8 +43,7 @@ from .constants import (
 from .data import TreatNegValues
 from .metrics import file_score
 from .models import is_model_finger, ModelHandler
-from .prepared_data import extract_features, split_by_durations
-from .util import to_dataTIME
+from .prepared_data import adapt_durations, extract_features
 from .visualize_results import plot_results
 
 SEED: Final = 23
@@ -64,26 +63,6 @@ def get_classifier(pipeline: Pipeline) -> BaseEstimator:
 
 def is_keras(pipeline: Pipeline) -> bool:
     return isinstance(get_classifier(pipeline), (KerasClassifier))
-
-
-def adapt_durations(
-    measurements: List[pd.DataFrame],
-    min_duration: str = "60 seconds",
-    max_duration: str = "60 seconds",
-    split: bool = True,
-    drop_empty: bool = True,
-):
-    min_duration = pd.Timedelta(min_duration)
-    long_enough_measurements = []
-    for df in measurements:
-        if df[data.TIME_DIFF].sum() > to_dataTIME(min_duration):
-            long_enough_measurements.append(df)
-
-    if not split:
-        return long_enough_measurements
-    return split_by_durations(
-        long_enough_measurements, pd.Timedelta(max_duration), drop_empty
-    )
 
 
 def group_by_file(measurements: List[pd.DataFrame]) -> List[int]:
