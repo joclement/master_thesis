@@ -82,7 +82,8 @@ def _split_by_duration(
         if not drop_empty or len(part.index) >= duration / ONEPD_DURATION:
             part = part.reset_index(drop=True)
             if (
-                len(part) > 0
+                drop_empty
+                and len(part) > 0
                 and part[TIME_DIFF][0] > part["tmp_time"][0] % int_dur
             ):
                 correct_timediff = part["tmp_time"][0] % int_dur
