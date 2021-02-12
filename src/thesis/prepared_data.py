@@ -81,13 +81,13 @@ def _split_by_duration(
             warnings.warn(f"Empty Part in data for duration {duration}.")
         if not drop_empty or len(part.index) >= duration / ONEPD_DURATION:
             part = part.reset_index(drop=True)
-            part.attrs[PART] = index
             if (
                 len(part) > 0
-                and part[TIME_DIFF].iloc[0] > part["tmp_time"][0] % int_dur
+                and part[TIME_DIFF][0] > part["tmp_time"][0] % int_dur
             ):
                 correct_timediff = part["tmp_time"][0] % int_dur
                 part.loc[0, TIME_DIFF] = correct_timediff
+            part.attrs[PART] = index
             part.attrs[START_TIME] = index * int_dur + df.attrs[START_TIME]
             sequence.append(part.drop(columns="tmp_time"))
 
