@@ -46,7 +46,6 @@ models-to-run:
 defaults:
   duration: &duration "30 seconds"
   step_duration: &step_duration "10 seconds"
-  tsfresh_data: &tsfresh_data ./data/csv-files/prepared/dataset/train/tsfresh-features_0.5.0_minimal_60seconds.data
   normalize: &normalize True
   n_jobs: &n_jobs 1
   stop_early: &stop_early False
@@ -145,16 +144,6 @@ models:
       n_jobs: *n_jobs
       n_neighbors: 1
 
-  knn-finger_tsfresh:
-    default_fc_parameters: MinimalFCParameters
-    n_jobs: *n_jobs
-    normalize: *normalize
-    fdr_level: 0.23
-    tsfresh_data: *tsfresh_data
-    classifier:
-      n_jobs: *n_jobs
-      n_neighbors: 1
-
   knn_dtw-seqfinger_seqown:
     normalize: *normalize
     classifier:
@@ -222,14 +211,6 @@ models:
     classifier:
       decision_function_shape: "ovr"
 
-  svm-finger_tsfresh:
-    normalize: *normalize
-    n_jobs: *n_jobs
-    fdr_level: 0.23
-    tsfresh_data: *tsfresh_data
-    classifier:
-      decision_function_shape: "ovr"
-
   svm_dtw-seqfinger_seqown:
     normalize: *normalize
     data:
@@ -253,11 +234,3 @@ models:
 
   dt-finger_tugraz:
     normalize: *normalize
-
-  dt-finger_tsfresh:
-    normalize: *normalize
-    n_jobs: *n_jobs
-    fdr_level: 0.23
-    tsfresh_data: *tsfresh_data
-    classifier:
-      min_samples_split: 5
