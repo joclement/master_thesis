@@ -59,10 +59,10 @@ def _check_similar_filenames_for_content(measurements: list, csv_filepaths: list
             print(df1.isin(df2).all())
             if df1.isin(df2).all().all() or df2.isin(df1).all().all():
                 print("df1 is in df2: ", df1.isin(df2).all().all())
-                raise ValueError("Likely possibly duplicate content!")
+                raise ValueError("Likely possible duplicate content!")
             if df1.isin(df2).all().any() or df2.isin(df1).all().any():
                 print("df1 is in df2: ", df1.isin(df2).all().any())
-                raise ValueError("Maybe possibly duplicate content!")
+                raise ValueError("Maybe possible duplicate content!")
             else:
                 click.echo("No.")
 
