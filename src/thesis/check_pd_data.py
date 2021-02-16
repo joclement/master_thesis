@@ -53,16 +53,16 @@ def _check_similar_filenames_for_content(measurements: list, csv_filepaths: list
         file1 = Path(file1)
         file2 = Path(file2)
 
-        click.echo(f"Check similar filenames: '{str(file1)}' and '{str(file2)}':")
-        print(df1.isin(df2).all())
         if df1.isin(df2).all().all() or df2.isin(df1).all().all():
-            print("df1 is in df2: ", df1.isin(df2).all().all())
+            click.echo(f"filenames: '{str(file1)}' and '{str(file2)}':")
+            click.echo(f"df1 is in df2: {df1.isin(df2).all().all()}")
+            click.echo(f"df2 is in df1: {df2.isin(df1).all().all()}")
             raise ValueError("Likely possible duplicate content!")
         if df1.isin(df2).all().any() or df2.isin(df1).all().any():
-            print("df1 is in df2: ", df1.isin(df2).all().any())
+            click.echo(f"filenames: '{str(file1)}' and '{str(file2)}':")
+            click.echo(f"df1 is in df2: {df1.isin(df2).all().all()}")
+            click.echo(f"df2 is in df1: {df2.isin(df1).all().all()}")
             raise ValueError("Maybe possible duplicate content!")
-        else:
-            click.echo("No.")
 
 
 def _check_time_starts_with_zero(measurements: List[pd.DataFrame]):
