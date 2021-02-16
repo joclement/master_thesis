@@ -144,12 +144,11 @@ class ClassificationHandler:
                 TOP_K_ACCURACY_SCORE,
             ]
         )
+        dataParts = [DataPart.val]
+        if self.config["general"]["calc_train_score"]:
+            dataParts.append(DataPart.train)
         all_score_names = sorted(
-            [
-                combine(p, m)
-                for p in [DataPart.train, DataPart.val]
-                for m in metric_names
-            ]
+            [combine(p, m) for p in dataParts for m in metric_names]
         )
         if self.config["general"]["cv"] == "logo":
             all_score_names.append(combine(DataPart.val, FILE_SCORE))
@@ -285,10 +284,13 @@ class ClassificationHandler:
 
             self._train(pipeline, X_train, y_train, train_index)
 
-            train_scores, _ = self.calc_scores(
-                pipeline, X_train, y_train, DataPart.train
-            )
-            self.assign_and_print_scores(model_name, DataPart.train, idx, train_scores)
+            if self.config["general"]["calc_train_score"]:
+                train_scores, _ = self.calc_scores(
+                    pipeline, X_train, y_train, DataPart.train
+                )
+                self.assign_and_print_scores(
+                    model_name, DataPart.train, idx, train_scores
+                )
 
             val_scores, confusion_matrix = self.calc_scores(
                 pipeline, X_val, y_val, DataPart.val
