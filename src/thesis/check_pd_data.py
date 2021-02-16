@@ -52,19 +52,17 @@ def _check_similar_filenames_for_content(measurements: list, csv_filepaths: list
         df2, file2 = fm2
         file1 = Path(file1)
         file2 = Path(file2)
-        str1 = file1.name.replace(" ", "")
-        str2 = file2.name.replace(" ", "")
-        if sum(1 for a, b in zip(str1, str2) if a != b) <= 1 or set(str1) == set(str2):
-            click.echo(f"Check similar filenames: '{str(file1)}' and '{str(file2)}':")
-            print(df1.isin(df2).all())
-            if df1.isin(df2).all().all() or df2.isin(df1).all().all():
-                print("df1 is in df2: ", df1.isin(df2).all().all())
-                raise ValueError("Likely possible duplicate content!")
-            if df1.isin(df2).all().any() or df2.isin(df1).all().any():
-                print("df1 is in df2: ", df1.isin(df2).all().any())
-                raise ValueError("Maybe possible duplicate content!")
-            else:
-                click.echo("No.")
+
+        click.echo(f"Check similar filenames: '{str(file1)}' and '{str(file2)}':")
+        print(df1.isin(df2).all())
+        if df1.isin(df2).all().all() or df2.isin(df1).all().all():
+            print("df1 is in df2: ", df1.isin(df2).all().all())
+            raise ValueError("Likely possible duplicate content!")
+        if df1.isin(df2).all().any() or df2.isin(df1).all().any():
+            print("df1 is in df2: ", df1.isin(df2).all().any())
+            raise ValueError("Maybe possible duplicate content!")
+        else:
+            click.echo("No.")
 
 
 def _check_time_starts_with_zero(measurements: List[pd.DataFrame]):
