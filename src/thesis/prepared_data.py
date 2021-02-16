@@ -1,5 +1,5 @@
 import math
-from typing import List, Tuple
+from typing import List
 import warnings
 
 import pandas as pd
@@ -178,7 +178,7 @@ def finger_tugraz(**config) -> pd.DataFrame:
 
 def extract_features(
     measurements: List[pd.DataFrame],
-) -> Tuple[pd.DataFrame, pd.DataFrame]:
+) -> pd.DataFrame:
     X = []
     features = []
     for df in measurements:
