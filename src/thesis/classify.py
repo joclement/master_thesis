@@ -4,7 +4,7 @@ from pathlib import Path
 import pickle
 import random
 import shutil
-from typing import Final, List, Tuple
+from typing import Final, List, Optional, Tuple
 import warnings
 
 import click
@@ -37,10 +37,13 @@ from .constants import (
     FILE_SCORE,
     K,
     MODEL_ID,
+    PART,
+    PREDICTIONS_FILENAME,
     SCORES_FILENAME,
     TOP_K_ACCURACY_SCORE,
 )
 from .data import TreatNegValues
+from .fingerprint import get_X_index
 from .metrics import file_score
 from .models import is_model_finger, ModelHandler
 from .prepared_data import adapt_durations, extract_features
@@ -80,6 +83,13 @@ def group_by_file(measurements: List[pd.DataFrame]) -> List[int]:
         groups.append(index)
 
     return groups
+
+
+def get_index(X):
+    if isinstance(X, pd.DataFrame):
+        return X.index
+    elif isinstance(X, list):
+        return [get_X_index(df) for df in X]
 
 
 class ClassificationHandler:
@@ -157,6 +167,14 @@ class ClassificationHandler:
         self.scores = pd.DataFrame(
             index=self.config[CONFIG_MODELS_RUN_ID], columns=score_columns, dtype=float
         )
+        self.predictions = pd.DataFrame(
+            data=-1,
+            index=pd.MultiIndex.from_tuples(
+                get_index(self.measurements), names=[data.PATH, PART]
+            ),
+            columns=self.config[CONFIG_MODELS_RUN_ID],
+            dtype=np.int64,
+        )
 
     def get_measurements(self) -> List[pd.DataFrame]:
         measurements, _ = data.read_recursive(
@@ -233,7 +251,12 @@ class ClassificationHandler:
         )
 
     def calc_scores(
-        self, pipeline: Pipeline, X, y_true: pd.Series, dataPart: DataPart
+        self,
+        pipeline: Pipeline,
+        X,
+        y_true: pd.Series,
+        dataPart: DataPart,
+        model_name: Optional[str] = None,
     ) -> Tuple[pd.Series, np.ndarray]:
         if isinstance(get_classifier(pipeline), (SVC, TimeSeriesSVC)):
             predictions = pipeline.predict(X)
@@ -245,6 +268,8 @@ class ClassificationHandler:
             scores[TOP_K_ACCURACY_SCORE] = top_k_accuracy_score(
                 y_true, proba_predictions, k=K, labels=self.defects
             )
+        if dataPart is DataPart.val:
+            self.predictions.loc[get_index(X), model_name] = predictions
         if self.config["general"]["cv"] == "logo" and dataPart is DataPart.val:
             scores[FILE_SCORE] = file_score(y_true, predictions)
         if dataPart is DataPart.val and self.calc_cm:
@@ -293,7 +318,7 @@ class ClassificationHandler:
                 )
 
             val_scores, confusion_matrix = self.calc_scores(
-                pipeline, X_val, y_val, DataPart.val
+                pipeline, X_val, y_val, DataPart.val, model_name
             )
             self.assign_and_print_scores(model_name, DataPart.val, idx, val_scores)
             if self.calc_cm and self.config["general"]["cv"] != "logo":
@@ -321,6 +346,7 @@ class ClassificationHandler:
             )
 
             self.scores.to_csv(Path(self.output_dir, SCORES_FILENAME))
+            self.predictions.to_csv(Path(self.output_dir, PREDICTIONS_FILENAME))
             if self.config["general"]["save_models"]:
                 self._save_models(pipeline, model_folder, model_name)
             click.echo(

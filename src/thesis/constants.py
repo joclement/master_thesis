@@ -2,6 +2,7 @@ from enum import Enum
 from typing import Final
 
 
+PREDICTIONS_FILENAME: Final = "models_predictions.csv"
 SCORES_FILENAME: Final = "models_scores.csv"
 CONFIG_FILENAME: Final = "config.yml"
 CONFIG_MODELS_RUN_ID: Final = "models-to-run"
