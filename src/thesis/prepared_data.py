@@ -179,7 +179,4 @@ def finger_tugraz(**config) -> pd.DataFrame:
 def extract_features(
     measurements: List[pd.DataFrame],
 ) -> pd.DataFrame:
-    features = []
-    for df in measurements:
-        features.append(fingerprint.extract_features(df))
-    return pd.concat(features)
+    return pd.concat([fingerprint.extract_features(df) for df in measurements])
