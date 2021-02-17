@@ -63,7 +63,7 @@ class SeqFingerScaler(TransformerMixin, BaseEstimator):
         return X
 
     def get_params(self, deep=True):
-        return {"Scaler": self.Scaler}
+        return {"Scaler": str(self.Scaler)}
 
     def set_params(self, **parameters):
         if "Scaler" in parameters:
