@@ -354,10 +354,8 @@ def build_set(
         ott: ott_feature_union,
     }
 
-    X = []
     features = []
     for df in measurements:
-        X.append(get_X_index(df))
         features.append(extract_features(df))
     features = pd.concat(features)
 
