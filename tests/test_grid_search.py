@@ -21,6 +21,9 @@ def test_grid_search_main(classify_config, tmpdir):
     result = runner.invoke(grid_search.main, [str(config_filepath)])
 
     assert result.exit_code == 0
+    output_dir = Path(classify_config["general"]["output_dir"])
+    num_of_models = len(classify_config["models-to-run"])
+    assert len(list(output_dir.rglob("grid-search-results.p"))) == num_of_models
 
 
 def test_main_version_succeeds():
