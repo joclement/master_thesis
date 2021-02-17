@@ -16,91 +16,90 @@ from tsfresh.feature_extraction.feature_calculators import (
     ratio_value_number_to_time_series_length,
 )
 
-from . import data
 from .constants import PART
-from .data import PATH
+from .data import CLASS, get_defects, PATH, PD, PD_DIFF, TIME_DIFF, VOLTAGE_SIGN
 from .util import get_memory
 
 memory = get_memory()
 
-PD = "PD-Value"
-PD_DIFF = "PD-Diff"
-TD = "TimeDiff"
-CORR = "Correlate"
+PD_ID = "PD-Value"
+PD_DIFF_ID = "PD-Diff"
+TD_ID = "TimeDiff"
+CORR_ID = "Correlate"
 
 
 class Group(Enum):
-    pd = PD
-    pd_diff = PD_DIFF
-    td = TD
-    corr = CORR
+    pd = PD_ID
+    pd_diff = PD_DIFF_ID
+    td = TD_ID
+    corr = CORR_ID
 
     def __str__(self):
         return "%s" % self.value
 
 
 # @note: parameter in TU Graz fingerprint
-PD_VAR = f"{PD} Variance"
-PD_SKEW = f"{PD} Skewness"
-PD_KURT = f"{PD} Kurtosis"
-PD_WEIB_A = f"{PD} Weibull A"
-PD_WEIB_B = f"{PD} Weibull B"
+PD_VAR = f"{PD_ID} Variance"
+PD_SKEW = f"{PD_ID} Skewness"
+PD_KURT = f"{PD_ID} Kurtosis"
+PD_WEIB_A = f"{PD_ID} Weibull A"
+PD_WEIB_B = f"{PD_ID} Weibull B"
 
-PD_DIFF_WEIB_B = f"{PD_DIFF} Weibull B"
+PD_DIFF_WEIB_B = f"{PD_DIFF_ID} Weibull B"
 
-TD_MAX = f"{TD} Max"
-TD_MEAN = f"{TD} Mean"
-TD_MIN = f"{TD} Min"
-TD_VAR = f"{TD} Variance"
-TD_SKEW = f"{TD} Skewness"
-TD_KURT = f"{TD} Kurtosis"
-TDIFF_NORM_WEIB_A = f"{TD} Sorted Normed Weibull A"
-TDIFF_NORM_WEIB_B = f"{TD} Sorted Normed Weibull B"
+TD_MAX = f"{TD_ID} Max"
+TD_MEAN = f"{TD_ID} Mean"
+TD_MIN = f"{TD_ID} Min"
+TD_VAR = f"{TD_ID} Variance"
+TD_SKEW = f"{TD_ID} Skewness"
+TD_KURT = f"{TD_ID} Kurtosis"
+TDIFF_NORM_WEIB_A = f"{TD_ID} Sorted Normed Weibull A"
+TDIFF_NORM_WEIB_B = f"{TD_ID} Sorted Normed Weibull B"
 
 
 # @note: parameter in Lukas fingerprint
 PDS_PER_SEC = "Number of PDs/sec"
 
-PD_MEAN = f"{PD} Mean"
-PD_MAX = f"{PD} Max"
-PD_CV = f"{PD} std/mean"
-PD_SUM = f"{PD} Sum"
+PD_MEAN = f"{PD_ID} Mean"
+PD_MAX = f"{PD_ID} Max"
+PD_CV = f"{PD_ID} std/mean"
+PD_SUM = f"{PD_ID} Sum"
 
-PD_DIFF_MEAN = f"{PD_DIFF} Mean"
-PD_DIFF_SKEW = f"{PD_DIFF} Skewness"
-PD_DIFF_KURT = f"{PD_DIFF} Kurtosis"
-PD_DIFF_WEIB_A = f"{PD_DIFF} Weibull A"
+PD_DIFF_MEAN = f"{PD_DIFF_ID} Mean"
+PD_DIFF_SKEW = f"{PD_DIFF_ID} Skewness"
+PD_DIFF_KURT = f"{PD_DIFF_ID} Kurtosis"
+PD_DIFF_WEIB_A = f"{PD_DIFF_ID} Weibull A"
 
-TD_MEDIAN = f"{TD} Median"
+TD_MEDIAN = f"{TD_ID} Median"
 
-CORR_PD_DIFF_TO_PD_BINS = f"{CORR} {PD_DIFF} - PD Bins"
-CORR_NEXT_PD_TO_PD_BINS = f"{CORR} Next PD - PD Bins"
+CORR_PD_DIFF_TO_PD_BINS = f"{CORR_ID} {PD_DIFF_ID} - PD Bins"
+CORR_NEXT_PD_TO_PD_BINS = f"{CORR_ID} Next PD - PD Bins"
 
 # @note: parameter in own fingerprint
 POLARITY = "+DC/-DC"
 
-PD_MIN = f"{PD} min"
-PD_MEDIAN = f"{PD} Median"
-PD_STD = f"{PD} std"
-PD_VAR = f"{PD} var"
-SIZE = f"{PD} Num"
-PD_NUM_PEAKS_50 = f"{PD} num peaks 50"
-PD_NUM_PEAKS_10 = f"{PD} num peaks 10"
-PD_RATIO = f"{PD} ratio"
-PD_PERC_REOCCUR = f"{PD} percentage reocurring"
-PD_COUNT_ABOVE_MEAN = f"{PD} count above mean"
-PD_COUNT_BELOW_MEAN = f"{PD} count below mean"
-PD_CHANGE_QUANTILES = f"{PD} ChangeQuantiles"
-PD_NORM_WEIB_A = f"{PD} Weibull normed sorted A"
-PD_NORM_WEIB_B = f"{PD} Weibull normed sorted B"
+PD_MIN = f"{PD_ID} min"
+PD_MEDIAN = f"{PD_ID} Median"
+PD_STD = f"{PD_ID} std"
+PD_VAR = f"{PD_ID} var"
+SIZE = f"{PD_ID} Num"
+PD_NUM_PEAKS_50 = f"{PD_ID} num peaks 50"
+PD_NUM_PEAKS_10 = f"{PD_ID} num peaks 10"
+PD_RATIO = f"{PD_ID} ratio"
+PD_PERC_REOCCUR = f"{PD_ID} percentage reocurring"
+PD_COUNT_ABOVE_MEAN = f"{PD_ID} count above mean"
+PD_COUNT_BELOW_MEAN = f"{PD_ID} count below mean"
+PD_CHANGE_QUANTILES = f"{PD_ID} ChangeQuantiles"
+PD_NORM_WEIB_A = f"{PD_ID} Weibull normed sorted A"
+PD_NORM_WEIB_B = f"{PD_ID} Weibull normed sorted B"
 
-TD_LONGEST_STRIKE_BELOW_MEAN = f"{TD} longest strike below mean"
-TD_CHANGE_QUANTILES = f"{TD} ChangeQuantiles"
-TD_SUM = f"{TD} Sum"
+TD_LONGEST_STRIKE_BELOW_MEAN = f"{TD_ID} longest strike below mean"
+TD_CHANGE_QUANTILES = f"{TD_ID} ChangeQuantiles"
+TD_SUM = f"{TD_ID} Sum"
 
 
 def keep_needed_columns(measurements: List[pd.DataFrame]):
-    return [df[[data.TIME_DIFF, data.PD_DIFF, data.PD]] for df in measurements]
+    return [df[[TIME_DIFF, PD_DIFF, PD]] for df in measurements]
 
 
 def get_parameter_group(df: pd.DataFrame, group: Group) -> pd.DataFrame:
@@ -117,63 +116,59 @@ def calc_weibull_params(data: Union[list, pd.Series]) -> Tuple[float, float]:
 
 @memory.cache
 def extract_features(df: pd.DataFrame):
-    next_pd = df[data.PD][1:].reset_index(drop=True)
+    next_pd = df[PD][1:].reset_index(drop=True)
 
     features = {
-        CORR_NEXT_PD_TO_PD_BINS: _correlate_with_bins(df[data.PD][:-1], next_pd),
-        CORR_PD_DIFF_TO_PD_BINS: _correlate_with_bins(df[data.PD], df[data.PD_DIFF]),
-        PDS_PER_SEC: len(df[data.TIME_DIFF]) / (df[data.TIME_DIFF].sum() / 1000),
-        PD_CHANGE_QUANTILES: change_quantiles(df[data.PD], 0.0, 0.7, True, "mean"),
-        PD_COUNT_ABOVE_MEAN: count_above_mean(df[data.PD]),
-        PD_COUNT_BELOW_MEAN: count_below_mean(df[data.PD]),
-        PD_CV: df[data.PD].std() / df[data.PD].mean(),
-        PD_DIFF_KURT: df[data.PD_DIFF].kurt(),
-        PD_DIFF_MEAN: df[data.PD_DIFF].mean(),
-        PD_DIFF_SKEW: df[data.PD_DIFF].skew(),
-        PD_KURT: df[data.PD].kurt(),
-        PD_MAX: df[data.PD].max(),
-        PD_MEAN: df[data.PD].mean(),
-        PD_MEDIAN: df[data.PD].median(),
-        PD_MIN: df[data.PD].min(),
-        PD_NUM_PEAKS_10: number_peaks(df[data.PD], 10),
-        PD_NUM_PEAKS_50: number_peaks(df[data.PD], 50),
-        PD_PERC_REOCCUR: percentage_of_reoccurring_datapoints_to_all_datapoints(
-            df[data.PD]
-        ),
-        PD_RATIO: ratio_value_number_to_time_series_length(df[data.PD]),
-        PD_SKEW: df[data.PD].skew(),
-        PD_STD: df[data.PD].std(),
-        PD_SUM: df[data.PD].sum(),
-        PD_VAR: df[data.PD].var(),
+        CORR_NEXT_PD_TO_PD_BINS: _correlate_with_bins(df[PD][:-1], next_pd),
+        CORR_PD_DIFF_TO_PD_BINS: _correlate_with_bins(df[PD], df[PD_DIFF]),
+        PDS_PER_SEC: len(df[TIME_DIFF]) / (df[TIME_DIFF].sum() / 1000),
+        PD_CHANGE_QUANTILES: change_quantiles(df[PD], 0.0, 0.7, True, "mean"),
+        PD_COUNT_ABOVE_MEAN: count_above_mean(df[PD]),
+        PD_COUNT_BELOW_MEAN: count_below_mean(df[PD]),
+        PD_CV: df[PD].std() / df[PD].mean(),
+        PD_DIFF_KURT: df[PD_DIFF].kurt(),
+        PD_DIFF_MEAN: df[PD_DIFF].mean(),
+        PD_DIFF_SKEW: df[PD_DIFF].skew(),
+        PD_KURT: df[PD].kurt(),
+        PD_MAX: df[PD].max(),
+        PD_MEAN: df[PD].mean(),
+        PD_MEDIAN: df[PD].median(),
+        PD_MIN: df[PD].min(),
+        PD_NUM_PEAKS_10: number_peaks(df[PD], 10),
+        PD_NUM_PEAKS_50: number_peaks(df[PD], 50),
+        PD_PERC_REOCCUR: percentage_of_reoccurring_datapoints_to_all_datapoints(df[PD]),
+        PD_RATIO: ratio_value_number_to_time_series_length(df[PD]),
+        PD_SKEW: df[PD].skew(),
+        PD_STD: df[PD].std(),
+        PD_SUM: df[PD].sum(),
+        PD_VAR: df[PD].var(),
         SIZE: len(df.index),
-        TD_CHANGE_QUANTILES: change_quantiles(
-            df[data.TIME_DIFF], 0.0, 0.3, True, "var"
-        ),
-        TD_KURT: df[data.TIME_DIFF].kurt(),
-        TD_LONGEST_STRIKE_BELOW_MEAN: longest_strike_below_mean(df[data.PD]),
-        TD_MAX: df[data.TIME_DIFF].max(),
-        TD_MEAN: df[data.TIME_DIFF].mean(),
-        TD_MEDIAN: df[data.TIME_DIFF].median(),
-        TD_MIN: df[data.TIME_DIFF].min(),
-        TD_SKEW: df[data.TIME_DIFF].skew(),
-        TD_SUM: df[data.TIME_DIFF].sum(),
-        TD_VAR: df[data.TIME_DIFF].var(),
-        POLARITY: df.attrs[data.VOLTAGE_SIGN],
+        TD_CHANGE_QUANTILES: change_quantiles(df[TIME_DIFF], 0.0, 0.3, True, "var"),
+        TD_KURT: df[TIME_DIFF].kurt(),
+        TD_LONGEST_STRIKE_BELOW_MEAN: longest_strike_below_mean(df[PD]),
+        TD_MAX: df[TIME_DIFF].max(),
+        TD_MEAN: df[TIME_DIFF].mean(),
+        TD_MEDIAN: df[TIME_DIFF].median(),
+        TD_MIN: df[TIME_DIFF].min(),
+        TD_SKEW: df[TIME_DIFF].skew(),
+        TD_SUM: df[TIME_DIFF].sum(),
+        TD_VAR: df[TIME_DIFF].var(),
+        POLARITY: df.attrs[VOLTAGE_SIGN],
     }
 
     (
         features[PD_DIFF_WEIB_A],
         features[PD_DIFF_WEIB_B],
-    ) = calc_weibull_params(df[data.PD_DIFF])
+    ) = calc_weibull_params(df[PD_DIFF])
     (
         features[PD_NORM_WEIB_A],
         features[PD_NORM_WEIB_B],
-    ) = calc_weibull_params(df[data.PD].sort_values() / df[data.PD].max())
+    ) = calc_weibull_params(df[PD].sort_values() / df[PD].max())
     (
         features[TDIFF_NORM_WEIB_A],
         features[TDIFF_NORM_WEIB_B],
-    ) = calc_weibull_params(df[data.TIME_DIFF].cumsum() / df[data.TIME_DIFF].sum())
-    features[PD_WEIB_A], features[PD_WEIB_B] = calc_weibull_params(df[data.PD])
+    ) = calc_weibull_params(df[TIME_DIFF].cumsum() / df[TIME_DIFF].sum())
+    features[PD_WEIB_A], features[PD_WEIB_B] = calc_weibull_params(df[PD])
 
     extracted_features = pd.DataFrame(
         data=features, columns=features.keys(), index=[get_X_index(df)]
@@ -317,17 +312,17 @@ def own(df: pd.DataFrame) -> pd.Series:
 
 def seqown(df: pd.DataFrame) -> pd.Series:
     own = [
-        df[data.PD].mean(),
-        df[data.PD].std(),
-        df[data.PD].median(),
-        df[data.PD].max(),
-        df[data.PD].sum(),
-        df[data.PD].var(),
+        df[PD].mean(),
+        df[PD].std(),
+        df[PD].median(),
+        df[PD].max(),
+        df[PD].sum(),
+        df[PD].var(),
         len(df.index),
-        df[data.TIME_DIFF].skew(),
-        df[data.TIME_DIFF].median(),
-        number_peaks(df[data.TIME_DIFF], 3),
-        df[data.TIME_DIFF].sum(),
+        df[TIME_DIFF].skew(),
+        df[TIME_DIFF].median(),
+        number_peaks(df[TIME_DIFF], 3),
+        df[TIME_DIFF].sum(),
     ]
 
     finger = pd.Series(data=own, dtype=float)
@@ -370,7 +365,5 @@ def build_set(
     fingers = fingerBuilder.transform(features)
     fingers = pd.DataFrame(data=fingers, columns=get_feature_names(fingerBuilder))
     if add_class:
-        fingers[data.CLASS] = pd.Series(
-            data.get_defects(measurements), dtype="category"
-        )
+        fingers[CLASS] = pd.Series(get_defects(measurements), dtype="category")
     return fingers
