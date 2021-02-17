@@ -91,7 +91,7 @@ def _get_voltage_sign(filename: str) -> VoltageSign:
     return detected_voltages_signs[0]
 
 
-def _get_defect(filename: str) -> Defect:
+def get_defect(filename: str) -> Defect:
     defects = []
     if "Stütze" in filename:
         defects.append(Defect.cavity)
@@ -157,7 +157,7 @@ def read(
     filename = Path(filepath).stem
     if labeled_file:
         experiment.attrs[VOLTAGE_SIGN] = _get_voltage_sign(filename)
-        experiment.attrs[CLASS] = _get_defect(filename)
+        experiment.attrs[CLASS] = get_defect(filename)
 
     return experiment.iloc[1:].reset_index(drop=True)
 
