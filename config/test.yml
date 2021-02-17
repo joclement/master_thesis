@@ -114,6 +114,8 @@ models:
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
+    grid:
+      classifier: *dt_grid
 
   knn-finger_both:
     normalize: *normalize
@@ -146,6 +148,8 @@ models:
       stop_early: *stop_early
       patience: *patience
       verbose: *verbose
+    grid:
+      classifier: *mlp_grid
 
   mlp-finger_own:
     normalize: *normalize
@@ -228,6 +232,8 @@ models:
 
   dt-finger_tugraz:
     normalize: *normalize
+    grid:
+      classifier: *dt_grid
 
   dt-finger_both:
     normalize: *normalize
