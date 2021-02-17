@@ -30,7 +30,6 @@ models-to-run:
   - dt-finger_ott
   - dt-finger_own
   - dt-finger_tugraz
-  - knn_dtw-oned
   - knn-finger_ott
   - knn-finger_own
   - knn-finger_tugraz
