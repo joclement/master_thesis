@@ -1,3 +1,5 @@
+from pathlib import Path
+import pickle
 from typing import Dict
 import warnings
 
@@ -35,6 +37,10 @@ class MyGridSearch(ClassificationHandler):
             grid_search.fit(self.get_X(model_name), self.y)
             click.echo("Best params:")
             click.echo(grid_search.best_params_)
+            model_folder = Path(self.output_dir, model_name)
+            model_folder.mkdir(exist_ok=True)
+            with open(Path(model_folder, "grid-search-results.p"), "wb") as file:
+                pickle.dump(grid_search.cv_results_, file)
 
 
 @click.command()
