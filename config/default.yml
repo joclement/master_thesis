@@ -33,6 +33,9 @@ models-to-run:
   - mlp-finger_ott
   - mlp-finger_own
   - mlp-finger_tugraz
+  - rf-finger_ott
+  - rf-finger_own
+  - rf-finger_tugraz
   - svm-finger_ott
   - svm-finger_own
   - svm-finger_tugraz
@@ -227,4 +230,13 @@ models:
       classifier: *dt_grid
 
   dt-finger_tugraz:
+    normalize: *normalize
+
+  rf-finger_ott:
+    normalize: *normalize
+
+  rf-finger_own:
+    normalize: *normalize
+
+  rf-finger_tugraz:
     normalize: *normalize

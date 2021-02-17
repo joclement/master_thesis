@@ -8,6 +8,7 @@ from keras.models import Sequential
 from keras.wrappers.scikit_learn import KerasClassifier
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer, MinMaxScaler, StandardScaler
@@ -86,7 +87,7 @@ def _get_transformer(
     if "finger_" in data_id:
         if classifier_id in ["mlp", "svm"]:
             return StandardScaler()
-        elif classifier_id in ["knn", "dt"]:
+        elif classifier_id in ["knn", "dt", "rf"]:
             return MinMaxScaler()
         else:
             raise ValueError(f"classifier {classifier_id} not supported.")
@@ -156,6 +157,8 @@ def get_classifier(
 ) -> BaseEstimator:
     if classifier_id == "dt":
         return DecisionTreeClassifier(**classifier_config)
+    if classifier_id == "rf":
+        return RandomForestClassifier(**classifier_config)
     if classifier_id == "knn":
         return KNeighborsClassifier(**classifier_config)
     if classifier_id == "knn_dtw":
