@@ -73,8 +73,8 @@ PD_DIFF_WEIB_A = f"{PD_DIFF} Weibull A"
 
 TD_MEDIAN = f"{TD} Median"
 
-CORR_PD_DIFF_TO_PD = f"{CORR} {PD_DIFF} - PD"
-CORR_NEXT_PD_TO_PD = f"{CORR} Next PD - PD"
+CORR_PD_DIFF_TO_PD_BINS = f"{CORR} {PD_DIFF} - PD Bins"
+CORR_NEXT_PD_TO_PD_BINS = f"{CORR} Next PD - PD Bins"
 
 # @note: parameter in own fingerprint
 POLARITY = "+DC/-DC"
@@ -120,8 +120,8 @@ def extract_features(df: pd.DataFrame):
     next_pd = df[data.PD][1:].reset_index(drop=True)
 
     features = {
-        CORR_NEXT_PD_TO_PD: _correlate_with_bins(df[data.PD][:-1], next_pd),
-        CORR_PD_DIFF_TO_PD: _correlate_with_bins(df[data.PD], df[data.PD_DIFF]),
+        CORR_NEXT_PD_TO_PD_BINS: _correlate_with_bins(df[data.PD][:-1], next_pd),
+        CORR_PD_DIFF_TO_PD_BINS: _correlate_with_bins(df[data.PD], df[data.PD_DIFF]),
         PDS_PER_SEC: len(df[data.TIME_DIFF]) / (df[data.TIME_DIFF].sum() / 1000),
         PD_CHANGE_QUANTILES: change_quantiles(df[data.PD], 0.0, 0.7, True, "mean"),
         PD_COUNT_ABOVE_MEAN: count_above_mean(df[data.PD]),
@@ -243,8 +243,8 @@ def ott_feature_union(**config):
             feature(PD_DIFF_KURT),
             feature(PD_DIFF_WEIB_A),
             feature(TD_MEDIAN),
-            feature(CORR_PD_DIFF_TO_PD),
-            feature(CORR_NEXT_PD_TO_PD),
+            feature(CORR_PD_DIFF_TO_PD_BINS),
+            feature(CORR_NEXT_PD_TO_PD_BINS),
         ]
     )
 
