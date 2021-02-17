@@ -22,6 +22,7 @@ from sklearn.model_selection import LeaveOneGroupOut, StratifiedKFold
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer
 from sklearn.svm import SVC
+from sklearn.utils import estimator_html_repr
 from sklearn.utils.class_weight import compute_class_weight
 import tensorflow
 from tslearn.svm import TimeSeriesSVC
@@ -345,6 +346,9 @@ class ClassificationHandler:
                 model_name, model_folder, pipeline, self.get_X(model_name)
             )
 
+            model_folder.mkdir(exist_ok=True)
+            with open(Path(model_folder, "pipeline_representation.html"), "w") as file:
+                file.write(estimator_html_repr(pipeline))
             self.scores.to_csv(Path(self.output_dir, SCORES_FILENAME))
             self.predictions.to_csv(Path(self.output_dir, PREDICTIONS_FILENAME))
             if self.config["general"]["save_models"]:
@@ -364,7 +368,6 @@ class ClassificationHandler:
         self, pipeline: Pipeline, model_folder: Path, model_name: str
     ) -> None:
         pipeline.fit(self.get_X(model_name), self.y)
-        model_folder.mkdir(exist_ok=True)
         if is_keras(pipeline):
             pipeline_steps = list(
                 zip(pipeline.named_steps.keys(), pipeline.named_steps.values())
