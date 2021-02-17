@@ -38,7 +38,6 @@ models-to-run:
   - mlp-finger_ott
   - mlp-finger_own
   - mlp-finger_tugraz
-  - ott_algo-finger_ott
   - svm_dtw-seqfinger_seqown
   - svm-finger_ott
   - svm-finger_own
