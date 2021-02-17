@@ -9,6 +9,7 @@ from keras.wrappers.scikit_learn import KerasClassifier
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.feature_selection import VarianceThreshold
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer, MinMaxScaler, StandardScaler
@@ -132,6 +133,10 @@ class ModelHandler:
             feature_generator.set_params(kw_args=data_config)
             pipeline.append((data_id, feature_generator))
 
+        if "select" in model_config:
+            select_config = model_config["select"]
+            if "variance" in select_config and select_config["variance"]:
+                pipeline.append(("variance_selector", VarianceThreshold()))
         scaler = _get_transformer(classifier_id, data_id, **model_config)
         if scaler:
             pipeline.append(("scaler", scaler))
