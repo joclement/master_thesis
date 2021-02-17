@@ -34,8 +34,8 @@ def test_fingerprint_ott(large_df):
     assert finger[fingerprint.PD_DIFF_MEAN] > 0
     assert finger[fingerprint.PD_DIFF_WEIB_A] >= 0
 
-    assert -1 <= finger[fingerprint.CORR_PD_DIFF_TO_PD] <= 1
-    assert -1 <= finger[fingerprint.CORR_NEXT_PD_TO_PD] <= 1
+    assert -1 <= finger[fingerprint.CORR_PD_DIFF_TO_PD_BINS] <= 1
+    assert -1 <= finger[fingerprint.CORR_NEXT_PD_TO_PD_BINS] <= 1
 
 
 def test_fingerprint_build_set_ott(large_df):
@@ -114,5 +114,5 @@ def test_ott_fingerprint_results_with_master_thesis_values(real_data_folder):
     # assert finger[fingerprint.PD_WEIB_B] == approx(8.277, abs=1e-3)
     # assert finger[fingerprint.PD_DIFF_WEIB_A] == approx(0.391, abs=1e-3)
 
-    assert finger[fingerprint.CORR_PD_DIFF_TO_PD] == approx(-0.908, abs=1e-1)
-    assert finger[fingerprint.CORR_NEXT_PD_TO_PD] == approx(0.503, abs=1e-2)
+    assert finger[fingerprint.CORR_PD_DIFF_TO_PD_BINS] == approx(-0.908, abs=1e-1)
+    assert finger[fingerprint.CORR_NEXT_PD_TO_PD_BINS] == approx(0.503, abs=1e-2)
