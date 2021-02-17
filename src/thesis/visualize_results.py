@@ -5,14 +5,21 @@ import click
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import seaborn as sns
+from sklearn.metrics import (
+    precision_score,
+    recall_score,
+)
 import yaml
 
 from . import __version__, util
 from .constants import (
     CONFIG_FILENAME,
     CONFIG_MODELS_RUN_ID,
+    PREDICTIONS_FILENAME,
     SCORES_FILENAME,
 )
+from .data import Defect, DEFECT_NAMES, get_defect
 
 
 def make_pandas_plot(scores: pd.DataFrame, config: dict, description: str):
@@ -23,7 +30,53 @@ def make_pandas_plot(scores: pd.DataFrame, config: dict, description: str):
     scores.mean(axis=1, level=0).plot.barh(title=description, xerr=xerr)
 
 
-def plot_results(
+def flatten(t):
+    return [item for sublist in t for item in sublist]
+
+
+def plot_predictions(
+    predictions: pd.DataFrame,
+    output_dir: Optional[Path] = None,
+    description: str = "",
+    show: bool = False,
+):
+    models = predictions.columns
+    predictions["true"] = [get_defect(filename) for filename, _ in predictions.index]
+    defect_names = [DEFECT_NAMES[Defect(d)] for d in sorted(set(predictions["true"]))]
+
+    args = {
+        "average": None,
+        "labels": sorted(set(predictions["true"])),
+    }
+    df = pd.DataFrame(
+        data={
+            "recall": np.concatenate(
+                [
+                    recall_score(predictions["true"], predictions[model], **args)
+                    for model in models
+                ]
+            ),
+            "precision": np.concatenate(
+                [
+                    precision_score(predictions["true"], predictions[model], **args)
+                    for model in models
+                ]
+            ),
+            "model": flatten(
+                [len(set(predictions["true"])) * [model] for model in models]
+            ),
+            "defect": flatten([defect_names for _ in models]),
+        }
+    )
+
+    sns.barplot(data=df, x="model", y="precision", hue="defect")
+    util.finish_plot("precisions", output_dir, show)
+
+    sns.barplot(data=df, x="model", y="recall", hue="defect")
+    util.finish_plot("recalls", output_dir, show)
+
+
+def plot_scores(
     scores: pd.DataFrame,
     config: dict,
     output_dir: Optional[Path] = None,
@@ -74,4 +127,10 @@ def main(result_dir, config_file, show):
 
     scores = pd.read_csv(Path(result_dir, SCORES_FILENAME), header=[0, 1], index_col=0)
     scores = scores.loc[scores.index.isin(models), :]
-    plot_results(scores, classify_config, show=show)
+    plot_scores(scores, classify_config, show=show)
+
+    predictions = pd.read_csv(
+        Path(result_dir, PREDICTIONS_FILENAME), header=0, index_col=[0, 1]
+    )
+    predictions = predictions.loc[:, models]
+    plot_predictions(predictions, show=show)

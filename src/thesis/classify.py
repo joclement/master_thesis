@@ -47,7 +47,7 @@ from .fingerprint import get_X_index
 from .metrics import file_score
 from .models import is_model_finger, ModelHandler
 from .prepared_data import adapt_durations, extract_features
-from .visualize_results import plot_results
+from .visualize_results import plot_scores
 
 SEED: Final = 23
 random.seed(SEED)
@@ -393,7 +393,7 @@ class ClassificationHandler:
             f", n: {len(self.y)}"
             f", n_defects: {len(self.defects)}"
         )
-        plot_results(self.scores, self.config, self.output_dir, description=description)
+        plot_scores(self.scores, self.config, self.output_dir, description=description)
 
 
 @click.command()
