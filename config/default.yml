@@ -134,6 +134,8 @@ models:
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
+    select:
+      variance: True
 
   knn-finger_tugraz:
     normalize: *normalize
@@ -179,6 +181,8 @@ models:
       verbose: *verbose
     grid:
       classifier: *mlp_grid
+    select:
+      variance: True
 
   mlp-finger_tugraz:
     normalize: *normalize
@@ -202,6 +206,8 @@ models:
     classifier:
       decision_function_shape: "ovr"
       class_weight: "balanced"
+    select:
+      variance: True
 
   svm-finger_tugraz:
     normalize: *normalize
@@ -228,6 +234,8 @@ models:
       verbose: True
     grid:
       classifier: *dt_grid
+    select:
+      variance: True
 
   dt-finger_tugraz:
     normalize: *normalize
@@ -237,6 +245,8 @@ models:
 
   rf-finger_own:
     normalize: *normalize
+    select:
+      variance: True
 
   rf-finger_tugraz:
     normalize: *normalize
