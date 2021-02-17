@@ -26,6 +26,7 @@ class MyGridSearch(ClassificationHandler):
             grid_search = GridSearchCV(
                 pipeline,
                 grid_params,
+                cv=self.cv_splits,
                 scoring="balanced_accuracy",
                 n_jobs=self.n_jobs,
                 error_score="raise",
