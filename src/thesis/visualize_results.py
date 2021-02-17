@@ -30,6 +30,25 @@ def make_pandas_plot(scores: pd.DataFrame, config: dict, description: str):
     scores.mean(axis=1, level=0).plot.barh(title=description, xerr=xerr)
 
 
+def print_wrong_files(predictions: pd.DataFrame):
+    models = predictions.columns
+    predictions["true"] = [get_defect(filename) for filename, _ in predictions.index]
+
+    wrongs = np.zeros(len(predictions.index), dtype=int)
+    for model in models:
+        wrongs += predictions[model] != predictions["true"]
+    predictions["wrongs"] = wrongs
+    most_wrongs = predictions.sort_values("wrongs", ascending=False)
+    click.echo("Absolutely most wronly classified filenames:")
+    click.echo(most_wrongs["wrongs"].head(23))
+    click.echo(
+        predictions.groupby(level=0)["wrongs"]
+        .mean()
+        .sort_values(ascending=False)
+        .head(23)
+    )
+
+
 def flatten(t):
     return [item for sublist in t for item in sublist]
 
@@ -134,3 +153,4 @@ def main(result_dir, config_file, show):
     )
     predictions = predictions.loc[:, models]
     plot_predictions(predictions, show=show)
+    print_wrong_files(predictions)
