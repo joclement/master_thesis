@@ -27,9 +27,6 @@ defects:
   - cavity
 
 models-to-run:
-  - dt-finger_ott
-  - dt-finger_own
-  - dt-finger_tugraz
   - knn-finger_ott
   - knn-finger_own
   - knn-finger_tugraz
