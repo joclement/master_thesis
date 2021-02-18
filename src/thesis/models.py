@@ -9,7 +9,7 @@ from keras.wrappers.scikit_learn import KerasClassifier
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.feature_selection import VarianceThreshold
+from sklearn.feature_selection import RFECV, VarianceThreshold
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer, MinMaxScaler, StandardScaler
@@ -137,6 +137,15 @@ class ModelHandler:
             select_config = model_config["select"]
             if "variance" in select_config and select_config["variance"]:
                 pipeline.append(("variance_selector", VarianceThreshold()))
+            if "rfecv" in select_config:
+                svc = SVC(kernel="linear")
+                rfecv = RFECV(
+                    estimator=svc,
+                    scoring="balanced_accuracy",
+                    min_features_to_select=select_config["rfecv"]["min_features"],
+                    cv=select_config["rfecv"]["cv"],
+                )
+                pipeline.append(("rfecv_selector", rfecv))
         scaler = _get_transformer(classifier_id, data_id, **model_config)
         if scaler:
             pipeline.append(("scaler", scaler))
