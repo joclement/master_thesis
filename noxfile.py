@@ -1,5 +1,5 @@
 import nox
-import nox_poetry.patch  # noqa F401
+import nox_poetry
 
 nox.options.sessions = "lint", "mypy", "tests"
 
@@ -7,6 +7,7 @@ LOCATIONS = "src", "tests", "noxfile.py"
 
 
 @nox.session(python="3.8")
+@nox_poetry.session
 def tests(session):
     args = session.posargs or ["tests", "-n", "3", "--cov", "-m", "not e2e"]
     session.install(".")
