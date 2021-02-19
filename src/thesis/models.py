@@ -9,7 +9,7 @@ from keras.wrappers.scikit_learn import KerasClassifier
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.feature_selection import RFECV, VarianceThreshold
+from sklearn.feature_selection import RFE, RFECV, VarianceThreshold
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer, MinMaxScaler, StandardScaler
@@ -146,6 +146,13 @@ class ModelHandler:
                     cv=select_config["rfecv"]["cv"],
                 )
                 pipeline.append(("rfecv_selector", rfecv))
+            if "rfe" in select_config and "rfecv" not in select_config:
+                svc = SVC(kernel="linear")
+                rfe = RFE(
+                    estimator=svc,
+                    n_features_to_select=select_config["rfe"]["features"],
+                )
+                pipeline.append(("rfe_selector", rfe))
         scaler = _get_transformer(classifier_id, data_id, **model_config)
         if scaler:
             pipeline.append(("scaler", scaler))
