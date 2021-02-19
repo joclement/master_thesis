@@ -170,6 +170,22 @@ models:
       patience: *patience
       verbose: *verbose
 
+  mlp-finger_all:
+    normalize: *normalize
+    classifier:
+      hidden_layer_sizes: !!python/tuple [20,10]
+      dropout: 0.01
+      optimizer: "adam"
+      batch_size: 1
+      epochs: *epochs
+      stop_early: *stop_early
+      patience: *patience
+      verbose: *verbose
+    grid:
+      classifier: *mlp_grid
+    select:
+      variance: True
+
   mlp-finger_own:
     normalize: *normalize
     classifier:
