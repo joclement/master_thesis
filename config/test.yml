@@ -170,9 +170,8 @@ models:
       classifier: *mlp_grid
     select:
       variance: True
-      rfecv:
-        min_features: 10
-        cv: 2
+      rfe:
+        features: 20
 
   mlp-finger_tugraz:
     normalize: *normalize
