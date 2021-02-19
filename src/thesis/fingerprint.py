@@ -67,6 +67,7 @@ PD_SUM = f"{PD_ID} Sum"
 
 PD_DIFF_MEAN = f"{PD_DIFF_ID} Mean"
 PD_DIFF_SKEW = f"{PD_DIFF_ID} Skewness"
+PD_DIFF_VAR = f"{PD_DIFF_ID} Variance"
 PD_DIFF_KURT = f"{PD_DIFF_ID} Kurtosis"
 PD_DIFF_WEIB_A = f"{PD_DIFF_ID} Weibull A"
 
@@ -74,6 +75,10 @@ TD_MEDIAN = f"{TD_ID} Median"
 
 CORR_PD_DIFF_TO_PD_BINS = f"{CORR_ID} {PD_DIFF_ID} - PD Bins"
 CORR_NEXT_PD_TO_PD_BINS = f"{CORR_ID} Next PD - PD Bins"
+CORR_NEXT_PD_TO_PD = f"{CORR_ID} Next PD - PD"
+CORR_2ND_NEXT_PD_TO_PD = f"{CORR_ID} 2nd Next PD - PD"
+CORR_PD_DIFF_TO_PD = f"{CORR_ID} {PD_DIFF_ID} - PD"
+CORR_PD_DIFF_TO_TD = f"{CORR_ID} PD - {PD_DIFF_ID}"
 
 # @note: parameter in own fingerprint
 POLARITY = "+DC/-DC"
@@ -85,6 +90,7 @@ PD_VAR = f"{PD_ID} var"
 SIZE = f"{PD_ID} Num"
 PD_NUM_PEAKS_50 = f"{PD_ID} num peaks 50"
 PD_NUM_PEAKS_10 = f"{PD_ID} num peaks 10"
+PD_NUM_PEAKS_5 = f"{PD_ID} num peaks 5"
 PD_RATIO = f"{PD_ID} ratio"
 PD_PERC_REOCCUR = f"{PD_ID} percentage reocurring"
 PD_COUNT_ABOVE_MEAN = f"{PD_ID} count above mean"
@@ -117,10 +123,15 @@ def calc_weibull_params(data: Union[list, pd.Series]) -> Tuple[float, float]:
 @memory.cache
 def extract_features(df: pd.DataFrame):
     next_pd = df[PD][1:].reset_index(drop=True)
+    next2_pd = df[PD][2:].reset_index(drop=True)
 
     features = {
         CORR_NEXT_PD_TO_PD_BINS: _correlate_with_bins(df[PD][:-1], next_pd),
         CORR_PD_DIFF_TO_PD_BINS: _correlate_with_bins(df[PD], df[PD_DIFF]),
+        CORR_NEXT_PD_TO_PD: stats.pearsonr(df[PD][:-1], next_pd)[0],
+        CORR_2ND_NEXT_PD_TO_PD: stats.pearsonr(df[PD][:-2], next2_pd)[0],
+        CORR_PD_DIFF_TO_PD: stats.pearsonr(df[PD], df[PD_DIFF])[0],
+        CORR_PD_DIFF_TO_TD: stats.pearsonr(df[PD_DIFF], df[TIME_DIFF])[0],
         PDS_PER_SEC: len(df[TIME_DIFF]) / (df[TIME_DIFF].sum() / 1000),
         PD_CHANGE_QUANTILES: change_quantiles(df[PD], 0.0, 0.7, True, "mean"),
         PD_COUNT_ABOVE_MEAN: count_above_mean(df[PD]),
@@ -129,12 +140,14 @@ def extract_features(df: pd.DataFrame):
         PD_DIFF_KURT: df[PD_DIFF].kurt(),
         PD_DIFF_MEAN: df[PD_DIFF].mean(),
         PD_DIFF_SKEW: df[PD_DIFF].skew(),
+        PD_DIFF_VAR: df[PD_DIFF].var(),
         PD_KURT: df[PD].kurt(),
         PD_MAX: df[PD].max(),
         PD_MEAN: df[PD].mean(),
         PD_MEDIAN: df[PD].median(),
         PD_MIN: df[PD].min(),
         PD_NUM_PEAKS_10: number_peaks(df[PD], 10),
+        PD_NUM_PEAKS_5: number_peaks(df[PD], 5),
         PD_NUM_PEAKS_50: number_peaks(df[PD], 50),
         PD_PERC_REOCCUR: percentage_of_reoccurring_datapoints_to_all_datapoints(df[PD]),
         PD_RATIO: ratio_value_number_to_time_series_length(df[PD]),
