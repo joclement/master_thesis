@@ -55,7 +55,7 @@ def test_classify_ClassificationHandler_save_models(config):
     num_of_models = len(config["models-to-run"])
     num_of_mlp_models = len([m for m in config["models-to-run"] if "mlp-" in m])
     assert len(list(output_dir.rglob("model-*.p"))) == num_of_models - num_of_mlp_models
-    assert len(list(output_dir.rglob("pipeline_step*.p"))) == num_of_mlp_models * 2
+    assert len(list(output_dir.rglob("pipeline_step*.p"))) == 4
 
 
 def test_classify_ClassificationHandler_no_defects(config):
