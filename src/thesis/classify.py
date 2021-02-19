@@ -229,7 +229,6 @@ class ClassificationHandler:
         pipeline: Pipeline,
         X_train,
         y_train: pd.Series,
-        train_index: range,
     ):
         if is_keras(pipeline):
             class_weights = dict(
@@ -308,7 +307,7 @@ class ClassificationHandler:
             y_train = self.y[train_index]
             y_val = self.y[val_index]
 
-            self._train(pipeline, X_train, y_train, train_index)
+            self._train(pipeline, X_train, y_train)
 
             if self.config["general"]["calc_train_score"]:
                 train_scores, _ = self.calc_scores(
