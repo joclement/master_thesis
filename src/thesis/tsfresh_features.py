@@ -10,7 +10,6 @@ from tsfresh.utilities.dataframe_functions import impute
 
 from . import __version__, data, prepared_data
 from .data import TreatNegValues
-from .prepared_data import split_by_durations
 
 
 def _convert_to_tsfresh_dataset(measurements: List[pd.DataFrame]) -> pd.DataFrame:
@@ -138,6 +137,7 @@ def calc_relevant_features(
     help="Set max length for measurement files",
 )
 @click.option("--drop/--no-drop", default=False, help="Drop empty frames")
+@click.option("--split", "-s", is_flag=True, help="Split data into 60 seconds samples")
 def main(
     input_directory,
     n_jobs=1,
@@ -146,14 +146,13 @@ def main(
     duration="",
     drop: bool = False,
     max_len: int = 100000,
+    split: bool = True,
 ):
     measurements, _ = data.read_recursive(input_directory, TreatNegValues.zero)
+    if split:
+        measurements = prepared_data.adapt_durations(measurements)
 
     measurements = [df for df in measurements if len(df.index) <= max_len]
-    if duration:
-        measurements = split_by_durations(
-            measurements, pd.Timedelta(duration), drop_empty=drop
-        )
 
     y = pd.Series(data.get_defects(measurements))
 
