@@ -4,6 +4,7 @@ import warnings
 
 import pandas as pd
 from sklearn.base import TransformerMixin
+from sklearn.preprocessing import FunctionTransformer
 from tslearn.utils import to_time_series_dataset
 
 from . import data, fingerprint
@@ -175,6 +176,14 @@ def finger_own(**config) -> TransformerMixin:
 
 def finger_tugraz(**config) -> TransformerMixin:
     return fingerprint.tugraz_feature_union(**config)
+
+
+def do_nothing(extracted_features: pd.DataFrame, **config):
+    return extracted_features
+
+
+def finger_all(**config) -> TransformerMixin:
+    return FunctionTransformer(do_nothing)
 
 
 def extract_features(

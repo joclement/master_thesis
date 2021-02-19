@@ -33,6 +33,7 @@ models-to-run:
   - knn_dtw-seqfinger_seqown
   - knn-finger_ott
   - knn-finger_own
+  - mlp-finger_all
   - mlp-finger_own
   - mlp-finger_tugraz
   - ott_algo-finger_ott
@@ -172,6 +173,24 @@ models:
       variance: True
       rfe:
         features: 20
+
+  mlp-finger_all:
+    normalize: *normalize
+    classifier:
+      n_jobs: *n_jobs
+      hidden_layer_sizes: !!python/tuple [3]
+      dropout: 0.05
+      optimizer: "adam"
+      batch_size: 6
+      epochs: *epochs
+      stop_early: *stop_early
+      patience: *patience
+      verbose: *verbose
+    grid:
+      classifier: *mlp_grid
+    select:
+      variance: True
+
 
   mlp-finger_tugraz:
     normalize: *normalize
