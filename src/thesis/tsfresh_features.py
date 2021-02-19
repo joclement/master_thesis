@@ -152,7 +152,9 @@ def main(
     if split:
         measurements = prepared_data.adapt_durations(measurements)
 
-    measurements = [df for df in measurements if len(df.index) <= max_len]
+    measurements = [
+        df.loc[:max_len, :] for df in measurements if len(df.index) <= max_len
+    ]
 
     y = pd.Series(data.get_defects(measurements))
 
