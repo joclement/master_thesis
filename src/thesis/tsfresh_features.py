@@ -124,27 +124,18 @@ def calc_relevant_features(
     help="Choose tsfresh parameter set",
 )
 @click.option(
-    "--duration",
-    "-d",
-    type=str,
-    help="Set duration to split measurement files by",
-)
-@click.option(
     "--max_len",
     "-m",
     type=int,
     default=100000,
     help="Set max length for measurement files",
 )
-@click.option("--drop/--no-drop", default=False, help="Drop empty frames")
 @click.option("--split", "-s", is_flag=True, help="Split data into 60 seconds samples")
 def main(
     input_directory,
     n_jobs=1,
     output_file=None,
     parameter_set="MinimalFCParameters",
-    duration="",
-    drop: bool = False,
     max_len: int = 100000,
     split: bool = True,
 ):
@@ -163,7 +154,7 @@ def main(
         measurements,
         n_jobs,
         output_file,
-        True if duration else False,
+        split,
         ParameterSet,
     )
     calc_relevant_features(extracted_features, y, n_jobs)
