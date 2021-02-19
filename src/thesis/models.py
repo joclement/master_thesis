@@ -85,7 +85,7 @@ def _get_transformer(
             return SeqFingerScaler(StandardScaler)
         else:
             raise ValueError(f"classifier {classifier_id} not supported.")
-    if "finger_" in data_id:
+    if "finger_" in data_id or "tsfresh" == data_id:
         if classifier_id in ["mlp", "svm"]:
             return StandardScaler()
         elif classifier_id in ["knn", "dt", "rf"]:

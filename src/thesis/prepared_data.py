@@ -19,6 +19,12 @@ ONEPD_DURATION = pd.Timedelta("10 seconds")
 memory = get_memory()
 
 
+def tsfresh(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
+    tsfresh_data = pd.read_csv(config["tsfresh_data"], header=0, index_col=[PATH, PART])
+    wanted_rows = [fingerprint.get_X_index(df) for df in measurements]
+    return tsfresh_data.loc[wanted_rows, :]
+
+
 def _convert_to_time_series(df: pd.DataFrame, frequency) -> pd.Series:
     df.loc[:, "DateTimeIndex"] = pd.to_datetime(
         df[data.TIME_DIFF].cumsum(), unit=data.TIME_UNIT
