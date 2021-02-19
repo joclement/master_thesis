@@ -170,13 +170,31 @@ models:
       patience: *patience
       verbose: *verbose
 
-  mlp-finger_all:
+  mlp-tsfresh:
+    data:
+        tsfresh_data: ./data/csv-files/prepared/dataset/train/tsfresh-features_minimal_60seconds_maxlen-100000.data
     normalize: *normalize
     classifier:
       hidden_layer_sizes: !!python/tuple [20,10]
       dropout: 0.01
       optimizer: "adam"
-      batch_size: 1
+      batch_size: 5
+      epochs: *epochs
+      stop_early: *stop_early
+      patience: *patience
+      verbose: *verbose
+    grid:
+      classifier: *mlp_grid
+    select:
+      variance: True
+
+  mlp-finger_all:
+    normalize: *normalize
+    classifier:
+      hidden_layer_sizes: !!python/tuple [15,5]
+      dropout: 0.01
+      optimizer: "adam"
+      batch_size: 5
       epochs: *epochs
       stop_early: *stop_early
       patience: *patience

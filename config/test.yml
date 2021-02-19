@@ -36,6 +36,7 @@ models-to-run:
   - mlp-finger_all
   - mlp-finger_own
   - mlp-finger_tugraz
+  - mlp-tsfresh
   - ott_algo-finger_ott
   - rf-finger_tugraz
   - svm_dtw-seqfinger_seqown
@@ -138,6 +139,22 @@ models:
 
   ott_algo-finger_ott:
     normalize: False
+
+  mlp-tsfresh:
+    data:
+        tsfresh_data: ./data/csv-files/testdata_small/tsfresh-features-0.6.1_minimal_60seconds.data
+    normalize: *normalize
+    classifier:
+      hidden_layer_sizes: !!python/tuple [20,10]
+      dropout: 0.01
+      optimizer: "adam"
+      batch_size: 5
+      epochs: *epochs
+      stop_early: *stop_early
+      patience: *patience
+      verbose: *verbose
+    grid:
+      classifier: *mlp_grid
 
   mlp-finger_ott:
     normalize: *normalize
