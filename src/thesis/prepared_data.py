@@ -3,6 +3,7 @@ from typing import List
 import warnings
 
 import pandas as pd
+from sklearn.base import TransformerMixin
 from tslearn.utils import to_time_series_dataset
 
 from . import data, fingerprint
@@ -164,15 +165,15 @@ def seqfinger_seqown(measurements: List[pd.DataFrame], **config) -> pd.DataFrame
     return X
 
 
-def finger_ott(**config) -> pd.DataFrame:
+def finger_ott(**config) -> TransformerMixin:
     return fingerprint.ott_feature_union(**config)
 
 
-def finger_own(**config) -> pd.DataFrame:
+def finger_own(**config) -> TransformerMixin:
     return fingerprint.own_feature_union(**config)
 
 
-def finger_tugraz(**config) -> pd.DataFrame:
+def finger_tugraz(**config) -> TransformerMixin:
     return fingerprint.tugraz_feature_union(**config)
 
 
