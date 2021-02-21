@@ -103,6 +103,10 @@ TD_LONGEST_STRIKE_BELOW_MEAN = f"{TD_ID} longest strike below mean"
 TD_CHANGE_QUANTILES = f"{TD_ID} ChangeQuantiles"
 TD_SUM = f"{TD_ID} Sum"
 
+# @note: further parameters
+PD_BY_TD_WEIB_A = f"{PD_ID} / {TD_ID} Weibull A"
+PD_BY_TD_WEIB_B = f"{PD_ID} / {TD_ID} Weibull B"
+
 
 def keep_needed_columns(measurements: List[pd.DataFrame]):
     return [df[[TIME_DIFF, PD_DIFF, PD]] for df in measurements]
@@ -181,6 +185,13 @@ def extract_features(df: pd.DataFrame):
         features[TDIFF_NORM_WEIB_A],
         features[TDIFF_NORM_WEIB_B],
     ) = calc_weibull_params(df[TIME_DIFF].cumsum() / df[TIME_DIFF].sum())
+
+    pd_by_timediff = (df[PD] / df[TIME_DIFF]).sort_values()
+    pd_by_timediff /= pd_by_timediff.max()
+    features[PD_BY_TD_WEIB_A], features[PD_BY_TD_WEIB_B] = calc_weibull_params(
+        pd_by_timediff
+    )
+
     features[PD_WEIB_A], features[PD_WEIB_B] = calc_weibull_params(df[PD])
 
     extracted_features = pd.DataFrame(
