@@ -105,6 +105,12 @@ defaults:
       - 100
       - 200
 
+    kbest_grid: &kbest_grid
+      k:
+        - 20
+        - 50
+        - 100
+
 
 models:
   knn_dtw-oned:
@@ -185,8 +191,11 @@ models:
       verbose: *verbose
     grid:
       classifier: *mlp_grid
+      kbest_selector: *kbest_grid
     select:
-      variance: True
+      kbest:
+        k: 100
+
 
   mlp-finger_all:
     normalize: *normalize

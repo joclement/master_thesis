@@ -127,7 +127,9 @@ class ClassificationHandler:
             with open(Path(self.output_dir, "preprocessor.p"), "wb") as file:
                 pickle.dump(preprocessor, file)
 
-        self.y: Final = pd.Series(data.get_defects(self.measurements))
+        self.y: Final = pd.Series(
+            data=data.get_defects(self.measurements), index=get_index(self.measurements)
+        )
         self.defects: Final = sorted(set(self.y))
         self.defect_names: Final = [
             data.DEFECT_NAMES[data.Defect(d)] for d in self.defects
