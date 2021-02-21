@@ -105,11 +105,11 @@ defaults:
       - 100
       - 200
 
-    kbest_grid: &kbest_grid
-      k:
-        - 20
-        - 50
-        - 100
+  kbest_grid: &kbest_grid
+    k:
+      - 20
+      - 50
+      - 100
 
 
 models:
