@@ -9,7 +9,7 @@ from tslearn.utils import to_time_series_dataset
 
 from . import data, fingerprint
 from .constants import PART
-from .data import PATH, START_TIME, TIME_DIFF
+from .data import PATH, START_TIME, TIME_DIFF, VOLTAGE_SIGN
 from .util import get_memory, to_dataTIME
 
 MAX_FREQUENCY = pd.tseries.frequencies.to_offset("50us")
@@ -22,7 +22,9 @@ memory = get_memory()
 def tsfresh(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     tsfresh_data = pd.read_csv(config["tsfresh_data"], header=0, index_col=[PATH, PART])
     wanted_rows = [fingerprint.get_X_index(df) for df in measurements]
-    return tsfresh_data.loc[wanted_rows, :]
+    tsfresh_data = tsfresh_data.loc[wanted_rows, :]
+    tsfresh_data[fingerprint.POLARITY] = [df.attrs[VOLTAGE_SIGN] for df in measurements]
+    return tsfresh_data
 
 
 def _convert_to_time_series(df: pd.DataFrame, frequency) -> pd.Series:
