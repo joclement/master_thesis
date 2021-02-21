@@ -178,7 +178,7 @@ models:
 
   mlp-tsfresh:
     data:
-        tsfresh_data: ./data/csv-files/prepared/dataset/train/tsfresh-features_minimal_60seconds_maxlen-100000.data
+        tsfresh_data: ./data/csv-files/prepared/dataset/train/tsfresh-features_efficient_60seconds_maxlen-100000.data
     normalize: *normalize
     classifier:
       hidden_layer_sizes: !!python/tuple [20,10]
