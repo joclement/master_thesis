@@ -105,6 +105,8 @@ models:
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
+    select:
+      variance: True
 
   knn-finger_own:
     normalize: *normalize
@@ -121,6 +123,8 @@ models:
       n_neighbors: 1
     grid:
       classifier: *dt_grid
+    select:
+      variance: True
 
   knn-finger_both:
     normalize: *normalize
