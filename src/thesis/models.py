@@ -9,11 +9,17 @@ from keras.wrappers.scikit_learn import KerasClassifier
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.feature_selection import RFE, RFECV, SelectKBest, VarianceThreshold
+from sklearn.feature_selection import (
+    RFE,
+    RFECV,
+    SelectFromModel,
+    SelectKBest,
+    VarianceThreshold,
+)
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer, MinMaxScaler, StandardScaler
-from sklearn.svm import SVC
+from sklearn.svm import LinearSVC, SVC
 from sklearn.tree import DecisionTreeClassifier
 from tsfresh.transformers import FeatureSelector
 from tslearn.neighbors import KNeighborsTimeSeriesClassifier
@@ -160,6 +166,11 @@ class ModelHandler:
             if "kbest" in select_config:
                 kbest_selector = SelectKBest(**select_config["kbest"])
                 pipeline.append(("kbest_selector", kbest_selector))
+            if "frommodel" in select_config:
+                frommodel = SelectFromModel(
+                    LinearSVC(dual=False, **select_config["frommodel"])
+                )
+                pipeline.append(("frommodel_selector", frommodel))
         scaler = _get_transformer(classifier_id, data_id, **model_config)
         if scaler:
             pipeline.append(("scaler", scaler))
