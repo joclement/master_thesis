@@ -3,7 +3,7 @@ from typing import List
 import warnings
 
 import pandas as pd
-from sklearn.base import TransformerMixin
+from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.preprocessing import FunctionTransformer
 from tslearn.utils import to_time_series_dataset
 
@@ -19,12 +19,30 @@ ONEPD_DURATION = pd.Timedelta("10 seconds")
 memory = get_memory()
 
 
-def tsfresh(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
-    tsfresh_data = pd.read_csv(config["tsfresh_data"], header=0, index_col=[PATH, PART])
-    wanted_rows = [fingerprint.get_X_index(df) for df in measurements]
-    tsfresh_data = tsfresh_data.loc[wanted_rows, :]
-    tsfresh_data[fingerprint.POLARITY] = [df.attrs[VOLTAGE_SIGN] for df in measurements]
-    return tsfresh_data
+class TsfreshTransformer(TransformerMixin, BaseEstimator):
+    def __init__(self, **config):
+        self.tsfresh_data = pd.read_csv(
+            config["tsfresh_data"], header=0, index_col=[PATH, PART]
+        )
+
+    def fit(self, X: List[pd.DataFrame], y=None, **kwargs):
+        self.n_features_in_ = len(self.tsfresh_data.columns)
+        return self
+
+    def transform(self, measurements: List[pd.DataFrame], y=None, **kwargs):
+        wanted_rows = [fingerprint.get_X_index(df) for df in measurements]
+        tsfresh_data = self.tsfresh_data.loc[wanted_rows, :]
+        tsfresh_data[fingerprint.POLARITY] = [
+            df.attrs[VOLTAGE_SIGN] for df in measurements
+        ]
+        return tsfresh_data
+
+    def _more_tags(self):
+        return {"no_validation": True, "requires_fit": False}
+
+
+def tsfresh(**config):
+    return TsfreshTransformer(**config)
 
 
 def _convert_to_time_series(df: pd.DataFrame, frequency) -> pd.Series:
@@ -40,7 +58,7 @@ def keep_needed_columns(measurements: List[pd.DataFrame]):
     return [df[[data.TIME_DIFF, data.PD]] for df in measurements]
 
 
-def oned(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
+def oned_func(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     fix_duration = to_dataTIME(pd.Timedelta(config["fix_duration"]))
     measurements = keep_needed_columns(measurements)
 
@@ -66,9 +84,17 @@ def oned(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     return to_time_series_dataset(time_serieses)
 
 
-def twod(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
+def oned(**config) -> FunctionTransformer:
+    return FunctionTransformer(oned_func, kw_args=config)
+
+
+def twod_func(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     measurements = keep_needed_columns(measurements)
     return to_time_series_dataset([m[: config["max_len"]] for m in measurements])
+
+
+def twod(**config) -> FunctionTransformer:
+    return FunctionTransformer(twod_func, kw_args=config)
 
 
 # FIXME _split_by_duration does not work properly, e.g. for oned
@@ -160,7 +186,7 @@ def _build_fingerprint_sequence(
     return pd.DataFrame([finger_algo(part) for part in sequence])
 
 
-def seqfinger_seqown(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
+def seqfinger_seqown_func(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     duration = pd.Timedelta(config["duration"])
     step_duration = pd.Timedelta(config["step_duration"])
 
@@ -172,6 +198,10 @@ def seqfinger_seqown(measurements: List[pd.DataFrame], **config) -> pd.DataFrame
         ]
     )
     return X
+
+
+def seqfinger_seqown(**config) -> FunctionTransformer:
+    return FunctionTransformer(seqfinger_seqown_func, kw_args=config)
 
 
 def finger_ott(**config) -> TransformerMixin:
@@ -191,7 +221,7 @@ def do_nothing(extracted_features: pd.DataFrame, **config):
 
 
 def finger_all(**config) -> TransformerMixin:
-    return FunctionTransformer(do_nothing)
+    return FunctionTransformer(do_nothing, kw_args=config)
 
 
 def extract_features(

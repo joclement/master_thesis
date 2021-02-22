@@ -18,7 +18,7 @@ from sklearn.feature_selection import (
 )
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import FunctionTransformer, MinMaxScaler, StandardScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.svm import LinearSVC, SVC
 from sklearn.tree import DecisionTreeClassifier
 from tsfresh.transformers import FeatureSelector
@@ -133,12 +133,7 @@ class ModelHandler:
 
         data_config = model_config["data"] if "data" in model_config else {}
         get_feature_builder = getattr(prepared_data, data_id)
-        if is_data_finger(data_id):
-            pipeline.append((data_id, get_feature_builder(**data_config)))
-        else:
-            feature_generator = FunctionTransformer(get_feature_builder)
-            feature_generator.set_params(kw_args=data_config)
-            pipeline.append((data_id, feature_generator))
+        pipeline.append((data_id, get_feature_builder(**data_config)))
 
         if "select" in model_config:
             select_config = model_config["select"]
