@@ -206,7 +206,8 @@ models:
     grid:
       classifier: *mlp_grid
     select:
-      variance: True
+      frommodel:
+        penalty: "l1"
 
 
   mlp-finger_tugraz:
