@@ -80,7 +80,7 @@ def test__split_by_duration(measurement):
 
 def test_oned(measurements):
     config = {"fix_duration": "200 seconds", "frequency": "500ms"}
-    dataset = prepared_data.oned(measurements, **config)
+    dataset = prepared_data.oned_func(measurements, **config)
 
     assert len(dataset.shape) == 3
     # FIXME assert not np.isnan(dataset).any()
