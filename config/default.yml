@@ -289,6 +289,7 @@ models:
     normalize: *normalize
     classifier:
       n_jobs: *n_jobs
+      class_weight: "balanced"
     select:
       variance: True
 
@@ -296,11 +297,13 @@ models:
     normalize: *normalize
     classifier:
       n_jobs: *n_jobs
+      class_weight: "balanced"
 
   rf-finger_all:
     normalize: *normalize
     classifier:
       n_jobs: *n_jobs
+      class_weight: "balanced"
 
   rf-tsfresh:
     data:
