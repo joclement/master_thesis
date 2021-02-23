@@ -16,7 +16,7 @@ from .classify import ClassificationHandler
 
 FINGERPRINT_COMPARE_GRID = [
     {
-        "classifier__batch_size": [1, 5, 10],
+        "classifier__batch_size": [1, 10],
         "classifier__dropout": [0.0, 0.05, 0.2],
         "classifier__hidden_layer_sizes": [(5,), (20,), (5, 3), (20, 10)],
         "classifier__epochs": [50, 100],
