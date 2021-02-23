@@ -33,9 +33,13 @@ models-to-run:
   - mlp-finger_ott
   - mlp-finger_own
   - mlp-finger_tugraz
+  - mlp-finger_all
+  - mlp-tsfresh
   - rf-finger_ott
   - rf-finger_own
   - rf-finger_tugraz
+  - rf-finger_all
+  - rf-tsfresh
   - svm-finger_ott
   - svm-finger_own
   - svm-finger_tugraz
@@ -281,11 +285,29 @@ models:
 
   rf-finger_ott:
     normalize: *normalize
+    classifier:
+      n_jobs: *n_jobs
 
   rf-finger_own:
     normalize: *normalize
+    classifier:
+      n_jobs: *n_jobs
     select:
       variance: True
 
   rf-finger_tugraz:
     normalize: *normalize
+    classifier:
+      n_jobs: *n_jobs
+
+  rf-finger_all:
+    normalize: *normalize
+    classifier:
+      n_jobs: *n_jobs
+
+  rf-tsfresh:
+    data:
+        tsfresh_data: ./data/csv-files/prepared/dataset/train/tsfresh-features_efficient_60seconds_maxlen-100000.data
+    normalize: *normalize
+    classifier:
+      n_jobs: *n_jobs
