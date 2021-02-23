@@ -218,8 +218,7 @@ models:
     classifier:
       n_jobs: *n_jobs
       batch_size: 6
-      hidden_layer_sizes:
-        - 4
+      hidden_layer_sizes: !!python/tuple [4]
       dropout: 0.05
       optimizer: "adam"
       epochs: *epochs
