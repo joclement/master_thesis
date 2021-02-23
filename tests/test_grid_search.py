@@ -7,12 +7,18 @@ from thesis import grid_search
 
 
 def test_grid_search(classify_config_with_tsfresh, tmpdir):
+    classify_config_with_tsfresh["general"]["cv"] = "group"
     classify_config_with_tsfresh["models-to-run"] = [
         "mlp-finger_own",
         "mlp-tsfresh",
         "dt-finger_ott",
     ]
     grid_search.MyGridSearch(classify_config_with_tsfresh).run()
+
+
+def test_group_cv(classify_config, tmpdir):
+    classify_config["general"]["cv"] = "group"
+    assert len(grid_search.MyGridSearch(classify_config).cv_splits) == 4
 
 
 def test_grid_search_main(classify_config, tmpdir):
