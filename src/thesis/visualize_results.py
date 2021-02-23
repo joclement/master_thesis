@@ -62,12 +62,11 @@ def flatten(t):
 def get_file_predictions(
     predictions: pd.DataFrame,
 ):
-    file_predictions = {
-        c: predictions.groupby(level=0)[c].agg(lambda x: x.mode()[0])
-        for c in predictions.columns
-    }
     file_predictions = pd.DataFrame(
-        data=file_predictions,
+        data={
+            c: predictions.groupby(level=0)[c].agg(lambda x: x.mode()[0])
+            for c in predictions.columns
+        },
         columns=predictions.columns,
         index=list(dict.fromkeys(predictions.index.droplevel(1))),
     )
