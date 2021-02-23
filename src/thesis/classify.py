@@ -217,7 +217,7 @@ class ClassificationHandler:
     def _generate_cv_splits(self):
         cv = self.config["general"]["cv"]
         if isinstance(cv, int):
-            cross_validator = StratifiedKFold(n_splits=cv)
+            cross_validator = StratifiedKFold(n_splits=cv, shuffle=True)
             groups = None
         elif self.config["general"]["cv"] == "group":
             cross_validator = LeaveOneGroupOut()
