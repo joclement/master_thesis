@@ -20,18 +20,19 @@ memory = get_memory()
 
 
 class TsfreshTransformer(TransformerMixin, BaseEstimator):
-    def __init__(self, **config):
-        self.tsfresh_data = pd.read_csv(
-            config["tsfresh_data"], header=0, index_col=[PATH, PART]
+    def __init__(self, tsfresh_data_path, **kw_args):
+        self.tsfresh_data_path = tsfresh_data_path
+        self._tsfresh_data = pd.read_csv(
+            tsfresh_data_path, header=0, index_col=[PATH, PART]
         )
 
     def fit(self, X: List[pd.DataFrame], y=None, **kwargs):
-        self.n_features_in_ = len(self.tsfresh_data.columns)
+        self.n_features_in_ = len(self._tsfresh_data.columns)
         return self
 
     def transform(self, measurements: List[pd.DataFrame], y=None, **kwargs):
         wanted_rows = [fingerprint.get_X_index(df) for df in measurements]
-        tsfresh_data = self.tsfresh_data.loc[wanted_rows, :]
+        tsfresh_data = self._tsfresh_data.loc[wanted_rows, :]
         tsfresh_data[fingerprint.POLARITY] = [
             df.attrs[VOLTAGE_SIGN] for df in measurements
         ]
@@ -40,9 +41,20 @@ class TsfreshTransformer(TransformerMixin, BaseEstimator):
     def _more_tags(self):
         return {"no_validation": True, "requires_fit": False}
 
+    def get_params(self, deep=True):
+        return {"tsfresh_data_path": str(self.tsfresh_data_path)}
+
+    def set_params(self, **parameters):
+        if "tsfresh_data_path" in parameters:
+            self.tsfresh_data_path = parameters["tsfresh_data_path"]
+            self._tsfresh_data = pd.read_csv(
+                self.tsfresh_data_path, header=0, index_col=[PATH, PART]
+            )
+        return self
+
 
 def tsfresh(**config):
-    return TsfreshTransformer(**config)
+    return TsfreshTransformer(config["tsfresh_data"])
 
 
 def _convert_to_time_series(df: pd.DataFrame, frequency) -> pd.Series:
