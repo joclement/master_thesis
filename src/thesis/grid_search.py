@@ -4,11 +4,40 @@ from typing import Dict
 import warnings
 
 import click
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
 import yaml
 
 from . import __version__
 from .classify import ClassificationHandler
+
+
+FINGERPRINT_COMPARE_GRID = [
+    {
+        "classifier__batch_size": [1, 5, 10],
+        "classifier__dropout": [0.0, 0.05, 0.2],
+        "classifier__hidden_layer_sizes": [(5,), (20,), (5, 3), (20, 10)],
+        "classifier__epochs": [50, 100],
+    },
+    {
+        "classifier": [KNeighborsClassifier()],
+        "classifier__weights": ["uniform", "distance"],
+        "classifier__n_neighbors": [1, 5],
+    },
+    {
+        "classifier": [RandomForestClassifier()],
+        "classifier__min_samples_leaf": [1, 3],
+        "classifier__bootstrap": [True, False],
+        "classifier__class_weight": ["balanced"],
+    },
+    {
+        "classifier": [SVC()],
+        "classifier__decision_function_shape": ["ovr", "ovo"],
+        "classifier__class_weight": ["balanced"],
+    },
+]
 
 
 class MyGridSearch(ClassificationHandler):
@@ -22,9 +51,14 @@ class MyGridSearch(ClassificationHandler):
 
             grid_params: Dict[str, list] = {}
             grid_config = self.config["models"][model_name]["grid"]
-            for step in grid_config:
-                for param_key in grid_config[step]:
-                    grid_params[f"{step}__{param_key}"] = grid_config[step][param_key]
+            if grid_config == "fingerprint_compare":
+                grid_params = FINGERPRINT_COMPARE_GRID
+            else:
+                for step in grid_config:
+                    for param_key in grid_config[step]:
+                        grid_params[f"{step}__{param_key}"] = grid_config[step][
+                            param_key
+                        ]
             grid_search = GridSearchCV(
                 pipeline,
                 grid_params,

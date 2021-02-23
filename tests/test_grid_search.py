@@ -16,6 +16,16 @@ def test_grid_search(classify_config_with_tsfresh, tmpdir):
     grid_search.MyGridSearch(classify_config_with_tsfresh).run()
 
 
+def test_fingerprint_compare_grid(classify_config, tmpdir):
+    classify_config["general"]["cv"] = "group"
+    classify_config["models-to-run"] = [
+        "mlp-finger_own",
+    ]
+    classify_config["models"]["mlp-finger_own"]["grid"] = "fingerprint_compare"
+
+    grid_search.MyGridSearch(classify_config).run()
+
+
 def test_group_cv(classify_config, tmpdir):
     classify_config["general"]["cv"] = "group"
     assert len(grid_search.MyGridSearch(classify_config).cv_splits) == 4
