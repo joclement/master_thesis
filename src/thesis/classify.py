@@ -340,7 +340,9 @@ class ClassificationHandler:
             y_train = self.y[train_index]
             y_val = self.y[val_index]
 
+            click.echo("train...")
             self._train(pipeline, X_train, y_train)
+            click.echo("Done.")
 
             if self.config["general"]["calc_train_score"]:
                 train_scores, _ = self.calc_scores(
