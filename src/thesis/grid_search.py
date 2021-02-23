@@ -31,6 +31,7 @@ class MyGridSearch(ClassificationHandler):
                 cv=self.cv_splits,
                 scoring="balanced_accuracy",
                 n_jobs=self.n_jobs,
+                pre_dispatch=self.n_jobs + 2,
                 error_score="raise",
                 verbose=1,
             )
