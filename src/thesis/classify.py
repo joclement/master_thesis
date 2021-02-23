@@ -144,7 +144,9 @@ class ClassificationHandler:
                     ("extract_features", FunctionTransformer(extract_features)),
                 ]
             )
+            click.echo("Calc finger features...")
             self.finger_X = finger_preprocessor.fit_transform(self.measurements)
+            click.echo("Done.")
             if self.config["general"]["save_models"]:
                 with open(Path(self.output_dir, "finger_preprocessor.p"), "wb") as file:
                     pickle.dump(finger_preprocessor, file)
