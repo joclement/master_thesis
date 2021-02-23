@@ -215,10 +215,10 @@ def build_mlp(
     dropout: float,
 ) -> KerasClassifier:
     model = Sequential()
-    neurons_per_layer = hidden_layer_sizes
     model.add(keras.Input(shape=(input_dim,)))
-    model.add(Dense(neurons_per_layer[0], activation="relu"))
-    model.add(Dropout(dropout))
+    for layer_size in hidden_layer_sizes:
+        model.add(Dense(layer_size, activation="relu"))
+        model.add(Dropout(dropout))
     model.add(
         Dense(output_dim, activation="softmax"),
     )
