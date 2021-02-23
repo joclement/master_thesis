@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 
 import click
 import matplotlib.pyplot as plt
@@ -30,6 +30,12 @@ def make_pandas_plot(scores: pd.DataFrame, config: dict, description: str):
     scores.mean(axis=1, level=0).plot.barh(title=description, xerr=xerr)
 
 
+def get_defect_from_index(index_entry: Union[tuple, str]):
+    if isinstance(index_entry, tuple):
+        return get_defect(index_entry[0])
+    return get_defect(index_entry)
+
+
 def print_wrong_files(predictions: pd.DataFrame):
     models = predictions.columns
     predictions["true"] = [get_defect(filename) for filename, _ in predictions.index]
@@ -53,6 +59,24 @@ def flatten(t):
     return [item for sublist in t for item in sublist]
 
 
+def get_file_predictions(
+    predictions: pd.DataFrame,
+):
+    file_predictions = {
+        c: predictions.groupby(level=0)[c].agg(lambda x: x.mode()[0])
+        for c in predictions.columns
+    }
+    file_predictions = pd.DataFrame(
+        data=file_predictions,
+        columns=predictions.columns,
+        index=list(dict.fromkeys(predictions.index.droplevel(1))),
+    )
+    file_predictions["true"] = [
+        get_defect_from_index(i) for i in file_predictions.index
+    ]
+    return file_predictions
+
+
 def plot_predictions(
     predictions: pd.DataFrame,
     output_dir: Optional[Path] = None,
@@ -60,7 +84,7 @@ def plot_predictions(
     show: bool = False,
 ):
     models = predictions.columns
-    predictions["true"] = [get_defect(filename) for filename, _ in predictions.index]
+    predictions["true"] = [get_defect_from_index(i) for i in predictions.index]
     defect_names = [DEFECT_NAMES[Defect(d)] for d in sorted(set(predictions["true"]))]
 
     args = {
@@ -154,3 +178,6 @@ def main(result_dir, config_file, show):
     predictions = predictions.loc[:, models]
     plot_predictions(predictions, show=show)
     print_wrong_files(predictions)
+    plot_predictions(
+        get_file_predictions(predictions), description="file-based", show=show
+    )
