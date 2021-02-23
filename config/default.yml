@@ -180,7 +180,7 @@ models:
       dropout: 0.0
       optimizer: "adam"
       batch_size: 1
-      epochs: 50
+      epochs: *epochs
       stop_early: *stop_early
       patience: *patience
       verbose: *verbose
