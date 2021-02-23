@@ -138,8 +138,6 @@ models:
       n_neighbors: 1
     select:
       variance: True
-      rfe:
-        features: 10
 
   knn-finger_tugraz:
     normalize: *normalize
@@ -224,8 +222,6 @@ models:
       classifier: *mlp_grid
     select:
       variance: True
-      rfe:
-        features: 20
 
   mlp-finger_tugraz:
     normalize: *normalize
