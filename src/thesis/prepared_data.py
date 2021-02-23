@@ -33,9 +33,10 @@ class TsfreshTransformer(TransformerMixin, BaseEstimator):
     def transform(self, measurements: List[pd.DataFrame], y=None, **kwargs):
         wanted_rows = [fingerprint.get_X_index(df) for df in measurements]
         tsfresh_data = self._tsfresh_data.loc[wanted_rows, :]
-        tsfresh_data[fingerprint.POLARITY] = [
-            df.attrs[VOLTAGE_SIGN] for df in measurements
-        ]
+        tsfresh_data[fingerprint.POLARITY] = pd.Series(
+            data=[df.attrs[VOLTAGE_SIGN] for df in measurements],
+            index=wanted_rows,
+        )
         return tsfresh_data
 
     def _more_tags(self):
