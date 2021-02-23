@@ -49,6 +49,7 @@ defaults:
   step_duration: &step_duration "10 seconds"
   normalize: &normalize True
   n_jobs: &n_jobs 1
+  batch_size: &batch_size 5
   stop_early: &stop_early False
   patience: &patience 11
   epochs: &epochs 40
@@ -160,7 +161,7 @@ models:
   mlp-finger_ott:
     normalize: *normalize
     classifier:
-      batch_size: 6
+      batch_size: *batch_size
       hidden_layer_sizes:
         - 4
       dropout: 0.05
@@ -197,7 +198,7 @@ models:
       hidden_layer_sizes: !!python/tuple [15,5]
       dropout: 0.01
       optimizer: "adam"
-      batch_size: 5
+      batch_size: *batch_size
       epochs: *epochs
       stop_early: *stop_early
       patience: *patience
@@ -226,7 +227,7 @@ models:
   mlp-finger_tugraz:
     normalize: *normalize
     classifier:
-      batch_size: 6
+      batch_size: *batch_size
       hidden_layer_sizes: !!python/tuple [4]
       dropout: 0.05
       optimizer: "adam"
