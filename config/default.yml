@@ -82,28 +82,20 @@ defaults:
   mlp_grid: &mlp_grid
     batch_size:
       - 1
-      - 2
       - 5
       - 10
     dropout:
-      - 0.01
+      - 0.0
       - 0.05
-      - 0.1
       - 0.2
-      - 0.5
     hidden_layer_sizes:
-      - !!python/tuple [3,3]
+      - !!python/tuple [5]
+      - !!python/tuple [20]
       - !!python/tuple [5,3]
-      - !!python/tuple [7,3]
-      - !!python/tuple [10,3]
-      - !!python/tuple [15,3]
+      - !!python/tuple [20,3]
     epochs:
-      - 10
-      - 20
-      - 40
-      - 60
+      - 50
       - 100
-      - 200
 
   kbest_grid: &kbest_grid
     k:
@@ -181,8 +173,8 @@ models:
         tsfresh_data: ./data/csv-files/prepared/dataset/train/tsfresh-features_efficient_60seconds_maxlen-100000.data
     normalize: *normalize
     classifier:
-      hidden_layer_sizes: !!python/tuple [20,10]
-      dropout: 0.01
+      hidden_layer_sizes: !!python/tuple [20]
+      dropout: 0.05
       optimizer: "adam"
       batch_size: 5
       epochs: *epochs
