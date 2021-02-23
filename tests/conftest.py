@@ -2,10 +2,13 @@ from itertools import product
 from pathlib import Path
 from shutil import copyfile
 
+import pandas as pd
 import pytest
 import yaml
 
 from thesis import data
+from thesis.prepared_data import split_by_durations
+from thesis.tsfresh_features import save_extract_features
 
 
 def pytest_configure(config):
@@ -66,6 +69,22 @@ def classify_config(multiple_csv_files, tmpdir):
         config = yaml.load(stream)
     config["general"]["data_dir"] = str(multiple_csv_files)
     config["general"]["output_dir"] = str(Path(tmpdir, "output"))
+    return config
+
+
+@pytest.fixture
+def classify_config_with_tsfresh(classify_config):
+    config = classify_config
+    data_dir = Path(config["general"]["data_dir"])
+    extracted_features_path = Path(data_dir, "extracted_features.data")
+    splitted = split_by_durations(
+        data.read_recursive(data_dir)[0],
+        pd.Timedelta(config["general"]["max_duration"]),
+    )
+    save_extract_features(splitted, 1, extracted_features_path, True)
+    config["models"]["mlp-tsfresh"]["data"]["tsfresh_data"] = str(
+        extracted_features_path
+    )
     return config
 
 
