@@ -15,13 +15,8 @@ def file_score(
     else:
         correct_defect = y_true[0]
     predictions = pd.Series(data=predictions)
-    predicted_defects = predictions.mode()
-    if len(predicted_defects) == 1:
-        if predicted_defects[0] == correct_defect:
-            return 1.0
-        else:
-            return 0.0
-    elif correct_defect in predicted_defects:
-        return 1.0 / len(predicted_defects)
-    else:
+    predicted_defects = predictions.mode().values
+    if correct_defect not in predicted_defects:
         return 0.0
+    else:
+        return 1.0 / len(predicted_defects)
