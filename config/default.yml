@@ -143,6 +143,7 @@ models:
       stop_early: *stop_early
       patience: *patience
       verbose: *verbose
+    grid: "fingerprint_compare"
 
   mlp-tsfresh:
     data:
@@ -205,6 +206,7 @@ models:
       stop_early: *stop_early
       patience: *patience
       verbose: *verbose
+    grid: "fingerprint_compare"
 
   svm-finger_ott:
     normalize: *normalize
