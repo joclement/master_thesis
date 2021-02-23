@@ -173,11 +173,11 @@ models:
         tsfresh_data: ./data/csv-files/prepared/dataset/train/tsfresh-features_efficient_60seconds_maxlen-100000.data
     normalize: *normalize
     classifier:
-      hidden_layer_sizes: !!python/tuple [20]
-      dropout: 0.05
+      hidden_layer_sizes: !!python/tuple [5,3]
+      dropout: 0.0
       optimizer: "adam"
-      batch_size: 5
-      epochs: *epochs
+      batch_size: 1
+      epochs: 50
       stop_early: *stop_early
       patience: *patience
       verbose: *verbose
