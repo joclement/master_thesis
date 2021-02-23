@@ -178,7 +178,7 @@ def main(result_dir, config_file, show):
     )
     predictions = predictions.loc[:, models]
     plot_predictions(predictions, show=show)
-    print_wrong_files(predictions)
     plot_predictions(
         get_file_predictions(predictions), description="file-based", show=show
     )
+    print_wrong_files(predictions)
