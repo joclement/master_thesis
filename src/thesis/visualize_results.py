@@ -45,8 +45,10 @@ def print_wrong_files(predictions: pd.DataFrame):
         wrongs += predictions[model] != predictions["true"]
     predictions["wrongs"] = wrongs
     most_wrongs = predictions.sort_values("wrongs", ascending=False)
-    click.echo("Absolutely most wrongly classified filenames:")
+    click.echo("Most wrongly classified filename parts:")
     click.echo(most_wrongs["wrongs"].head(23))
+    click.echo()
+    click.echo("Most wrongly classified filenames:")
     click.echo(
         predictions.groupby(level=0)["wrongs"]
         .mean()
