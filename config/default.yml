@@ -186,7 +186,7 @@ models:
       verbose: *verbose
     grid:
       classifier: *mlp_grid
-      kbest_selector: *kbest_grid
+      selector: *kbest_grid
     select:
       kbest:
         k: 100
