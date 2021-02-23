@@ -147,25 +147,25 @@ class ModelHandler:
                     min_features_to_select=select_config["rfecv"]["min_features"],
                     cv=select_config["rfecv"]["cv"],
                 )
-                pipeline.append(("rfecv_selector", rfecv))
+                pipeline.append(("selector", rfecv))
             if "rfe" in select_config and "rfecv" not in select_config:
                 svc = SVC(kernel="linear")
                 rfe = RFE(
                     estimator=svc,
                     n_features_to_select=select_config["rfe"]["features"],
                 )
-                pipeline.append(("rfe_selector", rfe))
+                pipeline.append(("selector", rfe))
             if "tsfresh" in select_config:
                 tsfresh_selector = FeatureSelector(**select_config["tsfresh"])
-                pipeline.append(("tsfresh_selector", tsfresh_selector))
+                pipeline.append(("selector", tsfresh_selector))
             if "kbest" in select_config:
                 kbest_selector = SelectKBest(**select_config["kbest"])
-                pipeline.append(("kbest_selector", kbest_selector))
+                pipeline.append(("selector", kbest_selector))
             if "frommodel" in select_config:
                 frommodel = SelectFromModel(
                     LinearSVC(dual=False, **select_config["frommodel"])
                 )
-                pipeline.append(("frommodel_selector", frommodel))
+                pipeline.append(("selector", frommodel))
         scaler = _get_transformer(classifier_id, data_id, **model_config)
         if scaler:
             pipeline.append(("scaler", scaler))
