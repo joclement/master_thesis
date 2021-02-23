@@ -128,7 +128,9 @@ class ClassificationHandler:
                 pickle.dump(preprocessor, file)
 
         self.y: Final = pd.Series(
-            data=data.get_defects(self.measurements), index=get_index(self.measurements)
+            data=data.get_defects(self.measurements),
+            index=get_index(self.measurements),
+            dtype=int,
         )
         self.defects: Final = sorted(set(self.y))
         self.defect_names: Final = [
@@ -186,11 +188,40 @@ class ClassificationHandler:
         )
         return self._keep_wanted_defects(measurements)
 
+    def group_by_file_and_class(self) -> List[int]:
+        pairs = [
+            (df.attrs[data.PATH], df.attrs[data.CLASS]) for df in self.measurements
+        ]
+        pairs = list(dict.fromkeys(pairs))
+        file_defects = pd.Series([pair[1] for pair in pairs])
+        file_defect_counts = file_defects.value_counts(ascending=True)
+        num_of_groups = file_defect_counts.iloc[0]
+
+        current_filename = ""
+        seen = []
+        groups = []
+        counts_per_defect = {defect: 0 for defect in file_defect_counts.index}
+        for filename, defect in zip(
+            [df.attrs[data.PATH] for df in self.measurements], self.y
+        ):
+            assert filename not in seen
+            if filename != current_filename:
+                seen.append(current_filename)
+                index = counts_per_defect[defect] % num_of_groups
+                counts_per_defect[defect] += 1
+                current_filename = filename
+            groups.append(index)
+
+        return groups
+
     def _generate_cv_splits(self):
         cv = self.config["general"]["cv"]
         if isinstance(cv, int):
             cross_validator = StratifiedKFold(n_splits=cv)
             groups = None
+        elif self.config["general"]["cv"] == "group":
+            cross_validator = LeaveOneGroupOut()
+            groups = self.group_by_file_and_class()
         elif self.config["general"]["cv"] == "logo":
             cross_validator = LeaveOneGroupOut()
             groups = group_by_file(self.measurements)
