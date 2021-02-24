@@ -19,7 +19,7 @@ FINGERPRINT_COMPARE_GRID = [
         "classifier__batch_size": [1, 10],
         "classifier__dropout": [0.0, 0.05, 0.2],
         "classifier__hidden_layer_sizes": [(5,), (20,), (5, 3), (20, 10)],
-        "classifier__epochs": [50, 100],
+        "classifier__epochs": [50, 100, 150],
     },
     {
         "classifier": [KNeighborsClassifier()],
@@ -28,7 +28,7 @@ FINGERPRINT_COMPARE_GRID = [
     },
     {
         "classifier": [RandomForestClassifier()],
-        "classifier__min_samples_leaf": [1, 3],
+        "classifier__min_samples_leaf": [1, 2, 4, 8],
         "classifier__bootstrap": [True, False],
         "classifier__class_weight": ["balanced"],
     },
