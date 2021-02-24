@@ -198,11 +198,11 @@ models:
   mlp-finger_tugraz:
     normalize: *normalize
     classifier:
-      batch_size: *batch_size
-      hidden_layer_sizes: !!python/tuple [5]
-      dropout: *dropout
+      batch_size: 1
+      hidden_layer_sizes: !!python/tuple [20]
+      dropout: 0.0
       optimizer: *optimizer
-      epochs: *epochs
+      epochs: 100
       stop_early: *stop_early
       patience: *patience
       verbose: *verbose
@@ -235,6 +235,9 @@ models:
   rf-finger_ott:
     normalize: *normalize
     classifier:
+      class_weight: "balanced"
+      bootstrap: True
+      min_samples_leaf: 1
       n_jobs: *n_jobs
 
   rf-finger_own:
@@ -242,6 +245,8 @@ models:
     classifier:
       n_jobs: *n_jobs
       class_weight: "balanced"
+      bootstrap: True
+      min_samples_leaf: 3
     select:
       variance: True
 
