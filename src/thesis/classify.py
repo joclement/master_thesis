@@ -45,7 +45,7 @@ from .constants import (
 )
 from .data import TreatNegValues
 from .fingerprint import get_X_index
-from .metrics import file_score
+from .metrics import file_scores
 from .models import is_model_finger, ModelHandler
 from .prepared_data import adapt_durations, extract_features
 from .visualize_results import plot_scores
@@ -305,8 +305,11 @@ class ClassificationHandler:
             )
         if dataPart is DataPart.val:
             self.predictions.loc[get_index(X), model_name] = predictions
-        if self.config["general"]["cv"] == "logo" and dataPart is DataPart.val:
-            scores[FILE_SCORE] = file_score(y_true, predictions)
+        if (
+            self.config["general"]["cv"] in ["logo", "group"]
+            and dataPart is DataPart.val
+        ):
+            scores[FILE_SCORE] = file_scores(y_true, predictions)
         if dataPart is DataPart.val and self.calc_cm:
             self._all_val_predictions.extend(predictions)
             self._all_val_correct.extend(y_true)
