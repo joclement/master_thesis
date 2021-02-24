@@ -9,7 +9,16 @@ LOCATIONS = "src", "tests", "noxfile.py"
 @nox.session(python="3.8")
 @nox_poetry.session
 def tests(session):
-    args = session.posargs or ["tests", "-n", "3", "--cov", "-m", "not e2e"]
+    args = session.posargs or [
+        "tests",
+        "-n",
+        "3",
+        "--cov",
+        "-m",
+        "not e2e",
+        "-m",
+        "not expensive",
+    ]
     session.install(".")
     session.install("coverage[toml]", "pytest", "pytest-cov", "pytest-xdist")
     session.run("pytest", *args)

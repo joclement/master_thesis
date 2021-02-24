@@ -1,11 +1,13 @@
 from pathlib import Path
 
 import click.testing
+import pytest
 import yaml
 
 from thesis import grid_search
 
 
+@pytest.mark.expensive
 def test_grid_search(classify_config_with_tsfresh, tmpdir):
     classify_config_with_tsfresh["general"]["cv"] = "group"
     classify_config_with_tsfresh["models-to-run"] = [
@@ -17,6 +19,7 @@ def test_grid_search(classify_config_with_tsfresh, tmpdir):
     grid_searcher.run()
 
 
+@pytest.mark.expensive
 def test_fingerprint_compare_grid(classify_config, tmpdir):
     classify_config["general"]["cv"] = "group"
     classify_config["models-to-run"] = [
@@ -28,6 +31,7 @@ def test_fingerprint_compare_grid(classify_config, tmpdir):
 
 
 def test_grid_search_main(classify_config, tmpdir):
+    classify_config["general"]["cv"] = "group"
     classify_config["models-to-run"] = ["dt-finger_ott"]
     config_filepath = Path(tmpdir, "config.yml")
     with open(config_filepath, "w") as outfile:
