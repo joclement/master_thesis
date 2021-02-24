@@ -48,8 +48,8 @@ def test_classify_ClassificationHandler_with_saving(
     assert len(list(output_dir.rglob("model-*.p"))) == num_of_models - num_of_mlp_models
     assert (
         2 * num_of_mlp_models
-        < len(list(output_dir.rglob("pipeline_step*.p")))
-        < 4 * num_of_mlp_models
+        <= len(list(output_dir.rglob("pipeline_step*.p")))
+        <= 4 * num_of_mlp_models
     )
 
 
