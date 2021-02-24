@@ -2,6 +2,20 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+from sklearn.metrics import balanced_accuracy_score
+
+
+def file_scores(
+    y_true: pd.Series,
+    predictions: Union[pd.Series, np.array, list],
+    sample_weight=None,
+) -> float:
+
+    matches = pd.DataFrame(
+        data={"true": y_true, "predict": predictions}, index=y_true.index
+    )
+    matches = matches.groupby(level=0).agg(lambda x: x.value_counts().index[0])
+    return balanced_accuracy_score(matches["true"], matches["predict"])
 
 
 def file_score(
