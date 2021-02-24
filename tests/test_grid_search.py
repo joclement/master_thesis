@@ -9,11 +9,12 @@ from thesis import grid_search
 def test_grid_search(classify_config_with_tsfresh, tmpdir):
     classify_config_with_tsfresh["general"]["cv"] = "group"
     classify_config_with_tsfresh["models-to-run"] = [
-        "mlp-finger_own",
         "mlp-tsfresh",
-        "dt-finger_ott",
+        "dt-finger_own",
     ]
-    grid_search.MyGridSearch(classify_config_with_tsfresh).run()
+    grid_searcher = grid_search.MyGridSearch(classify_config_with_tsfresh)
+    assert len(grid_searcher.cv_splits) == 4
+    grid_searcher.run()
 
 
 def test_fingerprint_compare_grid(classify_config, tmpdir):
@@ -24,11 +25,6 @@ def test_fingerprint_compare_grid(classify_config, tmpdir):
     classify_config["models"]["mlp-finger_own"]["grid"] = "fingerprint_compare"
 
     grid_search.MyGridSearch(classify_config).run()
-
-
-def test_group_cv(classify_config, tmpdir):
-    classify_config["general"]["cv"] = "group"
-    assert len(grid_search.MyGridSearch(classify_config).cv_splits) == 4
 
 
 def test_grid_search_main(classify_config, tmpdir):

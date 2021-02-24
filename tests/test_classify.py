@@ -13,7 +13,7 @@ def config(classify_config):
 
 
 def test_classify_main(config, tmpdir):
-    config["models-to-run"] = config["models-to-run"][0:2]
+    config["models-to-run"] = config["models-to-run"][0:1]
     config_filepath = Path(tmpdir, "config.yml")
     with open(config_filepath, "w") as outfile:
         yaml.dump(config, outfile)
@@ -27,36 +27,30 @@ def test_classify_main(config, tmpdir):
     assert Path(config["general"]["output_dir"], "val_top_3_accuracy.svg").exists()
 
 
-def test_classify_ClassificationHandler(classify_config_with_tsfresh, tmpdir):
+def test_classify_ClassificationHandler_with_saving(
+    classify_config_with_tsfresh, tmpdir
+):
     config = classify_config_with_tsfresh
     output_dir = Path(config["general"]["output_dir"])
     config["general"]["calc_cm"] = True
-    config["general"]["save_models"] = False
+    config["general"]["save_models"] = True
 
     handler = classify.ClassificationHandler(config)
+    assert Path(output_dir, "preprocessor.p").exists()
+    assert Path(output_dir, "finger_preprocessor.p").exists()
     handler.run()
 
     num_of_models = len(config["models-to-run"])
     assert len(list(output_dir.rglob("confusion_matrix_*.svg"))) == num_of_models * (
         config["general"]["cv"] + 1
     )
-
-
-def test_classify_ClassificationHandler_save_models(config):
-    config["models-to-run"] = ["mlp-finger_own", "dt-finger_ott"]
-    config["general"]["save_models"] = True
-
-    handler = classify.ClassificationHandler(config)
-    output_dir = Path(config["general"]["output_dir"])
-    assert Path(output_dir, "preprocessor.p").exists()
-    assert Path(output_dir, "finger_preprocessor.p").exists()
-
-    handler.run()
-
-    num_of_models = len(config["models-to-run"])
     num_of_mlp_models = len([m for m in config["models-to-run"] if "mlp-" in m])
     assert len(list(output_dir.rglob("model-*.p"))) == num_of_models - num_of_mlp_models
-    assert len(list(output_dir.rglob("pipeline_step*.p"))) == 4
+    assert (
+        2 * num_of_mlp_models
+        < len(list(output_dir.rglob("pipeline_step*.p")))
+        < 4 * num_of_mlp_models
+    )
 
 
 def test_classify_ClassificationHandler_no_defects(config):

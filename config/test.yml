@@ -49,39 +49,25 @@ defaults:
   n_jobs: &n_jobs 1
   stop_early: &stop_early False
   patience: &patience 1
-  epochs: &epochs 10
+  batch_size: &batch_size 10
+  epochs: &epochs 3
   verbose: &verbose 0
 
   dt_grid: &dt_grid
-    min_samples_split:
-      - 2
-      - 5
-      - 10
-      - 20
     class_weight:
       - "balanced"
       - null
-    max_features:
-      - null
-      - 5
     min_samples_leaf:
-      - 1
       - 3
       - 5
-      - 10
 
   mlp_grid: &mlp_grid
-    callbacks:
-      - null
     hidden_layer_sizes:
       - !!python/tuple [3]
       - !!python/tuple [3, 3]
-    dropout:
-      - 0.01
-      - 0.05
     epochs:
+      - 5
       - 10
-      - 20
 
 models:
   knn_dtw-oned:
@@ -95,7 +81,7 @@ models:
 
   knn_dtw-twod:
     data:
-      max_len: 100000
+      max_len: 10000
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
@@ -152,7 +138,7 @@ models:
       hidden_layer_sizes: !!python/tuple [20,10]
       dropout: 0.01
       optimizer: "adam"
-      batch_size: 5
+      batch_size: *batch_size
       epochs: *epochs
       stop_early: *stop_early
       patience: *patience
@@ -164,7 +150,7 @@ models:
     normalize: *normalize
     classifier:
       n_jobs: *n_jobs
-      batch_size: 6
+      batch_size: *batch_size
       hidden_layer_sizes: !!python/tuple [5]
       dropout: 0.05
       optimizer: "adam"
@@ -182,7 +168,7 @@ models:
       hidden_layer_sizes: !!python/tuple [3]
       dropout: 0.05
       optimizer: "adam"
-      batch_size: 6
+      batch_size: *batch_size
       epochs: *epochs
       stop_early: *stop_early
       patience: *patience
@@ -201,7 +187,7 @@ models:
       hidden_layer_sizes: !!python/tuple [3]
       dropout: 0.05
       optimizer: "adam"
-      batch_size: 6
+      batch_size: *batch_size
       epochs: *epochs
       stop_early: *stop_early
       patience: *patience
@@ -217,7 +203,7 @@ models:
     normalize: *normalize
     classifier:
       n_jobs: *n_jobs
-      batch_size: 6
+      batch_size: *batch_size
       hidden_layer_sizes: !!python/tuple [4]
       dropout: 0.05
       optimizer: "adam"
@@ -230,7 +216,7 @@ models:
     normalize: *normalize
     classifier:
       n_jobs: *n_jobs
-      batch_size: 6
+      batch_size: *batch_size
       hidden_layer_sizes:
         - 6
       dropout: 0.05
