@@ -132,10 +132,10 @@ def plot_predictions(
     )
 
     sns.barplot(data=df, x="model", y="precision", hue="defect").set_title(description)
-    util.finish_plot("precisions", output_dir, show)
+    util.finish_plot(f"{description}-precisions", output_dir, show)
 
     sns.barplot(data=df, x="model", y="recall", hue="defect").set_title(description)
-    util.finish_plot("recalls", output_dir, show)
+    util.finish_plot(f"{description}-recalls", output_dir, show)
 
 
 def plot_scores(
