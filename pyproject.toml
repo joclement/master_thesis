@@ -39,6 +39,7 @@ gui = "thesis.gui:main"
 mat2csv = "thesis.convert:mat2csv"
 tsfresh-features = "thesis.tsfresh_features:main"
 visualize-fingerprints = "thesis.visualize_fingerprints:main"
+visualize-grid = "thesis.visualize_grid:main"
 visualize-pd-data = "thesis.visualize_pd_data:main"
 visualize-results = "thesis.visualize_results:main"
 
