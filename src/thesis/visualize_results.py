@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from sklearn.metrics import (
+    balanced_accuracy_score,
     precision_score,
     recall_score,
 )
@@ -87,6 +88,23 @@ def plot_predictions(
     models = predictions.columns
     predictions["true"] = [get_defect_from_index(i) for i in predictions.index]
     defect_names = [DEFECT_NAMES[Defect(d)] for d in sorted(set(predictions["true"]))]
+
+    balanced_accuracy_scores = [
+        balanced_accuracy_score(predictions["true"], predictions[model])
+        for model in models
+    ]
+    y_pos = np.arange(len(balanced_accuracy_scores))
+    _, ax = plt.subplots()
+    ax.barh(
+        y_pos,
+        balanced_accuracy_scores,
+        align="center",
+    )
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels(models)
+    ax.set_xlabel("Balanced accuracy")
+    ax.set_title(description)
+    util.finish_plot(f"{description}-balanced-accuracy", output_dir, show)
 
     args = {
         "average": None,
