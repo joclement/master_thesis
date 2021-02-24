@@ -5,6 +5,7 @@ import warnings
 
 import click
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import make_scorer
 from sklearn.model_selection import GridSearchCV
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
@@ -12,6 +13,7 @@ import yaml
 
 from . import __version__
 from .classify import ClassificationHandler
+from .metrics import file_scores
 
 
 FINGERPRINT_COMPARE_GRID = [
@@ -63,7 +65,7 @@ class MyGridSearch(ClassificationHandler):
                 pipeline,
                 grid_params,
                 cv=self.cv_splits,
-                scoring="balanced_accuracy",
+                scoring=make_scorer(file_scores),
                 n_jobs=self.n_jobs,
                 pre_dispatch=self.n_jobs + 2,
                 error_score="raise",
