@@ -148,7 +148,7 @@ def plot_scores(
     y_pos = np.arange(len(scores.index))
 
     for metric, metric_scores in scores.groupby(axis=1, level=0):
-        fig, ax = plt.subplots()
+        _, ax = plt.subplots()
         if config["general"]["cv"] == "logo":
             xerr = None
         else:
