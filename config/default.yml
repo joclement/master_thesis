@@ -135,10 +135,9 @@ models:
     normalize: *normalize
     classifier:
       batch_size: *batch_size
-      hidden_layer_sizes:
-        - 4
-      dropout: 0.05
-      optimizer: "adam"
+      hidden_layer_sizes: !!python/tuple [5]
+      dropout: *dropout
+      optimizer: *optimizer
       epochs: *epochs
       stop_early: *stop_early
       patience: *patience
@@ -152,7 +151,7 @@ models:
     classifier:
       hidden_layer_sizes: !!python/tuple [5,3]
       dropout: 0.0
-      optimizer: "adam"
+      optimizer: *optimizer
       batch_size: 1
       epochs: *epochs
       stop_early: *stop_early
@@ -171,11 +170,9 @@ models:
     classifier:
       hidden_layer_sizes: !!python/tuple [15,5]
       dropout: 0.01
-      optimizer: "adam"
+      optimizer: *optimizer
       batch_size: *batch_size
       hidden_layer_sizes: !!python/tuple [5]
-      dropout: *dropout
-      optimizer: *optimizer
       epochs: *epochs
       stop_early: *stop_early
       patience: *patience
