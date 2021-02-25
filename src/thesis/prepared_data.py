@@ -25,7 +25,7 @@ class MeasurementNormalizer(TransformerMixin, BaseEstimator):
 
     def transform(self, measurements: List[pd.DataFrame], y=None, **kwargs):
         for df in measurements:
-            df[PD] /= df[PD].max()
+            df.loc[:, PD] /= df[PD].max()
         return measurements
 
     def _more_tags(self):
