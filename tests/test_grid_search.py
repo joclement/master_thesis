@@ -14,6 +14,7 @@ def test_grid_search(classify_config_with_tsfresh, tmpdir):
         "mlp-tsfresh",
         "dt-finger_own",
         "knn_dtw-oned",
+        "knn_dtw-twod",
     ]
     grid_searcher = grid_search.MyGridSearch(classify_config_with_tsfresh)
     assert len(grid_searcher.cv_splits) == 4

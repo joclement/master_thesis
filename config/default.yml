@@ -110,6 +110,11 @@ models:
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
+    grid:
+      twod:
+        normalize:
+          - True
+          - False
 
   knn-finger_ott:
     normalize: *normalize
