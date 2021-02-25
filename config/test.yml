@@ -1,4 +1,5 @@
 general:
+  normalize: False
   calc_train_score: True
   verbose: False
   n_jobs: 2
