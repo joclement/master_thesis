@@ -201,7 +201,7 @@ def extract_features(df: pd.DataFrame):
         extracted_features.isnull().any().any()
         or extracted_features.isin([np.inf, -np.inf]).any().any()
     ):
-        raise ValueError(f"Incorrect features: \n {extracted_features}")
+        raise ValueError(f"Incorrect features: \n {extracted_features.to_string()}")
     return extracted_features
 
 
