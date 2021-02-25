@@ -3,7 +3,6 @@ general:
   verbose: False
   n_jobs: 3
   cv: "logo"
-  # cv: 9
   data_dir: ./data/csv-files/prepared/dataset/train
   calc_cm: True
   output_dir: ./output/tmp
