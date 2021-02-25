@@ -139,7 +139,8 @@ def oned_func(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
 
 
 class twod(BaseEstimator, TransformerMixin):
-    def __init__(self, max_len: int, **kw_args):
+    def __init__(self, max_len: int, normalize: bool, **kw_args):
+        self.normalize = normalize
         self.max_len = max_len
 
     def fit(self, measurements: List[pd.DataFrame], y=None, **kwargs):
@@ -147,6 +148,8 @@ class twod(BaseEstimator, TransformerMixin):
 
     def transform(self, measurements: List[pd.DataFrame], y=None, **kwargs):
         measurements = keep_needed_columns(measurements)
+        for df in measurements:
+            df[PD] /= df[PD].max()
         return to_time_series_dataset([df[: self.max_len] for df in measurements])
 
 

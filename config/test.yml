@@ -92,6 +92,7 @@ models:
 
   knn_dtw-twod:
     data:
+      normalize: True
       max_len: 10000
     classifier:
       n_jobs: *n_jobs
