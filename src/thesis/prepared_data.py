@@ -138,13 +138,16 @@ def oned_func(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     return oned(config["fix_duration"], config["frequency"]).transform(measurements)
 
 
-def twod_func(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
-    measurements = keep_needed_columns(measurements)
-    return to_time_series_dataset([m[: config["max_len"]] for m in measurements])
+class twod(BaseEstimator, TransformerMixin):
+    def __init__(self, max_len: int, **kw_args):
+        self.max_len = max_len
 
+    def fit(self, measurements: List[pd.DataFrame], y=None, **kwargs):
+        return self
 
-def twod(**config) -> FunctionTransformer:
-    return FunctionTransformer(twod_func, kw_args=config)
+    def transform(self, measurements: List[pd.DataFrame], y=None, **kwargs):
+        measurements = keep_needed_columns(measurements)
+        return to_time_series_dataset([df[: self.max_len] for df in measurements])
 
 
 # FIXME _split_by_duration does not work properly, e.g. for oned
