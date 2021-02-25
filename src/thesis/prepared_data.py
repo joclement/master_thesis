@@ -39,7 +39,7 @@ class TsfreshTransformer(TransformerMixin, BaseEstimator):
             tsfresh_data_path, header=0, index_col=[PATH, PART]
         )
 
-    def fit(self, X: List[pd.DataFrame], y=None, **kwargs):
+    def fit(self, measurements: List[pd.DataFrame], y=None, **kwargs):
         self.n_features_in_ = len(self._tsfresh_data.columns)
         return self
 
