@@ -89,7 +89,6 @@ models:
           - "2000ms"
           - "5000ms"
 
-
   knn_dtw-twod:
     data:
       normalize: True
