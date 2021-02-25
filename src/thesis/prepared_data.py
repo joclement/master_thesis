@@ -149,7 +149,7 @@ class twod(BaseEstimator, TransformerMixin):
     def transform(self, measurements: List[pd.DataFrame], y=None, **kwargs):
         measurements = keep_needed_columns(measurements)
         for df in measurements:
-            df[PD] /= df[PD].max()
+            df.loc[:, PD] /= df[PD].max()
         return to_time_series_dataset([df[: self.max_len] for df in measurements])
 
 
