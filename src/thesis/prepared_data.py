@@ -9,7 +9,7 @@ from tslearn.utils import to_time_series_dataset
 
 from . import data, fingerprint
 from .constants import PART
-from .data import PATH, START_TIME, TIME_DIFF, VOLTAGE_SIGN
+from .data import PATH, START_TIME, TIME_DIFF, VOLTAGE_SIGN, PD
 from .util import get_memory, to_dataTIME
 
 MAX_FREQUENCY = pd.tseries.frequencies.to_offset("50us")
@@ -17,6 +17,19 @@ MAX_FREQUENCY = pd.tseries.frequencies.to_offset("50us")
 ONEPD_DURATION = pd.Timedelta("10 seconds")
 
 memory = get_memory()
+
+
+class MeasurementNormalizer(TransformerMixin, BaseEstimator):
+    def fit(self, measurements: List[pd.DataFrame], y=None, **kwargs):
+        return self
+
+    def transform(self, measurements: List[pd.DataFrame], y=None, **kwargs):
+        for df in measurements:
+            df[PD] /= df[PD].max()
+        return measurements
+
+    def _more_tags(self):
+        return {"no_validation": True, "requires_fit": False}
 
 
 class TsfreshTransformer(TransformerMixin, BaseEstimator):

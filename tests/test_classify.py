@@ -4,7 +4,7 @@ import click.testing
 import pytest
 import yaml
 
-from thesis import classify
+from thesis import classify, data
 
 
 @pytest.fixture
@@ -69,6 +69,15 @@ def test_classify_ClassificationHandler_logo_cv(config):
     handler.run()
     output_dir = Path(config["general"]["output_dir"])
     assert len(list(output_dir.rglob("confusion_matrix_*.svg"))) == 1
+
+
+def test_classify_ClassificationHandler_normalize_pd_values(config):
+    config["models-to-run"] = config["models-to-run"][0:1]
+    config["general"]["normalize"] = True
+
+    handler = classify.ClassificationHandler(config)
+    for df in handler.measurements:
+        assert df[data.PD].max() == 1.0
 
 
 def test_classify_ClassificationHandler_invalid_cv(config):

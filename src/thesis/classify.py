@@ -47,7 +47,7 @@ from .data import TreatNegValues
 from .fingerprint import get_X_index
 from .metrics import file_scores
 from .models import is_model_finger, ModelHandler
-from .prepared_data import adapt_durations, extract_features
+from .prepared_data import adapt_durations, extract_features, MeasurementNormalizer
 from .visualize_results import plot_scores
 
 SEED: Final = 23
@@ -114,7 +114,10 @@ class ClassificationHandler:
         self.calc_cm = self.config["general"]["calc_cm"]
 
         durationAdapter = FunctionTransformer(adapt_durations)
-        preprocessor = Pipeline([("adapt_durations", durationAdapter)])
+        preprocessor = [("adapt_durations", durationAdapter)]
+        if self.config["general"]["normalize"]:
+            preprocessor.append(("normalize", MeasurementNormalizer()))
+        preprocessor = Pipeline(preprocessor)
         self.measurements: Final = preprocessor.set_params(
             adapt_durations__kw_args={
                 "min_duration": self.config["general"]["min_duration"],
