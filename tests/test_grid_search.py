@@ -13,6 +13,7 @@ def test_grid_search(classify_config_with_tsfresh, tmpdir):
     classify_config_with_tsfresh["models-to-run"] = [
         "mlp-tsfresh",
         "dt-finger_own",
+        "knn_dtw-oned",
     ]
     grid_searcher = grid_search.MyGridSearch(classify_config_with_tsfresh)
     assert len(grid_searcher.cv_splits) == 4
