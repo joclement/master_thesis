@@ -9,7 +9,7 @@ from tslearn.utils import to_time_series_dataset
 
 from . import data, fingerprint
 from .constants import PART
-from .data import PATH, START_TIME, TIME_DIFF, VOLTAGE_SIGN, PD
+from .data import PATH, PD, START_TIME, TIME_DIFF, VOLTAGE_SIGN
 from .util import get_memory, to_dataTIME
 
 MAX_FREQUENCY = pd.tseries.frequencies.to_offset("50us")
@@ -84,34 +84,58 @@ def keep_needed_columns(measurements: List[pd.DataFrame]):
     return [df[[data.TIME_DIFF, data.PD]] for df in measurements]
 
 
-def oned_func(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
-    fix_duration = to_dataTIME(pd.Timedelta(config["fix_duration"]))
-    measurements = keep_needed_columns(measurements)
+class oned(BaseEstimator, TransformerMixin):
+    def __init__(self, fix_duration: str, frequency: str, **kw_args):
+        self.fix_duration_str = fix_duration
+        self._fix_duration = to_dataTIME(pd.Timedelta(self.fix_duration_str))
+        self.frequency = frequency
 
-    # FIXME workaround due to _split_by_durations bug
-    equal_lenghted_dfs = []
-    for df in measurements:
-        duration = df[data.TIME_DIFF].sum()
-        if duration > fix_duration:
-            df = df[df[data.TIME_DIFF].cumsum() <= fix_duration]
-        elif duration < fix_duration:
-            df = df.append(
-                pd.DataFrame(
-                    data={data.PD: [0.0], data.TIME_DIFF: [fix_duration - duration]},
-                    index=[len(df.index)],
+    def fit(self, measurements: List[pd.DataFrame], y=None, **kwargs):
+        return self
+
+    def transform(self, measurements: List[pd.DataFrame], y=None, **kwargs):
+        measurements = keep_needed_columns(measurements)
+
+        # FIXME workaround due to _split_by_durations bug
+        equal_lenghted_dfs = []
+        for df in measurements:
+            duration = df[data.TIME_DIFF].sum()
+            if duration > self._fix_duration:
+                df = df[df[data.TIME_DIFF].cumsum() <= self._fix_duration]
+            elif duration < self._fix_duration:
+                df = df.append(
+                    pd.DataFrame(
+                        data={
+                            data.PD: [0.0],
+                            data.TIME_DIFF: [self._fix_duration - duration],
+                        },
+                        index=[len(df.index)],
+                    )
                 )
-            )
-        equal_lenghted_dfs.append(df)
-    measurements = equal_lenghted_dfs
+            equal_lenghted_dfs.append(df)
+        measurements = equal_lenghted_dfs
 
-    time_serieses = [
-        _convert_to_time_series(df, config["frequency"]) for df in measurements
-    ]
-    return to_time_series_dataset(time_serieses)
+        return to_time_series_dataset(
+            [_convert_to_time_series(df, self.frequency) for df in measurements]
+        )
+
+    def _more_tags(self):
+        return {"no_validation": True, "requires_fit": False}
+
+    def get_params(self, deep=True):
+        return {"fix_duration": self.fix_duration_str, "frequency": self.frequency}
+
+    def set_params(self, **parameters):
+        if "fix_duration" in parameters:
+            self.fix_duration_str = parameters["fix_duration"]
+            self._fix_duration = to_dataTIME(pd.Timedelta(self.fix_duration_str))
+        if "frequency" in parameters:
+            self.frequency = parameters["frequency"]
+        return self
 
 
-def oned(**config) -> FunctionTransformer:
-    return FunctionTransformer(oned_func, kw_args=config)
+def oned_func(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
+    return oned(config["fix_duration"], config["frequency"]).transform(measurements)
 
 
 def twod_func(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
