@@ -150,7 +150,6 @@ class twod(BaseEstimator, TransformerMixin):
         return to_time_series_dataset([df[: self.max_len] for df in measurements])
 
 
-# FIXME _split_by_duration does not work properly, e.g. for oned
 def _split_by_duration(
     df: pd.DataFrame, duration: pd.Timedelta, drop_last: bool, drop_empty: bool = False
 ) -> List[pd.DataFrame]:
