@@ -17,6 +17,7 @@ numpy = "^1.19.4"
 tsfresh = { git = "https://github.com/flyingdutchman23/tsfresh", tag = "main" }
 Keras = "^2.4.3"
 tensorflow = "^2.4.0"
+lightgbm = "^3.1.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.1.0"
