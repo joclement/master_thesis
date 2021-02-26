@@ -4,6 +4,7 @@ from typing import Dict
 import warnings
 
 import click
+from lightgbm import LGBMClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import make_scorer
 from sklearn.model_selection import GridSearchCV
@@ -38,6 +39,9 @@ FINGERPRINT_COMPARE_GRID = [
         "classifier": [SVC()],
         "classifier__decision_function_shape": ["ovr", "ovo"],
         "classifier__class_weight": ["balanced"],
+    },
+    {
+        "classifier": [LGBMClassifier()],
     },
 ]
 

@@ -6,6 +6,7 @@ from keras.layers import Dense, Dropout
 from keras.metrics import TopKCategoricalAccuracy
 from keras.models import Sequential
 from keras.wrappers.scikit_learn import KerasClassifier
+from lightgbm import LGBMClassifier
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.ensemble import RandomForestClassifier
@@ -205,6 +206,8 @@ def get_classifier(
         return SVC(**classifier_config)
     if classifier_id == "svm_dtw":
         return TimeSeriesSVC()
+    if classifier_id == "lgbm":
+        return LGBMClassifier(**classifier_config)
 
 
 def build_mlp(
