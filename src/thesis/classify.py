@@ -115,8 +115,6 @@ class ClassificationHandler:
 
         durationAdapter = FunctionTransformer(adapt_durations)
         preprocessor = [("adapt_durations", durationAdapter)]
-        if self.config["general"]["normalize"]:
-            preprocessor.append(("normalize", MeasurementNormalizer()))
         preprocessor = Pipeline(preprocessor)
         self.measurements: Final = preprocessor.set_params(
             adapt_durations__kw_args={
@@ -142,11 +140,12 @@ class ClassificationHandler:
         self.cv_splits: Final = self._generate_cv_splits()
 
         if any([is_model_finger(m) for m in self.config["models-to-run"]]):
-            finger_preprocessor = Pipeline(
-                [
+            finger_preprocessor = [
                     ("extract_features", FunctionTransformer(extract_features)),
-                ]
-            )
+            ]
+            if self.config["general"]["normalize_fingerprints"]:
+                finger_preprocessor.insert(0, ("normalize", MeasurementNormalizer()))
+            finger_preprocessor = Pipeline(finger_preprocessor)
             click.echo("Calc finger features...")
             self.finger_X = finger_preprocessor.fit_transform(self.measurements)
             click.echo("Done.")

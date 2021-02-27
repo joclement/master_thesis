@@ -72,8 +72,8 @@ def test_classify_ClassificationHandler_logo_cv(config):
 
 
 def test_classify_ClassificationHandler_normalize_pd_values(config):
-    config["models-to-run"] = config["models-to-run"][0:1]
-    config["general"]["normalize"] = True
+    config["models-to-run"] = ["rf-finger_ott"]
+    config["general"]["normalize_fingerprints"] = True
 
     handler = classify.ClassificationHandler(config)
     for df in handler.measurements:
