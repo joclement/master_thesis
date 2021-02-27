@@ -128,11 +128,11 @@ class oned(BaseEstimator, TransformerMixin):
 
     def set_params(self, **parameters):
         if "fix_duration" in parameters:
-            self.frequency_str = parameters["frequency"]
-            self._frequency = pd.tseries.frequencies.to_offset(self.frequency_str)
-        if "frequency" in parameters:
             self.fix_duration_str = parameters["fix_duration"]
             self._fix_duration = to_dataTIME(pd.Timedelta(self.fix_duration_str))
+        if "frequency" in parameters:
+            self.frequency_str = parameters["frequency"]
+            self._frequency = pd.tseries.frequencies.to_offset(self.frequency_str)
         self._time_series_len = pd.Timedelta(self.fix_duration_str) / self._frequency
         return self
 
