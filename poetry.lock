@@ -1095,12 +1095,11 @@ telegram = ["requests"]
 
 [[package]]
 name = "tsfresh"
-version = "0.17.1.dev20+gece2327"
+version = "0.17.0"
 description = "tsfresh extracts relevant characteristics from time series"
 category = "main"
 optional = false
 python-versions = ">=3.5"
-develop = false
 
 [package.dependencies]
 dask = {version = ">=2.9.0", extras = ["dataframe"]}
@@ -1113,12 +1112,6 @@ scikit-learn = ">=0.19.2"
 scipy = ">=1.2.0"
 statsmodels = ">=0.9.0"
 tqdm = ">=4.10.0"
-
-[package.source]
-type = "git"
-url = "https://github.com/flyingdutchman23/tsfresh"
-reference = "main"
-resolved_reference = "ece232790f7aa69eda51e856f5539e41d4608fbf"
 
 [[package]]
 name = "tslearn"
@@ -1202,7 +1195,7 @@ heapdict = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "4ef7359ff85ebcc464bfbfa61c49f8f5d07f342c6aa34da5aeb79c2516bdca54"
+content-hash = "5e7ace6e282d6757380a2f932e6a97b79cdcd5b3a93035af62505215420176c6"
 
 [metadata.files]
 absl-py = [
@@ -2143,7 +2136,10 @@ tqdm = [
     {file = "tqdm-4.58.0-py2.py3-none-any.whl", hash = "sha256:2c44efa73b8914dba7807aefd09653ac63c22b5b4ea34f7a80973f418f1a3089"},
     {file = "tqdm-4.58.0.tar.gz", hash = "sha256:c23ac707e8e8aabb825e4d91f8e17247f9cc14b0d64dd9e97be0781e9e525bba"},
 ]
-tsfresh = []
+tsfresh = [
+    {file = "tsfresh-0.17.0-py2.py3-none-any.whl", hash = "sha256:711588107a7a5539829daa86087a249eec7b4865bbed6006fcccd63cbf81cf57"},
+    {file = "tsfresh-0.17.0.tar.gz", hash = "sha256:f3db06063116c3cca6ef1ad30dcd50a0cc4a4d0688cc34cc8843d9bd400da969"},
+]
 tslearn = [
     {file = "tslearn-0.5.0.5-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:cf87ccf2617ef713ce018382882fc5d021804cf16ccb0af1718e28fa89192261"},
     {file = "tslearn-0.5.0.5-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:caece99a10970bf7a344ad4e72280bf585bef0352e82b6daaa5eea25d97ca294"},
