@@ -139,7 +139,7 @@ class ClassificationHandler:
 
         if any([is_model_finger(m) for m in self.config["models-to-run"]]):
             finger_preprocessor = [
-                    ("extract_features", FunctionTransformer(extract_features)),
+                ("extract_features", FunctionTransformer(extract_features)),
             ]
             if self.config["general"]["normalize_fingerprints"]:
                 finger_preprocessor.insert(0, ("normalize", MeasurementNormalizer()))
