@@ -1,8 +1,10 @@
+from enum import Enum
 import math
 from typing import List
 import warnings
 
 import pandas as pd
+from scipy.stats import zscore
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.preprocessing import FunctionTransformer
 from tslearn.utils import to_time_series_dataset
@@ -17,6 +19,12 @@ MAX_FREQUENCY = pd.tseries.frequencies.to_offset("50us")
 ONEPD_DURATION = pd.Timedelta("10 seconds")
 
 memory = get_memory()
+
+
+class NormalizationMethod(Enum):
+    none = "none"
+    zscore = "zscore"
+    minmax = "minmax"
 
 
 class MeasurementNormalizer(TransformerMixin, BaseEstimator):
@@ -142,19 +150,32 @@ def oned_func(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
 
 
 class twod(BaseEstimator, TransformerMixin):
-    def __init__(self, max_len: int, normalize: bool, **kw_args):
-        self.normalize = normalize
-        self.max_len = max_len
+    def __init__(self, max_len: int, normalize: str, **kw_args):
+        self.set_params(**{"max_len": max_len, "normalize": normalize})
 
     def fit(self, measurements: List[pd.DataFrame], y=None, **kwargs):
         return self
 
     def transform(self, measurements: List[pd.DataFrame], y=None, **kwargs):
         measurements = keep_needed_columns(measurements)
-        if self.normalize:
+        if self._normalize is NormalizationMethod.minmax:
             for df in measurements:
                 df.loc[:, PD] /= df[PD].max()
+        elif self._normalize is NormalizationMethod.zscore:
+            for df in measurements:
+                df.loc[:, PD] = df.apply(zscore)[PD]
         return to_time_series_dataset([df[: self.max_len] for df in measurements])
+
+    def get_params(self, deep=True):
+        return {"normalize": self.normalize_str, "max_len": self.max_len}
+
+    def set_params(self, **parameters):
+        if "max_len" in parameters:
+            self.max_len = parameters["max_len"]
+        if "normalize" in parameters:
+            self.normalize_str = parameters["normalize"]
+            self._normalize = NormalizationMethod(self.normalize_str)
+        return self
 
 
 def _split_by_duration(

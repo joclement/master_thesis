@@ -110,16 +110,17 @@ models:
 
   knn_dtw-twod:
     data:
-      normalize: False
       max_len: 100000
+      normalize: "minmax"
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
     grid:
       twod:
         normalize:
-          - True
-          - False
+          - "none"
+          - "zscore"
+          - "minmax"
 
   knn-finger_ott:
     normalize: *normalize
