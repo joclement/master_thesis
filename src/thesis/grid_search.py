@@ -27,7 +27,7 @@ FINGERPRINT_COMPARE_GRID = [
     {
         "classifier": [KNeighborsClassifier()],
         "classifier__weights": ["uniform", "distance"],
-        "classifier__n_neighbors": [1, 5],
+        "classifier__n_neighbors": [1, 5, 10, 30],
     },
     {
         "classifier": [RandomForestClassifier()],
