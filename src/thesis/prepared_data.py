@@ -96,13 +96,11 @@ class oned(BaseEstimator, TransformerMixin):
     def transform(self, measurements: List[pd.DataFrame], y=None, **kwargs):
         measurements = keep_needed_columns(measurements)
 
-        # FIXME workaround due to _split_by_durations bug
         equal_lenghted_dfs = []
         for df in measurements:
             duration = df[data.TIME_DIFF].sum()
-            if duration > self._fix_duration:
-                df = df[df[data.TIME_DIFF].cumsum() <= self._fix_duration]
-            elif duration < self._fix_duration:
+            assert duration <= self._fix_duration
+            if duration < self._fix_duration:
                 df = df.append(
                     pd.DataFrame(
                         data={
