@@ -111,10 +111,9 @@ class oned(BaseEstimator, TransformerMixin):
                     )
                 )
             equal_lenghted_dfs.append(df)
-        measurements = equal_lenghted_dfs
 
         return to_time_series_dataset(
-            [_convert_to_time_series(df, self.frequency) for df in measurements]
+            [_convert_to_time_series(df, self.frequency) for df in equal_lenghted_dfs]
         )
 
     def _more_tags(self):
