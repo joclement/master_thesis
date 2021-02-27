@@ -1,5 +1,5 @@
 general:
-  normalize: False
+  normalize_fingerprints: False
   calc_train_score: True
   verbose: False
   n_jobs: 3
