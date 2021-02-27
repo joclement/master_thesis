@@ -71,63 +71,69 @@ def tsfresh(**config):
     return TsfreshTransformer(config["tsfresh_data"])
 
 
-def _convert_to_time_series(df: pd.DataFrame, frequency) -> pd.Series:
-    df.loc[:, "DateTimeIndex"] = pd.to_datetime(
-        df[data.TIME_DIFF].cumsum(), unit=data.TIME_UNIT
-    )
-    df = df.set_index("DateTimeIndex")
-    time_series = df[data.PD]
-    return time_series.asfreq(MAX_FREQUENCY, fill_value=0.0).resample(frequency).max()
-
-
 def keep_needed_columns(measurements: List[pd.DataFrame]):
     return [df[[data.TIME_DIFF, data.PD]] for df in measurements]
 
 
 class oned(BaseEstimator, TransformerMixin):
     def __init__(self, fix_duration: str, frequency: str, **kw_args):
-        self.fix_duration_str = fix_duration
-        self._fix_duration = to_dataTIME(pd.Timedelta(self.fix_duration_str))
-        self.frequency = frequency
+        self.set_params(**{"fix_duration": fix_duration, "frequency": frequency})
+
+    def to_time_series(self, df: pd.DataFrame) -> pd.Series:
+        duration = df[data.TIME_DIFF].sum()
+        assert duration <= self._fix_duration
+        if duration < self._fix_duration:
+            df = df.append(
+                pd.DataFrame(
+                    data={
+                        data.PD: [0.0],
+                        data.TIME_DIFF: [self._fix_duration - duration],
+                    },
+                    index=[len(df.index)],
+                )
+            )
+        df.loc[:, "DateTimeIndex"] = pd.to_datetime(
+            df[data.TIME_DIFF].cumsum(), unit=data.TIME_UNIT
+        )
+        df = df.set_index("DateTimeIndex")
+        time_series = (
+            df[data.PD]
+            .asfreq(MAX_FREQUENCY, fill_value=0.0)
+            .resample(self._frequency)
+            .max()
+        )
+        if len(time_series.index) < self._time_series_len:
+            len_diff = len(time_series.index) < self._time_series_len
+            return time_series.append(
+                pd.Series(
+                    index=[len(time_series.index) + i for i in range(len_diff)],
+                    data=[0.0] * len_diff,
+                )
+            )
+        return time_series
 
     def fit(self, measurements: List[pd.DataFrame], y=None, **kwargs):
         return self
 
     def transform(self, measurements: List[pd.DataFrame], y=None, **kwargs):
-        measurements = keep_needed_columns(measurements)
-
-        equal_lenghted_dfs = []
-        for df in measurements:
-            duration = df[data.TIME_DIFF].sum()
-            assert duration <= self._fix_duration
-            if duration < self._fix_duration:
-                df = df.append(
-                    pd.DataFrame(
-                        data={
-                            data.PD: [0.0],
-                            data.TIME_DIFF: [self._fix_duration - duration],
-                        },
-                        index=[len(df.index)],
-                    )
-                )
-            equal_lenghted_dfs.append(df)
-
         return to_time_series_dataset(
-            [_convert_to_time_series(df, self.frequency) for df in equal_lenghted_dfs]
+            [self.to_time_series(df) for df in keep_needed_columns(measurements)]
         )
 
     def _more_tags(self):
         return {"no_validation": True, "requires_fit": False}
 
     def get_params(self, deep=True):
-        return {"fix_duration": self.fix_duration_str, "frequency": self.frequency}
+        return {"fix_duration": self.fix_duration_str, "frequency": self.frequency_str}
 
     def set_params(self, **parameters):
         if "fix_duration" in parameters:
+            self.frequency_str = parameters["frequency"]
+            self._frequency = pd.tseries.frequencies.to_offset(self.frequency_str)
+        if "frequency" in parameters:
             self.fix_duration_str = parameters["fix_duration"]
             self._fix_duration = to_dataTIME(pd.Timedelta(self.fix_duration_str))
-        if "frequency" in parameters:
-            self.frequency = parameters["frequency"]
+        self._time_series_len = pd.Timedelta(self.fix_duration_str) / self._frequency
         return self
 
 

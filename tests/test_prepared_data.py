@@ -1,31 +1,6 @@
 import pandas as pd
-import pytest
 
 from thesis import data, prepared_data
-
-
-@pytest.fixture
-def simple_artificial_measurement():
-    df = pd.DataFrame(data={data.TIME_DIFF: [10.1, 13.1, 77.1], data.PD: [1, 2, 3]})
-    return df
-
-
-def test__convert_to_time_series(simple_artificial_measurement):
-    time_series = prepared_data._convert_to_time_series(
-        simple_artificial_measurement, "2ms"
-    )
-    assert len(time_series) == (100 - 10) / 2 + 1
-    assert len(time_series == 0.0) == len(time_series)
-    assert time_series[0] == 1
-    assert time_series[6] == 2
-    assert time_series[-1] == 3
-
-
-def test__convert_to_time_series_same_frequency(simple_artificial_measurement):
-    time_series = prepared_data._convert_to_time_series(
-        simple_artificial_measurement, "50us"
-    )
-    assert time_series.equals(time_series.resample("50us").max())
 
 
 def test_split_by_durations(measurement):
