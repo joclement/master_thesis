@@ -116,6 +116,17 @@ models:
       n_jobs: *n_jobs
       n_neighbors: 1
     grid:
+      classifier:
+        n_neighbors:
+          - 1
+          - 3
+          - 7
+        weights:
+          - "uniform"
+          - "distance"
+        metric:
+          - "dtw"
+          - "euclidean"
       twod:
         normalize:
           - "none"
