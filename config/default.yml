@@ -48,7 +48,6 @@ defaults:
   step_duration: &step_duration "10 seconds"
   optimizer: &optimizer "adam"
   dropout: &dropout 0.01
-  normalize: &normalize True
   n_jobs: &n_jobs 1
   batch_size: &batch_size 5
   stop_early: &stop_early False
@@ -83,7 +82,7 @@ defaults:
 
 models:
   knn_dtw-oned:
-    normalize: *normalize
+    normalize: "zscore"
     data:
       fix_duration: *min_duration
       frequency: "20ms"
@@ -109,6 +108,7 @@ models:
           - "100ms"
 
   knn_dtw-twod:
+    normalize: "none"
     data:
       max_len: 100000
       normalize: "minmax"
@@ -134,13 +134,13 @@ models:
           - "minmax"
 
   knn-finger_ott:
-    normalize: *normalize
+    normalize: "minmax"
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
 
   knn-finger_own:
-    normalize: *normalize
+    normalize: "minmax"
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
@@ -148,13 +148,13 @@ models:
       variance: True
 
   knn-finger_tugraz:
-    normalize: *normalize
+    normalize: "minmax"
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
 
   knn_dtw-seqfinger_seqown:
-    normalize: *normalize
+    normalize: "zscore"
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
@@ -163,10 +163,10 @@ models:
       step_duration: *step_duration
 
   ott_algo-finger_ott:
-    normalize: False
+    normalize: "none"
 
   mlp-finger_ott:
-    normalize: *normalize
+    normalize: "zscore"
     classifier:
       batch_size: *batch_size
       hidden_layer_sizes: !!python/tuple [5]
@@ -181,7 +181,7 @@ models:
   mlp-tsfresh:
     data:
         tsfresh_data: ./data/csv-files/prepared/dataset/train/tsfresh-features_efficient_60seconds_maxlen-100000.data
-    normalize: *normalize
+    normalize: "zscore"
     classifier:
       hidden_layer_sizes: !!python/tuple [5,3]
       dropout: 0.0
@@ -200,7 +200,7 @@ models:
 
 
   mlp-finger_all:
-    normalize: *normalize
+    normalize: "zscore"
     classifier:
       hidden_layer_sizes: !!python/tuple [15,5]
       dropout: 0.01
@@ -214,7 +214,7 @@ models:
     grid: "fingerprint_compare"
 
   mlp-finger_own:
-    normalize: *normalize
+    normalize: "zscore"
     classifier:
       hidden_layer_sizes: !!python/tuple [20]
       dropout: 0.0
@@ -227,7 +227,7 @@ models:
     grid: "fingerprint_compare"
 
   mlp-finger_tugraz:
-    normalize: *normalize
+    normalize: "zscore"
     classifier:
       batch_size: 1
       hidden_layer_sizes: !!python/tuple [20, 10]
@@ -240,12 +240,12 @@ models:
     grid: "fingerprint_compare"
 
   svm-finger_ott:
-    normalize: *normalize
+    normalize: "zscore"
     classifier:
       decision_function_shape: "ovr"
 
   svm-finger_own:
-    normalize: *normalize
+    normalize: "zscore"
     classifier:
       decision_function_shape: "ovr"
       class_weight: "balanced"
@@ -253,18 +253,18 @@ models:
       variance: True
 
   svm-finger_tugraz:
-    normalize: *normalize
+    normalize: "zscore"
     classifier:
       decision_function_shape: "ovr"
 
   svm_dtw-seqfinger_seqown:
-    normalize: *normalize
+    normalize: "zscore"
     data:
       duration: *duration
       step_duration: *step_duration
 
   rf-finger_ott:
-    normalize: *normalize
+    normalize: "none"
     classifier:
       class_weight: "balanced"
       bootstrap: True
@@ -272,7 +272,7 @@ models:
       n_jobs: *n_jobs
 
   rf-finger_own:
-    normalize: *normalize
+    normalize: "none"
     classifier:
       n_jobs: *n_jobs
       class_weight: "balanced"
@@ -282,13 +282,13 @@ models:
       variance: True
 
   rf-finger_tugraz:
-    normalize: *normalize
+    normalize: "none"
     classifier:
       n_jobs: *n_jobs
       class_weight: "balanced"
 
   rf-finger_all:
-    normalize: *normalize
+    normalize: "none"
     classifier:
       n_jobs: *n_jobs
       class_weight: "balanced"
@@ -296,7 +296,7 @@ models:
   rf-tsfresh:
     data:
         tsfresh_data: ./data/csv-files/prepared/dataset/train/tsfresh-features_efficient_60seconds_maxlen-100000.data
-    normalize: *normalize
+    normalize: "none"
     classifier:
       n_jobs: *n_jobs
     grid: "fingerprint_compare"
