@@ -1,4 +1,4 @@
-from typing import Final, Optional, Tuple
+from typing import Final, List, Tuple
 
 import keras
 from keras.callbacks import EarlyStopping
@@ -24,12 +24,13 @@ from sklearn.svm import LinearSVC, SVC
 from sklearn.tree import DecisionTreeClassifier
 from tsfresh.transformers import FeatureSelector
 from tslearn.neighbors import KNeighborsTimeSeriesClassifier
-from tslearn.preprocessing import TimeSeriesScalerMinMax
+from tslearn.preprocessing import TimeSeriesScalerMeanVariance, TimeSeriesScalerMinMax
 from tslearn.svm import TimeSeriesSVC
 
 from . import classifiers, prepared_data
 from .classifiers import MyKerasClassifier
 from .constants import K, TOP_K_ACCURACY_SCORE
+from .prepared_data import NormalizationMethod
 
 
 def is_data_finger(data_id: str):
@@ -81,28 +82,42 @@ class SeqFingerScaler(TransformerMixin, BaseEstimator):
         return self
 
 
-def _get_transformer(
-    classifier_id: str, data_id: str, **config
-) -> Optional[TransformerMixin]:
-    if data_id == "twod" or not config["normalize"]:
-        return None
-    if "seqfinger_" in data_id:
-        if classifier_id == "knn_dtw":
-            return SeqFingerScaler(MinMaxScaler)
-        elif classifier_id == "svm_dtw":
-            return SeqFingerScaler(StandardScaler)
-        else:
-            raise ValueError(f"classifier {classifier_id} not supported.")
-    if "finger_" in data_id or "tsfresh" == data_id:
-        if classifier_id in ["mlp", "svm"]:
-            return StandardScaler()
-        elif classifier_id in ["knn", "dt", "rf"]:
-            return MinMaxScaler()
-        else:
-            raise ValueError(f"classifier {classifier_id} not supported.")
-    if data_id == "oned":
+def get_oned_scaler(normalizationMethod: NormalizationMethod):
+    if normalizationMethod is NormalizationMethod.minmax:
         return TimeSeriesScalerMinMax()
-    raise ValueError(f"Data Representation '{data_id}' not supported.")
+    if normalizationMethod is NormalizationMethod.zscore:
+        return TimeSeriesScalerMeanVariance()
+
+
+def get_finger_scaler(normalizationMethod: NormalizationMethod):
+    if normalizationMethod is NormalizationMethod.minmax:
+        return MinMaxScaler()
+    if normalizationMethod is NormalizationMethod.zscore:
+        return StandardScaler()
+
+
+def get_seqfinger_scaler(normalizationMethod: NormalizationMethod):
+    if normalizationMethod is NormalizationMethod.minmax:
+        return SeqFingerScaler(MinMaxScaler)
+    if normalizationMethod is NormalizationMethod.zscore:
+        return SeqFingerScaler(StandardScaler)
+
+
+def add_scaler(
+    pipeline: List[Tuple[str, TransformerMixin]],
+    classifier_id: str,
+    data_id: str,
+    normalizationMethod: NormalizationMethod,
+) -> None:
+    if normalizationMethod is NormalizationMethod.none:
+        return
+    if "seqfinger_" in data_id:
+        scaler = get_seqfinger_scaler(normalizationMethod)
+    elif "finger_" in data_id or "tsfresh" == data_id:
+        scaler = get_finger_scaler(normalizationMethod)
+    elif data_id == "oned":
+        scaler = get_oned_scaler(normalizationMethod)
+    pipeline.append(("scaler", scaler))
 
 
 def split_model_name(model_name: str):
@@ -167,9 +182,12 @@ class ModelHandler:
                     LinearSVC(dual=False, **select_config["frommodel"])
                 )
                 pipeline.append(("selector", frommodel))
-        scaler = _get_transformer(classifier_id, data_id, **model_config)
-        if scaler:
-            pipeline.append(("scaler", scaler))
+        add_scaler(
+            pipeline,
+            classifier_id,
+            data_id,
+            NormalizationMethod(model_config["normalize"]),
+        )
 
         if "classifier" in model_config:
             classifier_config = model_config["classifier"]

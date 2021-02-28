@@ -8,7 +8,7 @@ from thesis import data, models
 def models_config():
     return {
         "knn_dtw-seqfinger_seqown": {
-            "normalize": True,
+            "normalize": "zscore",
             "data": {
                 "duration": "30 seconds",
                 "step_duration": "10 seconds",
