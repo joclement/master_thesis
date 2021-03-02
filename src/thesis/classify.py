@@ -91,6 +91,15 @@ def get_index(X):
         return [get_X_index(df) for df in X]
 
 
+def get_X_part(X, index):
+    if isinstance(X, pd.DataFrame):
+        return X.iloc[index]
+    elif isinstance(X, list):
+        return [X[idx] for idx in index]
+    else:
+        raise ValueError("Invalid X.")
+
+
 class ClassificationHandler:
     def __init__(self, config):
         pd.set_option("precision", 2)
@@ -335,31 +344,28 @@ class ClassificationHandler:
             click.echo()
             click.echo(f"cv: {idx}")
             train_index, val_index = split_indexes
-            if isinstance(X, pd.DataFrame):
-                X_train = X.iloc[train_index]
-                X_val = X.iloc[val_index]
-            elif isinstance(X, list):
-                X_train = [X[idx] for idx in train_index]
-                X_val = [X[idx] for idx in val_index]
-            else:
-                raise ValueError("Invalid X.")
-            y_train = self.y[train_index]
-            y_val = self.y[val_index]
 
             click.echo("train...")
-            self._train(pipeline, X_train, y_train)
+            self._train(pipeline, get_X_part(X, train_index), self.y[train_index])
             click.echo("Done.")
 
             if self.config["general"]["calc_train_score"]:
                 train_scores, _ = self.calc_scores(
-                    pipeline, X_train, y_train, DataPart.train
+                    pipeline,
+                    get_X_part(X, train_index),
+                    self.y[train_index],
+                    DataPart.train,
                 )
                 self.assign_and_print_scores(
                     model_name, DataPart.train, idx, train_scores
                 )
 
             val_scores, confusion_matrix = self.calc_scores(
-                pipeline, X_val, y_val, DataPart.val, model_name
+                pipeline,
+                get_X_part(X, val_index),
+                self.y[val_index],
+                DataPart.val,
+                model_name,
             )
             self.assign_and_print_scores(model_name, DataPart.val, idx, val_scores)
             if self.calc_cm and self.config["general"]["cv"] != "logo":
