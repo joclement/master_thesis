@@ -208,33 +208,28 @@ class ModelHandler:
         return Pipeline(pipeline, verbose=self.verbose)
 
 
+CLASSIFIER_MAP = {
+    "bossvs": BOSSVS,
+    "dt": DecisionTreeClassifier,
+    "rf": RandomForestClassifier,
+    "knn": KNeighborsClassifier,
+    "knn_dtw": KNeighborsTimeSeriesClassifier,
+    "pytsknn": PytsKNN,
+    "ott_algo": classifiers.LukasMeanDist,
+    "svm": SVC,
+    "svm_dtw": TimeSeriesSVC,
+    "lgbm": LGBMClassifier,
+}
+
+
 def get_classifier(
     classifier_id: str,
     defects: set,
     **classifier_config: dict,
 ) -> BaseEstimator:
-    if classifier_id == "bossvs":
-        return BOSSVS(**classifier_config)
-    if classifier_id == "dt":
-        return DecisionTreeClassifier(**classifier_config)
-    if classifier_id == "rf":
-        return RandomForestClassifier(**classifier_config)
-    if classifier_id == "knn":
-        return KNeighborsClassifier(**classifier_config)
-    if classifier_id == "knn_dtw":
-        return KNeighborsTimeSeriesClassifier(**classifier_config)
-    if classifier_id == "pytsknn":
-        return PytsKNN(**classifier_config)
     if classifier_id == "mlp":
         return get_mlp(defects, **classifier_config)
-    if classifier_id == "ott_algo":
-        return classifiers.LukasMeanDist()
-    if classifier_id == "svm":
-        return SVC(**classifier_config)
-    if classifier_id == "svm_dtw":
-        return TimeSeriesSVC()
-    if classifier_id == "lgbm":
-        return LGBMClassifier(**classifier_config)
+    return CLASSIFIER_MAP[classifier_id](**classifier_config)
 
 
 def build_mlp(
