@@ -3,9 +3,12 @@ import math
 from typing import List
 import warnings
 
+import numpy as np
 import pandas as pd
+from pyts.transformation import BOSS
 from scipy.stats import zscore
 from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer
 from tslearn.utils import to_time_series_dataset
 
@@ -147,6 +150,24 @@ class oned(BaseEstimator, TransformerMixin):
 
 def oned_func(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     return oned(config["fix_duration"], config["frequency"]).transform(measurements)
+
+
+class Reshaper(BaseEstimator, TransformerMixin):
+    def fit(self, X, y=None, **kwargs):
+        return self
+
+    def transform(self, X, y=None, **kwargs):
+        return np.reshape(X, (X.shape[0], -1))
+
+
+def oned_boss(**config):
+    return Pipeline(
+        [
+            ("oned", oned(**config["oned"])),
+            ("reshaper", Reshaper()),
+            ("boss", BOSS(**config["boss"])),
+        ]
+    )
 
 
 class twod(BaseEstimator, TransformerMixin):

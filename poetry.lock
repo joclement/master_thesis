@@ -822,6 +822,25 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
 six = ">=1.5"
 
 [[package]]
+name = "pyts"
+version = "0.11.0"
+description = "A python package for time series classification"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+joblib = ">=0.12"
+numba = ">=0.48.0"
+numpy = ">=1.17.5"
+scikit-learn = ">=0.22.1"
+scipy = ">=1.3.0"
+
+[package.extras]
+docs = ["sphinx (==1.8.5)", "sphinx-gallery", "numpydoc", "matplotlib"]
+tests = ["pytest", "pytest-cov"]
+
+[[package]]
 name = "pytz"
 version = "2021.1"
 description = "World timezone definitions, modern and historical"
@@ -1195,7 +1214,7 @@ heapdict = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "26c3332be4d68046eb7a81de5ba7b250d51113d07047582d4f3accd50b30f895"
+content-hash = "c949c12b276a8b1931ac00cd19d730d814fc58679b805b832ca4e08b670916f1"
 
 [metadata.files]
 absl-py = [
@@ -1891,6 +1910,10 @@ pytest-xdist = [
 python-dateutil = [
     {file = "python-dateutil-2.8.1.tar.gz", hash = "sha256:73ebfe9dbf22e832286dafa60473e4cd239f8592f699aa5adaf10050e6e1823c"},
     {file = "python_dateutil-2.8.1-py2.py3-none-any.whl", hash = "sha256:75bb3f31ea686f1197762692a9ee6a7550b59fc6ca3a1f4b5d7e32fb98e2da2a"},
+]
+pyts = [
+    {file = "pyts-0.11.0-py3-none-any.whl", hash = "sha256:f280e2fc7aed90d9b79093a8b2e79d10ba3caa73a80204bef9cbe5094ffb0767"},
+    {file = "pyts-0.11.0.tar.gz", hash = "sha256:4b9cc6266f3673c88b339047544dbf3412522e95bbe7e68d026300609149f3a7"},
 ]
 pytz = [
     {file = "pytz-2021.1-py2.py3-none-any.whl", hash = "sha256:eb10ce3e7736052ed3623d49975ce333bcd712c7bb19a58b9e2089d4057d0798"},
