@@ -2,6 +2,7 @@ from enum import Enum, IntEnum
 from pathlib import Path
 from typing import Final, List, Tuple, Union
 
+import numpy as np
 import pandas as pd
 
 
@@ -135,7 +136,12 @@ def read(
     treat_neg_values: TreatNegValues = TreatNegValues.nothing,
     labeled_file: bool = True,
 ) -> pd.DataFrame:
-    experiment = pd.read_csv(filepath, sep=SEPERATOR, decimal=DECIMAL_SIGN)
+    experiment = pd.read_csv(
+        filepath,
+        sep=SEPERATOR,
+        decimal=DECIMAL_SIGN,
+        dtype={TIME_IN_FILE: np.float64, PD: np.float32},
+    )
     _do_sanity_test(experiment, filepath)
 
     experiment.drop(TEST_VOLTAGE, axis=1, inplace=True, errors="ignore")
