@@ -53,6 +53,13 @@ def test_classify_ClassificationHandler_with_saving(
     )
 
 
+def test_classify_ClassificationHandler_step_duration(classify_config):
+    classify_config["models-to-run"].remove("mlp-tsfresh")
+    classify_config["general"]["step_duration"] = "20 seconds"
+    handler = classify.ClassificationHandler(classify_config)
+    handler.run()
+
+
 def test_classify_ClassificationHandler_no_defects(config):
     config["defects"] = list()
 

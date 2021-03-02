@@ -1,6 +1,6 @@
 from enum import Enum
 import math
-from typing import List
+from typing import List, Optional
 import warnings
 
 import numpy as np
@@ -236,20 +236,43 @@ def _split_by_duration(
 
 
 def split_by_durations(
-    measurements: List[pd.DataFrame], max_duration: pd.Timedelta, drop_empty=False
+    measurements: List[pd.DataFrame],
+    max_duration: pd.Timedelta,
+    step_duration: Optional[pd.Timedelta] = None,
+    drop_empty=False,
 ) -> List[pd.DataFrame]:
+    if step_duration is not None:
+        if max_duration % step_duration != pd.Timedelta(0):
+            raise ValueError(
+                f"max_duration '{max_duration}' and "
+                f"step_duration '{step_duration}' don't fit"
+            )
+        length = int(max_duration / step_duration)
+        duration = step_duration
+    else:
+        duration = max_duration
     splitted_measurements = []
     for df in measurements:
         splitted_measurements.extend(
-            _split_by_duration(df, max_duration, True, drop_empty=drop_empty)
+            _split_by_duration(df, duration, True, drop_empty=drop_empty)
         )
-    return splitted_measurements
+    if step_duration is None:
+        return splitted_measurements
+    stepped_measurements = []
+    for idx in range(0, len(splitted_measurements) - length + 1):
+        df = pd.concat(splitted_measurements[idx : idx + length])
+        df = df.reset_index(drop=True)
+        df.attrs = splitted_measurements[idx].attrs
+        df.attrs[PART] = idx
+        stepped_measurements.append(df)
+    return stepped_measurements
 
 
 def adapt_durations(
     measurements: List[pd.DataFrame],
     min_duration: str = "60 seconds",
     max_duration: str = "60 seconds",
+    step_duration: Optional[str] = None,
     split: bool = True,
     drop_empty: bool = True,
 ):
@@ -262,7 +285,10 @@ def adapt_durations(
     if not split:
         return long_enough_measurements
     return split_by_durations(
-        long_enough_measurements, pd.Timedelta(max_duration), drop_empty
+        long_enough_measurements,
+        pd.Timedelta(max_duration),
+        step_duration=pd.Timedelta(step_duration) if step_duration else None,
+        drop_empty=drop_empty,
     )
 
 
