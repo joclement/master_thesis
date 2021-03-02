@@ -85,7 +85,7 @@ models:
     normalize: "zscore"
     data:
       fix_duration: *min_duration
-      frequency: "20ms"
+      frequency: "50ms"
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
@@ -101,11 +101,6 @@ models:
         metric:
           - "dtw"
           - "euclidean"
-      oned:
-        frequency:
-          - "30ms"
-          - "50ms"
-          - "100ms"
 
   knn_dtw-twod:
     normalize: "none"
