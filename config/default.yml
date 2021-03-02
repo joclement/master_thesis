@@ -178,6 +178,17 @@ models:
           - "zscore"
           - "minmax"
 
+  bossvs-oned:
+    normalize: "none"
+    reshaper: True
+    data:
+      fix_duration: *min_duration
+      frequency: "4ms"
+    classifier:
+      anova: True
+      strategy: "entropy"
+
+
   knn-oned_boss:
     normalize: "none"
     data:

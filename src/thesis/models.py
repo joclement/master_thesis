@@ -8,6 +8,7 @@ from keras.models import Sequential
 from keras.wrappers.scikit_learn import KerasClassifier
 from lightgbm import LGBMClassifier
 import numpy as np
+from pyts.classification import BOSSVS
 from pyts.classification import KNeighborsClassifier as PytsKNN
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.ensemble import RandomForestClassifier
@@ -212,6 +213,8 @@ def get_classifier(
     defects: set,
     **classifier_config: dict,
 ) -> BaseEstimator:
+    if classifier_id == "bossvs":
+        return BOSSVS(**classifier_config)
     if classifier_id == "dt":
         return DecisionTreeClassifier(**classifier_config)
     if classifier_id == "rf":
