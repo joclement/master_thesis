@@ -181,3 +181,6 @@ def main(path, recursive, expensive):
         _info_on_unique_filenames(csv_filepaths)
         measurements = [m.drop(columns=data.TIME_DIFF) for m in measurements]
         _check_similar_filenames_for_content(measurements, csv_filepaths)
+
+        click.echo(f"Min len: {min([len(df.index) for df in measurements])}")
+        click.echo(f"Max len: {max([len(df.index) for df in measurements])}")
