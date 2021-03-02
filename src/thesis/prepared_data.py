@@ -114,8 +114,8 @@ class oned(BaseEstimator, TransformerMixin):
             .max()
         )
         if len(time_series.index) < self._time_series_len:
-            len_diff = len(time_series.index) < self._time_series_len
-            return time_series.append(
+            len_diff = self._time_series_len - len(time_series.index)
+            time_series = time_series.append(
                 pd.Series(
                     index=[len(time_series.index) + i for i in range(len_diff)],
                     data=[0.0] * len_diff,
@@ -144,7 +144,9 @@ class oned(BaseEstimator, TransformerMixin):
         if "frequency" in parameters:
             self.frequency_str = parameters["frequency"]
             self._frequency = pd.tseries.frequencies.to_offset(self.frequency_str)
-        self._time_series_len = pd.Timedelta(self.fix_duration_str) / self._frequency
+        self._time_series_len = int(
+            pd.Timedelta(self.fix_duration_str) / self._frequency
+        )
         return self
 
 
