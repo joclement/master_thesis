@@ -167,7 +167,7 @@ class ClassificationHandler:
         all_score_names = sorted(
             [combine(p, m) for p in dataParts for m in metric_names]
         )
-        if self.config["general"]["cv"] == "logo":
+        if self.config["general"]["cv"] in ["group", "logo"]:
             all_score_names.append(combine(DataPart.val, FILE_SCORE))
         iterables = [all_score_names, list(range(len(self.cv_splits)))]
         score_columns = pd.MultiIndex.from_product(iterables, names=["metric", "index"])
