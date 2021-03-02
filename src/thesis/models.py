@@ -8,6 +8,7 @@ from keras.models import Sequential
 from keras.wrappers.scikit_learn import KerasClassifier
 from lightgbm import LGBMClassifier
 import numpy as np
+from pyts.classification import KNeighborsClassifier as PytsKNN
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import (
@@ -30,7 +31,7 @@ from tslearn.svm import TimeSeriesSVC
 from . import classifiers, prepared_data
 from .classifiers import MyKerasClassifier
 from .constants import K, TOP_K_ACCURACY_SCORE
-from .prepared_data import NormalizationMethod
+from .prepared_data import NormalizationMethod, Reshaper
 
 
 def is_data_finger(data_id: str):
@@ -189,6 +190,9 @@ class ModelHandler:
             NormalizationMethod(model_config["normalize"]),
         )
 
+        if "reshaper" in model_config and model_config["reshaper"] is True:
+            pipeline.append(("reshaper", Reshaper()))
+
         if "classifier" in model_config:
             classifier_config = model_config["classifier"]
         else:
@@ -216,6 +220,8 @@ def get_classifier(
         return KNeighborsClassifier(**classifier_config)
     if classifier_id == "knn_dtw":
         return KNeighborsTimeSeriesClassifier(**classifier_config)
+    if classifier_id == "pytsknn":
+        return PytsKNN(**classifier_config)
     if classifier_id == "mlp":
         return get_mlp(defects, **classifier_config)
     if classifier_id == "ott_algo":

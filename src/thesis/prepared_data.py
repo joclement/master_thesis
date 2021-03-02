@@ -121,6 +121,8 @@ class oned(BaseEstimator, TransformerMixin):
                     data=[0.0] * len_diff,
                 )
             )
+        elif len(time_series.index) > self._time_series_len:
+            time_series = time_series.iloc[:-1]
         return time_series
 
     def fit(self, measurements: List[pd.DataFrame], y=None, **kwargs):
@@ -166,7 +168,7 @@ def oned_boss(**config):
     return Pipeline(
         [
             ("oned", oned(**config["oned"])),
-            ("reshaper", Reshaper()),
+            (("reshaper", Reshaper())),
             ("boss", BOSS(**config["boss"])),
         ]
     )
