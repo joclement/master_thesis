@@ -194,10 +194,14 @@ models:
     data:
       oned:
         fix_duration: *min_duration
-        frequency: "500ms"
+        frequency: "2ms"
       boss:
-        strategy: "entropy"
-
+        strategy: "normal"
+        anova: True
+        window_size: 0.2
+        window_step: 0.05
+        numerosity_reduction: False
+        sparse: False
 
   knn-finger_ott:
     normalize: "minmax"
