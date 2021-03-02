@@ -108,10 +108,6 @@ PD_BY_TD_WEIB_A = f"{PD_ID} / {TD_ID} Weibull A"
 PD_BY_TD_WEIB_B = f"{PD_ID} / {TD_ID} Weibull B"
 
 
-def keep_needed_columns(measurements: List[pd.DataFrame]):
-    return [df[[TIME_DIFF, PD_DIFF, PD]] for df in measurements]
-
-
 def get_parameter_group(df: pd.DataFrame, group: Group) -> pd.DataFrame:
     wanted_columns = [column for column in df.columns if group.value in column]
     return df[wanted_columns].copy()
