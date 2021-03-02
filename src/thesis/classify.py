@@ -336,7 +336,7 @@ class ClassificationHandler:
         ] = scores.values
 
     def _cross_validate(
-        self, model_name, model_folder, pipeline, X: List[pd.DataFrame]
+        self, model_name: str, model_folder: Path, pipeline: Pipeline, X
     ):
         self._all_val_correct: List[data.Defect] = []
         self._all_val_predictions: List[data.Defect] = []
