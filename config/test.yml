@@ -6,7 +6,7 @@ general:
   cv: 2
   data_dir: ./data/csv-files/testdata_small
   calc_cm: False
-  output_dir: ./output/tmp
+  output_dir: ./output/test_tmp
   overwrite_output_dir: True
   save_models: False
   show_plots: False
