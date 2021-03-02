@@ -171,10 +171,8 @@ def read(
 def read_recursive(
     dir_path, treat_neg_values: TreatNegValues = TreatNegValues.nothing
 ) -> Tuple[List[pd.DataFrame], list]:
-    measurements = []
     csv_filepaths = list(Path(dir_path).rglob("*.csv"))
-    for csv_filepath in csv_filepaths:
-        measurements.append(read(csv_filepath, treat_neg_values))
+    measurements = [read(f, treat_neg_values) for f in csv_filepaths]
 
     return measurements, csv_filepaths
 
