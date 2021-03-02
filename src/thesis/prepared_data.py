@@ -320,7 +320,6 @@ def seqfinger_seqown_func(measurements: List[pd.DataFrame], **config) -> pd.Data
     duration = pd.Timedelta(config["duration"])
     step_duration = pd.Timedelta(config["step_duration"])
 
-    measurements = fingerprint.keep_needed_columns(measurements)
     X = to_time_series_dataset(
         [
             _build_fingerprint_sequence(df, fingerprint.seqown, duration, step_duration)
