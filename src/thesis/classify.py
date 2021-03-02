@@ -231,10 +231,10 @@ class ClassificationHandler:
         if isinstance(cv, int):
             cross_validator = StratifiedKFold(n_splits=cv, shuffle=True)
             groups = None
-        elif self.config["general"]["cv"] == "group":
+        elif cv == "group":
             cross_validator = LeaveOneGroupOut()
             groups = self.group_by_file_and_class()
-        elif self.config["general"]["cv"] == "logo":
+        elif cv == "logo":
             cross_validator = LeaveOneGroupOut()
             groups = group_by_file(self.measurements)
         else:
