@@ -31,6 +31,7 @@ models-to-run:
   - knn_dtw-oned
   - knn_dtw-twod
   - knn_dtw-seqfinger_seqown
+  - knn-oned_boss
   - knn-finger_ott
   - knn-finger_own
   - mlp-finger_all
@@ -101,6 +102,15 @@ models:
           - "none"
           - "zscore"
           - "minmax"
+
+  knn-oned_boss:
+    normalize: "none"
+    data:
+      oned:
+        fix_duration: *min_duration
+        frequency: "500ms"
+      boss:
+        strategy: "entropy"
 
   knn-finger_ott:
     normalize: "minmax"
