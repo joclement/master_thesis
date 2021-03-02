@@ -139,7 +139,7 @@ class ClassificationHandler:
         self.y: Final = pd.Series(
             data=data.get_defects(self.measurements),
             index=get_index(self.measurements),
-            dtype=int,
+            dtype=np.int8,
         )
         self.defects: Final = sorted(set(self.y))
         self.defect_names: Final = [
