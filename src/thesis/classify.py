@@ -11,6 +11,7 @@ import click
 from keras.wrappers.scikit_learn import KerasClassifier
 import numpy as np
 import pandas as pd
+from pyts.classification import BOSSVS
 from sklearn import metrics
 from sklearn.base import BaseEstimator
 from sklearn.metrics import (
@@ -303,7 +304,7 @@ class ClassificationHandler:
         dataPart: DataPart,
         model_name: Optional[str] = None,
     ) -> Tuple[pd.Series, np.ndarray]:
-        if isinstance(get_classifier(pipeline), (SVC, TimeSeriesSVC)):
+        if isinstance(get_classifier(pipeline), (SVC, TimeSeriesSVC, BOSSVS)):
             predictions = pipeline.predict(X)
             scores = self._calc_scores(y_true, predictions)
         else:
