@@ -30,6 +30,7 @@ defects:
 models-to-run:
   - dt-finger_tugraz
   - dt-finger_own
+  - bossvs-oned
   - knn_dtw-oned
   - knn_dtw-twod
   - knn_dtw-seqfinger_seqown
@@ -74,6 +75,16 @@ defaults:
       - 10
 
 models:
+  bossvs-oned:
+    normalize: "none"
+    reshaper: True
+    data:
+      fix_duration: *min_duration
+      frequency: "500ms"
+    classifier:
+      anova: True
+      strategy: "entropy"
+
   knn-oned:
     normalize: "minmax"
     reshaper: True
