@@ -25,10 +25,6 @@ def test_data_read(csv_filepath):
     assert data.PD_DIFF in df
     assert len(df.columns) == 3
 
-    assert df[data.TIME_DIFF].dtype == "float64"
-    assert df[data.PD].dtype == "float32"
-    assert df[data.PD_DIFF].dtype == "float32"
-
 
 def test_data_read_wrong_filename(csv_filepath, tmpdir):
     wrong_file = Path(tmpdir, "wrong_filename.csv")
