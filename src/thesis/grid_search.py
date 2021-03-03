@@ -9,6 +9,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import make_scorer
 from sklearn.model_selection import GridSearchCV
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.svm import SVC
 import yaml
 
@@ -19,28 +20,33 @@ from .metrics import file_scores
 
 FINGERPRINT_COMPARE_GRID = [
     {
+        "scaler": [StandardScaler()],
         "classifier__batch_size": [1, 10],
         "classifier__dropout": [0.0, 0.05, 0.2],
         "classifier__hidden_layer_sizes": [(5,), (20,), (5, 3), (20, 10)],
         "classifier__epochs": [50, 100, 150],
     },
     {
+        "scaler": [MinMaxScaler()],
         "classifier": [KNeighborsClassifier()],
         "classifier__weights": ["uniform", "distance"],
         "classifier__n_neighbors": [1, 5, 10, 30],
     },
     {
+        "scaler": ["passthrough"],
         "classifier": [RandomForestClassifier()],
         "classifier__min_samples_leaf": [1, 2, 4, 8],
         "classifier__bootstrap": [True, False],
         "classifier__class_weight": ["balanced"],
     },
     {
+        "scaler": [StandardScaler(), MinMaxScaler()],
         "classifier": [SVC()],
         "classifier__decision_function_shape": ["ovr", "ovo"],
         "classifier__class_weight": ["balanced"],
     },
     {
+        "scaler": ["passthrough"],
         "classifier": [LGBMClassifier()],
     },
 ]
