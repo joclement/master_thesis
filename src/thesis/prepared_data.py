@@ -46,10 +46,20 @@ class MeasurementNormalizer(TransformerMixin, BaseEstimator):
 
 class TsfreshTransformer(TransformerMixin, BaseEstimator):
     def __init__(self, tsfresh_data_path, **kw_args):
+        self.set_tsfresh_data(tsfresh_data_path)
+
+    def _get_feature_name(self, _):
+        self._i += 1
+        return self._i
+
+    def set_tsfresh_data(self, tsfresh_data_path):
+        self._i = 0
         self.tsfresh_data_path = tsfresh_data_path
         self._tsfresh_data = pd.read_csv(
-            tsfresh_data_path, header=0, index_col=[PATH, PART]
+            self.tsfresh_data_path, header=0, index_col=[PATH, PART]
         )
+        self._tsfresh_data = self._tsfresh_data.rename(columns=self._get_feature_name)
+        del self._i
 
     def fit(self, measurements: List[pd.DataFrame], y=None, **kwargs):
         self.n_features_in_ = len(self._tsfresh_data.columns)
@@ -72,10 +82,7 @@ class TsfreshTransformer(TransformerMixin, BaseEstimator):
 
     def set_params(self, **parameters):
         if "tsfresh_data_path" in parameters:
-            self.tsfresh_data_path = parameters["tsfresh_data_path"]
-            self._tsfresh_data = pd.read_csv(
-                self.tsfresh_data_path, header=0, index_col=[PATH, PART]
-            )
+            self.set_tsfresh_data(parameters["tsfresh_data_path"])
         return self
 
 
