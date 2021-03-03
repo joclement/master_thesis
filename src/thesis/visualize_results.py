@@ -103,6 +103,7 @@ def plot_predictions(
     ax.set_yticks(y_pos)
     ax.set_yticklabels(models)
     ax.set_xlabel("Balanced accuracy")
+    ax.set_xlim([0, 1])
     ax.set_title(description)
     util.finish_plot(f"{description}-balanced-accuracy", output_dir, show)
 
@@ -162,6 +163,7 @@ def plot_scores(
         ax.set_yticks(y_pos)
         ax.set_yticklabels(scores.index)
         ax.set_xlabel(metric)
+        ax.set_xlim([0, 1])
         ax.set_title(description)
         util.finish_plot(metric, output_dir, show)
 
