@@ -17,10 +17,11 @@ from . import __version__, util
 from .constants import (
     CONFIG_FILENAME,
     CONFIG_MODELS_RUN_ID,
+    PART,
     PREDICTIONS_FILENAME,
     SCORES_FILENAME,
 )
-from .data import Defect, DEFECT_NAMES, get_defect
+from .data import Defect, DEFECT_NAMES, get_defect, PATH
 
 
 def make_pandas_plot(scores: pd.DataFrame, config: dict, description: str):
@@ -193,9 +194,14 @@ def main(result_dir, config_file, show):
     scores = scores.loc[scores.index.isin(models), :]
     plot_scores(scores, classify_config, show=show)
 
-    predictions = pd.read_csv(
-        Path(result_dir, PREDICTIONS_FILENAME), header=0, index_col=[0, 1]
-    )
+    if classify_config["general"]["split"]:
+        predictions = pd.read_csv(
+            Path(result_dir, PREDICTIONS_FILENAME), header=0, index_col=[PATH, PART]
+        )
+    else:
+        predictions = pd.read_csv(
+            Path(result_dir, PREDICTIONS_FILENAME), header=0, index_col=0
+        )
     predictions = predictions.loc[:, models]
     plot_predictions(predictions, show=show)
     plot_predictions(
