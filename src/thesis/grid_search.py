@@ -48,6 +48,10 @@ FINGERPRINT_COMPARE_GRID = [
     {
         "scaler": ["passthrough"],
         "classifier": [LGBMClassifier()],
+        "classifier__feature_fraction": [1.0, 0.8],
+        "classifier__min_split_gain": [0.0, 0.01, 0.1],
+        "classifier__max_depth": [10, 50],
+        "classifier__num_leaves": [10, 30],
     },
 ]
 
