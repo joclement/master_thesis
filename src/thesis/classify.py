@@ -183,7 +183,9 @@ class ClassificationHandler:
         iterables = [all_score_names, list(range(len(self.cv_splits)))]
         score_columns = pd.MultiIndex.from_product(iterables, names=["metric", "index"])
         self.scores = pd.DataFrame(
-            index=self.config[CONFIG_MODELS_RUN_ID], columns=score_columns, dtype=float
+            index=self.config[CONFIG_MODELS_RUN_ID],
+            columns=score_columns,
+            dtype=np.float16,
         )
 
         predictions_index = get_index(self.measurements)
@@ -197,7 +199,7 @@ class ClassificationHandler:
             data=-1,
             columns=self.config[CONFIG_MODELS_RUN_ID],
             index=predictions_index,
-            dtype=np.int64,
+            dtype=np.int8,
         )
 
     def get_measurements(self) -> List[pd.DataFrame]:
