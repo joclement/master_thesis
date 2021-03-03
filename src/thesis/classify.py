@@ -185,12 +185,18 @@ class ClassificationHandler:
         self.scores = pd.DataFrame(
             index=self.config[CONFIG_MODELS_RUN_ID], columns=score_columns, dtype=float
         )
+
+        predictions_index = get_index(self.measurements)
+        if isinstance(predictions_index[0], tuple):
+            predictions_index = pd.MultiIndex.from_tuples(
+                predictions_index, name=[data.PATH, PART]
+            )
+        else:
+            predictions_index = pd.Index(data=predictions_index, name=data.PATH)
         self.predictions = pd.DataFrame(
             data=-1,
-            index=pd.MultiIndex.from_tuples(
-                get_index(self.measurements), names=[data.PATH, PART]
-            ),
             columns=self.config[CONFIG_MODELS_RUN_ID],
+            index=predictions_index,
             dtype=np.int64,
         )
 
