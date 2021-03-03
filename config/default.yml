@@ -105,7 +105,7 @@ models:
           - "distance"
         metric:
           - "euclidean"
-          - "manhatten"
+          - "manhattan"
 
   knn_dtw-oned:
     normalize: "minmax"
