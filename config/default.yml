@@ -157,7 +157,7 @@ models:
   knn_dtw-twod:
     normalize: "none"
     data:
-      max_len: 100000
+      max_len: 1200
       normalize: "minmax"
     classifier:
       n_jobs: *n_jobs
