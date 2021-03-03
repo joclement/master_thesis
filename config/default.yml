@@ -203,6 +203,33 @@ models:
         numerosity_reduction: False
         sparse: False
 
+  knn-oned_weasel:
+    normalize: "none"
+    data:
+      oned:
+        fix_duration: *min_duration
+        frequency: "200us"
+      boss:
+        strategy: "entropy"
+        numerosity_reduction: False
+        sparse: False
+
+  rf-weaselmuse:
+    normalize: "none"
+    data:
+      twod:
+        normalize: "none"
+        max_len: 246
+      weaselmuse:
+        strategy: "quantile"
+    classifier:
+      class_weight: "balanced"
+      bootstrap: True
+      min_samples_leaf: 1
+      n_jobs: *n_jobs
+
+
+
   knn-finger_ott:
     normalize: "minmax"
     classifier:

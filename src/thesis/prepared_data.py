@@ -5,7 +5,8 @@ import warnings
 
 import numpy as np
 import pandas as pd
-from pyts.transformation import BOSS
+from pyts.multivariate.transformation import WEASELMUSE
+from pyts.transformation import BOSS, WEASEL
 from scipy.stats import zscore
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
@@ -164,6 +165,16 @@ class Reshaper(BaseEstimator, TransformerMixin):
         return np.reshape(X, (X.shape[0], -1))
 
 
+def oned_weasel(**config):
+    return Pipeline(
+        [
+            ("oned", oned(**config["oned"])),
+            (("reshaper", Reshaper())),
+            ("weasel", WEASEL(**config["weasel"])),
+        ]
+    )
+
+
 def oned_boss(**config):
     return Pipeline(
         [
@@ -201,6 +212,24 @@ class twod(BaseEstimator, TransformerMixin):
             self.normalize_str = parameters["normalize"]
             self._normalize = NormalizationMethod(self.normalize_str)
         return self
+
+
+class AxisSwapper(BaseEstimator, TransformerMixin):
+    def fit(self, X, y=None, **kwargs):
+        return self
+
+    def transform(self, X, y=None, **kwargs):
+        return np.swapaxes(X, 1, 2)
+
+
+def weaselmuse(**config):
+    return Pipeline(
+        [
+            ("twod", twod(**config["twod"])),
+            ("axisswapper", AxisSwapper()),
+            ("weaselmuse", WEASELMUSE(**config["weaselmuse"])),
+        ]
+    )
 
 
 def _split_by_duration(
