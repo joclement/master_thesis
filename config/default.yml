@@ -28,6 +28,7 @@ defects:
   - cavity
 
 models-to-run:
+  - lgbm-finger_own
   - knn-finger_ott
   - knn-finger_own
   - knn-finger_tugraz
@@ -340,6 +341,23 @@ models:
       patience: *patience
       verbose: *verbose
     grid: "fingerprint_compare"
+
+  lgbm-finger_own:
+    normalize: "none"
+    classifier:
+      min_split_gain: 0.01
+      feature_fraction: 0.9
+      min_child_samples: 30
+      max_depth: 23
+      num_leaves: 20
+      n_jobs: *n_jobs
+
+  lgbm-tsfresh:
+    data:
+        tsfresh_data: ./data/csv-files/prepared/dataset/train/tsfresh-features_efficient_60seconds_maxlen-100000.data
+    normalize: "none"
+    classifier:
+      n_jobs: *n_jobs
 
   svm-finger_ott:
     normalize: "zscore"
