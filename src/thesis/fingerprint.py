@@ -79,6 +79,7 @@ CORR_NEXT_PD_TO_PD = f"{CORR_ID} Next PD - PD"
 CORR_2ND_NEXT_PD_TO_PD = f"{CORR_ID} 2nd Next PD - PD"
 CORR_PD_DIFF_TO_PD = f"{CORR_ID} {PD_DIFF_ID} - PD"
 CORR_PD_DIFF_TO_TD = f"{CORR_ID} PD - {PD_DIFF_ID}"
+CORR_PD_TO_TD = f"{CORR_ID} PD - {TD_ID}"
 
 # @note: parameter in own fingerprint
 POLARITY = "+DC/-DC"
@@ -91,6 +92,7 @@ SIZE = f"{PD_ID} Num"
 PD_NUM_PEAKS_50 = f"{PD_ID} num peaks 50"
 PD_NUM_PEAKS_10 = f"{PD_ID} num peaks 10"
 PD_NUM_PEAKS_5 = f"{PD_ID} num peaks 5"
+PD_NUM_PEAKS_500 = f"{PD_ID} num peaks 500"
 PD_RATIO = f"{PD_ID} ratio"
 PD_PERC_REOCCUR = f"{PD_ID} percentage reocurring"
 PD_COUNT_ABOVE_MEAN = f"{PD_ID} count above mean"
@@ -131,7 +133,7 @@ def extract_features(df: pd.DataFrame):
         CORR_NEXT_PD_TO_PD: stats.pearsonr(df[PD][:-1], next_pd)[0],
         CORR_2ND_NEXT_PD_TO_PD: stats.pearsonr(df[PD][:-2], next2_pd)[0],
         CORR_PD_DIFF_TO_PD: stats.pearsonr(df[PD], df[PD_DIFF])[0],
-        CORR_PD_DIFF_TO_TD: stats.pearsonr(df[PD_DIFF], df[TIME_DIFF])[0],
+        CORR_PD_TO_TD: stats.pearsonr(df[PD], df[TIME_DIFF])[0],
         PDS_PER_SEC: len(df[TIME_DIFF]) / (df[TIME_DIFF].sum() / 1000),
         PD_CHANGE_QUANTILES: change_quantiles(df[PD], 0.0, 0.7, True, "mean"),
         PD_COUNT_ABOVE_MEAN: count_above_mean(df[PD]),
@@ -149,6 +151,7 @@ def extract_features(df: pd.DataFrame):
         PD_NUM_PEAKS_10: number_peaks(df[PD], 10),
         PD_NUM_PEAKS_5: number_peaks(df[PD], 5),
         PD_NUM_PEAKS_50: number_peaks(df[PD], 50),
+        PD_NUM_PEAKS_500: number_peaks(df[PD], 500),
         PD_PERC_REOCCUR: percentage_of_reoccurring_datapoints_to_all_datapoints(df[PD]),
         PD_RATIO: ratio_value_number_to_time_series_length(df[PD]),
         PD_SKEW: df[PD].skew(),
