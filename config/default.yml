@@ -167,12 +167,16 @@ models:
           - 1
           - 3
           - 7
+          - 15
         weights:
           - "uniform"
           - "distance"
         metric:
           - "dtw"
           - "euclidean"
+          - "sqeuclidean"
+          - "cityblock"
+          - "ctw"
       twod:
         normalize:
           - "none"
