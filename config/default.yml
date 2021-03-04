@@ -28,6 +28,7 @@ defects:
   - cavity
 
 models-to-run:
+  - lgbm-finger_ott
   - lgbm-finger_own
   - lgbm-finger_tugraz
   - knn-finger_ott
@@ -343,6 +344,16 @@ models:
       verbose: *verbose
     grid: "fingerprint_compare"
 
+  lgbm-finger_ott:
+    normalize: "none"
+    classifier:
+      min_split_gain: 0.1
+      feature_fraction: 1.0
+      min_child_samples: 30
+      max_depth: 50
+      num_leaves: 10
+      n_jobs: *n_jobs
+
   lgbm-finger_tugraz:
     normalize: "none"
     classifier:
@@ -356,11 +367,11 @@ models:
   lgbm-finger_own:
     normalize: "none"
     classifier:
-      min_split_gain: 0.01
-      feature_fraction: 0.9
+      min_split_gain: 0.0
+      feature_fraction: 0.8
       min_child_samples: 30
-      max_depth: 23
-      num_leaves: 20
+      max_depth: 50
+      num_leaves: 30
       n_jobs: *n_jobs
 
   lgbm-tsfresh:
