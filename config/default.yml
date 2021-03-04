@@ -29,6 +29,7 @@ defects:
 
 models-to-run:
   - lgbm-finger_own
+  - lgbm-finger_tugraz
   - knn-finger_ott
   - knn-finger_own
   - knn-finger_tugraz
@@ -341,6 +342,16 @@ models:
       patience: *patience
       verbose: *verbose
     grid: "fingerprint_compare"
+
+  lgbm-finger_tugraz:
+    normalize: "none"
+    classifier:
+      min_split_gain: 0.00
+      feature_fraction: 0.8
+      min_child_samples: 30
+      max_depth: 50
+      num_leaves: 30
+      n_jobs: *n_jobs
 
   lgbm-finger_own:
     normalize: "none"
