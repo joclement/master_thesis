@@ -357,7 +357,7 @@ models:
   lgbm-finger_tugraz:
     normalize: "none"
     classifier:
-      min_split_gain: 0.00
+      min_split_gain: 0.0
       feature_fraction: 0.8
       min_child_samples: 30
       max_depth: 50
