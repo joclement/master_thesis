@@ -28,10 +28,10 @@ def main(grid_file):
     ax.set_yticks(y_pos)
     ax.set_xlabel("file-based Balanced accuracy")
     ax.set_xlim([0, 1])
-    util.finish_plot(f"mean-grid-score", "./", True)
+    util.finish_plot("mean-grid-score", "./", True)
 
     sns.swarmplot(data=combine_split_scores(grid_results), x="score", y="combination")
-    util.finish_plot(f"mean-grid-score", "./", True)
+    util.finish_plot("mean-grid-score", "./", True)
 
 
 def combine_split_scores(grid_results):
