@@ -243,6 +243,7 @@ models:
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
+      weights: "uniform"
 
   knn-finger_own:
     normalize: "minmax"
