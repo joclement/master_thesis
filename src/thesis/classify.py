@@ -86,11 +86,19 @@ def group_by_file(measurements: List[pd.DataFrame]) -> List[int]:
     return groups
 
 
-def get_index(X):
+def build_index(measurements: List[pd.DataFrame]) -> pd.Index:
+    index = [get_X_index(df) for df in measurements]
+    if isinstance(index[0], tuple):
+        return pd.MultiIndex.from_tuples(index, name=[data.PATH, PART])
+    else:
+        return pd.Index(data=index, name=data.PATH)
+
+
+def get_index(X) -> pd.Index:
     if isinstance(X, pd.DataFrame):
         return X.index
     elif isinstance(X, list):
-        return [get_X_index(df) for df in X]
+        return build_index(X)
 
 
 def get_X_part(X, index):
@@ -141,7 +149,7 @@ class ClassificationHandler:
 
         self.y: Final = pd.Series(
             data=data.get_defects(self.measurements),
-            index=get_index(self.measurements),
+            index=build_index(self.measurements),
             dtype=np.int8,
         )
         self.defects: Final = sorted(set(self.y))
@@ -191,17 +199,10 @@ class ClassificationHandler:
             dtype=np.float16,
         )
 
-        predictions_index = get_index(self.measurements)
-        if isinstance(predictions_index[0], tuple):
-            predictions_index = pd.MultiIndex.from_tuples(
-                predictions_index, name=[data.PATH, PART]
-            )
-        else:
-            predictions_index = pd.Index(data=predictions_index, name=data.PATH)
         self.predictions = pd.DataFrame(
             data=-1,
             columns=self.config[CONFIG_MODELS_RUN_ID],
-            index=predictions_index,
+            index=build_index(self.measurements),
             dtype=np.int8,
         )
 
