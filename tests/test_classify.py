@@ -22,9 +22,6 @@ def test_classify_main(config, tmpdir):
     result = runner.invoke(classify.main, [str(config_filepath)])
 
     assert result.exit_code == 0
-    assert Path(config["general"]["output_dir"], "val_balanced_accuracy.svg").exists()
-    assert Path(config["general"]["output_dir"], "val_accuracy.svg").exists()
-    assert Path(config["general"]["output_dir"], "val_top_3_accuracy.svg").exists()
 
 
 def test_classify_ClassificationHandler_with_saving(
