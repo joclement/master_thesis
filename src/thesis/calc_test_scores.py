@@ -39,6 +39,9 @@ def main(
         except ValueError as e:
             warn(str(e) + f" Path: {df.attrs[data.PATH]}")
             continue
+        click.echo(
+            f"prediction: {prediction}, probas: {proba_prediction}, true: {y[i]}"
+        )
         predictions.append(prediction)
         proba_predictions.append(proba_prediction)
     print_score("Accuracy", accuracy_score(y, predictions))
