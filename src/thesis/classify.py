@@ -453,7 +453,6 @@ class ClassificationHandler:
                 (combine(DataPart.val, BALANCED_ACCURACY_SCORE), slice(None)),
             ].mean(axis=1)
         )
-        self.finished = True
 
 
 @click.command()
