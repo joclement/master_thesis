@@ -31,6 +31,7 @@ import yaml
 from . import __version__, data, util
 from .constants import (
     ACCURACY_SCORE,
+    AVG_FILE_SCORE,
     BALANCED_ACCURACY_SCORE,
     CONFIG_FILENAME,
     CONFIG_MODELS_RUN_ID,
@@ -44,7 +45,7 @@ from .constants import (
 )
 from .data import TreatNegValues
 from .fingerprint import get_X_index
-from .metrics import file_scores, top_k_accuracy_score
+from .metrics import avg_file_scores, file_scores, top_k_accuracy_score
 from .models import is_model_finger, ModelHandler
 from .prepared_data import adapt_durations, extract_features, MeasurementNormalizer
 from .visualize_results import plot_scores
@@ -180,6 +181,7 @@ class ClassificationHandler:
             [combine(p, m) for p in dataParts for m in metric_names]
         )
         if self.config["general"]["cv"] in ["group", "logo"]:
+            all_score_names.append(combine(DataPart.val, AVG_FILE_SCORE))
             all_score_names.append(combine(DataPart.val, FILE_SCORE))
         iterables = [all_score_names, list(range(len(self.cv_splits)))]
         score_columns = pd.MultiIndex.from_product(iterables, names=["metric", "index"])
@@ -323,6 +325,11 @@ class ClassificationHandler:
             scores[TOP_K_ACCURACY_SCORE] = top_k_accuracy_score(
                 y_true, proba_predictions, self.defects
             )
+            if (
+                self.config["general"]["cv"] in ["logo", "group"]
+                and dataPart is DataPart.val
+            ):
+                scores[AVG_FILE_SCORE] = avg_file_scores(y_true, proba_predictions)
         if dataPart is DataPart.val:
             self.predictions.loc[get_index(X), model_name] = predictions
         if (
