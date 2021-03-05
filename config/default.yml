@@ -31,6 +31,8 @@ models-to-run:
   - lgbm-finger_ott
   - lgbm-finger_own
   - lgbm-finger_tugraz
+  - lgbm-finger_all
+  - lgbm-tsfresh
   - knn-finger_ott
   - knn-finger_own
   - knn-finger_tugraz
@@ -380,6 +382,16 @@ models:
         tsfresh_data: ./data/csv-files/prepared/dataset/train/tsfresh-features_efficient_60seconds_maxlen-100000.data
     normalize: "none"
     classifier:
+      n_jobs: *n_jobs
+
+  lgbm-finger_all:
+    normalize: "none"
+    classifier:
+      min_split_gain: 0.1
+      feature_fraction: 1.0
+      min_child_samples: 30
+      max_depth: 50
+      num_leaves: 10
       n_jobs: *n_jobs
 
   svm-finger_ott:
