@@ -42,6 +42,7 @@ models-to-run:
   - rf-finger_tugraz
   - svm_dtw-seqfinger_seqown
   - svm-finger_all
+  - lgbm-finger_own
 
 defaults:
   duration: &duration "30 seconds"
@@ -371,3 +372,11 @@ models:
 
   rf-finger_tugraz:
     normalize: "none"
+
+  lgbm-finger_own:
+    normalize: "none"
+    classifier:
+      min_split_gain: 0.1
+      max_depth: 3
+      num_leaves: 3
+      n_jobs: *n_jobs
