@@ -5,14 +5,11 @@ from warnings import warn
 import click
 import numpy as np
 import pandas as pd
-from sklearn.metrics import (
-    accuracy_score,
-    balanced_accuracy_score,
-    top_k_accuracy_score,
-)
+from sklearn.metrics import accuracy_score, balanced_accuracy_score
 
 from . import __version__, data
 from .constants import K
+from .metrics import top_k_accuracy_score
 from .predict import PredictionHandler
 
 
