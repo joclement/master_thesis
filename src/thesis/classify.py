@@ -419,7 +419,6 @@ class ClassificationHandler:
             click.echo(
                 "\n ============================================================ \n"
             )
-        self._finish()
 
     def get_X(self, model_name: str):
         if is_model_finger(model_name):
@@ -445,14 +444,6 @@ class ClassificationHandler:
         else:
             with open(Path(model_folder, f"{MODEL_ID}-{model_name}.p"), "wb") as file:
                 pickle.dump(pipeline, file)
-
-    def _finish(self):
-        click.echo(
-            self.scores.loc[
-                :,
-                (combine(DataPart.val, BALANCED_ACCURACY_SCORE), slice(None)),
-            ].mean(axis=1)
-        )
 
 
 @click.command()
