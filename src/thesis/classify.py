@@ -48,7 +48,6 @@ from .fingerprint import get_X_index
 from .metrics import avg_file_scores, file_scores, top_k_accuracy_score
 from .models import is_model_finger, ModelHandler
 from .prepared_data import adapt_durations, extract_features, MeasurementNormalizer
-from .visualize_results import plot_scores
 
 SEED: Final = 23
 random.seed(SEED)
@@ -455,12 +454,6 @@ class ClassificationHandler:
             ].mean(axis=1)
         )
         self.finished = True
-        description = (
-            f"cv: {len(self.cv_splits)}"
-            f", n: {len(self.y)}"
-            f", n_defects: {len(self.defects)}"
-        )
-        plot_scores(self.scores, self.config, self.output_dir, description=description)
 
 
 @click.command()
