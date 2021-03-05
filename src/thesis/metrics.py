@@ -9,6 +9,21 @@ from sklearn.utils._encode import _encode, _unique
 from . import constants
 
 
+def avg_file_scores(
+    y_true: pd.Series,
+    proba_predictions: Union[pd.DataFrame, np.ndarray],
+    sample_weight=None,
+) -> float:
+    proba_predictions = pd.DataFrame(
+        proba_predictions,
+        columns=list(range(len(proba_predictions[0]))),
+        index=y_true.index,
+    )
+    trues = y_true.groupby(level=0).agg(lambda x: x.value_counts().index[0])
+    predictions = proba_predictions.groupby(level=0).sum().idxmax(axis="columns")
+    return balanced_accuracy_score(trues, predictions)
+
+
 def file_scores(
     y_true: pd.Series,
     predictions: Union[pd.Series, np.array, list],
