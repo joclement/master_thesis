@@ -1,7 +1,9 @@
 from pathlib import Path
 from typing import Final, Optional
+from warnings import warn
 
 import click
+import numpy as np
 import pandas as pd
 from sklearn.metrics import (
     accuracy_score,
@@ -24,6 +26,8 @@ def main(
     model_file: Path,
     finger_preprocessor_file: Optional[Path],
 ):
+    np.set_printoptions(precision=2)
+
     measurements, _ = data.read_recursive(test_folder, data.TreatNegValues.absolute)
     y: Final = pd.Series(data.get_defects(measurements))
 
@@ -32,8 +36,12 @@ def main(
     )
     predictions = []
     proba_predictions = []
-    for df in measurements:
-        prediction, proba_prediction = predictionHandler.predict_one(df)
+    for i, df in enumerate(measurements):
+        try:
+            prediction, proba_prediction = predictionHandler.predict_one(df)
+        except ValueError as e:
+            warn(str(e) + f" Path: {df.attrs[data.PATH]}")
+            continue
         predictions.append(prediction)
         proba_predictions.append(proba_prediction)
     print_score("Accuracy", accuracy_score(y, predictions))

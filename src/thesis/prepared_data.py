@@ -323,6 +323,8 @@ def adapt_durations(
             df for df in long_enough_measurements if len(df.index) > min_len
         ]
 
+    if len(long_enough_measurements) == 0:
+        raise ValueError("No long enough data.")
     if not split:
         return long_enough_measurements
     return split_by_durations(
