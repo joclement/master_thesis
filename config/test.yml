@@ -28,7 +28,6 @@ defects:
   - cavity
 
 models-to-run:
-  - dt-finger_tugraz
   - dt-finger_own
   - bossvs-oned
   - knn_dtw-oned
@@ -38,15 +37,11 @@ models-to-run:
   - pytsknn-oned
   - knn-oned_boss
   - knn-finger_ott
-  - knn-finger_own
-  - mlp-finger_all
-  - mlp-finger_own
-  - mlp-finger_tugraz
   - mlp-tsfresh
   - ott_algo-finger_ott
   - rf-finger_tugraz
   - svm_dtw-seqfinger_seqown
-  - svm-finger_ott
+  - svm-finger_all
 
 defaults:
   duration: &duration "30 seconds"
@@ -312,6 +307,11 @@ models:
       stop_early: *stop_early
       patience: *patience
       verbose: *verbose
+
+  svm-finger_all:
+    normalize: "zscore"
+    classifier:
+      decision_function_shape: "ovr"
 
   svm-finger_ott:
     normalize: "zscore"
