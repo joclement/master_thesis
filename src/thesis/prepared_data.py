@@ -390,7 +390,7 @@ def do_nothing(extracted_features: pd.DataFrame, **config):
     return extracted_features
 
 
-def finger_all(**config) -> TransformerMixin:
+def finger_all(**config) -> FunctionTransformer:
     return FunctionTransformer(do_nothing, kw_args=config)
 
 
