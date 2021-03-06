@@ -86,6 +86,14 @@ defaults:
       - 50
       - 100
 
+  lgbm_grid: &lgbm_grid
+    num_iterations: [10, 20, 30, 50, 80]
+    num_leaves: [5, 10, 20, 50]
+    max_depth: [5, 10, 20, 40]
+    min_child_samples: [20, 30, 50, 80]
+    min_split_gain: [0.2, 0.1, 0.01, 0.001, 0.0]
+    feature_fraction: [1.0, 0.9, 0.8]
+
 
 models:
   knn-oned:
@@ -356,6 +364,7 @@ models:
       max_depth: 50
       num_leaves: 10
       n_jobs: *n_jobs
+    grid: *lgbm_grid
 
   lgbm-finger_tugraz:
     normalize: "none"
@@ -366,6 +375,7 @@ models:
       max_depth: 50
       num_leaves: 30
       n_jobs: *n_jobs
+    grid: *lgbm_grid
 
   lgbm-finger_own:
     normalize: "none"
@@ -376,6 +386,7 @@ models:
       max_depth: 50
       num_leaves: 30
       n_jobs: *n_jobs
+    grid: *lgbm_grid
 
   lgbm-tsfresh:
     data:
@@ -383,6 +394,7 @@ models:
     normalize: "none"
     classifier:
       n_jobs: *n_jobs
+    grid: *lgbm_grid
 
   lgbm-finger_all:
     normalize: "none"
@@ -393,6 +405,7 @@ models:
       max_depth: 50
       num_leaves: 10
       n_jobs: *n_jobs
+    grid: *lgbm_grid
 
   svm-finger_ott:
     normalize: "zscore"
