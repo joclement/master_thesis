@@ -4,7 +4,7 @@ from pathlib import Path
 import pickle
 import random
 import shutil
-from typing import Final, List, Optional, Tuple, Union
+from typing import Final, Iterable, List, Optional, Tuple, Union
 import warnings
 
 import click
@@ -21,7 +21,7 @@ from sklearn.metrics import (
     balanced_accuracy_score,
 )
 from sklearn.model_selection import LeaveOneGroupOut, StratifiedKFold
-from sklearn.pipeline import Pipeline
+from sklearn.pipeline import FeatureUnion, Pipeline
 from sklearn.preprocessing import FunctionTransformer
 from sklearn.svm import SVC
 from sklearn.utils import estimator_html_repr
@@ -46,7 +46,12 @@ from .constants import (
     TOP_K_ACCURACY_SCORE,
 )
 from .data import TreatNegValues
-from .fingerprint import get_X_index
+from .fingerprint import (
+    CATEGORICAL_FEATURES,
+    get_categorical_features,
+    get_feature_names,
+    get_X_index,
+)
 from .metrics import avg_file_scores, file_scores, top_k_accuracy_score
 from .models import is_model_finger, ModelHandler
 from .prepared_data import adapt_durations, extract_features, MeasurementNormalizer
@@ -64,6 +69,18 @@ def combine(dataPart: DataPart, metric_name: str):
 
 def get_classifier(pipeline: Pipeline) -> BaseEstimator:
     return list(pipeline.named_steps.values())[-1]
+
+
+def get_data_step(pipeline: Pipeline) -> BaseEstimator:
+    return list(pipeline.named_steps.values())[0]
+
+
+def get_categorical_features_info(
+    transformer: Union[FeatureUnion, FunctionTransformer], X: pd.DataFrame
+) -> Tuple[Iterable[str], Iterable[str]]:
+    if isinstance(transformer, FeatureUnion):
+        return get_feature_names(transformer), get_categorical_features(transformer)
+    return list(X.columns), CATEGORICAL_FEATURES
 
 
 def is_keras(pipeline: Pipeline) -> bool:
@@ -304,10 +321,15 @@ class ClassificationHandler:
         elif isinstance(get_classifier(pipeline), LGBMClassifier):
             X_val = get_X_part(X, val_index)
             y_val = self.y[val_index]
+            feature_name, categorical_feature = get_categorical_features_info(
+                get_data_step(pipeline), X
+            )
             pipeline.fit(
                 X_train,
                 y_train,
                 classifier__eval_set=[(X_val, y_val), (X_train, y_train)],
+                classifier__feature_name=feature_name,
+                classifier__categorical_feature=categorical_feature,
                 classifier__verbose=False,
             )
         else:
