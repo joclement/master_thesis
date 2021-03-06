@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, Callable, List, Tuple, Union
+from typing import Any, Callable, List, Set, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -120,6 +120,13 @@ def get_parameter_group(df: pd.DataFrame, group: Group) -> pd.DataFrame:
 def calc_weibull_params(data: Union[list, pd.Series]) -> Tuple[float, float]:
     weibull_a, _, weibull_b = stats.weibull_min.fit(data, floc=0.0)
     return weibull_a, weibull_b
+
+
+CATEGORICAL_FEATURES = {POLARITY}
+
+
+def get_categorical_features(feature_union: FeatureUnion) -> Set[str]:
+    return set.intersection(CATEGORICAL_FEATURES, set(get_feature_names(feature_union)))
 
 
 @memory.cache
@@ -370,7 +377,7 @@ def get_X_index(df: pd.DataFrame) -> Union[str, Tuple[str, int]]:
         return df.attrs[PATH]
 
 
-def get_feature_names(fingerTransformer: FeatureUnion):
+def get_feature_names(fingerTransformer: FeatureUnion) -> List[str]:
     return [name for name, _ in fingerTransformer.transformer_list]
 
 
