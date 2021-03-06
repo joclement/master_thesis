@@ -101,6 +101,8 @@ def plot_predictions(
         balanced_accuracy_scores,
         align="center",
     )
+    for idx, value in enumerate(balanced_accuracy_scores):
+        ax.text(value, idx, f" {value:.3f}", va="center")
     ax.set_yticks(y_pos)
     ax.set_yticklabels(models)
     ax.set_xlabel("Balanced accuracy")
@@ -161,6 +163,8 @@ def plot_scores(
             xerr=xerr,
             align="center",
         )
+        for idx, value in enumerate(metric_scores.mean(axis=1)):
+            ax.text(value, idx, f" {value:.3f}", va="center")
         ax.set_yticks(y_pos)
         ax.set_yticklabels(scores.index)
         ax.set_xlabel(metric)
