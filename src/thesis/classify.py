@@ -4,11 +4,13 @@ from pathlib import Path
 import pickle
 import random
 import shutil
-from typing import Final, List, Optional, Tuple
+from typing import Final, List, Optional, Tuple, Union
 import warnings
 
 import click
 from keras.wrappers.scikit_learn import KerasClassifier
+import lightgbm
+from lightgbm import LGBMClassifier
 import numpy as np
 import pandas as pd
 from pyts.classification import BOSSVS
@@ -284,9 +286,12 @@ class ClassificationHandler:
     def _train(
         self,
         pipeline: Pipeline,
-        X_train,
-        y_train: pd.Series,
+        X: Union[pd.DataFrame, List[pd.DataFrame]],
+        train_index,
+        val_index,
     ):
+        X_train = get_X_part(X, train_index)
+        y_train = self.y[train_index]
         if is_keras(pipeline):
             class_weights = dict(
                 enumerate(compute_class_weight("balanced", np.unique(y_train), y_train))
@@ -296,8 +301,23 @@ class ClassificationHandler:
                 y_train,
                 classifier__class_weight=class_weights,
             )
+        elif isinstance(get_classifier(pipeline), LGBMClassifier):
+            X_val = get_X_part(X, val_index)
+            y_val = self.y[val_index]
+            pipeline.fit(
+                X_train,
+                y_train,
+                classifier__eval_set=[(X_val, y_val), (X_train, y_train)],
+                classifier__verbose=False,
+            )
         else:
             pipeline.fit(X_train, y_train)
+        if (
+            isinstance(get_classifier(pipeline), LGBMClassifier)
+            and self.config["general"]["show_plots"]
+        ):
+            lightgbm.plot_metric(get_classifier(pipeline))
+            util.finish_plot(None, None, True)
 
     def _calc_scores(self, y_true, predictions) -> pd.Series:
         return pd.Series(
@@ -363,7 +383,7 @@ class ClassificationHandler:
             train_index, val_index = split_indexes
 
             click.echo("train...")
-            self._train(pipeline, get_X_part(X, train_index), self.y[train_index])
+            self._train(pipeline, X, train_index, val_index)
             click.echo("Done.")
 
             if self.config["general"]["calc_train_score"]:
