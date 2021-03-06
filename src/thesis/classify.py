@@ -65,7 +65,7 @@ def get_classifier(pipeline: Pipeline) -> BaseEstimator:
 
 
 def is_keras(pipeline: Pipeline) -> bool:
-    return isinstance(get_classifier(pipeline), (KerasClassifier))
+    return isinstance(get_classifier(pipeline), KerasClassifier)
 
 
 def group_by_file(measurements: List[pd.DataFrame]) -> List[int]:
