@@ -1,3 +1,6 @@
+from pathlib import Path
+from typing import Optional
+
 from joblib import Memory
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -6,7 +9,7 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from .constants import CACHE_DIR
 
 
-def finish_plot(name: str, output_folder, show: bool = False):
+def finish_plot(name: Optional[str], output_folder: Optional[Path], show: bool = False):
     if output_folder:
         plt.savefig(f"{output_folder}/{name}.svg")
     if show:
