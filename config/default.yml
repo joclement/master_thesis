@@ -15,7 +15,7 @@ general:
   max_duration: "60 seconds"
   split: True
   drop_empty: True
-  min_len: null
+  min_len: 0
   treat_negative_values: "absolute"
   cache_dir: ./cache
 

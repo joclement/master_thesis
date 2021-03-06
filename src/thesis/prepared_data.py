@@ -310,7 +310,7 @@ def adapt_durations(
     min_duration: str = "60 seconds",
     max_duration: str = "60 seconds",
     step_duration: Optional[str] = None,
-    min_len: Optional[int] = None,
+    min_len: int = 0,
     split: bool = True,
     drop_empty: bool = True,
 ):
@@ -318,10 +318,9 @@ def adapt_durations(
     long_enough_measurements = [
         df for df in measurements if df[data.TIME_DIFF].sum() > min_dur
     ]
-    if min_len is not None:
-        long_enough_measurements = [
-            df for df in long_enough_measurements if len(df.index) > min_len
-        ]
+    long_enough_measurements = [
+        df for df in long_enough_measurements if len(df.index) > min_len
+    ]
 
     if len(long_enough_measurements) == 0:
         raise ValueError("No long enough data.")
