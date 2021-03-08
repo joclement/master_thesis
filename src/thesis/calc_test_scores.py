@@ -14,7 +14,7 @@ from .predict import PredictionHandler
 
 
 def print_score(name: str, value: float) -> None:
-    click.echo(f"{name}: {value:.2f}")
+    click.echo(f"{name}: {value:.3f}")
 
 
 def main(
