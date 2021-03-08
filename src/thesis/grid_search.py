@@ -15,7 +15,7 @@ import yaml
 
 from . import __version__
 from .classify import ClassificationHandler
-from .metrics import file_scores
+from .metrics import avg_file_scores
 
 
 FINGERPRINT_COMPARE_GRID = [
@@ -79,7 +79,7 @@ class MyGridSearch(ClassificationHandler):
                 pipeline,
                 grid_params,
                 cv=self.cv_splits,
-                scoring=make_scorer(file_scores),
+                scoring=make_scorer(avg_file_scores, needs_proba=True),
                 n_jobs=self.n_jobs,
                 error_score="raise",
                 verbose=1,
