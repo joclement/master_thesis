@@ -272,6 +272,22 @@ def _split_by_duration(
     return sequence
 
 
+def get_part(df: pd.DataFrame, max_len: int, i) -> List[pd.DataFrame]:
+    part = df[max_len * i : max_len * (i + 1) + 1]
+    part.attrs[PART] = i
+    return part.reset_index(drop=True)
+
+
+def split_by_lengths(
+    measurements: List[pd.DataFrame], max_len: int
+) -> List[pd.DataFrame]:
+    return [
+        get_part(df, max_len, i)
+        for df in measurements
+        for i in range(0, len(df.index), max_len)
+    ]
+
+
 def split_by_durations(
     measurements: List[pd.DataFrame],
     max_duration: pd.Timedelta,
@@ -311,6 +327,7 @@ def adapt_durations(
     max_duration: str = "60 seconds",
     step_duration: Optional[str] = None,
     min_len: int = 0,
+    max_len: Optional[int] = None,
     split: bool = True,
     drop_empty: bool = True,
 ):
@@ -326,12 +343,16 @@ def adapt_durations(
         raise ValueError("No long enough data.")
     if not split:
         return long_enough_measurements
-    return split_by_durations(
-        long_enough_measurements,
-        pd.Timedelta(max_duration),
-        step_duration=pd.Timedelta(step_duration) if step_duration else None,
-        drop_empty=drop_empty,
-    )
+    if max_duration is not None:
+        return split_by_durations(
+            long_enough_measurements,
+            pd.Timedelta(max_duration),
+            step_duration=pd.Timedelta(step_duration) if step_duration else None,
+            drop_empty=drop_empty,
+        )
+    elif max_len is not None:
+        return split_by_lengths(long_enough_measurements, max_len)
+    raise ValueError("Invalid config.")
 
 
 @memory.cache

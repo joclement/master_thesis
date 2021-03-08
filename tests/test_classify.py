@@ -75,6 +75,15 @@ def test_classify_ClassificationHandler_logo_cv(config):
     assert len(list(output_dir.rglob("confusion_matrix_*.svg"))) == 1
 
 
+def test_classify_ClassificationHandler_max_len(config):
+    config["general"]["max_len"] = 23
+    config["general"]["split"] = True
+    config["models-to-run"] = ["knn_dtw-twod"]
+
+    handler = classify.ClassificationHandler(config)
+    handler.run()
+
+
 def test_classify_ClassificationHandler_normalize_pd_values(config):
     config["models-to-run"] = ["rf-finger_ott"]
     config["general"]["normalize_fingerprints"] = True
