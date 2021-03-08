@@ -16,6 +16,7 @@ general:
   split: True
   min_len: 10
   max_len: null
+  repeat: null
   drop_empty: True
   treat_negative_values: "absolute"
   cache_dir: ./cache

@@ -76,7 +76,10 @@ def test_classify_ClassificationHandler_logo_cv(config):
 
 
 def test_classify_ClassificationHandler_max_len(config):
+    config["general"]["min_duration"] = None
+    config["general"]["max_duration"] = None
     config["general"]["max_len"] = 23
+    config["general"]["repeat"] = 2
     config["general"]["split"] = True
     config["models-to-run"] = ["knn_dtw-twod"]
 
