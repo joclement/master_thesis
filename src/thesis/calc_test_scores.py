@@ -8,9 +8,11 @@ import pandas as pd
 from sklearn.metrics import accuracy_score, balanced_accuracy_score
 
 from . import __version__, data
+from .classify import build_index
 from .constants import K
 from .metrics import top_k_accuracy_score
 from .predict import PredictionHandler
+from .visualize_results import plot_predictions
 
 
 def print_score(name: str, value: float) -> None:
@@ -22,6 +24,7 @@ def main(
     preprocessor_file: Path,
     model_file: Path,
     finger_preprocessor_file: Optional[Path],
+    show: bool = False,
 ):
     np.set_printoptions(precision=2)
 
@@ -50,6 +53,11 @@ def main(
         f"Top {K} accuracy",
         top_k_accuracy_score(y, proba_predictions, k=K, labels=list(data.Defect)),
     )
+    predictions = pd.DataFrame(
+        data={"model": predictions},
+        index=build_index(measurements),
+    )
+    plot_predictions(predictions, show=show)
 
 
 @click.command()
@@ -63,10 +71,12 @@ def main(
     type=click.Path(exists=True, file_okay=True),
     help="Pickled finger preprocessor path",
 )
+@click.option("--show/--no-show", default=False)
 def click_command(
     test_folder,
     preprocessor,
     model,
     finger_preprocessor,
+    show,
 ):
-    main(test_folder, preprocessor, model, finger_preprocessor)
+    main(test_folder, preprocessor, model, finger_preprocessor, show)
