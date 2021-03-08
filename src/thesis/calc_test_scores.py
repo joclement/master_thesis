@@ -9,7 +9,7 @@ from sklearn.metrics import accuracy_score, balanced_accuracy_score
 
 from . import __version__, data
 from .constants import K
-from .metrics import file_scores, top_k_accuracy_score
+from .metrics import top_k_accuracy_score
 from .predict import PredictionHandler
 
 
@@ -50,7 +50,6 @@ def main(
         f"Top {K} accuracy",
         top_k_accuracy_score(y, proba_predictions, k=K, labels=list(data.Defect)),
     )
-    print_score("File scores", file_scores(y, predictions))
 
 
 @click.command()
