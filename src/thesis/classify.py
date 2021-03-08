@@ -154,6 +154,7 @@ class ClassificationHandler:
         self.measurements: Final = preprocessor.set_params(
             adapt_durations__kw_args={
                 "min_len": self.config["general"]["min_len"],
+                "max_len": self.config["general"]["min_len"],
                 "min_duration": self.config["general"]["min_duration"],
                 "step_duration": self.config["general"]["step_duration"],
                 "max_duration": self.config["general"]["max_duration"],
