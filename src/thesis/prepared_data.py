@@ -272,19 +272,22 @@ def _split_by_duration(
     return sequence
 
 
-def get_part(df: pd.DataFrame, max_len: int, i) -> List[pd.DataFrame]:
-    part = df[max_len * i : max_len * (i + 1) + 1]
-    part.attrs[PART] = i
+def get_part(df: pd.DataFrame, length: int, pos: int) -> pd.DataFrame:
+    part = df[pos : pos + length + 1]
+    part.attrs[PART] = pos
+    assert len(part.index) > 0
     return part.reset_index(drop=True)
 
 
 def split_by_lengths(
-    measurements: List[pd.DataFrame], max_len: int
+    measurements: List[pd.DataFrame],
+    max_len: int,
+    repeat: int,
 ) -> List[pd.DataFrame]:
     return [
         get_part(df, max_len, i)
         for df in measurements
-        for i in range(0, len(df.index), max_len)
+        for i in range(0, min(len(df.index) - max_len, repeat * max_len + 1), max_len)
     ]
 
 
@@ -328,6 +331,7 @@ def adapt_durations(
     step_duration: Optional[str] = None,
     min_len: int = 0,
     max_len: Optional[int] = None,
+    repeat: Optional[int] = None,
     split: bool = True,
     drop_empty: bool = True,
 ):
@@ -351,7 +355,7 @@ def adapt_durations(
             drop_empty=drop_empty,
         )
     elif max_len is not None:
-        return split_by_lengths(long_enough_measurements, max_len)
+        return split_by_lengths(long_enough_measurements, max_len, repeat)
     raise ValueError("Invalid config.")
 
 

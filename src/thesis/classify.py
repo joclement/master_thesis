@@ -155,6 +155,7 @@ class ClassificationHandler:
             adapt_durations__kw_args={
                 "min_len": self.config["general"]["min_len"],
                 "max_len": self.config["general"]["max_len"],
+                "repeat": self.config["general"]["repeat"],
                 "min_duration": self.config["general"]["min_duration"],
                 "step_duration": self.config["general"]["step_duration"],
                 "max_duration": self.config["general"]["max_duration"],
