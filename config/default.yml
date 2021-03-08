@@ -11,7 +11,7 @@ general:
   save_models: False
   show_plots: False
   min_duration: &min_duration "60 seconds"
-  step_duration: null
+  step_duration: "30 seconds"
   max_duration: "60 seconds"
   split: True
   drop_empty: True
@@ -87,12 +87,10 @@ defaults:
       - 100
 
   lgbm_grid: &lgbm_grid
-    num_iterations: [10, 20, 30, 50, 80]
+    num_iterations: [10, 30, 50, 80]
     num_leaves: [5, 10, 20, 50]
-    max_depth: [5, 10, 20, 40]
-    min_child_samples: [20, 30, 50, 80]
-    min_split_gain: [0.2, 0.1, 0.01, 0.001, 0.0]
-    feature_fraction: [1.0, 0.9, 0.8]
+    min_child_samples: [20, 30, 50]
+    min_split_gain: [0.1, 0.01, 0.0]
 
 
 models:
@@ -358,35 +356,35 @@ models:
   lgbm-finger_ott:
     normalize: "none"
     classifier:
-      min_split_gain: 0.1
-      feature_fraction: 1.0
-      min_child_samples: 30
-      max_depth: 50
-      num_leaves: 10
+      min_child_samples: 20
+      min_split_gain: 0.01
       n_jobs: *n_jobs
-    grid: *lgbm_grid
+      num_iterations: 10
+      num_leaves: 5
+    grid:
+      classifier: *lgbm_grid
 
   lgbm-finger_tugraz:
     normalize: "none"
     classifier:
-      min_split_gain: 0.0
-      feature_fraction: 0.8
-      min_child_samples: 30
-      max_depth: 50
-      num_leaves: 30
+      min_child_samples: 50
+      min_split_gain: 0.01
       n_jobs: *n_jobs
-    grid: *lgbm_grid
+      num_iterations: 10
+      num_leaves: 10
+    grid:
+      classifier: *lgbm_grid
 
   lgbm-finger_own:
     normalize: "none"
     classifier:
-      min_split_gain: 0.0
-      feature_fraction: 0.8
       min_child_samples: 30
-      max_depth: 50
-      num_leaves: 30
+      min_split_gain: 0.0
       n_jobs: *n_jobs
-    grid: *lgbm_grid
+      num_iterations: 80
+      num_leaves: 20
+    grid:
+      classifier: *lgbm_grid
 
   lgbm-tsfresh:
     data:
@@ -394,18 +392,23 @@ models:
     normalize: "none"
     classifier:
       n_jobs: *n_jobs
-    grid: *lgbm_grid
+    grid:
+      classifier: *lgbm_grid
 
   lgbm-finger_all:
     normalize: "none"
     classifier:
-      min_split_gain: 0.1
+      class_weight: "balanced"
       feature_fraction: 1.0
-      min_child_samples: 30
-      max_depth: 50
-      num_leaves: 10
+      max_bin: 255
+      min_child_samples: 50
+      min_split_gain: 0.01
       n_jobs: *n_jobs
-    grid: *lgbm_grid
+      num_iterations: 60
+      num_leaves: 10
+      path_smooth: 0.0
+    grid:
+      classifier: *lgbm_grid
 
   svm-finger_ott:
     normalize: "zscore"
