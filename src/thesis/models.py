@@ -131,6 +131,42 @@ def split_model_name(model_name: str):
     return classifier_id, data_id
 
 
+def add_selector(
+    pipeline: List[Tuple[str, TransformerMixin]], model_config: dict
+) -> None:
+    if "select" in model_config:
+        select_config = model_config["select"]
+        if "variance" in select_config and select_config["variance"]:
+            pipeline.append(("variance_selector", VarianceThreshold()))
+        if "rfecv" in select_config:
+            svc = SVC(kernel="linear")
+            rfecv = RFECV(
+                estimator=svc,
+                scoring="balanced_accuracy",
+                min_features_to_select=select_config["rfecv"]["min_features"],
+                cv=select_config["rfecv"]["cv"],
+            )
+            pipeline.append(("selector", rfecv))
+        if "rfe" in select_config and "rfecv" not in select_config:
+            svc = SVC(kernel="linear")
+            rfe = RFE(
+                estimator=svc,
+                n_features_to_select=select_config["rfe"]["features"],
+            )
+            pipeline.append(("selector", rfe))
+        if "tsfresh" in select_config:
+            tsfresh_selector = FeatureSelector(**select_config["tsfresh"])
+            pipeline.append(("selector", tsfresh_selector))
+        if "kbest" in select_config:
+            kbest_selector = SelectKBest(**select_config["kbest"])
+            pipeline.append(("selector", kbest_selector))
+        if "frommodel" in select_config:
+            frommodel = SelectFromModel(
+                LinearSVC(dual=False, **select_config["frommodel"])
+            )
+            pipeline.append(("selector", frommodel))
+
+
 class ModelHandler:
     def __init__(
         self,
@@ -153,37 +189,7 @@ class ModelHandler:
         get_feature_builder = getattr(prepared_data, data_id)
         pipeline.append((data_id, get_feature_builder(**data_config)))
 
-        if "select" in model_config:
-            select_config = model_config["select"]
-            if "variance" in select_config and select_config["variance"]:
-                pipeline.append(("variance_selector", VarianceThreshold()))
-            if "rfecv" in select_config:
-                svc = SVC(kernel="linear")
-                rfecv = RFECV(
-                    estimator=svc,
-                    scoring="balanced_accuracy",
-                    min_features_to_select=select_config["rfecv"]["min_features"],
-                    cv=select_config["rfecv"]["cv"],
-                )
-                pipeline.append(("selector", rfecv))
-            if "rfe" in select_config and "rfecv" not in select_config:
-                svc = SVC(kernel="linear")
-                rfe = RFE(
-                    estimator=svc,
-                    n_features_to_select=select_config["rfe"]["features"],
-                )
-                pipeline.append(("selector", rfe))
-            if "tsfresh" in select_config:
-                tsfresh_selector = FeatureSelector(**select_config["tsfresh"])
-                pipeline.append(("selector", tsfresh_selector))
-            if "kbest" in select_config:
-                kbest_selector = SelectKBest(**select_config["kbest"])
-                pipeline.append(("selector", kbest_selector))
-            if "frommodel" in select_config:
-                frommodel = SelectFromModel(
-                    LinearSVC(dual=False, **select_config["frommodel"])
-                )
-                pipeline.append(("selector", frommodel))
+        add_selector(pipeline, model_config)
         add_scaler(
             pipeline,
             classifier_id,
