@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from sklearn.metrics import (
+    accuracy_score,
     balanced_accuracy_score,
     precision_score,
     recall_score,
@@ -80,6 +81,23 @@ def get_file_predictions(
     return file_predictions
 
 
+def make_plot(scores, models, description):
+    y_pos = np.arange(len(scores))
+    _, ax = plt.subplots()
+    ax.barh(
+        y_pos,
+        scores,
+        align="center",
+    )
+    for idx, value in enumerate(scores):
+        ax.text(value, idx, f" {value:.3f}", va="center")
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels(models)
+    ax.set_xlabel(description)
+    ax.set_xlim([0, 1])
+    ax.set_title(description)
+
+
 def plot_predictions(
     predictions: pd.DataFrame,
     output_dir: Optional[Path] = None,
@@ -90,24 +108,18 @@ def plot_predictions(
     predictions["true"] = [get_defect_from_index(i) for i in predictions.index]
     defect_names = [DEFECT_NAMES[Defect(d)] for d in sorted(set(predictions["true"]))]
 
-    balanced_accuracy_scores = [
-        balanced_accuracy_score(predictions["true"], predictions[model])
-        for model in models
-    ]
-    y_pos = np.arange(len(balanced_accuracy_scores))
-    _, ax = plt.subplots()
-    ax.barh(
-        y_pos,
-        balanced_accuracy_scores,
-        align="center",
+    make_plot(
+        [accuracy_score(predictions["true"], predictions[m]) for m in models],
+        models,
+        f"{description} accuracy",
     )
-    for idx, value in enumerate(balanced_accuracy_scores):
-        ax.text(value, idx, f" {value:.3f}", va="center")
-    ax.set_yticks(y_pos)
-    ax.set_yticklabels(models)
-    ax.set_xlabel("Balanced accuracy")
-    ax.set_xlim([0, 1])
-    ax.set_title(description)
+    util.finish_plot(f"{description}-accuracy", output_dir, show)
+
+    make_plot(
+        [balanced_accuracy_score(predictions["true"], predictions[m]) for m in models],
+        models,
+        f"{description} balanced accuracy",
+    )
     util.finish_plot(f"{description}-balanced-accuracy", output_dir, show)
 
     args = {
