@@ -4,7 +4,7 @@ from pathlib import Path
 import pickle
 import random
 import shutil
-from typing import Final, Iterable, List, Optional, Tuple, Union
+from typing import Any, Dict, Final, Iterable, List, Optional, Tuple, Union
 import warnings
 
 import click
@@ -53,7 +53,7 @@ from .fingerprint import (
     get_X_index,
 )
 from .metrics import avg_file_scores, file_scores, top_k_accuracy_score
-from .models import is_model_finger, ModelHandler
+from .models import is_data_finger, is_model_finger, ModelHandler
 from .prepared_data import adapt_durations, extract_features, MeasurementNormalizer
 
 SEED: Final = 23
@@ -69,10 +69,6 @@ def combine(dataPart: DataPart, metric_name: str):
 
 def get_classifier(pipeline: Pipeline) -> BaseEstimator:
     return list(pipeline.named_steps.values())[-1]
-
-
-def get_data_step(pipeline: Pipeline) -> BaseEstimator:
-    return list(pipeline.named_steps.values())[0]
 
 
 def get_categorical_features_info(
@@ -323,16 +319,26 @@ class ClassificationHandler:
         elif isinstance(get_classifier(pipeline), LGBMClassifier):
             X_val = get_X_part(X, val_index)
             y_val = self.y[val_index]
-            feature_name, categorical_feature = get_categorical_features_info(
-                get_data_step(pipeline), X
-            )
+            fit_params: Dict[str, Any] = {}
+            if self.config["general"]["show_plots"]:
+                fit_params["classifier__eval_set"] = [
+                    (X_val, y_val),
+                    (X_train, y_train),
+                ]
+            if is_data_finger(list(pipeline.named_steps.keys())[0]):
+                feature_name, categorical_feature = get_categorical_features_info(
+                    list(pipeline.named_steps.values())[0], X
+                )
+                fit_params.update(
+                    {
+                        "classifier__feature_name": feature_name,
+                        "classifier__categorical_feature": categorical_feature,
+                    }
+                )
             pipeline.fit(
                 X_train,
                 y_train,
-                classifier__eval_set=[(X_val, y_val), (X_train, y_train)],
-                classifier__feature_name=feature_name,
-                classifier__categorical_feature=categorical_feature,
-                classifier__verbose=False,
+                **fit_params,
             )
         else:
             pipeline.fit(X_train, y_train)
