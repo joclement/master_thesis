@@ -324,7 +324,9 @@ class ClassificationHandler:
         elif isinstance(get_classifier(pipeline), LGBMClassifier):
             X_val = get_X_part(X, val_index)
             y_val = self.y[val_index]
-            fit_params: Dict[str, Any] = {}
+            fit_params: Dict[str, Any] = {
+                "classifier__verbose": self.config["general"]["verbose"]
+            }
             if show_plots:
                 fit_params["classifier__eval_set"] = [
                     (get_data_transformer(pipeline).transform(X_val), y_val),
