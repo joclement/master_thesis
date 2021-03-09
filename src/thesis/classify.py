@@ -308,6 +308,7 @@ class ClassificationHandler:
         X: Union[pd.DataFrame, List[pd.DataFrame]],
         train_index: range,
         val_index: range,
+        show_plots: bool,
     ):
         X_train = get_X_part(X, train_index)
         y_train = self.y[train_index]
@@ -324,7 +325,7 @@ class ClassificationHandler:
             X_val = get_X_part(X, val_index)
             y_val = self.y[val_index]
             fit_params: Dict[str, Any] = {}
-            if self.config["general"]["show_plots"]:
+            if show_plots:
                 fit_params["classifier__eval_set"] = [
                     (get_data_transformer(pipeline).transform(X_val), y_val),
                     (get_data_transformer(pipeline).transform(X_train), y_train),
@@ -346,10 +347,7 @@ class ClassificationHandler:
             )
         else:
             pipeline.fit(X_train, y_train)
-        if (
-            isinstance(get_classifier(pipeline), LGBMClassifier)
-            and self.config["general"]["show_plots"]
-        ):
+        if isinstance(get_classifier(pipeline), LGBMClassifier) and show_plots:
             lightgbm.plot_metric(get_classifier(pipeline))
             util.finish_plot(None, None, True)
 
@@ -417,7 +415,13 @@ class ClassificationHandler:
             train_index, val_index = split_indexes
 
             click.echo("train...")
-            self._train(pipeline, X, train_index, val_index)
+            self._train(
+                pipeline,
+                X,
+                train_index,
+                val_index,
+                self.config["general"]["show_plots"],
+            )
             click.echo("Done.")
 
             if self.config["general"]["calc_train_score"]:
@@ -483,7 +487,11 @@ class ClassificationHandler:
     def _save_models(
         self, pipeline: Pipeline, model_folder: Path, model_name: str
     ) -> None:
-        pipeline.fit(self.get_X(model_name), self.y)
+        X = self.get_X(model_name)
+        self._train(pipeline, X, range(0, len(X)), range(0), False)
+        if self.config["general"]["show_plots"]:
+            lightgbm.plot_importance(get_classifier(pipeline))
+            util.finish_plot(None, None, True)
         if is_keras(pipeline):
             pipeline_steps = list(
                 zip(pipeline.named_steps.keys(), pipeline.named_steps.values())
