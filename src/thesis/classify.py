@@ -306,8 +306,8 @@ class ClassificationHandler:
         self,
         pipeline: Pipeline,
         X: Union[pd.DataFrame, List[pd.DataFrame]],
-        train_index,
-        val_index,
+        train_index: range,
+        val_index: range,
     ):
         X_train = get_X_part(X, train_index)
         y_train = self.y[train_index]
