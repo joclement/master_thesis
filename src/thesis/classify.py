@@ -71,6 +71,10 @@ def get_classifier(pipeline: Pipeline) -> BaseEstimator:
     return list(pipeline.named_steps.values())[-1]
 
 
+def get_data_transformer(pipeline: Pipeline) -> BaseEstimator:
+    return list(pipeline.named_steps.values())[0]
+
+
 def get_categorical_features_info(
     transformer: Union[FeatureUnion, FunctionTransformer], X: pd.DataFrame
 ) -> Tuple[Iterable[str], Iterable[str]]:
@@ -322,12 +326,12 @@ class ClassificationHandler:
             fit_params: Dict[str, Any] = {}
             if self.config["general"]["show_plots"]:
                 fit_params["classifier__eval_set"] = [
-                    (X_val, y_val),
-                    (X_train, y_train),
+                    (get_data_transformer(pipeline).transform(X_val), y_val),
+                    (get_data_transformer(pipeline).transform(X_train), y_train),
                 ]
             if is_data_finger(list(pipeline.named_steps.keys())[0]):
                 feature_name, categorical_feature = get_categorical_features_info(
-                    list(pipeline.named_steps.values())[0], X
+                    get_data_transformer(pipeline), X
                 )
                 fit_params.update(
                     {
