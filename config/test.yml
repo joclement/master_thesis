@@ -217,7 +217,7 @@ models:
 
   mlp-tsfresh:
     data:
-        tsfresh_data: ./data/csv-files/testdata_small/tsfresh-features-0.6.1_minimal_60seconds.data
+      tsfresh_data: ./data/csv-files/testdata_small/tsfresh-features-0.6.1_minimal_60seconds.data
     normalize: "zscore"
     classifier:
       hidden_layer_sizes: !!python/tuple [20,10]
