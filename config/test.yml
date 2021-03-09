@@ -375,6 +375,13 @@ models:
   rf-finger_tugraz:
     normalize: "none"
 
+  lgbm-tsfresh:
+    data:
+      tsfresh_data: ./data/csv-files/testdata_small/tsfresh-features-0.6.1_minimal_60seconds.data
+    normalize: "none"
+    classifier:
+      n_jobs: *n_jobs
+
   lgbm-finger_own:
     normalize: "none"
     classifier:
