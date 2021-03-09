@@ -1,5 +1,3 @@
-from typing import List
-
 import click
 import pandas as pd
 from scipy.cluster import hierarchy
@@ -27,8 +25,7 @@ def _generate_pairplots(fingerprints: pd.DataFrame, output_folder, show):
         util.finish_plot(f"pairplot_{group}", output_folder, show)
 
 
-def _generate_dendogram(measurements: List[pd.DataFrame], output_folder, show):
-    fingerprints = fingerprint.build_set(measurements, fingerprint.ott, add_class=True)
+def _generate_dendogram(fingerprints: pd.DataFrame, output_folder, show):
     Z = hierarchy.linkage(fingerprints.drop(data.CLASS, axis=1), "single")
     hierarchy.dendrogram(
         Z, labels=data.get_names(fingerprints[data.CLASS]), leaf_rotation=90.0
@@ -57,4 +54,4 @@ def main(path, output_folder, show, split):
     _generate_heatmap(fingerprints, output_folder, show)
     _generate_pairplots(fingerprints, output_folder, show)
 
-    _generate_dendogram(measurements, output_folder, show)
+    _generate_dendogram(fingerprints, output_folder, show)
