@@ -9,7 +9,7 @@ from . import __version__, data, fingerprint, prepared_data, util
 def _generate_heatmap(fingerprints: pd.DataFrame, output_folder, show):
     corr = fingerprints.corr()
     sns.heatmap(corr, center=0)
-    util.finish_plot("correlation_fingerprint_ott", output_folder, show)
+    util.finish_plot("correlation_fingerprint", output_folder, show)
 
 
 def _generate_pairplots(fingerprints: pd.DataFrame, output_folder, show):
@@ -30,11 +30,12 @@ def _generate_dendogram(fingerprints: pd.DataFrame, output_folder, show):
     hierarchy.dendrogram(
         Z, labels=data.get_names(fingerprints[data.CLASS]), leaf_rotation=90.0
     )
-    util.finish_plot("ott_fingerprint_dendogram", output_folder, show)
+    util.finish_plot("fingerprint_dendogram", output_folder, show)
 
 
 @click.command()
 @click.version_option(version=__version__)
+@click.argument("finger", type=str)
 @click.argument("path", type=click.Path(exists=True))
 @click.option(
     "-o",
@@ -44,13 +45,15 @@ def _generate_dendogram(fingerprints: pd.DataFrame, output_folder, show):
 )
 @click.option("--show", "-s", is_flag=True, help="Show plots")
 @click.option("--split", "-s", is_flag=True, help="Split data into 60 seconds samples")
-def main(path, output_folder, show, split):
+def main(finger, path, output_folder, show, split):
     "Plot visualization of measurement file csv"
     measurements, _ = data.read_recursive(path)
     if split:
         measurements = prepared_data.adapt_durations(measurements)
 
-    fingerprints = fingerprint.build_set(measurements, fingerprint.ott, add_class=True)
+    fingerprints = fingerprint.build_set(
+        measurements, getattr(fingerprint, finger), add_class=True
+    )
     _generate_heatmap(fingerprints, output_folder, show)
     _generate_pairplots(fingerprints, output_folder, show)
 
