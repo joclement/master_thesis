@@ -407,6 +407,10 @@ def finger_own(**config) -> TransformerMixin:
     return fingerprint.own_feature_union(**config)
 
 
+def finger_relown(**config) -> TransformerMixin:
+    return fingerprint.relown_feature_union(**config)
+
+
 def finger_tugraz(**config) -> TransformerMixin:
     return fingerprint.tugraz_feature_union(**config)
 
