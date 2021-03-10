@@ -344,6 +344,41 @@ def own_feature_union(**data_config) -> FeatureUnion:
     )
 
 
+def relown_feature_union(**data_config) -> FeatureUnion:
+    return FeatureUnion(
+        [
+            feature(POLARITY),
+            feature(PD_CHANGE_QUANTILES),
+            feature(PD_COUNT_ABOVE_MEAN),
+            feature(PD_COUNT_BELOW_MEAN),
+            feature(PD_NORM_WEIB_A),
+            feature(PD_NORM_WEIB_B),
+            feature(PD_NUM_PEAKS_10),
+            feature(PD_NUM_PEAKS_50),
+            feature(PD_PERC_REOCCUR),
+            feature(PD_RATIO),
+            feature(PD_VAR),
+            feature(SIZE),
+            feature(TDIFF_NORM_WEIB_A),
+            feature(TD_CHANGE_QUANTILES),
+            feature(TD_KURT),
+            feature(TD_LONGEST_STRIKE_BELOW_MEAN),
+            feature(TD_MEDIAN),
+            feature(TD_SKEW),
+            feature(TD_SUM),
+            feature(PD_NUM_PEAKS_5),
+            feature(PD_NUM_PEAKS_500),
+            feature(PD_BY_TD_WEIB_A),
+            feature(PD_BY_TD_WEIB_B),
+            feature(CORR_NEXT_PD_TO_PD),
+            feature(CORR_2ND_NEXT_PD_TO_PD),
+            feature(CORR_PD_DIFF_TO_PD),
+            feature(CORR_PD_TO_TD),
+        ],
+        **data_config,
+    )
+
+
 def own(df: pd.DataFrame) -> pd.Series:
     return build_set([df], own).iloc[0]
 

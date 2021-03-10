@@ -388,6 +388,16 @@ models:
     grid:
       classifier: *lgbm_grid
 
+  lgbm-finger_relown:
+    normalize: "none"
+    classifier:
+      min_child_samples: 30
+      n_jobs: *n_jobs
+      num_iterations: 40
+      num_leaves: 15
+    grid:
+      classifier: *lgbm_grid
+
   lgbm-tsfresh:
     data:
         tsfresh_data: ./data/csv-files/prepared/dataset/train/tsfresh-features_efficient_60seconds_maxlen-100000.data
