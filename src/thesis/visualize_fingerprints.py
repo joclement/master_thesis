@@ -1,3 +1,5 @@
+from random import shuffle
+
 import click
 import pandas as pd
 from scipy.cluster import hierarchy
@@ -12,17 +14,29 @@ def _generate_heatmap(fingerprints: pd.DataFrame, output_folder, show):
     util.finish_plot("correlation_fingerprint", output_folder, show)
 
 
-def _generate_pairplots(fingerprints: pd.DataFrame, output_folder, show):
-    for group in fingerprint.Group:
-        parameters = fingerprint.get_parameter_group(fingerprints, group)
-        parameters[data.CLASS] = data.get_names(fingerprints[data.CLASS])
-
-        pairgrid = sns.pairplot(parameters, hue=data.CLASS)
-        pairgrid.fig.suptitle(
-            f"Pairwise relationships in fingerprint parameters related to {group}",
-            y=1.08,
-        )
-        util.finish_plot(f"pairplot_{group}", output_folder, show)
+def _generate_pairplots(fingerprints: pd.DataFrame, output_folder, use_groups, show):
+    fingerprints[data.CLASS] = data.get_names(fingerprints[data.CLASS])
+    if use_groups:
+        for group in fingerprint.Group:
+            pairgrid = sns.pairplot(
+                fingerprint.get_parameter_group(fingerprints, group), hue=data.CLASS
+            )
+            pairgrid.fig.suptitle(
+                f"Pairwise relationships in fingerprint {group} parameters",
+            )
+            util.finish_plot(f"pairplot_{group}", output_folder, show)
+    else:
+        features = list(fingerprints.columns)
+        shuffle(features)
+        for idx_part_start in range(0, len(features), 8):
+            pairgrid = sns.pairplot(
+                fingerprints[
+                    features[idx_part_start : idx_part_start + 8] + [data.CLASS]
+                ],
+                hue=data.CLASS,
+            )
+            pairgrid.fig.suptitle("Pairwise relationships of 8 features")
+            util.finish_plot(f"pairplot_{idx_part_start}", output_folder, show)
 
 
 def _generate_dendogram(fingerprints: pd.DataFrame, output_folder, show):
@@ -45,7 +59,8 @@ def _generate_dendogram(fingerprints: pd.DataFrame, output_folder, show):
 )
 @click.option("--show", "-s", is_flag=True, help="Show plots")
 @click.option("--split", "-s", is_flag=True, help="Split data into 60 seconds samples")
-def main(finger, path, output_folder, show, split):
+@click.option("--group", "-g", is_flag=True, help="Use groups for pairplots")
+def main(finger, path, output_folder, show, split, group):
     "Plot visualization of measurement file csv"
     measurements, _ = data.read_recursive(path)
     if split:
@@ -55,6 +70,6 @@ def main(finger, path, output_folder, show, split):
         measurements, getattr(fingerprint, finger), add_class=True
     )
     _generate_heatmap(fingerprints, output_folder, show)
-    _generate_pairplots(fingerprints, output_folder, show)
+    _generate_pairplots(fingerprints, output_folder, group, show)
 
     _generate_dendogram(fingerprints, output_folder, show)

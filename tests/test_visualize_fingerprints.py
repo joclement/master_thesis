@@ -1,3 +1,4 @@
+from math import ceil
 from pathlib import Path
 from shutil import copyfile
 from typing import List
@@ -37,9 +38,15 @@ def test__generate_dendogram(fingerprints, tmpdir):
 
 
 @pytest.mark.expensive
-def test__generate_pairplots(fingerprints, tmpdir):
-    visualize_fingerprints._generate_pairplots(fingerprints, tmpdir, False)
+def test__generate_pairplots_use_groups(fingerprints, tmpdir):
+    visualize_fingerprints._generate_pairplots(fingerprints, tmpdir, True, False)
     assert len(list(Path(tmpdir).glob("*.svg"))) == 4
+
+
+@pytest.mark.expensive
+def test__generate_pairplots_random(fingerprints, tmpdir):
+    visualize_fingerprints._generate_pairplots(fingerprints, tmpdir, False, False)
+    assert len(list(Path(tmpdir).glob("*.svg"))) == ceil(len(fingerprints.columns) / 8)
 
 
 @pytest.mark.expensive
