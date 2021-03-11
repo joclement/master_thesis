@@ -31,8 +31,8 @@ def test__generate_heatmap(fingerprints, tmpdir):
     assert len(list(Path(tmpdir).glob("*.svg"))) == 1
 
 
-def test__generate_dendogram(measurements, tmpdir):
-    visualize_fingerprints._generate_dendogram(measurements, tmpdir, False)
+def test__generate_dendogram(fingerprints, tmpdir):
+    visualize_fingerprints._generate_dendogram(fingerprints, tmpdir, False)
     assert len(list(Path(tmpdir).glob("*.svg"))) == 1
 
 
