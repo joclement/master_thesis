@@ -48,6 +48,7 @@ def test_visualize_fingerprints_main_with_save_succeeds(
 ):
     runner = click.testing.CliRunner()
     result = runner.invoke(
+        "own",
         visualize_fingerprints.main,
         ["--output-folder", tmpdir, folder_with_two_csv_files],
     )
