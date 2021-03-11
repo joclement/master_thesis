@@ -491,9 +491,13 @@ class ClassificationHandler:
     ) -> None:
         X = self.get_X(model_name)
         self._train(pipeline, X, range(0, len(X)), range(0), False)
-        if self.config["general"]["show_plots"]:
+
+        if isinstance(get_classifier(pipeline), LGBMClassifier):
             lightgbm.plot_importance(get_classifier(pipeline))
-            util.finish_plot(None, None, True)
+            util.finish_plot(
+                "feature_importance", model_folder, self.config["general"]["show_plots"]
+            )
+
         if is_keras(pipeline):
             pipeline_steps = list(
                 zip(pipeline.named_steps.keys(), pipeline.named_steps.values())
