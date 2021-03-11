@@ -320,7 +320,6 @@ def own_feature_union(**data_config) -> FeatureUnion:
             feature(PD_NUM_PEAKS_50),
             feature(PD_PERC_REOCCUR),
             feature(PD_RATIO),
-            feature(PD_STD),
             feature(PD_SUM),
             feature(PD_VAR),
             feature(SIZE),
