@@ -9,6 +9,7 @@ import pandas as pd
 import seaborn as sns
 
 from . import __version__, data, prepared_data, util
+from .data import CLASS, Defect, VOLTAGE_SIGN, VoltageSign
 
 
 def _plot_pd_volts_over_time(df):
@@ -90,6 +91,22 @@ def _generate_summary_plots(measurements: List[pd.DataFrame], output_folder, sho
 
 _LENGTH_KEY = "Number of PDs x 1000"
 _DURATION_KEY = "Duration [s]"
+
+
+def _generate_polarity_plot(measurements: List[pd.DataFrame], output_folder, show):
+    counts = {(str(defect), str(vs)): 0 for defect in Defect for vs in VoltageSign}
+    for df in measurements:
+        counts[(str(df.attrs[CLASS]), str(df.attrs[VOLTAGE_SIGN]))] += 1
+    info_df = pd.DataFrame(
+        data={
+            "defect": [defect for defect, _ in counts.keys()],
+            "polarity": [polarity for _, polarity in counts.keys()],
+            "amount": list(counts.values()),
+        }
+    )
+
+    sns.barplot(x="defect", y="amount", hue="polarity", data=info_df)
+    util.finish_plot("amount_of_polarity_per_defect", output_folder, show)
 
 
 def _calc_duration_and_lengths(measurements):
@@ -204,3 +221,4 @@ def main(path, output_folder, recursive, show, split):
                 single_csv_folder.mkdir(parents=True, exist_ok=False)
                 _generate_plots_for_single_csv(measurement, single_csv_folder, show)
         _generate_summary_plots(measurements, output_folder, show)
+        _generate_polarity_plot(measurements, output_folder, show)
