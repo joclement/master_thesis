@@ -101,12 +101,12 @@ def _generate_polarity_plot(measurements: List[pd.DataFrame], output_folder, sho
         data={
             "defect": [defect for defect, _ in counts.keys()],
             "polarity": [polarity for _, polarity in counts.keys()],
-            "amount": list(counts.values()),
+            "occurences": list(counts.values()),
         }
     )
 
-    sns.barplot(x="defect", y="amount", hue="polarity", data=info_df)
-    util.finish_plot("amount_of_polarity_per_defect", output_folder, show)
+    sns.barplot(x="defect", y="occurences", hue="polarity", data=info_df)
+    util.finish_plot("occurences_of_polarity_per_defect", output_folder, show)
 
 
 def _calc_duration_and_lengths(measurements):
