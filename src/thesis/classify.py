@@ -173,9 +173,7 @@ class ClassificationHandler:
             dtype=np.int8,
         )
         self.defects: Final = sorted(set(self.y))
-        self.defect_names: Final = [
-            data.DEFECT_NAMES[data.Defect(d)] for d in self.defects
-        ]
+        self.defect_names: Final = data.get_names(self.defects)
         self.cv_splits: Final = self._generate_cv_splits()
 
         if any([is_model_finger(m) for m in self.config["models-to-run"]]):

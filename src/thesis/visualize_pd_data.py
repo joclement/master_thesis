@@ -98,7 +98,7 @@ def _calc_duration_and_lengths(measurements):
         {
             _LENGTH_KEY: len(df.index) / 1000,
             _DURATION_KEY: df[data.TIME_DIFF].sum() / 1000,
-            data.CLASS: data.DEFECT_NAMES[df.attrs[data.CLASS]],
+            data.CLASS: str(df.attrs[data.CLASS]),
         }
         for df in measurements
     ]
@@ -112,10 +112,7 @@ def _boxplot_lengths_of_pd_csvs_per_defect(measurements):
     for df in measurements:
         lengths_per_defect[data.Defect(df.attrs[data.CLASS])].append(len(df.index))
     fig, ax = plt.subplots()
-    labels = [
-        f"{data.DEFECT_NAMES[key]}: {len(value)}"
-        for key, value in lengths_per_defect.items()
-    ]
+    labels = [f"{str(key)}: {len(value)}" for key, value in lengths_per_defect.items()]
     ax.boxplot(lengths_per_defect.values(), labels=labels)
     plt.ylabel("Number of PDs in csv file")
     plt.xlabel("Defect type with number of samples")
@@ -160,10 +157,7 @@ def _boxplot_duration_of_pd_csvs_per_defect(measurements):
             df[data.TIME_DIFF].sum()
         )
     fig, ax = plt.subplots()
-    labels = [
-        f"{data.DEFECT_NAMES[key]}: {len(value)}"
-        for key, value in duration_per_defect.items()
-    ]
+    labels = [f"{str(key)}: {len(value)}" for key, value in duration_per_defect.items()]
     ax.boxplot(duration_per_defect.values(), labels=labels)
     plt.ylabel(f"Duration {data.TIME_UNIT}")
     plt.xlabel("Defect type with number of samples")

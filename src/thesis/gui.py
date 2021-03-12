@@ -79,15 +79,12 @@ class ClassifierGui(tk.Toplevel):
             data.Defect(idx): prob for idx, prob in enumerate(probabilities_list)
         }
         probabilities_output = "".join(
-            [
-                f"{data.DEFECT_NAMES[defect]}: {prob}\n"
-                for defect, prob in probabilities_dict.items()
-            ]
+            [f"{str(defect)}: {prob}\n" for defect, prob in probabilities_dict.items()]
         )
         self.text_field.insert(
             tk.END,
             "Classification results:\n"
-            f"class {data.DEFECT_NAMES[prediction]}\n\n"
+            f"class {str(prediction)}\n\n"
             "Probabilities:\n"
             f"{probabilities_output}",
         )

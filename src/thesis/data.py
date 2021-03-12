@@ -30,8 +30,11 @@ class VoltageSign(IntEnum):
     positive = 1
     negative = 0
 
+    def __str__(self):
+        return _VOLTAGE_NAMES[self.value]
 
-VOLTAGE_NAMES: Final = {
+
+_VOLTAGE_NAMES: Final = {
     VoltageSign.positive: POS_VOLTAGE,
     VoltageSign.negative: NEG_VOLTAGE,
 }
@@ -45,10 +48,11 @@ class Defect(IntEnum):
     floating = 4
     cavity = 5
 
+    def __str__(self):
+        return _DEFECT_NAMES[self.value]
 
-# TODO try this maybe as an improvement:
-# https://stackoverflow.com/questions/43862184/associating-string-representations-with-an-enum-that-uses-integer-values
-DEFECT_NAMES: Final = {
+
+_DEFECT_NAMES: Final = {
     Defect.free_particle: "Particle",
     Defect.particle_insulator: "ParticleInsulator",
     Defect.protrusion_earth: "ProtruEnclosure",
@@ -65,11 +69,11 @@ class TreatNegValues(Enum):
 
 
 def get_names(defects: Union[List[Defect], pd.Series]) -> List[str]:
-    return [DEFECT_NAMES[defect] for defect in defects]
+    return [str(defect) for defect in defects]
 
 
 def _has_voltage_sign(voltage_sign: VoltageSign, filename: str) -> bool:
-    volt_name = VOLTAGE_NAMES[voltage_sign]
+    volt_name = str(voltage_sign)
     return (
         filename[1:].startswith(volt_name)
         or filename[11:].startswith(volt_name)
