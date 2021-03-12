@@ -22,7 +22,7 @@ from .constants import (
     PREDICTIONS_FILENAME,
     SCORES_FILENAME,
 )
-from .data import Defect, DEFECT_NAMES, get_defect, PATH
+from .data import Defect, get_defect, PATH
 
 
 def make_pandas_plot(scores: pd.DataFrame, config: dict, description: str):
@@ -106,7 +106,7 @@ def plot_predictions(
 ):
     models = predictions.columns
     predictions["true"] = [get_defect_from_index(i) for i in predictions.index]
-    defect_names = [DEFECT_NAMES[Defect(d)] for d in sorted(set(predictions["true"]))]
+    defect_names = [str(Defect(d)) for d in sorted(set(predictions["true"]))]
 
     make_plot(
         [accuracy_score(predictions["true"], predictions[m]) for m in models],
