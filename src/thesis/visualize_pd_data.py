@@ -70,14 +70,14 @@ def _generate_summary_plots(measurements: List[pd.DataFrame], output_folder, sho
     _boxplot_lengths_of_pd_csvs_per_defect(measurements)
     util.finish_plot("boxplot_lengths_of_pd_csvs_per_defect", output_folder, show)
 
-    _swarmplot_lengths_of_pd_csvs_per_defect(measurements)
-    util.finish_plot("swarmplot_lengths_of_pd_csv_per_defect", output_folder, show)
+    _stripplot_lengths_of_pd_csvs_per_defect(measurements)
+    util.finish_plot("stripplot_lengths_of_pd_csv_per_defect", output_folder, show)
 
     _scatterplot_length_duration(measurements)
     util.finish_plot("scatterplot_lengths_durations", output_folder, show)
 
-    _swarmplot_duration_of_pd_csvs_per_defect(measurements)
-    util.finish_plot("swarmplot_duration_of_pd_csv_per_defect", output_folder, show)
+    _stripplot_duration_of_pd_csvs_per_defect(measurements)
+    util.finish_plot("stripplot_duration_of_pd_csv_per_defect", output_folder, show)
 
     _plot_histogram_lengths_of_pd_csvs(measurements)
     util.finish_plot("histogram_lengths_of_pd_csvs", output_folder, show)
@@ -136,8 +136,8 @@ def _boxplot_lengths_of_pd_csvs_per_defect(measurements):
     ax.set_title(f"Lengths of {len(measurements)} PD csv files")
 
 
-def _swarmplot_lengths_of_pd_csvs_per_defect(measurements):
-    sns.swarmplot(
+def _stripplot_lengths_of_pd_csvs_per_defect(measurements):
+    sns.stripplot(
         data=_calc_duration_and_lengths(measurements), x=_LENGTH_KEY, y=data.CLASS
     )
 
@@ -151,8 +151,8 @@ def _scatterplot_length_duration(measurements):
     )
 
 
-def _swarmplot_duration_of_pd_csvs_per_defect(measurements):
-    sns.swarmplot(
+def _stripplot_duration_of_pd_csvs_per_defect(measurements):
+    sns.stripplot(
         data=_calc_duration_and_lengths(measurements), x=_DURATION_KEY, y=data.CLASS
     )
 
