@@ -103,7 +103,7 @@ def _calc_duration_and_lengths(measurements):
         {
             _LENGTH_KEY: len(df.index) / 1000,
             _DURATION_KEY: df[data.TIME_DIFF].sum() / 1000,
-            data.CLASS: str(df.attrs[data.CLASS]),
+            data.CLASS: df.attrs[data.CLASS].wrapped(),
         }
         for df in measurements
     ]

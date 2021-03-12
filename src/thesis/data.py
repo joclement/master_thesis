@@ -1,5 +1,6 @@
 from enum import Enum, IntEnum
 from pathlib import Path
+import textwrap
 from typing import Final, List, Tuple, Union
 
 import pandas as pd
@@ -51,14 +52,17 @@ class Defect(IntEnum):
     def __str__(self):
         return _DEFECT_NAMES[self.value]
 
+    def wrapped(self):
+        return textwrap.fill(str(self), 12)
+
 
 _DEFECT_NAMES: Final = {
-    Defect.free_particle: "Particle",
-    Defect.particle_insulator: "ParticleInsulator",
-    Defect.protrusion_earth: "ProtruEnclosure",
-    Defect.protrusion_hv: "ProtruHV",
-    Defect.floating: "Floating",
-    Defect.cavity: "Void",
+    Defect.free_particle: "Free Particle",
+    Defect.particle_insulator: "Particle on Insulator",
+    Defect.protrusion_earth: "Protrusion on Enclosure",
+    Defect.protrusion_hv: "Protrusion on HV",
+    Defect.floating: "Floating Electrode",
+    Defect.cavity: "Void in Insulator",
 }
 
 
