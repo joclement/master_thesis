@@ -67,9 +67,6 @@ def _generate_plots_for_single_csv(df: pd.DataFrame, output_folder, show):
 
 
 def _generate_summary_plots(measurements: List[pd.DataFrame], output_folder, show):
-    _boxplot_lengths_of_pd_csvs_per_defect(measurements)
-    util.finish_plot("boxplot_lengths_of_pd_csvs_per_defect", output_folder, show)
-
     _stripplot_lengths_of_pd_csvs_per_defect(measurements)
     util.finish_plot("stripplot_lengths_of_pd_csv_per_defect", output_folder, show)
 
@@ -78,15 +75,6 @@ def _generate_summary_plots(measurements: List[pd.DataFrame], output_folder, sho
 
     _stripplot_duration_of_pd_csvs_per_defect(measurements)
     util.finish_plot("stripplot_duration_of_pd_csv_per_defect", output_folder, show)
-
-    _plot_histogram_lengths_of_pd_csvs(measurements)
-    util.finish_plot("histogram_lengths_of_pd_csvs", output_folder, show)
-
-    _boxplot_duration_of_pd_csvs_per_defect(measurements)
-    util.finish_plot("boxplot_duration_of_pd_csvs_per_defect", output_folder, show)
-
-    _plot_histogram_duration_of_pd_csvs(measurements)
-    util.finish_plot("histogram_duration_of_pd_csvs", output_folder, show)
 
 
 _LENGTH_KEY = "Number of PDs x 1000"
