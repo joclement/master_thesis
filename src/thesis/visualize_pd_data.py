@@ -131,9 +131,8 @@ def _boxplot_lengths_of_pd_csvs_per_defect(measurements):
     fig, ax = plt.subplots()
     labels = [f"{str(key)}: {len(value)}" for key, value in lengths_per_defect.items()]
     ax.boxplot(lengths_per_defect.values(), labels=labels)
-    plt.ylabel("Number of PDs in csv file")
+    plt.ylabel("Number of PDs")
     plt.xlabel("Defect type with number of samples")
-    ax.set_title(f"Lengths of {len(measurements)} PD csv files")
 
 
 def _stripplot_lengths_of_pd_csvs_per_defect(measurements):
@@ -161,8 +160,7 @@ def _plot_histogram_lengths_of_pd_csvs(measurements):
     lengths = [len(df.index) for df in measurements]
     fig, ax = plt.subplots()
     ax.hist(lengths, 10)
-    plt.xlabel("Number of PDs in csv file")
-    ax.set_title(f"Histogram of lengths of {len(measurements)} PD csv files")
+    plt.xlabel("Number of PDs")
 
 
 def _boxplot_duration_of_pd_csvs_per_defect(measurements):
@@ -178,7 +176,6 @@ def _boxplot_duration_of_pd_csvs_per_defect(measurements):
     ax.boxplot(duration_per_defect.values(), labels=labels)
     plt.ylabel(f"Duration {data.TIME_UNIT}")
     plt.xlabel("Defect type with number of samples")
-    ax.set_title(f"Duration of {len(measurements)} PD csv files")
 
 
 def _plot_histogram_duration_of_pd_csvs(measurements):
@@ -186,7 +183,6 @@ def _plot_histogram_duration_of_pd_csvs(measurements):
     fig, ax = plt.subplots()
     ax.hist(durations, 10)
     plt.xlabel(f"Duration {data.TIME_UNIT}")
-    ax.set_title(f"Histogram of duration of {len(measurements)} PD csv files")
 
 
 @click.command()
@@ -208,6 +204,8 @@ def _plot_histogram_duration_of_pd_csvs(measurements):
 @click.option("--split", "-s", is_flag=True, help="Split data into 60 seconds samples")
 def main(path, output_folder, recursive, show, split):
     "Plot visualization of measurement file csv"
+
+    sns.set(font_scale=1.2)
 
     if Path(path).is_file():
         _generate_plots_for_single_csv(data.read(path), output_folder, show)
