@@ -32,6 +32,7 @@ defects:
 models-to-run:
   - lgbm-finger_ott
   - lgbm-finger_own
+  - lgbm-finger_relown
   - lgbm-finger_tugraz
   - lgbm-finger_all
   - lgbm-tsfresh
