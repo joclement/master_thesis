@@ -329,7 +329,9 @@ class ClassificationHandler:
         X_train = get_X_part(X, train_index)
         y_train = self.y[train_index]
         fit_params: Dict[str, Any] = {}
-        if not no_sample_weight(get_classifier(pipeline)):
+        if self.config["general"]["balance"] and not no_sample_weight(
+            get_classifier(pipeline)
+        ):
             fit_params["classifier__sample_weight"] = compute_sample_weight(
                 X_train, y_train, self.config["general"]["balance_polarity"]
             )

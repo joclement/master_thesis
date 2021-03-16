@@ -1,4 +1,5 @@
 general:
+  balance: True
   balance_polarity: True
   normalize_fingerprints: False
   calc_train_score: True
