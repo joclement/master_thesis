@@ -42,6 +42,10 @@ def no_sample_weight(classifier: BaseEstimator) -> bool:
     )
 
 
+def no_predict_proba(classifier: BaseEstimator) -> bool:
+    return isinstance(classifier, (SVC, TimeSeriesSVC, BOSSVS))
+
+
 def is_data_finger(data_id: str):
     return "finger_" in data_id and "seqfinger" not in data_id
 

@@ -13,7 +13,6 @@ import lightgbm
 from lightgbm import LGBMClassifier
 import numpy as np
 import pandas as pd
-from pyts.classification import BOSSVS
 from sklearn import metrics
 from sklearn.base import BaseEstimator
 from sklearn.metrics import (
@@ -23,11 +22,9 @@ from sklearn.metrics import (
 from sklearn.model_selection import LeaveOneGroupOut, StratifiedKFold
 from sklearn.pipeline import FeatureUnion, Pipeline
 from sklearn.preprocessing import FunctionTransformer
-from sklearn.svm import SVC
 from sklearn.utils import estimator_html_repr
 from sklearn.utils.class_weight import compute_class_weight
 import tensorflow
-from tslearn.svm import TimeSeriesSVC
 import yaml
 
 from . import __version__, data, util
@@ -54,7 +51,13 @@ from .fingerprint import (
     POLARITY,
 )
 from .metrics import avg_file_scores, file_scores, top_k_accuracy_score
-from .models import is_data_finger, is_model_finger, ModelHandler, no_sample_weight
+from .models import (
+    is_data_finger,
+    is_model_finger,
+    ModelHandler,
+    no_predict_proba,
+    no_sample_weight,
+)
 from .prepared_data import adapt_durations, extract_features, MeasurementNormalizer
 
 SEED: Final = 23
@@ -370,7 +373,7 @@ class ClassificationHandler:
         dataPart: DataPart,
         model_name: Optional[str] = None,
     ) -> Tuple[pd.Series, np.ndarray]:
-        if isinstance(get_classifier(pipeline), (SVC, TimeSeriesSVC, BOSSVS)):
+        if no_predict_proba(get_classifier(pipeline)):
             predictions = pipeline.predict(X)
             scores = self._calc_scores(y_true, predictions)
         else:
