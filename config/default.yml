@@ -249,8 +249,6 @@ models:
       min_samples_leaf: 1
       n_jobs: *n_jobs
 
-
-
   knn-finger_ott:
     normalize: "minmax"
     classifier:
