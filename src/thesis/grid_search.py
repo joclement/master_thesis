@@ -37,13 +37,13 @@ FINGERPRINT_COMPARE_GRID = [
         "classifier": [RandomForestClassifier()],
         "classifier__min_samples_leaf": [1, 2, 4, 8],
         "classifier__bootstrap": [True, False],
-        "classifier__class_weight": ["balanced"],
+        "classifier__class_weight": ["balanced", None],
     },
     {
         "scaler": [StandardScaler(), MinMaxScaler()],
         "classifier": [SVC()],
         "classifier__decision_function_shape": ["ovr", "ovo"],
-        "classifier__class_weight": ["balanced"],
+        "classifier__class_weight": ["balanced", None],
     },
     {
         "scaler": ["passthrough"],
