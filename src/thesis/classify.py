@@ -45,15 +45,16 @@ from .constants import (
     SCORES_FILENAME,
     TOP_K_ACCURACY_SCORE,
 )
-from .data import TreatNegValues
+from .data import TreatNegValues, VOLTAGE_SIGN
 from .fingerprint import (
     CATEGORICAL_FEATURES,
     get_categorical_features,
     get_feature_names,
     get_X_index,
+    POLARITY,
 )
 from .metrics import avg_file_scores, file_scores, top_k_accuracy_score
-from .models import is_data_finger, is_model_finger, ModelHandler
+from .models import is_data_finger, is_model_finger, ModelHandler, no_sample_weight
 from .prepared_data import adapt_durations, extract_features, MeasurementNormalizer
 
 SEED: Final = 23
@@ -126,6 +127,20 @@ def get_X_part(X, index):
         return [X[idx] for idx in index]
     else:
         raise ValueError("Invalid X.")
+
+
+def compute_sample_weight(X, y, balance_polarity):
+    if balance_polarity:
+        if isinstance(X, pd.DataFrame):
+            polarity = X[POLARITY]
+        else:
+            polarity = np.array([df.attrs[VOLTAGE_SIGN] for df in X])
+        polarity *= len(set(y))
+        y = y + polarity
+    class_weights = compute_class_weight(
+        class_weight="balanced", classes=sorted(pd.unique(y)), y=y
+    )
+    return np.array([class_weights[c] for c in y.values])
 
 
 class ClassificationHandler:
@@ -310,21 +325,15 @@ class ClassificationHandler:
     ):
         X_train = get_X_part(X, train_index)
         y_train = self.y[train_index]
-        if is_keras(pipeline):
-            class_weights = dict(
-                enumerate(compute_class_weight("balanced", np.unique(y_train), y_train))
+        fit_params: Dict[str, Any] = {}
+        if not no_sample_weight(get_classifier(pipeline)):
+            fit_params["classifier__sample_weight"] = compute_sample_weight(
+                X_train, y_train, self.config["general"]["balance_polarity"]
             )
-            pipeline.fit(
-                X_train,
-                y_train,
-                classifier__class_weight=class_weights,
-            )
-        elif isinstance(get_classifier(pipeline), LGBMClassifier):
+        if isinstance(get_classifier(pipeline), LGBMClassifier):
             X_val = get_X_part(X, val_index)
             y_val = self.y[val_index]
-            fit_params: Dict[str, Any] = {
-                "classifier__verbose": self.config["general"]["verbose"]
-            }
+            fit_params["classifier__verbose"] = self.config["general"]["verbose"]
             if show_plots:
                 fit_params["classifier__eval_set"] = [
                     (get_data_transformer(pipeline).transform(X_val), y_val),
@@ -340,13 +349,7 @@ class ClassificationHandler:
                         "classifier__categorical_feature": categorical_feature,
                     }
                 )
-            pipeline.fit(
-                X_train,
-                y_train,
-                **fit_params,
-            )
-        else:
-            pipeline.fit(X_train, y_train)
+        pipeline.fit(X_train, y_train, **fit_params)
         if isinstance(get_classifier(pipeline), LGBMClassifier) and show_plots:
             lightgbm.plot_metric(get_classifier(pipeline))
             util.finish_plot(None, None, True)
