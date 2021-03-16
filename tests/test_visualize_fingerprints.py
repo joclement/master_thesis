@@ -1,4 +1,3 @@
-from math import ceil
 from pathlib import Path
 from shutil import copyfile
 from typing import List
