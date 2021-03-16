@@ -35,6 +35,13 @@ from .constants import K, TOP_K_ACCURACY_SCORE
 from .prepared_data import NormalizationMethod, Reshaper
 
 
+def no_sample_weight(classifier: BaseEstimator) -> bool:
+    return isinstance(
+        classifier,
+        (BOSSVS, PytsKNN, KNeighborsClassifier, KNeighborsTimeSeriesClassifier),
+    )
+
+
 def is_data_finger(data_id: str):
     return "finger_" in data_id and "seqfinger" not in data_id
 

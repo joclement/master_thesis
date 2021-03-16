@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import click.testing
+import pandas as pd
 import pytest
 import yaml
 
@@ -85,6 +86,30 @@ def test_classify_ClassificationHandler_max_len(config):
 
     handler = classify.ClassificationHandler(config)
     handler.run()
+
+
+def different_polarity(df):
+    new_df = df.copy()
+    new_df.attrs[data.VOLTAGE_SIGN] = not new_df.attrs[data.VOLTAGE_SIGN]
+    return new_df
+
+
+def test_classify_compute_sample_weight(measurements):
+    polarity_measurements = []
+    for df in measurements:
+        polarity_measurements.append(different_polarity(df))
+        polarity_measurements.append(different_polarity(df))
+    polarity_measurements.extend(measurements)
+    y = pd.Series(
+        data=data.get_defects(polarity_measurements),
+        index=classify.build_index(polarity_measurements),
+    )
+
+    sample_weights = classify.compute_sample_weight(polarity_measurements, y, True)
+    assert len(sample_weights) == len(polarity_measurements)
+    assert len(set(sample_weights[: 2 * len(measurements)])) == 1
+    assert len(set(sample_weights[2 * len(measurements) :])) == 1
+    assert sample_weights[0] * 2 == sample_weights[2 * len(measurements)]
 
 
 def test_classify_ClassificationHandler_normalize_pd_values(config):
