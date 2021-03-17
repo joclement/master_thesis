@@ -10,6 +10,7 @@ from sklearn.metrics import accuracy_score, balanced_accuracy_score
 from . import __version__, data
 from .classify import build_index
 from .constants import K
+from .data import Defect
 from .metrics import top_k_accuracy_score
 from .predict import PredictionHandler
 from .visualize_results import plot_predictions
@@ -49,9 +50,11 @@ def main(
         proba_predictions.append(proba_prediction)
     print_score("Accuracy", accuracy_score(y, predictions))
     print_score("Balanced accuracy", balanced_accuracy_score(y, predictions))
+    defects = list(Defect)
+    defects.remove(Defect.noise)
     print_score(
         f"Top {K} accuracy",
-        top_k_accuracy_score(y, proba_predictions, k=K, labels=list(data.Defect)),
+        top_k_accuracy_score(y, proba_predictions, k=K, labels=defects),
     )
     predictions = pd.DataFrame(
         data={"model": predictions},

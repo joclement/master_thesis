@@ -48,6 +48,7 @@ class Defect(IntEnum):
     protrusion_hv = 3
     floating = 4
     cavity = 5
+    noise = 6
 
     def __str__(self):
         return _DEFECT_NAMES[self.value]
@@ -63,6 +64,7 @@ _DEFECT_NAMES: Final = {
     Defect.protrusion_hv: "Protrusion on HV",
     Defect.floating: "Floating Electrode",
     Defect.cavity: "Void in Insulator",
+    Defect.noise: "Noise",
 }
 
 
@@ -101,7 +103,9 @@ def _get_voltage_sign(filename: str) -> VoltageSign:
 
 def get_defect(filename: str) -> Defect:
     defects = []
-    if "Stütze" in filename:
+    if "Störeinkopplungen" in filename or "Stützer_Störer" in filename:
+        defects.append(Defect.noise)
+    elif "Stütze" in filename:
         defects.append(Defect.cavity)
     if "Spitze an Erde" in filename or "Spitze_an_Erde" in filename:
         defects.append(Defect.protrusion_earth)
