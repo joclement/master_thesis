@@ -9,7 +9,7 @@ import pandas as pd
 import seaborn as sns
 
 from . import __version__, data, prepared_data, util
-from .data import CLASS, Defect, VOLTAGE_SIGN, VoltageSign
+from .data import CLASS, VOLTAGE_SIGN, VoltageSign
 
 
 def _plot_pd_volts_over_time(df):
@@ -82,19 +82,20 @@ _DURATION_KEY = "Duration [s]"
 
 
 def _generate_polarity_plot(measurements: List[pd.DataFrame], output_folder, show):
-    counts = {(str(defect), str(vs)): 0 for defect in Defect for vs in VoltageSign}
+    defects = set(data.get_defects(measurements))
+    counts = {(defect, str(vs)): 0 for defect in defects for vs in VoltageSign}
     for df in measurements:
-        counts[(str(df.attrs[CLASS]), str(df.attrs[VOLTAGE_SIGN]))] += 1
+        counts[(df.attrs[CLASS], str(df.attrs[VOLTAGE_SIGN]))] += 1
     info_df = pd.DataFrame(
         data={
-            "defect": [defect for defect, _ in counts.keys()],
+            "defect": [defect.wrapped() for defect, _ in counts.keys()],
             "polarity": [polarity for _, polarity in counts.keys()],
-            "occurences": list(counts.values()),
+            "occurence": list(counts.values()),
         }
     )
 
-    sns.barplot(x="defect", y="occurences", hue="polarity", data=info_df)
-    util.finish_plot("occurences_of_polarity_per_defect", output_folder, show)
+    sns.barplot(x="defect", y="occurence", hue="polarity", data=info_df)
+    util.finish_plot("occurence_of_polarity_per_defect", output_folder, show)
 
 
 def _calc_duration_and_lengths(measurements):
