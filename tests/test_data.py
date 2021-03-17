@@ -71,7 +71,11 @@ def test_data_split_train_test(measurements):
     assert len(test) == len(dataset) / 2
     classes_in_train = [df.attrs[data.CLASS] for df in train]
     classes_in_test = [df.attrs[data.CLASS] for df in test]
-    assert set(classes_in_train) == set(classes_in_test) == set(data.Defect)
+    assert (
+        set(classes_in_train)
+        == set(classes_in_test)
+        == set(data.Defect) - set([data.Defect.noise])
+    )
     assert all(
         [classes_in_train.count(d) == classes_in_test.count(d) for d in data.Defect]
     )
