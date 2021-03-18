@@ -31,6 +31,7 @@ flake8-import-order = "^0.18.1"
 black = "^20.8b1"
 flake8-black = "^0.2.1"
 pytest-xdist = "^2.1.0"
+statsmodels = "^0.12.2"
 
 [tool.poetry.scripts]
 calc-test-scores = "thesis.calc_test_scores:click_command"
