@@ -76,7 +76,6 @@ TD_MEDIAN = f"{TD_ID} Median"
 CORR_PD_DIFF_TO_PD_BINS = f"{CORR_ID} {PD_DIFF_ID} - PD Bins"
 CORR_NEXT_PD_TO_PD_BINS = f"{CORR_ID} Next PD - PD Bins"
 CORR_NEXT_PD_TO_PD = f"{CORR_ID} Next PD - PD"
-CORR_2ND_NEXT_PD_TO_PD = f"{CORR_ID} 2nd Next PD - PD"
 CORR_PD_DIFF_TO_PD = f"{CORR_ID} {PD_DIFF_ID} - PD"
 CORR_PD_DIFF_TO_TD = f"{CORR_ID} PD - {PD_DIFF_ID}"
 CORR_PD_TO_TD = f"{CORR_ID} PD - {TD_ID}"
@@ -105,6 +104,17 @@ TD_LONGEST_STRIKE_BELOW_MEAN = f"{TD_ID} longest strike below mean"
 TD_CHANGE_QUANTILES = f"{TD_ID} ChangeQuantiles"
 TD_SUM = f"{TD_ID} Sum"
 
+CORR_2ND_NEXT_PD_TO_PD = f"{CORR_ID} 2nd Next PD - PD"
+CORR_3RD_NEXT_PD_TO_PD = f"{CORR_ID} 3rd Next PD - PD"
+CORR_5TH_NEXT_PD_TO_PD = f"{CORR_ID} 5th Next PD - PD"
+CORR_10TH_NEXT_PD_TO_PD = f"{CORR_ID} 10th Next PD - PD"
+
+AUTOCORR_NEXT_TD = f"{CORR_ID} Auto Next TD"
+AUTOCORR_2ND_NEXT_TD = f"{CORR_ID} Auto 2nd Next TD"
+AUTOCORR_3RD_NEXT_TD = f"{CORR_ID} Auto 3rd Next TD"
+AUTOCORR_5TH_NEXT_TD = f"{CORR_ID} Auto 5th Next TD"
+AUTOCORR_10TH_NEXT_TD = f"{CORR_ID} Auto 10th Next TD"
+
 # @note: further parameters
 PD_BY_TD_WEIB_A = f"{PD_ID} / {TD_ID} Weibull A"
 PD_BY_TD_WEIB_B = f"{PD_ID} / {TD_ID} Weibull B"
@@ -129,18 +139,34 @@ def get_categorical_features(feature_union: FeatureUnion) -> Set[str]:
     return set.intersection(CATEGORICAL_FEATURES, set(get_feature_names(feature_union)))
 
 
+def autocorrelate(values: pd.Series, lag: int) -> float:
+    if len(values) < 2 * lag:
+        return 0.0
+    corr_coef = stats.pearsonr(values[:-lag], values[lag:])[0]
+    if corr_coef is np.nan:
+        return 0.0
+    return corr_coef
+
+
 @memory.cache
 def extract_features(df: pd.DataFrame):
-    next_pd = df[PD][1:].reset_index(drop=True)
-    next2_pd = df[PD][2:].reset_index(drop=True)
-
     features = {
-        CORR_NEXT_PD_TO_PD_BINS: _correlate_with_bins(df[PD][:-1], next_pd),
+        CORR_NEXT_PD_TO_PD_BINS: _correlate_with_bins(
+            df[PD][:-1], df[PD][1:].reset_index(drop=True)
+        ),
         CORR_PD_DIFF_TO_PD_BINS: _correlate_with_bins(df[PD], df[PD_DIFF]),
-        CORR_NEXT_PD_TO_PD: stats.pearsonr(df[PD][:-1], next_pd)[0],
-        CORR_2ND_NEXT_PD_TO_PD: stats.pearsonr(df[PD][:-2], next2_pd)[0],
+        CORR_NEXT_PD_TO_PD: autocorrelate(df[PD], 1),
+        CORR_2ND_NEXT_PD_TO_PD: autocorrelate(df[PD], 2),
+        CORR_3RD_NEXT_PD_TO_PD: autocorrelate(df[PD], 3),
+        CORR_5TH_NEXT_PD_TO_PD: autocorrelate(df[PD], 5),
+        CORR_10TH_NEXT_PD_TO_PD: autocorrelate(df[PD], 10),
         CORR_PD_DIFF_TO_PD: stats.pearsonr(df[PD], df[PD_DIFF])[0],
         CORR_PD_TO_TD: stats.pearsonr(df[PD], df[TIME_DIFF])[0],
+        AUTOCORR_NEXT_TD: autocorrelate(df[TIME_DIFF], 1),
+        AUTOCORR_2ND_NEXT_TD: autocorrelate(df[TIME_DIFF], 2),
+        AUTOCORR_3RD_NEXT_TD: autocorrelate(df[TIME_DIFF], 3),
+        AUTOCORR_5TH_NEXT_TD: autocorrelate(df[TIME_DIFF], 5),
+        AUTOCORR_10TH_NEXT_TD: autocorrelate(df[TIME_DIFF], 10),
         PDS_PER_SEC: len(df[TIME_DIFF]) / (df[TIME_DIFF].sum() / 1000),
         PD_CHANGE_QUANTILES: change_quantiles(df[PD], 0.0, 0.7, True, "mean"),
         PD_COUNT_ABOVE_MEAN: count_above_mean(df[PD]),
@@ -336,6 +362,14 @@ def own_feature_union(**data_config) -> FeatureUnion:
             feature(PD_BY_TD_WEIB_B),
             feature(CORR_NEXT_PD_TO_PD),
             feature(CORR_2ND_NEXT_PD_TO_PD),
+            feature(CORR_3RD_NEXT_PD_TO_PD),
+            feature(CORR_5TH_NEXT_PD_TO_PD),
+            feature(CORR_10TH_NEXT_PD_TO_PD),
+            feature(AUTOCORR_NEXT_TD),
+            feature(AUTOCORR_2ND_NEXT_TD),
+            feature(AUTOCORR_3RD_NEXT_TD),
+            feature(AUTOCORR_5TH_NEXT_TD),
+            feature(AUTOCORR_10TH_NEXT_TD),
             feature(CORR_PD_DIFF_TO_PD),
             feature(CORR_PD_TO_TD),
         ],
@@ -371,6 +405,14 @@ def relown_feature_union(**data_config) -> FeatureUnion:
             feature(PD_BY_TD_WEIB_B),
             feature(CORR_NEXT_PD_TO_PD),
             feature(CORR_2ND_NEXT_PD_TO_PD),
+            feature(CORR_3RD_NEXT_PD_TO_PD),
+            feature(CORR_5TH_NEXT_PD_TO_PD),
+            feature(CORR_10TH_NEXT_PD_TO_PD),
+            feature(AUTOCORR_NEXT_TD),
+            feature(AUTOCORR_2ND_NEXT_TD),
+            feature(AUTOCORR_3RD_NEXT_TD),
+            feature(AUTOCORR_5TH_NEXT_TD),
+            feature(AUTOCORR_10TH_NEXT_TD),
             feature(CORR_PD_DIFF_TO_PD),
             feature(CORR_PD_TO_TD),
         ],
