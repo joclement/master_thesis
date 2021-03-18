@@ -92,7 +92,7 @@ SIZE = f"{PD_ID} Num"
 PD_NUM_PEAKS_50 = f"{PD_ID} num peaks 50"
 PD_NUM_PEAKS_10 = f"{PD_ID} num peaks 10"
 PD_NUM_PEAKS_5 = f"{PD_ID} num peaks 5"
-PD_NUM_PEAKS_500 = f"{PD_ID} num peaks 500"
+PD_NUM_PEAKS_100 = f"{PD_ID} num peaks 100"
 PD_RATIO = f"{PD_ID} ratio"
 PD_PERC_REOCCUR = f"{PD_ID} percentage reocurring"
 PD_COUNT_ABOVE_MEAN = f"{PD_ID} count above mean"
@@ -158,7 +158,7 @@ def extract_features(df: pd.DataFrame):
         PD_NUM_PEAKS_10: number_peaks(df[PD], 10),
         PD_NUM_PEAKS_5: number_peaks(df[PD], 5),
         PD_NUM_PEAKS_50: number_peaks(df[PD], 50),
-        PD_NUM_PEAKS_500: number_peaks(df[PD], 500),
+        PD_NUM_PEAKS_100: number_peaks(df[PD], 100),
         PD_PERC_REOCCUR: percentage_of_reoccurring_datapoints_to_all_datapoints(df[PD]),
         PD_RATIO: ratio_value_number_to_time_series_length(df[PD]),
         PD_SKEW: df[PD].skew(),
@@ -331,7 +331,7 @@ def own_feature_union(**data_config) -> FeatureUnion:
             feature(TD_SKEW),
             feature(TD_SUM),
             feature(PD_NUM_PEAKS_5),
-            feature(PD_NUM_PEAKS_500),
+            feature(PD_NUM_PEAKS_100),
             feature(PD_BY_TD_WEIB_A),
             feature(PD_BY_TD_WEIB_B),
             feature(CORR_NEXT_PD_TO_PD),
@@ -366,7 +366,7 @@ def relown_feature_union(**data_config) -> FeatureUnion:
             feature(TD_SKEW),
             feature(TD_SUM),
             feature(PD_NUM_PEAKS_5),
-            feature(PD_NUM_PEAKS_500),
+            feature(PD_NUM_PEAKS_100),
             feature(PD_BY_TD_WEIB_A),
             feature(PD_BY_TD_WEIB_B),
             feature(CORR_NEXT_PD_TO_PD),
