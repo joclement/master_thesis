@@ -35,6 +35,10 @@ from .constants import K, TOP_K_ACCURACY_SCORE
 from .prepared_data import NormalizationMethod, Reshaper
 
 
+def get_classifier(pipeline: Pipeline) -> BaseEstimator:
+    return list(pipeline.named_steps.values())[-1]
+
+
 def no_sample_weight(classifier: BaseEstimator) -> bool:
     return isinstance(
         classifier,
