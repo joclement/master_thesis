@@ -52,6 +52,7 @@ from .fingerprint import (
 )
 from .metrics import avg_file_scores, file_scores, top_k_accuracy_score
 from .models import (
+    get_classifier,
     is_data_finger,
     is_model_finger,
     ModelHandler,
@@ -69,10 +70,6 @@ tensorflow.random.set_seed(SEED)
 
 def combine(dataPart: DataPart, metric_name: str):
     return f"{dataPart}_{metric_name}"
-
-
-def get_classifier(pipeline: Pipeline) -> BaseEstimator:
-    return list(pipeline.named_steps.values())[-1]
 
 
 def get_data_transformer(pipeline: Pipeline) -> BaseEstimator:

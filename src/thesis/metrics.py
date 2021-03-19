@@ -3,10 +3,13 @@ from typing import Union
 import numpy as np
 import pandas as pd
 from sklearn.metrics import balanced_accuracy_score
+from sklearn.metrics._scorer import _BaseScorer
 from sklearn.utils import check_array, check_consistent_length, column_or_1d
 from sklearn.utils._encode import _encode, _unique
+from sklearn.utils.multiclass import type_of_target
 
 from . import constants
+from .models import get_classifier, no_predict_proba
 
 
 def avg_file_scores(
@@ -90,3 +93,22 @@ def top_k_accuracy_score(y_true, predictions, labels, k=constants.K):
     hits = (y_true_encoded == sorted_pred[:, :k].T).any(axis=0)
 
     return np.average(hits)
+
+
+class MyScorer(_BaseScorer):
+    def dummy():  # type: ignore
+        raise NotImplementedError("")
+
+    def __init__(self):
+        super().__init__(MyScorer.dummy, 1, {})
+
+    # Adapted from: scikit-learn/sklearn/metrics/_scorer.py
+    def _score(self, method_caller, estimator, X, y_true, sample_weight=None):
+        if no_predict_proba(get_classifier(estimator)):
+            return file_scores(y_true, method_caller(estimator, "predict", X))
+
+        y_type = type_of_target(y_true)
+        y_pred = method_caller(estimator, "predict_proba", X)
+        if y_type == "binary" and y_pred.shape[1] <= 2:
+            y_pred = self._select_proba_binary(y_pred, estimator.classes_)
+        return avg_file_scores(y_true, y_pred)
