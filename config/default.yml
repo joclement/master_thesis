@@ -44,6 +44,7 @@ models-to-run:
   - mlp-finger_ott
   - mlp-finger_own
   - mlp-finger_tugraz
+  - mlp-finger_relown
   - mlp-finger_all
   - mlp-tsfresh
   - rf-finger_ott
@@ -331,6 +332,19 @@ models:
     grid: "fingerprint_compare"
 
   mlp-finger_own:
+    normalize: "zscore"
+    classifier:
+      hidden_layer_sizes: !!python/tuple [20]
+      dropout: 0.0
+      optimizer: *optimizer
+      batch_size: 1
+      epochs: 100
+      stop_early: *stop_early
+      patience: *patience
+      verbose: *verbose
+    grid: "fingerprint_compare"
+
+  mlp-finger_relown:
     normalize: "zscore"
     classifier:
       hidden_layer_sizes: !!python/tuple [20]
