@@ -25,7 +25,17 @@ FINGERPRINT_COMPARE_GRID = [
         "classifier__dropout": [0.0, 0.05, 0.2],
         "classifier__hidden_layer_sizes": [(5,), (20,), (5, 3), (20, 10)],
         "classifier__epochs": [50, 100, 150],
-        "classifier__class_weight": ["balanced", None],
+        "classifier__class_weight": [
+            {
+                0: 1.0212121212121212,
+                1: 0.8467336683417085,
+                2: 1.2389705882352942,
+                3: 1.2210144927536233,
+                4: 1.1950354609929077,
+                5: 0.7262931034482759,
+            },
+            None,
+        ],
     },
     {
         "scaler": [MinMaxScaler()],
