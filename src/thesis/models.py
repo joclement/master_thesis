@@ -211,16 +211,12 @@ class ModelHandler:
         if "reshaper" in model_config and model_config["reshaper"] is True:
             pipeline.append(("reshaper", Reshaper()))
 
-        if "classifier" in model_config:
-            classifier_config = model_config["classifier"]
-        else:
-            classifier_config = {}
-        classifier = get_classifier(
+        add_classifier(
+            pipeline,
             classifier_id,
             self.defects,
-            **classifier_config,
+            model_config["classifier"] if "classifier" in model_config else {},
         )
-        pipeline.append(("classifier", classifier))
 
         return Pipeline(pipeline, verbose=self.verbose)
 
@@ -239,14 +235,17 @@ CLASSIFIER_MAP = {
 }
 
 
-def get_classifier(
+def add_classifier(
+    pipeline: List[Tuple[str, TransformerMixin]],
     classifier_id: str,
     defects: set,
-    **classifier_config: dict,
+    classifier_config: dict,
 ) -> BaseEstimator:
     if classifier_id == "mlp":
-        return get_mlp(defects, **classifier_config)
-    return CLASSIFIER_MAP[classifier_id](**classifier_config)
+        classifier = get_mlp(defects, **classifier_config)
+    else:
+        classifier = CLASSIFIER_MAP[classifier_id](**classifier_config)
+    pipeline.append(("classifier", classifier))
 
 
 def build_mlp(
