@@ -1,0 +1,99 @@
+general:
+  balance: True
+  balance_polarity: True
+  normalize_fingerprints: False
+  calc_train_score: False
+  verbose: False
+  n_jobs: 1
+  cv: "group"
+  data_dir: ./data/csv-files/prepared/dataset/train
+  calc_cm: True
+  output_dir: ./output/twod_03_20
+  overwrite_output_dir: True
+  save_models: True
+  show_plots: False
+  min_duration: null
+  step_duration: null
+  max_duration: null
+  split: True
+  drop_empty: True
+  min_len: 0
+  max_len: &max_len 245
+  repeat: 12
+  treat_negative_values: "absolute"
+  cache_dir: ./cache
+
+defects:
+  - free_particle
+  - particle_insulator
+  - protrusion_earth
+  - protrusion_hv
+  - floating
+  - cavity
+
+models-to-run:
+  - rf-weaselmuse
+  - knn_dtw-twod
+
+defaults:
+  n_jobs: &n_jobs 7
+  verbose: &verbose 0
+
+models:
+  knn_dtw-twod:
+    normalize: "none"
+    data:
+      max_len: *max_len
+      normalize: "minmax"
+    classifier:
+      n_jobs: *n_jobs
+      n_neighbors: 1
+    grid:
+      classifier:
+        n_neighbors:
+          - 1
+          - 3
+          - 7
+          - 15
+        weights:
+          - "uniform"
+          - "distance"
+        metric:
+          - "dtw"
+          - "euclidean"
+          - "sqeuclidean"
+          - "cityblock"
+          - "ctw"
+      twod:
+        normalize:
+          - "none"
+          - "zscore"
+          - "minmax"
+
+  knn-weaselmuse:
+    normalize: "none"
+    data:
+      twod:
+        normalize: "none"
+        max_len: *max_len
+      weaselmuse:
+        strategy: "quantile"
+    classifier:
+      n_jobs: *n_jobs
+      n_neighbors: 1
+      weights: "distance"
+      metric: "euclidean"
+
+  rf-weaselmuse:
+    normalize: "none"
+    data:
+      twod:
+        normalize: "none"
+        max_len: *max_len
+      weaselmuse:
+        strategy: "quantile"
+    classifier:
+      class_weight: "balanced"
+      bootstrap: True
+      min_samples_leaf: 1
+      n_jobs: *n_jobs
