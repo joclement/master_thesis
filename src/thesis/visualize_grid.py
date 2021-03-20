@@ -37,7 +37,7 @@ def main(grid_file):
     scores = combine_split_scores(grid_results)
     scores = drop_unneeded_classifiers(scores)
     sns.swarmplot(data=scores, x="score", y="combination", hue="run")
-    util.finish_plot("mean-grid-score", None, True)
+    util.finish_plot("swarmplot-score", None, True)
 
     skip = "classifier__min_child_samples"
     scores = combine_split_scores_relplot(grid_results, skip)
