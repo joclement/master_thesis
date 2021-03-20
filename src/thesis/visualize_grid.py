@@ -31,7 +31,6 @@ def main(grid_file):
     )
     ax.set_yticks(y_pos)
     ax.set_xlabel("file-based Balanced accuracy")
-    ax.set_xlabel("file-based Balanced accuracy")
     ax.set_xlim([0, 1])
     util.finish_plot("mean-grid-score", None, True)
 
