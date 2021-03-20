@@ -26,3 +26,5 @@ MODEL_ID = "model"
 CACHE_DIR = "./cache"
 
 PART = "part"
+
+RANDOM_STATE = 11

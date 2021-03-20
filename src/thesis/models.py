@@ -31,7 +31,7 @@ from tslearn.svm import TimeSeriesSVC
 
 from . import classifiers, prepared_data
 from .classifiers import MyKerasClassifier
-from .constants import K, TOP_K_ACCURACY_SCORE
+from .constants import K, RANDOM_STATE, TOP_K_ACCURACY_SCORE
 from .prepared_data import NormalizationMethod, Reshaper
 
 
@@ -248,6 +248,8 @@ def add_classifier(
     if classifier_id == "mlp":
         classifier = get_mlp(defects, **classifier_config)
     else:
+        if classifier_id not in ["bossvs", "pytsknn", "ott_algo", "knn", "knn_dtw"]:
+            classifier_config["random_state"] = RANDOM_STATE
         classifier = CLASSIFIER_MAP[classifier_id](**classifier_config)
     pipeline.append(("classifier", classifier))
 

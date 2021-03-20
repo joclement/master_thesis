@@ -14,6 +14,7 @@ import yaml
 
 from . import __version__
 from .classify import ClassificationHandler
+from .constants import RANDOM_STATE
 from .metrics import MyScorer
 
 
@@ -46,21 +47,21 @@ FINGERPRINT_COMPARE_GRID = [
     },
     {
         "scaler": ["passthrough"],
-        "classifier": [RandomForestClassifier()],
+        "classifier": [RandomForestClassifier(random_state=RANDOM_STATE)],
         "classifier__min_samples_leaf": [1, 2, 5, 10, 30],
         "classifier__bootstrap": [True, False],
         "classifier__class_weight": ["balanced", None],
     },
     {
         "scaler": [StandardScaler(), MinMaxScaler()],
-        "classifier": [SVC()],
+        "classifier": [SVC(random_state=RANDOM_STATE)],
         "classifier__decision_function_shape": ["ovr", "ovo"],
         "classifier__class_weight": ["balanced", None],
         "classifier__kernel": ["linear", "poly", "rbf"],
     },
     {
         "scaler": ["passthrough"],
-        "classifier": [LGBMClassifier()],
+        "classifier": [LGBMClassifier(random_state=RANDOM_STATE)],
         "classifier__feature_fraction": [1.0, 0.8],
         "classifier__min_split_gain": [0.0, 0.01, 0.1, 0.2],
         "classifier__num_leaves": [10, 30, 50],
