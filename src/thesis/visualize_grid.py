@@ -15,12 +15,11 @@ from . import __version__, util
 def main(grid_file):
     with open(grid_file, "rb") as f:
         grid_results = pickle.load(f)
-    print(grid_results)
 
     for i, rank in enumerate(grid_results["rank_test_score"]):
         if rank <= 10:
-            print(f"Rank {rank}:")
-            print(f"{grid_results['params'][i]}")
+            click.echo(f"Rank {rank}:")
+            click.echo(f"{grid_results['params'][i]}")
     _, ax = plt.subplots()
     y_pos = np.arange(len(grid_results["mean_test_score"]))
     ax.barh(
@@ -43,7 +42,6 @@ def main(grid_file):
 
     skip = "classifier__min_child_samples"
     scores = combine_split_scores_relplot(grid_results, skip)
-    print(scores)
     sns.relplot(
         data=scores,
         x=skip,
