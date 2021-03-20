@@ -61,6 +61,9 @@ from .models import (
 )
 from .prepared_data import adapt_durations, extract_features, MeasurementNormalizer
 
+
+warnings.simplefilter("ignore")
+
 SEED: Final = 23
 random.seed(SEED)
 os.environ["PYTHONHASHSEED"] = str(SEED)
@@ -530,7 +533,8 @@ def main(config_path, warn):
     with open(config_path, "r") as stream:
         config = yaml.load(stream)
 
-    if not warn:
-        warnings.simplefilter("ignore")
+    if warn:
+        warnings.resetwarnings()
+
     classificationHandler = ClassificationHandler(config)
     classificationHandler.run()

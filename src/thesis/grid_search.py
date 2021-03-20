@@ -17,6 +17,8 @@ from .classify import ClassificationHandler
 from .metrics import MyScorer
 
 
+warnings.simplefilter("ignore")
+
 FINGERPRINT_COMPARE_GRID = [
     {
         "scaler": [StandardScaler()],
@@ -119,7 +121,7 @@ def main(config_path, warn):
     with open(config_path, "r") as stream:
         config = yaml.load(stream)
 
-    if not warn:
-        warnings.simplefilter("ignore")
+    if warn:
+        warnings.resetwarnings()
     grid_search = MyGridSearch(config)
     grid_search.run()
