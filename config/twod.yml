@@ -5,10 +5,10 @@ general:
   calc_train_score: False
   verbose: False
   n_jobs: 1
-  cv: "group"
+  cv: "logo"
   data_dir: ./data/csv-files/prepared/dataset/train
   calc_cm: True
-  output_dir: ./output/twod_03_20
+  output_dir: ./output/twod_03_21
   overwrite_output_dir: True
   save_models: True
   show_plots: False
@@ -32,11 +32,11 @@ defects:
   - cavity
 
 models-to-run:
-  - rf-weaselmuse
   - knn_dtw-twod
+  - rf-weaselmuse
 
 defaults:
-  n_jobs: &n_jobs 7
+  n_jobs: &n_jobs 6
   verbose: &verbose 0
 
 models:
@@ -66,29 +66,14 @@ models:
           - "ctw"
       twod:
         normalize:
-          - "none"
           - "zscore"
           - "minmax"
-
-  knn-weaselmuse:
-    normalize: "none"
-    data:
-      twod:
-        normalize: "none"
-        max_len: *max_len
-      weaselmuse:
-        strategy: "quantile"
-    classifier:
-      n_jobs: *n_jobs
-      n_neighbors: 1
-      weights: "distance"
-      metric: "euclidean"
 
   rf-weaselmuse:
     normalize: "none"
     data:
       twod:
-        normalize: "none"
+        normalize: "minmax"
         max_len: *max_len
       weaselmuse:
         strategy: "quantile"
