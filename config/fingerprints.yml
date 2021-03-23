@@ -171,7 +171,6 @@ models:
       kbest:
         k: 100
 
-
   mlp-finger_all:
     normalize: "zscore"
     classifier:
