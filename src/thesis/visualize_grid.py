@@ -20,6 +20,27 @@ def main(grid_file):
         if rank <= 10:
             click.echo(f"Rank {rank}:")
             click.echo(f"{grid_results['params'][i]}")
+
+    best_params_per_classifier = {
+        "KNeighborsClassifier": (None, 0),
+        "mlp": (None, 0),
+        "RandomForestClassifier": (None, 0),
+        "LGBMClassifier": (None, 0),
+        "SVC": (None, 0),
+    }
+    for i in range(len(grid_results["mean_test_score"])):
+        classifier_name = get_classifier_name(grid_results["params"][i])
+        score = grid_results["mean_test_score"][i]
+        for key in best_params_per_classifier.keys():
+            if key in classifier_name:
+                if score > best_params_per_classifier[key][1]:
+                    best_params_per_classifier[key] = (grid_results["params"][i], score)
+                    break
+    click.echo("Best params per classifier:")
+    for key, value in best_params_per_classifier.items():
+        click.echo(f"Best {key}:")
+        click.echo(value)
+
     _, ax = plt.subplots()
     y_pos = np.arange(len(grid_results["mean_test_score"]))
     ax.barh(
