@@ -113,6 +113,13 @@ models:
     select:
       variance: True
 
+  knn-finger_relown:
+    normalize: "minmax"
+    classifier:
+      n_jobs: *n_jobs
+      n_neighbors: 1
+      weights: "uniform"
+
   knn-finger_tugraz:
     normalize: "minmax"
     classifier:
@@ -199,9 +206,8 @@ models:
       dropout: 0.0
       optimizer: *optimizer
       batch_size: 1
-      epochs: 100
-      stop_early: *stop_early
-      patience: *patience
+      epochs: 50
+      stop_early: False
       verbose: *verbose
     grid: "fingerprint_compare"
 
@@ -254,10 +260,13 @@ models:
   lgbm-finger_relown:
     normalize: "none"
     classifier:
-      min_child_samples: 30
+      class_weight: null
+      feature_fraction: 0.8
+      max_bin: 127
+      min_split_gain: 0.0
       n_jobs: *n_jobs
-      num_iterations: 40
-      num_leaves: 15
+      num_iterations: 20
+      num_leaves: 50
     grid:
       classifier: *lgbm_grid
 
@@ -295,6 +304,15 @@ models:
     classifier:
       decision_function_shape: "ovr"
       class_weight: "balanced"
+    select:
+      variance: True
+
+  svm-finger_relown:
+    normalize: "zscore"
+    classifier:
+      class_weight: null
+      decision_function_shape: "ovr"
+      kernel: "rbf"
     select:
       variance: True
 
