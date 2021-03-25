@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Final, Optional
-from warnings import warn
+from warnings import resetwarnings, warn
 
 import click
 import numpy as np
@@ -14,6 +14,9 @@ from .data import Defect
 from .metrics import top_k_accuracy_score
 from .predict import PredictionHandler
 from .visualize_results import plot_predictions
+
+
+resetwarnings()
 
 
 def print_score(name: str, value: float) -> None:
