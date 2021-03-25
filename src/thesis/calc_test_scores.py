@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Final, Optional
+from typing import Optional
 from warnings import resetwarnings, warn
 
 import click
@@ -33,24 +33,28 @@ def main(
     np.set_printoptions(precision=2)
 
     measurements, _ = data.read_recursive(test_folder, data.TreatNegValues.absolute)
-    y: Final = pd.Series(data.get_defects(measurements))
+    y = np.array(data.get_defects(measurements))
 
     predictionHandler = PredictionHandler(
         preprocessor_file, [model_file], finger_preprocessor_file
     )
     predictions = []
     proba_predictions = []
+    failing_indexes = []
     for i, df in enumerate(measurements):
         try:
             prediction, proba_prediction = predictionHandler.predict_one(df)
+            click.echo(
+                f"prediction: {prediction}, probas: {proba_prediction}, true: {y[i]}"
+            )
         except ValueError as e:
+            failing_indexes.append(i)
             warn(str(e) + f" Path: {df.attrs[data.PATH]}")
             continue
-        click.echo(
-            f"prediction: {prediction}, probas: {proba_prediction}, true: {y[i]}"
-        )
         predictions.append(prediction)
         proba_predictions.append(proba_prediction)
+    y = np.delete(y, failing_indexes)
+    measurements = [df for i, df in enumerate(measurements) if i not in failing_indexes]
     print_score("Accuracy", accuracy_score(y, predictions))
     print_score("Balanced accuracy", balanced_accuracy_score(y, predictions))
     defects = list(Defect)
