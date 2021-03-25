@@ -166,8 +166,7 @@ class ClassificationHandler:
         self.n_jobs = self.config["general"]["n_jobs"]
         self.calc_cm = self.config["general"]["calc_cm"]
 
-        durationAdapter = FunctionTransformer(adapt_durations)
-        preprocessor = [("adapt_durations", durationAdapter)]
+        preprocessor = [("adapt_durations", FunctionTransformer(adapt_durations))]
         preprocessor = Pipeline(preprocessor)
         self.measurements: Final = preprocessor.set_params(
             adapt_durations__kw_args={
