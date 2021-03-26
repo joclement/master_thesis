@@ -30,7 +30,7 @@ from tslearn.preprocessing import TimeSeriesScalerMeanVariance, TimeSeriesScaler
 from tslearn.svm import TimeSeriesSVC
 
 from . import prepared_data
-from .classifiers import LukasMeanDist, MyKerasClassifier
+from .classifiers import LukasMeanDist, MyKerasClassifier, PolarityKNN, UnderSampleKNN
 from .constants import K, RANDOM_STATE, TOP_K_ACCURACY_SCORE
 from .prepared_data import NormalizationMethod, Reshaper
 
@@ -236,6 +236,8 @@ CLASSIFIER_MAP = {
     "svm": SVC,
     "svm_dtw": TimeSeriesSVC,
     "lgbm": LGBMClassifier,
+    "uknn_dtw": UnderSampleKNN,
+    "polknn_dtw": PolarityKNN,
 }
 
 
@@ -248,7 +250,15 @@ def add_classifier(
     if classifier_id == "mlp":
         classifier = get_mlp(defects, **classifier_config)
     else:
-        if classifier_id not in ["bossvs", "pytsknn", "ott_algo", "knn", "knn_dtw"]:
+        if classifier_id not in [
+            "bossvs",
+            "pytsknn",
+            "ott_algo",
+            "knn",
+            "knn_dtw",
+            "uknn_dtw",
+            "polknn_dtw",
+        ]:
             classifier_config["random_state"] = RANDOM_STATE
         classifier = CLASSIFIER_MAP[classifier_id](**classifier_config)
     pipeline.append(("classifier", classifier))

@@ -69,6 +69,22 @@ models:
           - "zscore"
           - "minmax"
 
+  uknn_dtw-raw:
+    normalize: "none"
+    classifier:
+      n_jobs: *n_jobs
+      n_neighbors: 4
+      metric: "dtw"
+      weights: "distance"
+
+  polknn_dtw-raw:
+    normalize: "none"
+    classifier:
+      n_jobs: *n_jobs
+      n_neighbors: 1
+      metric: "dtw"
+      weights: "distance"
+
   rf-weaselmuse:
     normalize: "none"
     data:

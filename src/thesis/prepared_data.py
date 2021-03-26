@@ -185,11 +185,24 @@ def oned_weasel(**config):
 def oned_boss(**config):
     return Pipeline(
         [
-            ("oned", oned(**config["oned"])),
+            ("normalize", MeasurementNormalizer()),
+            ("oned", Oned(**config["oned"])),
             (("reshaper", Reshaper())),
             ("boss", BOSS(**config["boss"])),
         ]
     )
+
+
+class Raw(BaseEstimator, TransformerMixin):
+    def fit(self, measurements: List[pd.DataFrame], y=None, **kwargs):
+        return self
+
+    def transform(self, measurements: List[pd.DataFrame], y=None, **kwargs):
+        return measurements
+
+
+def raw(**config):
+    return Pipeline([("normalize", MeasurementNormalizer()), ("raw", Raw())])
 
 
 class twod(BaseEstimator, TransformerMixin):
