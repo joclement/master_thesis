@@ -1,4 +1,5 @@
 from enum import Enum
+import math
 from typing import Any, Callable, List, Set, Tuple, Union
 
 import numpy as np
@@ -17,7 +18,7 @@ from tsfresh.feature_extraction.feature_calculators import (
 )
 
 from .constants import PART
-from .data import CLASS, get_defects, PATH, PD, PD_DIFF, TIME_DIFF, VOLTAGE_SIGN
+from .data import CLASS, get_defects, PATH, PD, TIME_DIFF, VOLTAGE_SIGN
 from .util import get_memory
 
 memory = get_memory()
@@ -150,17 +151,22 @@ def autocorrelate(values: pd.Series, lag: int) -> float:
 
 @memory.cache
 def extract_features(df: pd.DataFrame):
+    pd_diff = df[PD].diff()[1:].abs().reset_index(drop=True)
     features = {
         CORR_NEXT_PD_TO_PD_BINS: _correlate_with_bins(
             df[PD][:-1], df[PD][1:].reset_index(drop=True)
         ),
-        CORR_PD_DIFF_TO_PD_BINS: _correlate_with_bins(df[PD], df[PD_DIFF]),
+        CORR_PD_DIFF_TO_PD_BINS: _correlate_with_bins(
+            df[PD][1:].reset_index(drop=True), pd_diff
+        ),
         CORR_NEXT_PD_TO_PD: autocorrelate(df[PD], 1),
         CORR_2ND_NEXT_PD_TO_PD: autocorrelate(df[PD], 2),
         CORR_3RD_NEXT_PD_TO_PD: autocorrelate(df[PD], 3),
         CORR_5TH_NEXT_PD_TO_PD: autocorrelate(df[PD], 5),
         CORR_10TH_NEXT_PD_TO_PD: autocorrelate(df[PD], 10),
-        CORR_PD_DIFF_TO_PD: stats.pearsonr(df[PD], df[PD_DIFF])[0],
+        CORR_PD_DIFF_TO_PD: stats.pearsonr(df[PD][1:].reset_index(drop=True), pd_diff)[
+            0
+        ],
         CORR_PD_TO_TD: stats.pearsonr(df[PD], df[TIME_DIFF])[0],
         AUTOCORR_NEXT_TD: autocorrelate(df[TIME_DIFF], 1),
         AUTOCORR_2ND_NEXT_TD: autocorrelate(df[TIME_DIFF], 2),
@@ -172,10 +178,10 @@ def extract_features(df: pd.DataFrame):
         PD_COUNT_ABOVE_MEAN: count_above_mean(df[PD]),
         PD_COUNT_BELOW_MEAN: count_below_mean(df[PD]),
         PD_CV: df[PD].std() / df[PD].mean(),
-        PD_DIFF_KURT: df[PD_DIFF].kurt(),
-        PD_DIFF_MEAN: df[PD_DIFF].mean(),
-        PD_DIFF_SKEW: df[PD_DIFF].skew(),
-        PD_DIFF_VAR: df[PD_DIFF].var(),
+        PD_DIFF_KURT: pd_diff.kurt(),
+        PD_DIFF_MEAN: pd_diff.mean(),
+        PD_DIFF_SKEW: pd_diff.skew(),
+        PD_DIFF_VAR: pd_diff.var(),
         PD_KURT: df[PD].kurt(),
         PD_MAX: df[PD].max(),
         PD_MEAN: df[PD].mean(),
@@ -208,7 +214,7 @@ def extract_features(df: pd.DataFrame):
     (
         features[PD_DIFF_WEIB_A],
         features[PD_DIFF_WEIB_B],
-    ) = calc_weibull_params(df[PD_DIFF])
+    ) = calc_weibull_params(pd_diff)
     (
         features[PD_NORM_WEIB_A],
         features[PD_NORM_WEIB_B],
@@ -229,6 +235,8 @@ def extract_features(df: pd.DataFrame):
     extracted_features = pd.DataFrame(
         data=features, columns=features.keys(), index=[get_X_index(df)]
     )
+    if math.isnan(extracted_features[PD_DIFF_KURT]):
+        extracted_features[PD_DIFF_KURT] = 0.0
     if (
         extracted_features.isnull().any().any()
         or extracted_features.isin([np.inf, -np.inf]).any().any()

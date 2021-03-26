@@ -22,8 +22,7 @@ def test_data_read(csv_filepath):
     assert df.attrs[data.VOLTAGE_SIGN] == data.VoltageSign.positive
 
     assert data.TEST_VOLTAGE not in df
-    assert data.PD_DIFF in df
-    assert len(df.columns) == 3
+    assert len(df.columns) == 2
 
 
 def test_data_read_wrong_filename(csv_filepath, tmpdir):

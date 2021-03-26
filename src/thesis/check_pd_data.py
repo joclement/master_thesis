@@ -153,8 +153,6 @@ def main(path, recursive, expensive):
                     "\n ============================================================ \n"
                 )
 
-        measurements = [m.drop(columns=[data.PD_DIFF]) for m in measurements]
-
         min_pd = min([measurement[data.PD].min() for measurement in measurements])
         max_pd = max([measurement[data.PD].max() for measurement in measurements])
         min_timediff = min(

@@ -7,7 +7,6 @@ import pandas as pd
 
 
 PD: Final = "A [nV]"
-PD_DIFF: Final = "PDAbsDiff [nV]"
 
 TEST_VOLTAGE: Final = "Voltage [kV]"
 
@@ -162,8 +161,6 @@ def read(
         experiment.loc[:, PD].clip(lower=0, inplace=True)
     elif treat_neg_values is TreatNegValues.absolute:
         experiment.loc[:, PD] = experiment[PD].abs()
-
-    experiment[PD_DIFF] = experiment[PD].diff().abs()
 
     experiment.attrs[PATH] = str(filepath)
     filename = Path(filepath).stem
