@@ -29,8 +29,8 @@ from tslearn.neighbors import KNeighborsTimeSeriesClassifier
 from tslearn.preprocessing import TimeSeriesScalerMeanVariance, TimeSeriesScalerMinMax
 from tslearn.svm import TimeSeriesSVC
 
-from . import classifiers, prepared_data
-from .classifiers import MyKerasClassifier
+from . import prepared_data
+from .classifiers import LukasMeanDist, MyKerasClassifier
 from .constants import K, RANDOM_STATE, TOP_K_ACCURACY_SCORE
 from .prepared_data import NormalizationMethod, Reshaper
 
@@ -232,7 +232,7 @@ CLASSIFIER_MAP = {
     "knn": KNeighborsClassifier,
     "knn_dtw": KNeighborsTimeSeriesClassifier,
     "pytsknn": PytsKNN,
-    "ott_algo": classifiers.LukasMeanDist,
+    "ott_algo": LukasMeanDist,
     "svm": SVC,
     "svm_dtw": TimeSeriesSVC,
     "lgbm": LGBMClassifier,
