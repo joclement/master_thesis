@@ -94,7 +94,7 @@ def keep_needed_columns(measurements: List[pd.DataFrame]):
     return [df[[data.TIME_DIFF, data.PD]] for df in measurements]
 
 
-class oned(BaseEstimator, TransformerMixin):
+class Oned(BaseEstimator, TransformerMixin):
     def __init__(self, fix_duration: str, frequency: str, **kw_args):
         self.set_params(**{"fix_duration": fix_duration, "frequency": frequency})
 
@@ -161,7 +161,7 @@ class oned(BaseEstimator, TransformerMixin):
 
 
 def oned_func(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
-    return oned(config["fix_duration"], config["frequency"]).transform(measurements)
+    return Oned(config["fix_duration"], config["frequency"]).transform(measurements)
 
 
 class Reshaper(BaseEstimator, TransformerMixin):
@@ -172,10 +172,20 @@ class Reshaper(BaseEstimator, TransformerMixin):
         return np.reshape(X, (X.shape[0], -1))
 
 
+def oned(**config):
+    return Pipeline(
+        [
+            ("normalize", MeasurementNormalizer()),
+            ("oned", Oned(**config["oned"])),
+        ]
+    )
+
+
 def oned_weasel(**config):
     return Pipeline(
         [
-            ("oned", oned(**config["oned"])),
+            ("normalize", MeasurementNormalizer()),
+            ("oned", Oned(**config["oned"])),
             (("reshaper", Reshaper())),
             ("weasel", WEASEL(**config["weasel"])),
         ]
