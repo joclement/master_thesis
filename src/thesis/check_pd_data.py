@@ -69,7 +69,7 @@ def _check_time_starts_with_zero(measurements: List[pd.DataFrame]):
     click.echo("Report files starting not with 0 time:")
     for df in measurements:
         if df.attrs[data.START_TIME] > 0:
-            print(f"    {df.attrs[data.PATH]}")
+            click.echo(f"    {df.attrs[data.PATH]}")
 
 
 def _info_on_test_voltage(measurements, csv_filepaths):
