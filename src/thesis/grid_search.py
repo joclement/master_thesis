@@ -65,7 +65,6 @@ FINGERPRINT_COMPARE_GRID = [
         "classifier__feature_fraction": [1.0, 0.8],
         "classifier__min_split_gain": [0.0, 0.01, 0.1, 0.2],
         "classifier__num_leaves": [10, 30, 50],
-        "classifier__num_iterations": [20, 50, 100],
         "classifier__max_bin": [63, 127, 255],
         "classifier__class_weight": ["balanced", None],
     },
