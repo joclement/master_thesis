@@ -1,7 +1,7 @@
 general:
   balance: False
   balance_polarity: False
-  normalize_fingerprints: False
+  normalize_pd: True
   calc_train_score: False
   verbose: False
   n_jobs: 1

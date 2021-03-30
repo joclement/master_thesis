@@ -167,6 +167,8 @@ class ClassificationHandler:
         self.calc_cm = self.config["general"]["calc_cm"]
 
         preprocessor = [("adapt_durations", FunctionTransformer(adapt_durations))]
+        if self.config["general"]["normalize_pd"]:
+            preprocessor.insert(0, ("normalize", MeasurementNormalizer()))
         preprocessor = Pipeline(preprocessor)
         self.measurements: Final = preprocessor.set_params(
             adapt_durations__kw_args={
@@ -197,8 +199,6 @@ class ClassificationHandler:
             finger_preprocessor = [
                 ("extract_features", FunctionTransformer(extract_features)),
             ]
-            if self.config["general"]["normalize_fingerprints"]:
-                finger_preprocessor.insert(0, ("normalize", MeasurementNormalizer()))
             finger_preprocessor = Pipeline(finger_preprocessor)
             click.echo("Calc finger features...")
             self.finger_X = finger_preprocessor.fit_transform(self.measurements)
