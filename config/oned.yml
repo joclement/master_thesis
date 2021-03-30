@@ -64,13 +64,11 @@ models:
           - "dtw"
           - "euclidean"
 
-  knn-oned_weasel:
+  lgbm-oned_weasel:
     normalize: "none"
     data:
       oned:
         fix_duration: *min_duration
-        frequency: "200us"
-      boss:
-        strategy: "entropy"
-        numerosity_reduction: False
-        sparse: False
+        frequency: "100us"
+      weasel:
+          window_sizes: [1000, 10000, 90000]
