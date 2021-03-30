@@ -84,17 +84,3 @@ models:
       n_neighbors: 1
       metric: "dtw"
       weights: "distance"
-
-  rf-weaselmuse:
-    normalize: "none"
-    data:
-      twod:
-        normalize: "minmax"
-        max_len: *max_len
-      weaselmuse:
-        strategy: "quantile"
-    classifier:
-      class_weight: "balanced"
-      bootstrap: True
-      min_samples_leaf: 1
-      n_jobs: *n_jobs
