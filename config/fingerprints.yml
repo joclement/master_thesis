@@ -202,11 +202,18 @@ models:
   mlp-finger_relown:
     normalize: "zscore"
     classifier:
-      hidden_layer_sizes: !!python/tuple [20]
-      dropout: 0.0
-      optimizer: *optimizer
       batch_size: 1
-      epochs: 50
+      class_weight:
+        0: 1.0212121212121212,
+        1: 0.8467336683417085,
+        2: 1.2389705882352942,
+        3: 1.2210144927536233,
+        4: 1.1950354609929077,
+        5: 0.7262931034482759}
+      hidden_layer_sizes: !!python/tuple [20]
+      dropout: 0.05
+      optimizer: *optimizer
+      epochs: 150
       stop_early: False
       verbose: *verbose
     grid: "fingerprint_compare"
@@ -215,15 +222,9 @@ models:
     normalize: "zscore"
     classifier:
       batch_size: 1
-      class_weight:
-        0: 1.0212121212121212
-        1: 0.8467336683417085
-        2: 1.2389705882352942
-        3: 1.2210144927536233
-        4: 1.1950354609929077
-        5: 0.7262931034482759
-      hidden_layer_sizes: !!python/tuple [20, 10]
-      dropout: 0.05
+      class_weight: null
+      hidden_layer_sizes: !!python/tuple [20]
+      dropout: 0.0
       optimizer: *optimizer
       epochs: 100
       stop_early: False
@@ -244,12 +245,11 @@ models:
   lgbm-finger_tugraz:
     normalize: "none"
     classifier:
-      class_weight: null
+      class_weight: "balanced"
       feature_fraction: 1.0
-      max_bin: 63
-      min_split_gain: 0.2
+      max_bin: 127
+      min_split_gain: 0.0
       n_jobs: *n_jobs
-      num_iterations: 50
       num_leaves: 10
     grid:
       classifier: *lgbm_grid
@@ -273,8 +273,7 @@ models:
       max_bin: 127
       min_split_gain: 0.0
       n_jobs: *n_jobs
-      num_iterations: 20
-      num_leaves: 50
+      num_leaves: 10
     grid:
       classifier: *lgbm_grid
 
@@ -318,11 +317,9 @@ models:
   svm-finger_relown:
     normalize: "zscore"
     classifier:
-      class_weight: null
+      class_weight: "balanced"
       decision_function_shape: "ovr"
       kernel: "rbf"
-    select:
-      variance: True
 
   svm-finger_tugraz:
     normalize: "zscore"
@@ -361,7 +358,7 @@ models:
       n_jobs: *n_jobs
       class_weight: "balanced"
       bootstrap: False
-      min_samples_leaf: 1
+      min_samples_leaf: 10
 
   rf-finger_tugraz:
     normalize: "none"
@@ -369,7 +366,7 @@ models:
       n_jobs: *n_jobs
       bootstrap: True
       class_weight: null
-      min_samples_leaf: 1
+      min_samples_leaf: 5
 
   rf-finger_all:
     normalize: "none"
