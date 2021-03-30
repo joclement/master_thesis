@@ -41,30 +41,6 @@ defaults:
 
 
 models:
-  knn-oned:
-    normalize: "minmax"
-    reshaper: True
-    data:
-      fix_duration: *min_duration
-      frequency: "500ms"
-    classifier:
-      n_jobs: *n_jobs
-      n_neighbors: 3
-      weights: "distance"
-      metric: "euclidean"
-    grid:
-      classifier:
-        n_neighbors:
-          - 1
-          - 3
-          - 7
-        weights:
-          - "uniform"
-          - "distance"
-        metric:
-          - "euclidean"
-          - "manhattan"
-
   knn_dtw-oned:
     normalize: "minmax"
     data:
@@ -87,54 +63,6 @@ models:
         metric:
           - "dtw"
           - "euclidean"
-
-  pytsknn-oned:
-    normalize: "minmax"
-    reshaper: True
-    data:
-      fix_duration: *min_duration
-      frequency: "50ms"
-    classifier:
-      n_jobs: *n_jobs
-      n_neighbors: 1
-      weights: "distance"
-      metric: "dtw_fast"
-    grid:
-      classifier:
-        n_neighbors:
-          - 1
-          - 3
-          - 7
-        weights:
-          - "uniform"
-          - "distance"
-        metric:
-          - "dtw_fast"
-
-  bossvs-oned:
-    normalize: "none"
-    reshaper: True
-    data:
-      fix_duration: *min_duration
-      frequency: "4ms"
-    classifier:
-      anova: True
-      strategy: "entropy"
-
-
-  knn-oned_boss:
-    normalize: "none"
-    data:
-      oned:
-        fix_duration: *min_duration
-        frequency: "2ms"
-      boss:
-        strategy: "normal"
-        anova: True
-        window_size: 0.2
-        window_step: 0.05
-        numerosity_reduction: False
-        sparse: False
 
   knn-oned_weasel:
     normalize: "none"
