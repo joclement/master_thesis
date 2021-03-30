@@ -47,6 +47,7 @@ models-to-run:
   - svm_dtw-seqfinger_seqown
   - svm-finger_all
   - lgbm-finger_own
+  - svm-oned_weasel
 
 defaults:
   duration: &duration "30 seconds"
@@ -172,6 +173,16 @@ models:
         frequency: "500ms"
       boss:
         strategy: "entropy"
+
+  svm-oned_weasel:
+    normalize: "none"
+    data:
+      oned:
+        fix_duration: *min_duration
+        frequency: "500ms"
+      weasel:
+        window_sizes: [10, 20]
+        n_bins: 2
 
   knn-finger_ott:
     normalize: "minmax"
