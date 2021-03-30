@@ -173,18 +173,12 @@ class Reshaper(BaseEstimator, TransformerMixin):
 
 
 def oned(**config):
-    return Pipeline(
-        [
-            ("normalize", MeasurementNormalizer()),
-            ("oned", Oned(**config["oned"])),
-        ]
-    )
+    return Oned(**config)
 
 
 def oned_weasel(**config):
     return Pipeline(
         [
-            ("normalize", MeasurementNormalizer()),
             ("oned", Oned(**config["oned"])),
             (("reshaper", Reshaper())),
             ("weasel", WEASEL(**config["weasel"])),
@@ -195,7 +189,6 @@ def oned_weasel(**config):
 def oned_boss(**config):
     return Pipeline(
         [
-            ("normalize", MeasurementNormalizer()),
             ("oned", Oned(**config["oned"])),
             (("reshaper", Reshaper())),
             ("boss", BOSS(**config["boss"])),
@@ -212,7 +205,7 @@ class Raw(BaseEstimator, TransformerMixin):
 
 
 def raw(**config):
-    return Pipeline([("normalize", MeasurementNormalizer()), ("raw", Raw())])
+    return Raw()
 
 
 class twod(BaseEstimator, TransformerMixin):

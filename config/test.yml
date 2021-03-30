@@ -79,9 +79,8 @@ models:
     normalize: "none"
     reshaper: True
     data:
-      oned:
-        fix_duration: *min_duration
-        frequency: "500ms"
+      fix_duration: *min_duration
+      frequency: "500ms"
     classifier:
       anova: True
       strategy: "entropy"
@@ -90,9 +89,8 @@ models:
     normalize: "minmax"
     reshaper: True
     data:
-      oned:
-        fix_duration: *min_duration
-        frequency: "5000ms"
+      fix_duration: *min_duration
+      frequency: "5000ms"
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 5
@@ -114,9 +112,8 @@ models:
     normalize: "minmax"
     reshaper: True
     data:
-      oned:
-        fix_duration: *min_duration
-        frequency: "5000ms"
+      fix_duration: *min_duration
+      frequency: "5000ms"
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 5
@@ -137,9 +134,8 @@ models:
   knn_dtw-oned:
     normalize: "zscore"
     data:
-      oned:
-        fix_duration: *min_duration
-        frequency: "5000ms"
+      fix_duration: *min_duration
+      frequency: "5000ms"
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
