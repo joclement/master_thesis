@@ -58,6 +58,7 @@ def main(grid_file):
     scores = combine_split_scores(grid_results)
     scores = drop_unneeded_classifiers(scores)
     sns.swarmplot(data=scores, x="score", y="combination", hue="run")
+    sns.pointplot(data=scores, x="score", y="combination", join=False, ci="sd")
     util.finish_plot("swarmplot-score", None, True)
 
     skip = "classifier__min_child_samples"
