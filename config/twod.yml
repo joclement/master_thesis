@@ -60,13 +60,6 @@ models:
         metric:
           - "dtw"
           - "euclidean"
-          - "sqeuclidean"
-          - "cityblock"
-          - "ctw"
-      twod:
-        normalize:
-          - "zscore"
-          - "minmax"
 
   uknn_dtw-raw:
     normalize: "none"
