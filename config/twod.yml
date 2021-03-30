@@ -33,7 +33,6 @@ defects:
 
 models-to-run:
   - knn_dtw-twod
-  - rf-weaselmuse
 
 defaults:
   n_jobs: &n_jobs 6
