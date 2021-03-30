@@ -1,6 +1,6 @@
 general:
-  balance: True
-  balance_polarity: True
+  balance: False
+  balance_polarity: False
   normalize_pd: True
   calc_train_score: False
   verbose: False
@@ -18,8 +18,8 @@ general:
   split: True
   drop_empty: True
   min_len: 0
-  max_len: &max_len 245
-  repeat: 12
+  max_len: &max_len 247
+  repeat: 16
   treat_negative_values: "absolute"
   cache_dir: ./cache
 
@@ -44,7 +44,7 @@ models:
     normalize: "none"
     data:
       max_len: *max_len
-      normalize: "minmax"
+      normalize: "none"
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
