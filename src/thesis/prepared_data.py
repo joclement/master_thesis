@@ -180,7 +180,7 @@ def oned_weasel(**config):
     return Pipeline(
         [
             ("oned", Oned(**config["oned"])),
-            (("reshaper", Reshaper())),
+            ("reshaper", Reshaper()),
             ("weasel", WEASEL(**config["weasel"])),
         ]
     )
