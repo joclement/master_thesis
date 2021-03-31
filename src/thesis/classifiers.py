@@ -97,9 +97,25 @@ MIN_LEN = 247
 
 
 class UnderSampleKNN(KNeighborsTimeSeriesClassifier):
-    def __init__(self, min_len, **kwargs):
+    def __init__(
+        self,
+        min_len,
+        n_neighbors=5,
+        weights="uniform",
+        metric="dtw",
+        metric_params=None,
+        n_jobs=None,
+        **kw_args
+    ):
         self.min_len = min_len
-        super().__init__(**kwargs)
+        super().__init__(
+            n_neighbors=n_neighbors,
+            weights=weights,
+            metric=metric,
+            metric_params=metric_params,
+            n_jobs=n_jobs,
+            **kw_args
+        )
 
     def fit(self, measurements, y, **kwargs):
         samples = create_samples(measurements, y, self.min_len)
@@ -128,6 +144,17 @@ class UnderSampleKNN(KNeighborsTimeSeriesClassifier):
             proba_prediction = np.sum(super().predict_proba(X), axis=0) / len(X)
             proba_predictions.append(proba_prediction)
         return np.array(proba_predictions)
+
+    def get_params(self, deep=True):
+        params = super().get_params(deep)
+        params.update({"min_len": self.min_len})
+        return params
+
+    def set_params(self, **params):
+        if "min_len" in params:
+            self.min_len = params["min_len"]
+            del params["min_len"]
+        return super().set_params(**params)
 
 
 class PolarityKNN(BaseEstimator, TransformerMixin):
