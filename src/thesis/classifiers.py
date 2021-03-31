@@ -97,8 +97,12 @@ MIN_LEN = 247
 
 
 class UnderSampleKNN(KNeighborsTimeSeriesClassifier):
+    def __init__(self, min_len, **kwargs):
+        self.min_len = min_len
+        super().__init__(**kwargs)
+
     def fit(self, measurements, y, **kwargs):
-        samples = create_samples(measurements, y, MIN_LEN)
+        samples = create_samples(measurements, y, self.min_len)
         self.min_samples = min(len(dfs) for dfs in samples.values())
         X = []
         y = []
@@ -110,7 +114,7 @@ class UnderSampleKNN(KNeighborsTimeSeriesClassifier):
         return self
 
     def convert(self, measurements: List[pd.DataFrame]):
-        return convert(measurements, MIN_LEN)
+        return convert(measurements, self.min_len)
 
     def predict(self, measurements):
         X, ranges = self.convert(measurements)
@@ -127,12 +131,13 @@ class UnderSampleKNN(KNeighborsTimeSeriesClassifier):
 
 
 class PolarityKNN(BaseEstimator, TransformerMixin):
-    def __init__(self, neg_neighbors=1, pos_neighbors=1, **kwargs):
+    def __init__(self, min_len=0, neg_neighbors=1, pos_neighbors=1, **kwargs):
+        self.min_len = min_len
         self.neg_neighbors = neg_neighbors
         self.pos_neighbors = pos_neighbors
 
     def fit(self, measurements, y, **kwargs):
-        samples = create_samples(measurements, y, MIN_LEN)
+        samples = create_samples(measurements, y, self.min_len)
         self.neg_min_samples = min(
             len(dfs) for key, dfs in samples.items() if key[1] == VoltageSign.negative
         )
@@ -161,7 +166,7 @@ class PolarityKNN(BaseEstimator, TransformerMixin):
         return self
 
     def convert(self, measurements: List[pd.DataFrame]):
-        return convert(measurements, MIN_LEN)
+        return convert(measurements, self.min_len)
 
     def predict(self, measurements):
         X, ranges = self.convert(measurements)

@@ -68,6 +68,7 @@ models:
   uknn_dtw-raw:
     normalize: "none"
     classifier:
+      min_len: *max_len
       n_jobs: *n_jobs
       n_neighbors: 4
       metric: "dtw"
@@ -77,6 +78,7 @@ models:
   polknn_dtw-raw:
     normalize: "none"
     classifier:
+      min_len: *max_len
       n_jobs: *n_jobs
       pos_neighbors: 1
       neg_neighbors: 1
