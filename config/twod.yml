@@ -78,6 +78,25 @@ models:
     normalize: "none"
     classifier:
       n_jobs: *n_jobs
-      n_neighbors: 1
+      pos_neighbors: 1
+      neg_neighbors: 1
       metric: "dtw"
       weights: "distance"
+    grid:
+      classifier:
+        pos_neighbors:
+          - 1
+          - 3
+          - 7
+          - 15
+        neg_neighbors:
+          - 1
+          - 3
+          - 7
+          - 15
+        weights:
+          - "uniform"
+          - "distance"
+        metric:
+          - "dtw"
+          - "euclidean"
