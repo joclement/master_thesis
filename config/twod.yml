@@ -62,6 +62,7 @@ models:
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
+      metric: "dtw"
     grid: *knn_grid
 
   uknn_dtw-raw:
