@@ -38,6 +38,21 @@ defaults:
   n_jobs: &n_jobs 6
   verbose: &verbose 0
 
+  knn_grid: &knn_grid
+    classifier:
+      n_neighbors:
+        - 1
+        - 3
+        - 7
+        - 15
+        - 30
+      weights:
+        - "uniform"
+        - "distance"
+      metric:
+        - "dtw"
+        - "euclidean"
+
 models:
   knn_dtw-twod:
     normalize: "none"
@@ -47,19 +62,7 @@ models:
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 1
-    grid:
-      classifier:
-        n_neighbors:
-          - 1
-          - 3
-          - 7
-          - 15
-        weights:
-          - "uniform"
-          - "distance"
-        metric:
-          - "dtw"
-          - "euclidean"
+    grid: *knn_grid
 
   uknn_dtw-raw:
     normalize: "none"
@@ -68,6 +71,7 @@ models:
       n_neighbors: 4
       metric: "dtw"
       weights: "distance"
+    grid: *knn_grid
 
   polknn_dtw-raw:
     normalize: "none"
