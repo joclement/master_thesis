@@ -1,34 +1,29 @@
 from pathlib import Path
 import pickle
-from typing import Any, List, Optional, Tuple
+from typing import Any, Optional, Tuple
 
+from keras.models import load_model
 import numpy as np
 import pandas as pd
-from sklearn.pipeline import Pipeline
 
 from .data import Defect
 from .models import is_data_finger
-
-
-def load_mlp(model_paths: List[Path]) -> Pipeline:
-    # TODO implement
-    return None
 
 
 class PredictionHandler:
     def __init__(
         self,
         preprocessor_path: Path,
-        model_paths: List[Path],
+        model_pipeline_path: Path,
         finger_preprocessor_path: Optional[Path] = None,
+        keras_model_path: Optional[Path] = None,
     ):
         with open(preprocessor_path, "rb") as preprocessor_file:
             self.preprocessor = pickle.load(preprocessor_file)
-        if len(model_paths) > 1:
-            self.classifier = load_mlp(model_paths)
-        else:
-            with open(model_paths[0], "rb") as model_file:
-                self.classifier = pickle.load(model_file)
+        with open(model_pipeline_path, "rb") as model_file:
+            self.classifier = pickle.load(model_file)
+        if keras_model_path is not None:
+            self.classifier.named_step["classifier"] = load_model(keras_model_path)
         if is_data_finger(self.classifier.steps[0][0]):
             if finger_preprocessor_path is not None:
                 with open(finger_preprocessor_path, "rb") as finger_preprocessor_file:

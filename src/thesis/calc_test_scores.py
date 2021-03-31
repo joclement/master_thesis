@@ -27,7 +27,8 @@ def main(
     test_folder: Path,
     preprocessor_file: Path,
     model_file: Path,
-    finger_preprocessor_file: Optional[Path],
+    finger_preprocessor_file: Optional[Path] = None,
+    keras_model: Optional[Path] = None,
     show: bool = False,
 ):
     np.set_printoptions(precision=2)
@@ -36,7 +37,7 @@ def main(
     y = np.array(data.get_defects(measurements))
 
     predictionHandler = PredictionHandler(
-        preprocessor_file, [model_file], finger_preprocessor_file
+        preprocessor_file, model_file, finger_preprocessor_file, keras_model
     )
     predictions = []
     proba_predictions = []
@@ -81,12 +82,19 @@ def main(
     type=click.Path(exists=True, file_okay=True),
     help="Pickled finger preprocessor path",
 )
+@click.option(
+    "-k",
+    "--keras-model",
+    type=click.Path(exists=True, file_okay=True),
+    help="Keras model saved in H5",
+)
 @click.option("--show/--no-show", default=False)
 def click_command(
     test_folder,
     preprocessor,
     model,
+    keras_model,
     finger_preprocessor,
     show,
 ):
-    main(test_folder, preprocessor, model, finger_preprocessor, show)
+    main(test_folder, preprocessor, model, finger_preprocessor, keras_model, show)
