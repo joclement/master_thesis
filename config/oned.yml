@@ -47,7 +47,7 @@ models:
       frequency: "50ms"
     classifier:
       n_jobs: *n_jobs
-      n_neighbors: 5
+      n_neighbors: 15
       weights: "distance"
       metric: "dtw"
     grid:
