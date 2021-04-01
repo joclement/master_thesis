@@ -3,23 +3,23 @@ general:
   balance_polarity: False
   normalize_pd: True
   calc_train_score: False
-  verbose: False
+  verbose: True
   n_jobs: 1
-  cv: "logo"
+  cv: "group"
   data_dir: ./data/csv-files/prepared/dataset/train
   calc_cm: True
-  output_dir: ./output/tmp_twod
+  output_dir: ./output/grid-uknn_dtw-raw_04_01
   overwrite_output_dir: True
   save_models: True
   show_plots: False
   min_duration: null
   step_duration: null
   max_duration: null
-  split: True
+  split: False
   drop_empty: True
   min_len: 0
-  max_len: &max_len 247
-  repeat: 16
+  max_len: null
+  repeat: null
   treat_negative_values: "absolute"
   cache_dir: ./cache
 
@@ -32,10 +32,12 @@ defects:
   - cavity
 
 models-to-run:
-  - knn_dtw-twod
+  - uknn_dtw-raw
+  - polknn_dtw-raw
 
 defaults:
-  n_jobs: &n_jobs 6
+  min_len: &min_len 247
+  n_jobs: &n_jobs 1
 
   knn_grid: &knn_grid
     classifier:
@@ -53,13 +55,40 @@ defaults:
         - "euclidean"
 
 models:
-  knn_dtw-twod:
+  uknn_dtw-raw:
     normalize: "none"
-    data:
-      max_len: *max_len
-      normalize: "none"
     classifier:
+      min_len: *min_len
       n_jobs: *n_jobs
-      n_neighbors: 1
+      n_neighbors: 4
       metric: "dtw"
+      weights: "distance"
     grid: *knn_grid
+
+  polknn_dtw-raw:
+    normalize: "none"
+    classifier:
+      min_len: *min_len
+      n_jobs: *n_jobs
+      pos_neighbors: 1
+      neg_neighbors: 1
+      metric: "dtw"
+      weights: "distance"
+    grid:
+      classifier:
+        pos_neighbors:
+          - 1
+          - 3
+          - 7
+          - 15
+        neg_neighbors:
+          - 1
+          - 3
+          - 7
+          - 15
+        weights:
+          - "uniform"
+          - "distance"
+        metric:
+          - "dtw"
+          - "euclidean"
