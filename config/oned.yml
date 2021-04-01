@@ -44,7 +44,7 @@ models:
     normalize: "minmax"
     data:
       fix_duration: *min_duration
-      frequency: "50ms"
+      frequency: "40ms"
     classifier:
       n_jobs: *n_jobs
       n_neighbors: 15
