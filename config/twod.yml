@@ -8,7 +8,7 @@ general:
   cv: "logo"
   data_dir: ./data/csv-files/prepared/dataset/train
   calc_cm: True
-  output_dir: ./output/twod_03_21
+  output_dir: ./output/tmp_twod
   overwrite_output_dir: True
   save_models: True
   show_plots: False
