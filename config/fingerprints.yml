@@ -102,14 +102,15 @@ models:
     normalize: "minmax"
     classifier:
       n_jobs: *n_jobs
-      n_neighbors: 1
+      n_neighbors: 5
       weights: "uniform"
 
   knn-finger_own:
     normalize: "minmax"
     classifier:
       n_jobs: *n_jobs
-      n_neighbors: 1
+      n_neighbors: 5
+      weights: "distance"
     select:
       variance: True
 
@@ -142,12 +143,12 @@ models:
   mlp-finger_ott:
     normalize: "zscore"
     classifier:
-      batch_size: *batch_size
-      hidden_layer_sizes: !!python/tuple [5]
-      dropout: *dropout
+      batch_size: 1
+      hidden_layer_sizes: !!python/tuple [20]
+      dropout: 0.2
       optimizer: *optimizer
-      epochs: *epochs
-      stop_early: *stop_early
+      epochs: 150
+      stop_early: False
       patience: *patience
       verbose: *verbose
     grid: "fingerprint_compare"
@@ -189,13 +190,12 @@ models:
   mlp-finger_own:
     normalize: "zscore"
     classifier:
-      hidden_layer_sizes: !!python/tuple [20]
-      dropout: 0.0
-      optimizer: *optimizer
       batch_size: 1
-      epochs: 100
-      stop_early: *stop_early
-      patience: *patience
+      dropout: 0.05
+      epochs: 50
+      hidden_layer_sizes: !!python/tuple [20]
+      optimizer: *optimizer
+      stop_early: False
       verbose: *verbose
     grid: "fingerprint_compare"
 
@@ -234,11 +234,12 @@ models:
   lgbm-finger_ott:
     normalize: "none"
     classifier:
-      min_child_samples: 20
-      min_split_gain: 0.01
+      class_weight: "balanced"
+      feature_fraction: 1.0
+      max_bin: 63
+      min_split_gain: 0.0
       n_jobs: *n_jobs
-      num_iterations: 10
-      num_leaves: 5
+      num_leaves: 30
     grid:
       classifier: *lgbm_grid
 
@@ -257,11 +258,12 @@ models:
   lgbm-finger_own:
     normalize: "none"
     classifier:
-      min_child_samples: 30
+      class_weight: "balanced"
+      feature_fraction: 0.8
+      max_bin: 63
       min_split_gain: 0.0
       n_jobs: *n_jobs
-      num_iterations: 80
-      num_leaves: 20
+      num_leaves: 30
     grid:
       classifier: *lgbm_grid
 
@@ -304,13 +306,16 @@ models:
   svm-finger_ott:
     normalize: "zscore"
     classifier:
+      class_weight: "balanced"
       decision_function_shape: "ovr"
+      kernel: "linear"
 
   svm-finger_own:
     normalize: "zscore"
     classifier:
-      decision_function_shape: "ovr"
       class_weight: "balanced"
+      decision_function_shape: "ovr"
+      kernel: "rbf"
     select:
       variance: True
 
@@ -337,9 +342,9 @@ models:
   rf-finger_ott:
     normalize: "none"
     classifier:
-      class_weight: "balanced"
+      class_weight: null
       bootstrap: True
-      min_samples_leaf: 1
+      min_samples_leaf: 30
       n_jobs: *n_jobs
 
   rf-finger_own:
@@ -347,8 +352,8 @@ models:
     classifier:
       n_jobs: *n_jobs
       class_weight: "balanced"
-      bootstrap: True
-      min_samples_leaf: 3
+      bootstrap: False
+      min_samples_leaf: 2
     select:
       variance: True
 
