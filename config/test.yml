@@ -98,7 +98,7 @@ models:
       weights: "distance"
 
   knn-oned:
-    normalize: "minmax"
+    normalize: "none"
     reshaper: True
     undersample: True
     data:
