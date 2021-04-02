@@ -34,12 +34,34 @@ defects:
 models-to-run:
   - knn_dtw-oned
   - knn-oned_weasel
+  - knn-sparse
 
 defaults:
   n_jobs: &n_jobs 1
 
 
 models:
+  knn-sparse:
+    normalize: "none"
+    undersample: True
+    data:
+      fix_duration_str: *min_duration
+    classifier:
+      n_jobs: *n_jobs
+      n_neighbors: 5
+      weights: "distance"
+    grid:
+      classifier:
+        n_neighbors:
+          - 1
+          - 3
+          - 7
+          - 15
+          - 30
+        weights:
+          - "uniform"
+          - "distance"
+
   knn_dtw-oned:
     normalize: "minmax"
     data:
