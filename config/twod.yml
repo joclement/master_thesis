@@ -9,7 +9,7 @@ general:
   data_dir: ./data/csv-files/prepared/dataset/train
   calc_cm: True
   output_dir: ./output/tmp_twod
-  overwrite_output_dir: True
+  overwrite_output_dir: False
   save_models: True
   show_plots: False
   min_duration: null

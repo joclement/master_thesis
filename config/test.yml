@@ -38,6 +38,7 @@ models-to-run:
   - knn_dtw-twod
   - knn_dtw-seqfinger_seqown
   - knn-oned
+  - knn-sparse
   - pytsknn-oned
   - knn-oned_boss
   - knn-finger_ott
@@ -85,6 +86,16 @@ models:
     classifier:
       anova: True
       strategy: "entropy"
+
+  knn-sparse:
+    normalize: "none"
+    undersample: True
+    data:
+      fix_duration_str: *min_duration
+    classifier:
+      n_jobs: *n_jobs
+      n_neighbors: 5
+      weights: "distance"
 
   knn-oned:
     normalize: "minmax"

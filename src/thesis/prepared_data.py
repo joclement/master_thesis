@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 from pyts.multivariate.transformation import WEASELMUSE
 from pyts.transformation import BOSS, WEASEL
+from scipy.sparse import csr_matrix
 from scipy.stats import zscore
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
@@ -157,6 +158,29 @@ class Oned(BaseEstimator, TransformerMixin):
 
 def oned_func(measurements: List[pd.DataFrame], **config) -> pd.DataFrame:
     return Oned(config["fix_duration"], config["frequency"]).transform(measurements)
+
+
+class Sparse(BaseEstimator, TransformerMixin):
+    def __init__(self, fix_duration_str, **kw_args):
+        self.fix_duration_str = fix_duration_str
+
+    def fit(self, measurements, y=None, **kwargs):
+        self.fix_duration = to_dataTIME(pd.Timedelta(self.fix_duration_str))
+        return self
+
+    def transform(self, measurements, y=None, **kwargs):
+        data = []
+        row = []
+        column = []
+        for idx, df in enumerate(measurements):
+            data.extend(df[PD].values.tolist())
+            row.extend([idx] * len(df.index))
+            column.extend([int(t) for t in (df[TIME_DIFF].cumsum() * 20).values])
+        return csr_matrix((data, (row, column)), shape=(len(measurements), 1200000))
+
+
+def sparse(**config):
+    return Sparse(**config)
 
 
 class Reshaper(BaseEstimator, TransformerMixin):
