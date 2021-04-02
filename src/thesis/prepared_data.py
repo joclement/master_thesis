@@ -115,12 +115,7 @@ class Oned(BaseEstimator, TransformerMixin):
             df[data.TIME_DIFF].cumsum(), unit=data.TIME_UNIT
         )
         df = df.set_index("DateTimeIndex")
-        time_series = (
-            df[data.PD]
-            .asfreq(MAX_FREQUENCY, fill_value=0.0)
-            .resample(self._frequency)
-            .max()
-        )
+        time_series = df[data.PD].asfreq(self._frequency, fill_value=0.0)
         if len(time_series.index) < self._time_series_len:
             len_diff = self._time_series_len - len(time_series.index)
             time_series = time_series.append(
