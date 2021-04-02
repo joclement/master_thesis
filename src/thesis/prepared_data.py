@@ -176,7 +176,7 @@ class Sparse(BaseEstimator, TransformerMixin):
             data.extend(df[PD].values.tolist())
             row.extend([idx] * len(df.index))
             column.extend([int(t) for t in (df[TIME_DIFF].cumsum() * 20).values])
-        return csr_matrix((data, (row, column)), shape=(len(measurements), 1200000))
+        return csr_matrix((data, (row, column)), shape=(len(measurements), 1200000), dtype=np.float32)
 
 
 def sparse(**config):
