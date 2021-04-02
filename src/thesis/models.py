@@ -1,5 +1,7 @@
 from typing import Final, List, Tuple
 
+import imblearn
+from imblearn.under_sampling import RandomUnderSampler
 import keras
 from keras.callbacks import EarlyStopping
 from keras.layers import Dense, Dropout
@@ -215,6 +217,11 @@ class ModelHandler:
         if "reshaper" in model_config and model_config["reshaper"] is True:
             pipeline.append(("reshaper", Reshaper()))
 
+        if "undersample" in model_config and model_config["undersample"] is True:
+            pipeline.append(
+                ("undersample", RandomUnderSampler(random_state=RANDOM_STATE))
+            )
+
         add_classifier(
             pipeline,
             classifier_id,
@@ -222,6 +229,8 @@ class ModelHandler:
             model_config["classifier"] if "classifier" in model_config else {},
         )
 
+        if "undersample" in model_config and model_config["undersample"] is True:
+            return imblearn.pipeline.Pipeline(pipeline, verbose=self.verbose)
         return Pipeline(pipeline, verbose=self.verbose)
 
 

@@ -89,6 +89,7 @@ models:
   knn-oned:
     normalize: "minmax"
     reshaper: True
+    undersample: True
     data:
       fix_duration: *min_duration
       frequency: "5000ms"
