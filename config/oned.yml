@@ -48,8 +48,8 @@ models:
       fix_duration_str: *min_duration
     classifier:
       n_jobs: *n_jobs
-      n_neighbors: 5
-      weights: "distance"
+      n_neighbors: 1
+      weights: "uniform"
     grid:
       classifier:
         n_neighbors:
