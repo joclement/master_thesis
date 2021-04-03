@@ -191,10 +191,13 @@ class UndersampleTimeSeriesSVM(TimeSeriesSVC):
 
 
 class PolarityKNN(BaseEstimator, TransformerMixin):
-    def __init__(self, min_len=0, neg_neighbors=1, pos_neighbors=1, **kwargs):
+    def __init__(
+        self, min_len=0, neg_neighbors=1, pos_neighbors=1, weights="uniform", **kwargs
+    ):
         self.min_len = min_len
         self.neg_neighbors = neg_neighbors
         self.pos_neighbors = pos_neighbors
+        self.weights = weights
 
     def fit(self, measurements, y, **kwargs):
         samples = create_samples(measurements, y, self.min_len)
@@ -217,10 +220,10 @@ class PolarityKNN(BaseEstimator, TransformerMixin):
                 neg_y.extend([defect] * self.neg_min_samples)
 
         self.neg_knn = KNeighborsTimeSeriesClassifier(
-            n_neighbors=self.neg_neighbors
+            n_neighbors=self.neg_neighbors, weights=self.weights
         ).fit(to_time_series_dataset(neg_X), neg_y)
         self.pos_knn = KNeighborsTimeSeriesClassifier(
-            n_neighbors=self.pos_neighbors
+            n_neighbors=self.pos_neighbors, weights=self.weights
         ).fit(to_time_series_dataset(pos_X), pos_y)
 
         return self
