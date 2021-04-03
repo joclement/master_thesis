@@ -11,6 +11,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils.multiclass import unique_labels
 from sklearn.utils.validation import check_X_y
 from tslearn.neighbors import KNeighborsTimeSeriesClassifier
+from tslearn.svm import TimeSeriesSVC
 from tslearn.utils import to_time_series_dataset
 
 from .data import CLASS, VOLTAGE_SIGN, VoltageSign
@@ -93,6 +94,18 @@ def convert(measurements: List[pd.DataFrame], min_len):
     return to_time_series_dataset(X), ranges
 
 
+def undersample(measurements, y, min_len):
+    samples = create_samples(measurements, y, min_len)
+    min_samples = min(len(dfs) for dfs in samples.values())
+    X = []
+    y = []
+    for k, v in samples.items():
+        random.shuffle(v)
+        X.extend(v[:min_samples])
+        y.extend([k[0]] * min_samples)
+    return X, y
+
+
 class UnderSampleKNN(KNeighborsTimeSeriesClassifier):
     def __init__(
         self,
@@ -115,14 +128,7 @@ class UnderSampleKNN(KNeighborsTimeSeriesClassifier):
         )
 
     def fit(self, measurements, y, **kwargs):
-        samples = create_samples(measurements, y, self.min_len)
-        self.min_samples = min(len(dfs) for dfs in samples.values())
-        X = []
-        y = []
-        for k, v in samples.items():
-            random.shuffle(v)
-            X.extend(v[: self.min_samples])
-            y.extend([k[0]] * self.min_samples)
+        X, y = undersample(measurements, y, self.min_len)
         super().fit(to_time_series_dataset(X), y, **kwargs)
         return self
 
@@ -141,6 +147,36 @@ class UnderSampleKNN(KNeighborsTimeSeriesClassifier):
             proba_prediction = np.sum(super().predict_proba(X), axis=0) / len(X)
             proba_predictions.append(proba_prediction)
         return np.array(proba_predictions)
+
+    def get_params(self, deep=True):
+        params = super().get_params(deep)
+        params.update({"min_len": self.min_len})
+        return params
+
+    def set_params(self, **params):
+        if "min_len" in params:
+            self.min_len = params["min_len"]
+            del params["min_len"]
+        return super().set_params(**params)
+
+
+class UndersampleTimeSeriesSVM(TimeSeriesSVC):
+    def __init__(self, min_len, kernel="gak", n_jobs=None, **kw_args):
+        self.min_len = min_len
+        super().__init__(kernel=kernel, n_jobs=n_jobs, **kw_args)
+
+    def fit(self, measurements, y, **kwargs):
+        X, y = undersample(measurements, y, self.min_len)
+        super().fit(to_time_series_dataset(X), y, **kwargs)
+        return self
+
+    def convert(self, measurements: List[pd.DataFrame]):
+        return convert(measurements, self.min_len)
+
+    def predict(self, measurements):
+        X, ranges = self.convert(measurements)
+        predictions = super().predict(X)
+        return [stats.mode(predictions[r])[0] for r in ranges]
 
     def get_params(self, deep=True):
         params = super().get_params(deep)

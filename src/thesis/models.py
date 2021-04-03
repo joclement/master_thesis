@@ -32,7 +32,13 @@ from tslearn.preprocessing import TimeSeriesScalerMeanVariance, TimeSeriesScaler
 from tslearn.svm import TimeSeriesSVC
 
 from . import prepared_data
-from .classifiers import LukasMeanDist, MyKerasClassifier, PolarityKNN, UnderSampleKNN
+from .classifiers import (
+    LukasMeanDist,
+    MyKerasClassifier,
+    PolarityKNN,
+    UnderSampleKNN,
+    UndersampleTimeSeriesSVM,
+)
 from .constants import K, RANDOM_STATE, TOP_K_ACCURACY_SCORE
 from .prepared_data import NormalizationMethod, Reshaper
 
@@ -246,6 +252,7 @@ CLASSIFIER_MAP = {
     "svm_dtw": TimeSeriesSVC,
     "lgbm": LGBMClassifier,
     "uknn_dtw": UnderSampleKNN,
+    "usvm_dtw": UndersampleTimeSeriesSVM,
     "polknn_dtw": PolarityKNN,
 }
 
@@ -266,6 +273,7 @@ def add_classifier(
             "knn",
             "knn_dtw",
             "uknn_dtw",
+            "usvm_dtw",
             "polknn_dtw",
         }:
             classifier_config["random_state"] = RANDOM_STATE

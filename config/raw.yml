@@ -65,6 +65,12 @@ models:
       weights: "distance"
     grid: *knn_grid
 
+  usvm_dtw-raw:
+    normalize: "none"
+    classifier:
+      min_len: *min_len
+      n_jobs: *n_jobs
+
   polknn_dtw-raw:
     normalize: "none"
     classifier:
