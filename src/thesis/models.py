@@ -21,6 +21,7 @@ from sklearn.feature_selection import (
     SelectKBest,
     VarianceThreshold,
 )
+from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
@@ -247,6 +248,7 @@ CLASSIFIER_MAP = {
     "knn": KNeighborsClassifier,
     "knn_dtw": KNeighborsTimeSeriesClassifier,
     "pytsknn": PytsKNN,
+    "lr": LogisticRegression,
     "ott_algo": LukasMeanDist,
     "svm": SVC,
     "svm_dtw": TimeSeriesSVC,
