@@ -211,7 +211,12 @@ class ModelHandler:
 
         data_config = model_config["data"] if "data" in model_config else {}
         get_feature_builder = getattr(prepared_data, data_id)
-        pipeline.append((data_id, get_feature_builder(**data_config)))
+        data_transformer = get_feature_builder(**data_config)
+        if isinstance(data_transformer, list):
+            for t in data_transformer:
+                pipeline.append(t)
+        else:
+            pipeline.append((data_id, data_transformer))
 
         add_selector(pipeline, model_config)
         add_scaler(

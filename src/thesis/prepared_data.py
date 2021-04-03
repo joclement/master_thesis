@@ -198,13 +198,11 @@ def oned(**config):
 
 
 def oned_weasel(**config):
-    return Pipeline(
-        [
-            ("oned", Oned(**config["oned"])),
-            ("reshaper", Reshaper()),
-            ("weasel", WEASEL(**config["weasel"])),
-        ]
-    )
+    return [
+        ("oned", Oned(**config["oned"])),
+        ("reshaper", Reshaper()),
+        ("weasel", WEASEL(**config["weasel"])),
+    ]
 
 
 def oned_boss(**config):
