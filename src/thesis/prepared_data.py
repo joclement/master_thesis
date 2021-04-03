@@ -209,7 +209,7 @@ def oned_boss(**config):
     return Pipeline(
         [
             ("oned", Oned(**config["oned"])),
-            (("reshaper", Reshaper())),
+            ("reshaper", Reshaper()),
             ("boss", BOSS(**config["boss"])),
         ]
     )
