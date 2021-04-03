@@ -259,7 +259,7 @@ def add_classifier(
     if classifier_id == "mlp":
         classifier = get_mlp(defects, **classifier_config)
     else:
-        if classifier_id not in [
+        if classifier_id not in {
             "bossvs",
             "pytsknn",
             "ott_algo",
@@ -267,7 +267,7 @@ def add_classifier(
             "knn_dtw",
             "uknn_dtw",
             "polknn_dtw",
-        ]:
+        }:
             classifier_config["random_state"] = RANDOM_STATE
         classifier = CLASSIFIER_MAP[classifier_id](**classifier_config)
     pipeline.append(("classifier", classifier))
