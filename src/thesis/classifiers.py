@@ -93,9 +93,6 @@ def convert(measurements: List[pd.DataFrame], min_len):
     return to_time_series_dataset(X), ranges
 
 
-MIN_LEN = 247
-
-
 class UnderSampleKNN(KNeighborsTimeSeriesClassifier):
     def __init__(
         self,
