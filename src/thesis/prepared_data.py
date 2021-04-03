@@ -127,7 +127,7 @@ class Oned(BaseEstimator, TransformerMixin):
             )
         elif len(time_series.index) > self._time_series_len:
             time_series = time_series.iloc[:-1]
-        return time_series
+        return time_series.astype(np.float16)
 
     def fit(self, measurements: List[pd.DataFrame], y=None, **kwargs):
         return self
