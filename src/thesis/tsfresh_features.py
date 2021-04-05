@@ -50,8 +50,10 @@ def save_extract_features(
     duration=DEFAULT_DURATION,
     frequency=MIN_TIME_DIFF,
 ):
+    click.echo("INFO: _convert_to_tsfresh_dataset")
     all_df = _convert_to_tsfresh_dataset(measurements, duration, frequency)
 
+    click.echo("INFO: extract_features")
     extracted_features = extract_features(
         all_df,
         column_id="id",
@@ -63,6 +65,7 @@ def save_extract_features(
         show_warnings=False,
         n_jobs=n_jobs,
     )
+    click.echo("INFO: save csv file")
     if output_file:
         paths = [Path(df.attrs[data.PATH]) for df in measurements]
         extracted_features[data.PATH] = paths
@@ -142,7 +145,9 @@ def main(
     frequency: str,
 ):
     measurements, _ = data.read_recursive(input_directory, TreatNegValues.zero)
+    click.echo("INFO: normalize measurements")
     measurements = MeasurementNormalizer().transform(measurements)
+    click.echo("INFO: split measurements")
     if split:
         measurements = prepared_data.adapt_durations(
             measurements, step_duration=DEFAULT_DURATION
@@ -151,6 +156,7 @@ def main(
     y = pd.Series(data.get_defects(measurements))
 
     ParameterSet = getattr(feature_extraction, parameter_set)
+    click.echo("INFO: save_extract_features")
     extracted_features = save_extract_features(
         measurements,
         n_jobs,
