@@ -151,6 +151,7 @@ def read(
         sep=SEPERATOR,
         decimal=DECIMAL_SIGN,
         usecols=[TIME_IN_FILE, PD],
+        dtype={PD: "float32"},
     )
     _do_sanity_test(experiment, filepath)
 
