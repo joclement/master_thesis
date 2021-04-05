@@ -2,12 +2,11 @@ from itertools import product
 from pathlib import Path
 from shutil import copyfile
 
-import pandas as pd
 import pytest
 import yaml
 
 from thesis import data
-from thesis.prepared_data import split_by_durations
+from thesis.prepared_data import adapt_durations
 from thesis.tsfresh_features import save_extract_features
 
 
@@ -77,9 +76,9 @@ def classify_config_with_tsfresh(classify_config):
     config = classify_config
     data_dir = Path(config["general"]["data_dir"])
     extracted_features_path = Path(data_dir, "extracted_features.data")
-    splitted = split_by_durations(
+    splitted = adapt_durations(
         data.read_recursive(data_dir)[0],
-        pd.Timedelta(config["general"]["max_duration"]),
+        step_duration="60 seconds",
     )
     save_extract_features(splitted, 1, extracted_features_path, True)
     config["models"]["mlp-tsfresh"]["data"]["tsfresh_data"] = str(

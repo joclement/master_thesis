@@ -13,7 +13,7 @@ general:
   save_models: False
   show_plots: False
   min_duration: &min_duration "60 seconds"
-  step_duration: null
+  step_duration: "60 seconds"
   max_duration: "60 seconds"
   split: True
   min_len: 10
