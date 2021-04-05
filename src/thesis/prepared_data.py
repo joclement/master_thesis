@@ -127,14 +127,15 @@ class Oned(BaseEstimator, TransformerMixin):
             )
         elif len(time_series.index) > self._time_series_len:
             time_series = time_series.iloc[:-1]
-        return time_series.astype(np.float16)
+        return time_series.values.astype("float32", casting="same_kind")
 
     def fit(self, measurements: List[pd.DataFrame], y=None, **kwargs):
         return self
 
     def transform(self, measurements: List[pd.DataFrame], y=None, **kwargs):
         return to_time_series_dataset(
-            [self.to_time_series(df) for df in keep_needed_columns(measurements)]
+            [self.to_time_series(df) for df in keep_needed_columns(measurements)],
+            dtype="float32",
         )
 
     def _more_tags(self):
