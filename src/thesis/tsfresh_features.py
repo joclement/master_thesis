@@ -129,7 +129,7 @@ def calc_relevant_features(
     show_default=True,
     help="Choose tsfresh parameter set",
 )
-@click.option("--split", "-s", is_flag=True, help="Split data into 60 seconds samples")
+@click.option("--split", "-s", is_flag=True)
 @click.option("--duration", "-d", default="60 seconds", show_default=True)
 @click.option("--frequency", "-f", default="50us", show_default=True)
 def main(
