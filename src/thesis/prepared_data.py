@@ -15,11 +15,11 @@ from sklearn.preprocessing import FunctionTransformer
 from tslearn.utils import to_time_series_dataset
 
 from . import data, fingerprint
-from .constants import PART
+from .constants import MIN_TIME_DIFF, PART
 from .data import PATH, PD, START_TIME, TIME_DIFF, VOLTAGE_SIGN
 from .util import get_memory, to_dataTIME
 
-MAX_FREQUENCY = pd.tseries.frequencies.to_offset("50us")
+MAX_FREQUENCY = pd.tseries.frequencies.to_offset(MIN_TIME_DIFF)
 
 ONEPD_DURATION = pd.Timedelta("10 seconds")
 

@@ -14,6 +14,8 @@ class DataPart(str, Enum):
     test = "test"
 
 
+MIN_TIME_DIFF = "50us"
+
 ACCURACY_SCORE: Final = "accuracy"
 BALANCED_ACCURACY_SCORE: Final = "balanced_accuracy"
 K: Final = 3
