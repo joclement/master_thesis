@@ -134,12 +134,12 @@ def calc_relevant_features(
 @click.option("--frequency", "-f", default="50us", show_default=True)
 def main(
     input_directory,
-    n_jobs=1,
-    output_file=None,
-    parameter_set="MinimalFCParameters",
-    split: bool = True,
-    duration: str = DEFAULT_DURATION,
-    frequency: str = "50us",
+    n_jobs,
+    output_file,
+    parameter_set,
+    split: bool,
+    duration: str,
+    frequency: str,
 ):
     measurements, _ = data.read_recursive(input_directory, TreatNegValues.zero)
     measurements = MeasurementNormalizer().transform(measurements)
