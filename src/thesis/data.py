@@ -130,7 +130,7 @@ def _do_sanity_test(df: pd.DataFrame, filepath):
     if TIME_IN_FILE not in df or PD not in df:
         raise ValueError(f"TIME or PD column missing in file: {filepath}")
 
-    if (TEST_VOLTAGE in df and len(df.columns) > 6) or len(df.columns) > 5:
+    if len(df.columns) > 5:
         raise ValueError(f"Unexpected columns in file: {filepath}")
 
     if (
@@ -146,10 +146,13 @@ def read(
     treat_neg_values: TreatNegValues = TreatNegValues.nothing,
     labeled_file: bool = True,
 ) -> pd.DataFrame:
-    experiment = pd.read_csv(filepath, sep=SEPERATOR, decimal=DECIMAL_SIGN)
+    experiment = pd.read_csv(
+        filepath,
+        sep=SEPERATOR,
+        decimal=DECIMAL_SIGN,
+        usecols=[TIME_IN_FILE, PD],
+    )
     _do_sanity_test(experiment, filepath)
-
-    experiment.drop(TEST_VOLTAGE, axis=1, inplace=True, errors="ignore")
 
     assert TIME_UNIT == "ms"
     experiment[TIME_IN_FILE] *= 1000
