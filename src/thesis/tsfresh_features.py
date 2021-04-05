@@ -26,7 +26,7 @@ def _convert_to_tsfresh_dataset(
         data={
             "id": np.concatenate(
                 [
-                    np.full(time_serieses.shape[1], fill_value=i, dtype="int8")
+                    np.full(time_serieses.shape[1], fill_value=i, dtype="int16")
                     for i in range(time_serieses.shape[0])
                 ]
             ),
