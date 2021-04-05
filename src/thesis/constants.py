@@ -14,6 +14,7 @@ class DataPart(str, Enum):
     test = "test"
 
 
+DEFAULT_DURATION = "60 seconds"
 MIN_TIME_DIFF = "50us"
 
 ACCURACY_SCORE: Final = "accuracy"

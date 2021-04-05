@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import List
 
 import click
+import numpy as np
 import pandas as pd
 from tsfresh import extract_features
 from tsfresh import feature_extraction
@@ -9,30 +10,33 @@ from tsfresh.feature_selection.relevance import calculate_relevance_table
 from tsfresh.utilities.dataframe_functions import impute
 
 from . import __version__, data, prepared_data
+from .constants import DEFAULT_DURATION, MIN_TIME_DIFF
 from .data import TreatNegValues
+from .prepared_data import MeasurementNormalizer, oned_func
 
 
-def _convert_to_tsfresh_dataset(measurements: List[pd.DataFrame]) -> pd.DataFrame:
-    measurements = [m.loc[:, [data.TIME_DIFF, data.PD]] for m in measurements]
-    dfs = []
-    for index, df in enumerate(measurements):
-        pd_df_data = {
-            "id": [index] * len(df.index),
-            "sort": df[data.TIME_DIFF].cumsum(),
-            "kind": [data.PD] * len(df.index),
-            "value": df[data.PD],
+def _convert_to_tsfresh_dataset(
+    measurements: List[pd.DataFrame], duration, frequency
+) -> pd.DataFrame:
+    time_serieses = oned_func(
+        measurements, **{"fix_duration": duration, "frequency": frequency}
+    )
+    time_serieses = np.reshape(time_serieses, (time_serieses.shape[0], -1))
+    all_df = pd.DataFrame(
+        data={
+            "id": np.concatenate(
+                [
+                    np.full(time_serieses.shape[1], fill_value=i, dtype="int8")
+                    for i in range(time_serieses.shape[0])
+                ]
+            ),
+            "sort": np.tile(
+                np.arange(time_serieses.shape[1], dtype="int32"),
+                reps=time_serieses.shape[0],
+            ),
+            "value": np.ravel(time_serieses),
         }
-        dfs.append(pd.DataFrame(data=pd_df_data))
-
-        pd_df_data = {
-            "id": [index] * len(df.index),
-            "sort": df[data.TIME_DIFF].cumsum(),
-            "kind": [data.TIME_DIFF] * len(df.index),
-            "value": df[data.TIME_DIFF],
-        }
-        dfs.append(pd.DataFrame(data=pd_df_data))
-
-    all_df = pd.concat(dfs)
+    )
     assert all_df["id"].nunique() == len(measurements)
     return all_df
 
@@ -43,15 +47,17 @@ def save_extract_features(
     output_file,
     splitted: bool,
     ParameterSet=feature_extraction.MinimalFCParameters,
+    duration=DEFAULT_DURATION,
+    frequency=MIN_TIME_DIFF,
 ):
-    all_df = _convert_to_tsfresh_dataset(measurements)
+    all_df = _convert_to_tsfresh_dataset(measurements, duration, frequency)
 
     extracted_features = extract_features(
         all_df,
         column_id="id",
-        column_kind="kind",
+        column_kind=None,
         column_sort="sort",
-        column_value="value",
+        column_value=None,
         default_fc_parameters=ParameterSet(),
         impute_function=impute,
         show_warnings=False,
@@ -123,27 +129,24 @@ def calc_relevant_features(
     show_default=True,
     help="Choose tsfresh parameter set",
 )
-@click.option(
-    "--max_len",
-    "-m",
-    type=int,
-    default=100000,
-    help="Set max length for measurement files",
-)
 @click.option("--split", "-s", is_flag=True, help="Split data into 60 seconds samples")
+@click.option("--duration", "-d", default="60 seconds", show_default=True)
+@click.option("--frequency", "-f", default="50us", show_default=True)
 def main(
     input_directory,
     n_jobs=1,
     output_file=None,
     parameter_set="MinimalFCParameters",
-    max_len: int = 100000,
     split: bool = True,
+    duration: str = DEFAULT_DURATION,
+    frequency: str = "50us",
 ):
     measurements, _ = data.read_recursive(input_directory, TreatNegValues.zero)
+    measurements = MeasurementNormalizer().transform(measurements)
     if split:
-        measurements = prepared_data.adapt_durations(measurements)
-
-    measurements = [df.iloc[:max_len, :] for df in measurements]
+        measurements = prepared_data.adapt_durations(
+            measurements, step_duration=DEFAULT_DURATION
+        )
 
     y = pd.Series(data.get_defects(measurements))
 
@@ -154,5 +157,7 @@ def main(
         output_file,
         split,
         ParameterSet,
+        duration=duration,
+        frequency=frequency,
     )
     calc_relevant_features(extracted_features, y, n_jobs)
