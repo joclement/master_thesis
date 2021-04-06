@@ -37,6 +37,7 @@ def _convert_to_tsfresh_dataset(
             "value": np.ravel(time_serieses),
         }
     )
+    all_df = all_df.loc[all_df["value"] > 0.0]
     assert all_df["id"].nunique() == len(measurements)
     return all_df
 
