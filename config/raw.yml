@@ -73,7 +73,6 @@ models:
       n_jobs: *n_jobs
       pos_neighbors: 1
       neg_neighbors: 15
-      metric: "dtw"
       weights: "distance"
     grid:
       classifier:
@@ -90,6 +89,3 @@ models:
         weights:
           - "uniform"
           - "distance"
-        metric:
-          - "dtw"
-          - "euclidean"
