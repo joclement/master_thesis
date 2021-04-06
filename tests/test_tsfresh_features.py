@@ -45,3 +45,6 @@ def test__convert_to_tsfresh_dataset(measurements):
         measurements, "223 seconds", "50ms"
     )
     assert type(dataset) is pd.DataFrame
+    assert dataset["value"].dtype == "float32"
+    assert dataset["id"].dtype == "int16"
+    assert dataset["sort"].dtype == "int32"
