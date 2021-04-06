@@ -72,7 +72,7 @@ models:
       min_len: *min_len
       n_jobs: *n_jobs
       pos_neighbors: 1
-      neg_neighbors: 1
+      neg_neighbors: 15
       metric: "dtw"
       weights: "distance"
     grid:
