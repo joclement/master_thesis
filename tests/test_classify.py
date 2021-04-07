@@ -42,13 +42,9 @@ def test_classify_ClassificationHandler_with_saving(
     assert len(list(output_dir.rglob("confusion_matrix_*.svg"))) == num_of_models * (
         config["general"]["cv"] + 1
     )
+    assert len(list(output_dir.rglob("model-*.p"))) == num_of_models
     num_of_mlp_models = len([m for m in config["models-to-run"] if "mlp-" in m])
-    assert len(list(output_dir.rglob("model-*.p"))) == num_of_models - num_of_mlp_models
-    assert (
-        2 * num_of_mlp_models
-        <= len(list(output_dir.rglob("pipeline_step*.p")))
-        <= 4 * num_of_mlp_models
-    )
+    assert len(list(output_dir.rglob("keras.h5"))) == num_of_mlp_models
 
 
 def test_classify_ClassificationHandler_step_duration(classify_config):

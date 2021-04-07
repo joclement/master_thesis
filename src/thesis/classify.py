@@ -504,16 +504,12 @@ class ClassificationHandler:
             )
 
         if is_keras(pipeline):
-            pipeline_steps = list(
-                zip(pipeline.named_steps.keys(), pipeline.named_steps.values())
+            pipeline.named_steps["classifier"].model.save(
+                Path(model_folder, "keras.h5")
             )
-            for index, named_step in enumerate(pipeline_steps[:-1]):
-                name, transformer = named_step
-                with open(
-                    Path(model_folder, f"pipeline_step{index}_{name}.p"), "wb"
-                ) as file:
-                    pickle.dump(transformer, file)
-            get_classifier(pipeline).model.save(Path(model_folder, "model.h5"))
+            pipeline.named_steps["classifier"].model = None
+            with open(Path(model_folder, f"{MODEL_ID}-{model_name}.p"), "wb") as file:
+                pickle.dump(pipeline, file)
         else:
             with open(Path(model_folder, f"{MODEL_ID}-{model_name}.p"), "wb") as file:
                 pickle.dump(pipeline, file)
