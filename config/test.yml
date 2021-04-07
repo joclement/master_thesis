@@ -54,8 +54,6 @@ defaults:
   duration: &duration "30 seconds"
   step_duration: &step_duration "10 seconds"
   n_jobs: &n_jobs 1
-  stop_early: &stop_early False
-  patience: &patience 1
   batch_size: &batch_size 10
   epochs: &epochs 3
   verbose: &verbose 0
@@ -254,8 +252,6 @@ models:
       optimizer: "adam"
       batch_size: *batch_size
       epochs: *epochs
-      stop_early: *stop_early
-      patience: *patience
       verbose: *verbose
     grid:
       classifier: *mlp_grid
@@ -269,8 +265,6 @@ models:
       dropout: 0.05
       optimizer: "adam"
       epochs: *epochs
-      stop_early: *stop_early
-      patience: *patience
       verbose: *verbose
     grid:
       classifier: *mlp_grid
@@ -284,8 +278,6 @@ models:
       optimizer: "adam"
       batch_size: *batch_size
       epochs: *epochs
-      stop_early: *stop_early
-      patience: *patience
       verbose: *verbose
     grid:
       classifier: *mlp_grid
@@ -303,8 +295,6 @@ models:
       optimizer: "adam"
       batch_size: *batch_size
       epochs: *epochs
-      stop_early: *stop_early
-      patience: *patience
       verbose: *verbose
     grid:
       classifier: *mlp_grid
@@ -322,8 +312,6 @@ models:
       dropout: 0.05
       optimizer: "adam"
       epochs: *epochs
-      stop_early: *stop_early
-      patience: *patience
       verbose: *verbose
 
   mlp-finger_both:
@@ -336,8 +324,6 @@ models:
       dropout: 0.05
       optimizer: "adam"
       epochs: *epochs
-      stop_early: *stop_early
-      patience: *patience
       verbose: *verbose
 
   svm-finger_all:

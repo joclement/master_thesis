@@ -3,9 +3,7 @@ from typing import Final, List, Tuple
 import imblearn
 from imblearn.under_sampling import RandomUnderSampler
 import keras
-from keras.callbacks import EarlyStopping
 from keras.layers import Dense, Dropout
-from keras.metrics import TopKCategoricalAccuracy
 from keras.models import Sequential
 from keras.wrappers.scikit_learn import KerasClassifier
 from lightgbm import LGBMClassifier
@@ -40,7 +38,7 @@ from .classifiers import (
     UnderSampleKNN,
     UndersampleTimeSeriesSVM,
 )
-from .constants import K, RANDOM_STATE, TOP_K_ACCURACY_SCORE
+from .constants import RANDOM_STATE
 from .prepared_data import NormalizationMethod, Reshaper
 
 
@@ -303,27 +301,14 @@ def build_mlp(
     model.add(
         Dense(output_dim, activation="softmax"),
     )
-    top_k_accuracy = TopKCategoricalAccuracy(k=K, name=TOP_K_ACCURACY_SCORE)
     model.compile(
         loss="categorical_crossentropy",
         optimizer=optimizer,
-        metrics=["accuracy", top_k_accuracy],
     )
     return model
 
 
 def get_mlp(defects: set, **classifier_config: dict) -> KerasClassifier:
-    callbacks = []
-    if classifier_config["stop_early"]:
-        earlyStopping = EarlyStopping(
-            monitor="loss",
-            min_delta=0,
-            patience=classifier_config["patience"],
-            verbose=classifier_config["verbose"],
-            mode="auto",
-            restore_best_weights=True,
-        )
-        callbacks.append([earlyStopping])
     model = MyKerasClassifier(
         build_fn=build_mlp,
         optimizer=classifier_config["optimizer"],
@@ -333,6 +318,5 @@ def get_mlp(defects: set, **classifier_config: dict) -> KerasClassifier:
         epochs=classifier_config["epochs"],
         batch_size=classifier_config["batch_size"],
         verbose=classifier_config["verbose"],
-        callbacks=tuple(callbacks),
     )
     return model

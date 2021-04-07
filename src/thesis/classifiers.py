@@ -51,7 +51,7 @@ class LukasMeanDist(KNeighborsClassifier):
 class MyKerasClassifier(KerasClassifier):
     def fit(self, X, y, **kwargs):
         super().set_params(**{"input_dim": X.shape[1]})
-        self.history = super().fit(X, y, **kwargs)
+        super().fit(X, y, **kwargs)
         return self
 
 
