@@ -45,7 +45,7 @@ from .prepared_data import NormalizationMethod, Reshaper
 
 
 def get_classifier(pipeline: Pipeline) -> BaseEstimator:
-    return list(pipeline.named_steps.values())[-1]
+    return pipeline.named_steps["classifier"]
 
 
 def no_sample_weight(classifier: BaseEstimator) -> bool:
