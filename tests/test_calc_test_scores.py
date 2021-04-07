@@ -23,6 +23,8 @@ def test_main(csv_folder, results_dir_with_saved_models, tmpdir):
     assert len(model_files) == 1
     model_file = model_files[0]
 
+    test_scores = Path(tmpdir, "test_scores.csv")
+    assert not test_scores.exists()
     result = runner.invoke(
         calc_test_scores.click_command,
         [
@@ -31,10 +33,13 @@ def test_main(csv_folder, results_dir_with_saved_models, tmpdir):
             str(model_file),
             "-f",
             str(finger_preprocessor_file),
+            "-o",
+            str(test_scores),
         ],
     )
 
     assert result.exit_code == 0
+    assert test_scores.exists()
 
 
 def test_main_version_succeeds():

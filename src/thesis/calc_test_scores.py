@@ -29,6 +29,7 @@ def main(
     model_file: Path,
     finger_preprocessor_file: Optional[Path] = None,
     keras_model: Optional[Path] = None,
+    output_file: Optional[Path] = None,
     show: bool = False,
 ):
     np.set_printoptions(precision=2)
@@ -64,11 +65,13 @@ def main(
         f"Top {K} accuracy",
         top_k_accuracy_score(y, proba_predictions, k=K, labels=defects),
     )
-    predictions = pd.DataFrame(
-        data={"model": predictions},
+    predictions_df = pd.DataFrame(
+        data={"predictions": predictions, "true": y},
         index=build_index(measurements),
     )
-    plot_predictions(predictions, show=show)
+    if output_file:
+        predictions_df.to_csv(output_file)
+    plot_predictions(predictions_df, show=show)
 
 
 @click.command()
@@ -88,6 +91,12 @@ def main(
     type=click.Path(exists=True, file_okay=True),
     help="Keras model saved in H5",
 )
+@click.option(
+    "--output-file",
+    "-o",
+    type=click.Path(exists=False, file_okay=True, dir_okay=False),
+    help="Save predictions",
+)
 @click.option("--show/--no-show", default=False)
 def click_command(
     test_folder,
@@ -95,6 +104,15 @@ def click_command(
     model,
     keras_model,
     finger_preprocessor,
+    output_file,
     show,
 ):
-    main(test_folder, preprocessor, model, finger_preprocessor, keras_model, show)
+    main(
+        test_folder,
+        preprocessor,
+        model,
+        finger_preprocessor,
+        keras_model,
+        output_file,
+        show,
+    )
