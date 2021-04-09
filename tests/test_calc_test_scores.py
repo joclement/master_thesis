@@ -28,8 +28,11 @@ def test_main(csv_folder, results_dir_with_saved_models, tmpdir):
     result = runner.invoke(
         calc_test_scores.click_command,
         [
+            "-t",
             str(csv_folder),
+            "-p",
             str(preprocessor_file),
+            "-m",
             str(model_file),
             "-f",
             str(finger_preprocessor_file),

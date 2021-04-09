@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 from warnings import resetwarnings, warn
 
 import click
@@ -24,7 +24,7 @@ def print_score(name: str, value: float) -> None:
 
 
 def main(
-    test_folder: Path,
+    test_folders: List[Path],
     preprocessor_file: Path,
     model_file: Path,
     finger_preprocessor_file: Optional[Path] = None,
@@ -34,7 +34,11 @@ def main(
 ):
     np.set_printoptions(precision=2)
 
-    measurements, _ = data.read_recursive(test_folder, data.TreatNegValues.absolute)
+    measurements = []
+    for test_folder in test_folders:
+        measurements.extend(
+            data.read_recursive(test_folder, data.TreatNegValues.absolute)[0]
+        )
     y = np.array(data.get_defects(measurements))
 
     predictionHandler = PredictionHandler(
@@ -76,9 +80,38 @@ def main(
 
 @click.command()
 @click.version_option(version=__version__)
-@click.argument("test-folder", type=click.Path(exists=True, dir_okay=True))
-@click.argument("preprocessor", type=click.Path(exists=True, file_okay=True))
-@click.argument("model", type=click.Path(exists=True, file_okay=True))
+@click.argument("test", type=click.Path(exists=True, dir_okay=True))
+@click.argument("test", type=click.Path(exists=True, dir_okay=True))
+@click.option(
+    "-t",
+    "--test",
+    "test_folders",
+    type=click.Path(exists=True, file_okay=True),
+    help="Test location",
+    required=True,
+    multiple=True,
+)
+@click.option(
+    "-m",
+    "--model",
+    type=click.Path(exists=True, file_okay=True),
+    help="Pickled model path",
+    required=True,
+)
+@click.option(
+    "-p",
+    "--preprocessor",
+    type=click.Path(exists=True, file_okay=True),
+    help="Pickled preprocessor path",
+    required=True,
+)
+@click.option(
+    "-p",
+    "--preprocessor",
+    type=click.Path(exists=True, file_okay=True),
+    help="Pickled preprocessor path",
+    required=True,
+)
 @click.option(
     "-f",
     "--finger-preprocessor",
@@ -99,7 +132,7 @@ def main(
 )
 @click.option("--show/--no-show", default=False)
 def click_command(
-    test_folder,
+    test_folders,
     preprocessor,
     model,
     keras_model,
@@ -108,7 +141,7 @@ def click_command(
     show,
 ):
     main(
-        test_folder,
+        test_folders,
         preprocessor,
         model,
         finger_preprocessor,
