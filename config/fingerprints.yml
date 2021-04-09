@@ -151,8 +151,12 @@ models:
 
   mlp-tsfresh:
     data:
-        tsfresh_data: ./data/csv-files/prepared/dataset/train/tsfresh-features_efficient_60seconds_maxlen-100000.data
+        tsfresh_data: ./data/csv-files/prepared/dataset/train/tsfresh-features_efficient_60seconds.data
     normalize: "zscore"
+    select:
+      tsfresh:
+        multiclass: true
+        n_significant: 2
     classifier:
       hidden_layer_sizes: !!python/tuple [5,3]
       dropout: 0.0
@@ -160,12 +164,7 @@ models:
       batch_size: 1
       epochs: *epochs
       verbose: *verbose
-    grid:
-      classifier: *mlp_grid
-      selector: *kbest_grid
-    select:
-      kbest:
-        k: 100
+    grid: "fingerprint_compare"
 
   mlp-finger_all:
     normalize: "zscore"
