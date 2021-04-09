@@ -1,6 +1,6 @@
 general:
-  balance: True
-  balance_polarity: True
+  balance: False
+  balance_polarity: False
   normalize_pd: True
   calc_train_score: True
   verbose: False
