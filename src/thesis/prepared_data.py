@@ -367,7 +367,7 @@ def adapt_durations(
     step_duration: Optional[str] = None,
     min_len: int = 0,
     max_len: Optional[int] = None,
-    repeat: Optional[int] = None,
+    repeat: int = 0,
     split: bool = True,
     drop_empty: bool = True,
 ):
