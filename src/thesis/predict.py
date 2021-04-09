@@ -23,7 +23,9 @@ class PredictionHandler:
         with open(model_pipeline_path, "rb") as model_file:
             self.classifier = pickle.load(model_file)
         if keras_model_path is not None:
-            self.classifier.named_step["classifier"] = load_model(keras_model_path)
+            self.classifier.named_steps["classifier"].model = load_model(
+                keras_model_path
+            )
         if is_data_finger(self.classifier.steps[0][0]):
             if finger_preprocessor_path is not None:
                 with open(finger_preprocessor_path, "rb") as finger_preprocessor_file:
