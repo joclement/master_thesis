@@ -80,8 +80,6 @@ def main(
 
 @click.command()
 @click.version_option(version=__version__)
-@click.argument("test", type=click.Path(exists=True, dir_okay=True))
-@click.argument("test", type=click.Path(exists=True, dir_okay=True))
 @click.option(
     "-t",
     "--test",
@@ -96,13 +94,6 @@ def main(
     "--model",
     type=click.Path(exists=True, file_okay=True),
     help="Pickled model path",
-    required=True,
-)
-@click.option(
-    "-p",
-    "--preprocessor",
-    type=click.Path(exists=True, file_okay=True),
-    help="Pickled preprocessor path",
     required=True,
 )
 @click.option(
