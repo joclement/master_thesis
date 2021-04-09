@@ -348,22 +348,21 @@ def split_by_durations(
         splitted_measurements.extend(
             _split_by_duration(df, duration, True, drop_empty=drop_empty)
         )
-    if step_duration is None:
-        return splitted_measurements
-    stepped_measurements = []
-    for idx in range(0, len(splitted_measurements) - length + 1):
-        df = pd.concat(splitted_measurements[idx : idx + length])
-        df = df.reset_index(drop=True)
-        df.attrs = splitted_measurements[idx].attrs
-        df.attrs[PART] = idx
-        stepped_measurements.append(df)
-    return stepped_measurements
+    if step_duration is not None and max_duration / step_duration > 1:
+        stepped_measurements = []
+        for idx in range(0, len(splitted_measurements) - length + 1):
+            df = pd.concat(splitted_measurements[idx : idx + length])
+            df = df.reset_index(drop=True)
+            df.attrs = splitted_measurements[idx].attrs
+            stepped_measurements.append(df)
+        return stepped_measurements
+    return splitted_measurements
 
 
 def adapt_durations(
     measurements: List[pd.DataFrame],
     min_duration: str = "60 seconds",
-    max_duration: str = "60 seconds",
+    max_duration: Optional[str] = None,
     step_duration: Optional[str] = None,
     min_len: int = 0,
     max_len: Optional[int] = None,
@@ -381,16 +380,16 @@ def adapt_durations(
 
     if len(long_enough_measurements) == 0:
         raise ValueError("No long enough data.")
-    if not split:
+    if not split and max_duration is None and max_len is None:
         return long_enough_measurements
-    if max_duration is not None:
+    if split and max_duration is not None:
         return split_by_durations(
             long_enough_measurements,
             pd.Timedelta(max_duration),
             step_duration=pd.Timedelta(step_duration) if step_duration else None,
             drop_empty=drop_empty,
         )
-    elif max_len is not None:
+    if split and max_len is not None:
         return split_by_lengths(long_enough_measurements, max_len, repeat)
     raise ValueError("Invalid config.")
 

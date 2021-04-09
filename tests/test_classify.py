@@ -129,6 +129,8 @@ def test_classify_ClassificationHandler_normalize_pd_values(config):
 def test_classify_ClassificationHandler_normalize_pd_values_no_split(config):
     config["general"]["normalize_pd"] = True
     config["general"]["split"] = False
+    config["general"]["max_len"] = None
+    config["general"]["max_duration"] = None
 
     handler = classify.ClassificationHandler(config)
     assert all([df[data.PD].max() == 1.0 for df in handler.measurements])

@@ -133,26 +133,19 @@ def calc_relevant_features(
     show_default=True,
     help="Choose tsfresh parameter set",
 )
-@click.option("--split", "-s", is_flag=True)
-@click.option("--duration", "-d", default="60 seconds", show_default=True)
-@click.option("--frequency", "-f", default="50us", show_default=True)
 def main(
     input_directory,
     n_jobs,
     output_file,
     parameter_set,
-    split: bool,
-    duration: str,
-    frequency: str,
 ):
     measurements, _ = data.read_recursive(input_directory, TreatNegValues.zero)
     click.echo("INFO: normalize measurements")
     measurements = MeasurementNormalizer().transform(measurements)
     click.echo("INFO: split measurements")
-    if split:
-        measurements = prepared_data.adapt_durations(
-            measurements, step_duration=DEFAULT_DURATION
-        )
+    measurements = prepared_data.adapt_durations(
+        measurements, max_duration=DEFAULT_DURATION, step_duration="30 seconds"
+    )
 
     y = pd.Series(data.get_defects(measurements))
 
@@ -162,9 +155,6 @@ def main(
         measurements,
         n_jobs,
         output_file,
-        split,
         ParameterSet,
-        duration=duration,
-        frequency=frequency,
     )
     calc_relevant_features(extracted_features, y, n_jobs)

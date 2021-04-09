@@ -78,7 +78,8 @@ def classify_config_with_tsfresh(classify_config):
     extracted_features_path = Path(data_dir, "extracted_features.data")
     splitted = adapt_durations(
         data.read_recursive(data_dir)[0],
-        step_duration="60 seconds",
+        max_duration="60 seconds",
+        step_duration="30 seconds",
     )
     save_extract_features(splitted, 1, extracted_features_path, True, frequency="500ms")
     config["models"]["mlp-tsfresh"]["data"]["tsfresh_data"] = str(
