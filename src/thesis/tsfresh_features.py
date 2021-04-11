@@ -113,7 +113,7 @@ def calc_relevant_features(
 @click.option(
     "--n_jobs",
     "-j",
-    default=1,
+    default=0,
     show_default=True,
     help="Number of jobs",
 )
