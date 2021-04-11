@@ -46,7 +46,6 @@ def save_extract_features(
     measurements: List[pd.DataFrame],
     n_jobs: int,
     output_file,
-    splitted: bool,
     ParameterSet=feature_extraction.MinimalFCParameters,
     duration=DEFAULT_DURATION,
     frequency=MIN_TIME_DIFF,
@@ -68,13 +67,11 @@ def save_extract_features(
     )
     click.echo("INFO: save csv file")
     if output_file:
+        index = [data.PATH, prepared_data.PART]
         paths = [Path(df.attrs[data.PATH]) for df in measurements]
         extracted_features[data.PATH] = paths
-        index = [data.PATH]
-        if splitted:
-            parts = [df.attrs[prepared_data.PART] for df in measurements]
-            extracted_features[prepared_data.PART] = parts
-            index.append(prepared_data.PART)
+        parts = [df.attrs[prepared_data.PART] for df in measurements]
+        extracted_features[prepared_data.PART] = parts
         extracted_features.set_index(index, verify_integrity=True).to_csv(output_file)
     extracted_features.drop(
         columns=[data.PATH, prepared_data.PART], inplace=True, errors="ignore"
