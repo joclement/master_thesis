@@ -81,7 +81,7 @@ def classify_config_with_tsfresh(classify_config):
         max_duration="60 seconds",
         step_duration="30 seconds",
     )
-    save_extract_features(splitted, 1, extracted_features_path, True, frequency="500ms")
+    save_extract_features(splitted, 1, extracted_features_path, frequency="500ms")
     config["models"]["mlp-tsfresh"]["data"]["tsfresh_data"] = str(
         extracted_features_path
     )
