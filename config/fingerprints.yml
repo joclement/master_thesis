@@ -151,12 +151,12 @@ models:
 
   mlp-tsfresh:
     data:
-        tsfresh_data: ./data/csv-files/prepared/dataset/train/tsfresh-features_efficient_60seconds.data
+        tsfresh_data: ./data/csv-files/prepared/dataset/train/tsfresh_features_efficient_duration60seconds_stepduration30seconds.data
     normalize: "zscore"
     select:
       tsfresh:
         multiclass: true
-        n_significant: 2
+        n_significant: 3
     classifier:
       hidden_layer_sizes: !!python/tuple [5,3]
       dropout: 0.0
