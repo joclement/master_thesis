@@ -66,9 +66,10 @@ class TsfreshTransformer(TransformerMixin, BaseEstimator):
         self.n_features_in_ = len(self._tsfresh_data.columns)
         return self
 
-    def transform(self, measurements: List[pd.DataFrame], y=None, **kwargs):
-        wanted_rows = [fingerprint.get_X_index(df) for df in measurements]
-        return self._tsfresh_data.loc[wanted_rows, :]
+    def transform(self, measurements: List[pd.DataFrame], **kwargs):
+        return self._tsfresh_data.loc[
+            [fingerprint.get_X_index(df) for df in measurements], :
+        ]
 
     def _more_tags(self):
         return {"no_validation": True, "requires_fit": True}
