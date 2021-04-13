@@ -47,15 +47,14 @@ class MeasurementNormalizer(TransformerMixin, BaseEstimator):
 
 class TsfreshTransformer(TransformerMixin, BaseEstimator):
     def __init__(self, tsfresh_data_path, **kw_args):
-        self.set_tsfresh_data(tsfresh_data_path)
+        self.tsfresh_data_path = tsfresh_data_path
 
     def _get_feature_name(self, _):
         self._i += 1
         return self._i
 
-    def set_tsfresh_data(self, tsfresh_data_path):
+    def set_tsfresh_data(self):
         self._i = 0
-        self.tsfresh_data_path = tsfresh_data_path
         self._tsfresh_data = pd.read_csv(
             self.tsfresh_data_path, header=0, index_col=[PATH, PART]
         )
@@ -63,6 +62,7 @@ class TsfreshTransformer(TransformerMixin, BaseEstimator):
         del self._i
 
     def fit(self, measurements: List[pd.DataFrame], y=None, **kwargs):
+        self.set_tsfresh_data()
         self.n_features_in_ = len(self._tsfresh_data.columns)
         return self
 
@@ -76,14 +76,14 @@ class TsfreshTransformer(TransformerMixin, BaseEstimator):
         return tsfresh_data
 
     def _more_tags(self):
-        return {"no_validation": True, "requires_fit": False}
+        return {"no_validation": True, "requires_fit": True}
 
     def get_params(self, deep=True):
-        return {"tsfresh_data_path": str(self.tsfresh_data_path)}
+        return {"tsfresh_data_path": self.tsfresh_data_path}
 
     def set_params(self, **parameters):
         if "tsfresh_data_path" in parameters:
-            self.set_tsfresh_data(parameters["tsfresh_data_path"])
+            self.tsfresh_data_path = parameters["tsfresh_data_path"]
         return self
 
 
