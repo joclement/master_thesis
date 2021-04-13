@@ -27,6 +27,12 @@ def test_visualize_pd_data_main_dir_succeeds(tiny_csv_folder):
     assert result.exit_code == 0
 
 
+def test_visualize_pd_data_main_split_succeeds(csv_folder):
+    runner = click.testing.CliRunner()
+    result = runner.invoke(visualize_pd_data.main, ["--split", csv_folder])
+    assert result.exit_code == 0
+
+
 def test_visualize_pd_data_main_dir_save_succeeds(tiny_csv_folder, tmpdir):
     runner = click.testing.CliRunner()
     result = runner.invoke(

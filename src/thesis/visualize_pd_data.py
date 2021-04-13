@@ -200,12 +200,14 @@ def main(path, output_folder, recursive, show, split):
         _generate_plots_for_single_csv(data.read(path), output_folder, show)
     else:
         measurements, csv_filepaths = data.read_recursive(path)
-        if split and not recursive:
-            measurements = prepared_data.adapt_durations(measurements)
         if recursive:
             for measurement, csv_filepath in zip(measurements, csv_filepaths):
                 single_csv_folder = Path(output_folder, Path(csv_filepath).name)
                 single_csv_folder.mkdir(parents=True, exist_ok=False)
                 _generate_plots_for_single_csv(measurement, single_csv_folder, show)
+        if split:
+            measurements = prepared_data.adapt_durations(
+                measurements, max_duration="60 seconds"
+            )
         _generate_summary_plots(measurements, output_folder, show)
         _generate_polarity_plot(measurements, output_folder, show)
