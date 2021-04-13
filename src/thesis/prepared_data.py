@@ -370,10 +370,10 @@ def adapt_durations(
 ):
     min_dur = to_dataTIME(pd.Timedelta(min_duration))
     long_enough_measurements = [
-        df for df in measurements if df[data.TIME_DIFF].sum() > min_dur
+        df for df in measurements if df[data.TIME_DIFF].sum() >= min_dur
     ]
     long_enough_measurements = [
-        df for df in long_enough_measurements if len(df.index) > min_len
+        df for df in long_enough_measurements if len(df.index) >= min_len
     ]
 
     if len(long_enough_measurements) == 0:
