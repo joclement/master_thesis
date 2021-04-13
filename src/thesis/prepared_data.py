@@ -16,7 +16,7 @@ from tslearn.utils import to_time_series_dataset
 
 from . import data, fingerprint
 from .constants import MIN_TIME_DIFF, PART
-from .data import PATH, PD, START_TIME, TIME_DIFF, VOLTAGE_SIGN
+from .data import PATH, PD, START_TIME, TIME_DIFF
 from .util import get_memory, to_dataTIME
 
 MAX_FREQUENCY = pd.tseries.frequencies.to_offset(MIN_TIME_DIFF)
@@ -68,12 +68,7 @@ class TsfreshTransformer(TransformerMixin, BaseEstimator):
 
     def transform(self, measurements: List[pd.DataFrame], y=None, **kwargs):
         wanted_rows = [fingerprint.get_X_index(df) for df in measurements]
-        tsfresh_data = self._tsfresh_data.loc[wanted_rows, :]
-        tsfresh_data[fingerprint.POLARITY] = pd.Series(
-            data=[df.attrs[VOLTAGE_SIGN] for df in measurements],
-            index=wanted_rows,
-        )
-        return tsfresh_data
+        return self._tsfresh_data.loc[wanted_rows, :]
 
     def _more_tags(self):
         return {"no_validation": True, "requires_fit": True}
