@@ -46,7 +46,29 @@ def _info_on_unique_filenames(csv_filepaths: list):
             )
 
 
-def _check_similar_filenames_for_content(measurements: list, csv_filepaths: list):
+def _is_subarray(a, b):
+    try:
+        i = np.where(a == b[0])[0][0]
+    except IndexError:
+        return b.size == 0
+    a = a[i : i + b.size]
+    if a.size < b.size:
+        return False
+    return (a == b).all()
+
+
+def _check_subarrays(df1, df2):
+    if _is_subarray(df2[data.PD].values, df1[data.PD].values):
+        click.echo("df1 PD values are sub array of df2 PD values!")
+    if _is_subarray(df2[data.TIME_DIFF].values, df1[data.TIME_DIFF].values):
+        click.echo("df1 time diff values are sub array of df2 time diff values!")
+    if _is_subarray(df1[data.PD].values, df2[data.PD].values):
+        click.echo("df2 PD values are sub array of df1 PD values!")
+    if _is_subarray(df1[data.TIME_DIFF].values, df2[data.TIME_DIFF].values):
+        click.echo("df2 time diff values are sub array of df1 time diff values!")
+
+
+def _check_partly_duplicates(measurements: list, csv_filepaths: list):
     for fm1, fm2 in combinations(zip(measurements, csv_filepaths), 2):
         df1, file1 = fm1
         df2, file2 = fm2
@@ -54,15 +76,17 @@ def _check_similar_filenames_for_content(measurements: list, csv_filepaths: list
         file2 = Path(file2)
 
         if df1.isin(df2).all().all() or df2.isin(df1).all().all():
-            click.echo(f"filenames: '{str(file1)}' and '{str(file2)}':")
+            click.echo(f"filenames:\n df1: '{str(file1)}'\n df2: '{str(file2)}'")
             click.echo(f"df1 is in df2: {df1.isin(df2).all().all()}")
             click.echo(f"df2 is in df1: {df2.isin(df1).all().all()}")
+            _check_subarrays(df1, df2)
             raise ValueError("Likely possible duplicate content!")
         if df1.isin(df2).all().any() or df2.isin(df1).all().any():
-            click.echo(f"filenames: '{str(file1)}' and '{str(file2)}':")
+            click.echo("Maybe possible duplicate content:")
+            click.echo(f"filenames:\n df1: '{str(file1)}'\n df2: '{str(file2)}'")
             click.echo(f"df1 is in df2: {df1.isin(df2).all().any()}")
             click.echo(f"df2 is in df1: {df2.isin(df1).all().any()}")
-            raise ValueError("Maybe possible duplicate content!")
+            _check_subarrays(df1, df2)
 
 
 def _check_time_starts_with_zero(measurements: List[pd.DataFrame]):
@@ -166,8 +190,7 @@ def main(path, recursive, expensive):
         _check_time_starts_with_zero(measurements)
 
         _info_on_unique_filenames(csv_filepaths)
-        measurements = [m.drop(columns=data.TIME_DIFF) for m in measurements]
-        _check_similar_filenames_for_content(measurements, csv_filepaths)
+        _check_partly_duplicates(measurements, csv_filepaths)
 
         click.echo(f"Min len: {min([len(df.index) for df in measurements])}")
         click.echo(f"Max len: {max([len(df.index) for df in measurements])}")
