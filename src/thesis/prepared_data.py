@@ -342,21 +342,19 @@ def split_by_durations(
         length = int(max_duration / step_duration)
         duration = step_duration
     else:
+        length = 1
         duration = max_duration
-    splitted_measurements = []
-    for df in measurements:
-        splitted_measurements.extend(
-            _split_by_duration(df, duration, True, drop_empty=drop_empty)
-        )
-    if step_duration is not None and max_duration / step_duration > 1:
-        stepped_measurements = []
-        for idx in range(0, len(splitted_measurements) - length + 1):
-            df = pd.concat(splitted_measurements[idx : idx + length])
-            df = df.reset_index(drop=True)
-            df.attrs = splitted_measurements[idx].attrs
+    splitted_measurements = [
+        _split_by_duration(df, duration, True, drop_empty=drop_empty)
+        for df in measurements
+    ]
+    stepped_measurements = []
+    for file_dfs in splitted_measurements:
+        for idx in range(len(file_dfs) - length + 1):
+            df = pd.concat(file_dfs[idx : idx + length]).reset_index(drop=True)
+            df.attrs = file_dfs[idx].attrs
             stepped_measurements.append(df)
-        return stepped_measurements
-    return splitted_measurements
+    return stepped_measurements
 
 
 def adapt_durations(
