@@ -126,6 +126,19 @@ models:
       n_neighbors: 10
       weights: "distance"
 
+  knn-tsfresh:
+    data:
+        tsfresh_data: ./data/csv-files/prepared/dataset/train/tsfresh_features_efficient_duration60seconds_stepduration30seconds.data
+    select:
+      tsfresh:
+        multiclass: true
+        n_significant: 3
+    normalize: "minmax"
+    classifier:
+      n_jobs: *n_jobs
+      n_neighbors: 5
+      weights: "uniform"
+
   knn_dtw-seqfinger_seqown:
     normalize: "zscore"
     classifier:
@@ -152,19 +165,19 @@ models:
   mlp-tsfresh:
     data:
         tsfresh_data: ./data/csv-files/prepared/dataset/train/tsfresh_features_efficient_duration60seconds_stepduration30seconds.data
-    normalize: "zscore"
     select:
       tsfresh:
         multiclass: true
         n_significant: 3
+    normalize: "zscore"
     classifier:
-      hidden_layer_sizes: !!python/tuple [5,3]
-      dropout: 0.0
-      optimizer: *optimizer
       batch_size: 1
-      epochs: *epochs
+      class_weight: null
+      dropout: 0.05
+      epochs: 150
+      hidden_layer_sizes: !!python/tuple [20,10]
+      optimizer: *optimizer
       verbose: *verbose
-    grid: "fingerprint_compare"
 
   mlp-finger_all:
     normalize: "zscore"
@@ -269,12 +282,19 @@ models:
 
   lgbm-tsfresh:
     data:
-        tsfresh_data: ./data/csv-files/prepared/dataset/train/tsfresh-features_efficient_60seconds_maxlen-100000.data
+        tsfresh_data: ./data/csv-files/prepared/dataset/train/tsfresh_features_efficient_duration60seconds_stepduration30seconds.data
+    select:
+      tsfresh:
+        multiclass: true
+        n_significant: 3
     normalize: "none"
     classifier:
+      class_weight: "balanced"
+      feature_fraction: 0.8
+      max_bin: 63
+      min_split_gain: 0.0
+      num_leaves: 30
       n_jobs: *n_jobs
-    grid:
-      classifier: *lgbm_grid
 
   lgbm-finger_all:
     normalize: "none"
@@ -320,6 +340,19 @@ models:
       class_weight: null
       decision_function_shape: "ovr"
       kernel: "rbf"
+
+  svm-tsfresh:
+    data:
+        tsfresh_data: ./data/csv-files/prepared/dataset/train/tsfresh_features_efficient_duration60seconds_stepduration30seconds.data
+    select:
+      tsfresh:
+        multiclass: true
+        n_significant: 3
+    normalize: "minmax"
+    classifier:
+      class_weight: "balanced"
+      decision_function_shape: "ovr"
+      kernel: "linear"
 
   svm_dtw-seqfinger_seqown:
     normalize: "zscore"
@@ -369,8 +402,14 @@ models:
 
   rf-tsfresh:
     data:
-        tsfresh_data: ./data/csv-files/prepared/dataset/train/tsfresh-features_efficient_60seconds_maxlen-100000.data
+        tsfresh_data: ./data/csv-files/prepared/dataset/train/tsfresh_features_efficient_duration60seconds_stepduration30seconds.data
+    select:
+      tsfresh:
+        multiclass: true
+        n_significant: 3
     normalize: "none"
     classifier:
+      bootstrap: True
+      class_weight: "balanced"
+      min_samples_leaf: 5
       n_jobs: *n_jobs
-    grid: "fingerprint_compare"
