@@ -71,12 +71,15 @@ def main(
         f"Top {K} accuracy",
         top_k_accuracy_score(y, proba_predictions, k=K, labels=defects),
     )
+    if output_file:
+        pd.DataFrame(
+            data={"prediction": predictions, "true": y, "duration": durations},
+            index=build_index(measurements),
+        ).to_csv(output_file)
     predictions_df = pd.DataFrame(
-        data={"predictions": predictions, "true": y, "durations": durations},
+        data={"predictions": predictions, "true": y},
         index=build_index(measurements),
     )
-    if output_file:
-        predictions_df.to_csv(output_file)
     plot_predictions(predictions_df, show=show)
 
 
