@@ -131,3 +131,4 @@ report.html
 ### Own
 *.png
 cache/
+/thesis_results/
