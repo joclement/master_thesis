@@ -14,7 +14,7 @@ def results_dir_with_saved_models(classify_config):
     return classify_config["general"]["output_dir"]
 
 
-def test_main(csv_folder, results_dir_with_saved_models, tmpdir):
+def test_click_command(csv_folder, results_dir_with_saved_models, tmpdir):
     runner = click.testing.CliRunner()
     results_dir = Path(results_dir_with_saved_models)
     preprocessor_file = Path(results_dir, "preprocessor.p")
@@ -45,13 +45,13 @@ def test_main(csv_folder, results_dir_with_saved_models, tmpdir):
     assert test_scores.exists()
 
 
-def test_main_version_succeeds():
+def test_version_succeeds():
     runner = click.testing.CliRunner()
     result = runner.invoke(calc_test_scores.click_command, ["--version"])
     assert result.exit_code == 0
 
 
-def test_main_help_succeeds():
+def test_help_succeeds():
     runner = click.testing.CliRunner()
     result = runner.invoke(calc_test_scores.click_command, ["--help"])
     assert result.exit_code == 0

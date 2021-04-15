@@ -47,9 +47,10 @@ def main(
     predictions = []
     proba_predictions = []
     failing_indexes = []
+    durations = []
     for i, df in enumerate(measurements):
         try:
-            prediction, proba_prediction = predictionHandler.predict_one(df)
+            prediction, proba_prediction, duration = predictionHandler.predict_one(df)
             click.echo(
                 f"prediction: {prediction}, probas: {proba_prediction}, true: {y[i]}"
             )
@@ -59,6 +60,7 @@ def main(
             continue
         predictions.append(prediction)
         proba_predictions.append(proba_prediction)
+        durations.append(duration)
     y = np.delete(y, failing_indexes)
     measurements = [df for i, df in enumerate(measurements) if i not in failing_indexes]
     print_score("Accuracy", accuracy_score(y, predictions))
@@ -70,7 +72,7 @@ def main(
         top_k_accuracy_score(y, proba_predictions, k=K, labels=defects),
     )
     predictions_df = pd.DataFrame(
-        data={"predictions": predictions, "true": y},
+        data={"predictions": predictions, "true": y, "durations": durations},
         index=build_index(measurements),
     )
     if output_file:
