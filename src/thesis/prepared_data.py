@@ -213,6 +213,16 @@ class Reshaper(BaseEstimator, TransformerMixin):
         return np.reshape(X, (X.shape[0], -1))
 
 
+class DimAdder(BaseEstimator, TransformerMixin):
+    def fit(self, X, **kwargs):
+        return self
+
+    def transform(self, X, **kwargs):
+        if X.ndim != 2:
+            raise ValueError("Data does not fit.")
+        return np.expand_dims(X, 2)
+
+
 def oned(**config):
     return Oned(**config)
 

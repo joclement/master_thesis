@@ -40,7 +40,7 @@ from .classifiers import (
     UndersampleTimeSeriesSVM,
 )
 from .constants import RANDOM_STATE
-from .prepared_data import NormalizationMethod, Reshaper
+from .prepared_data import DimAdder, NormalizationMethod, Reshaper
 
 
 def get_classifier(pipeline: Pipeline) -> BaseEstimator:
@@ -232,6 +232,13 @@ class ModelHandler:
             pipeline.append(
                 ("undersample", RandomUnderSampler(random_state=RANDOM_STATE))
             )
+
+        if (
+            "reshaper" in model_config
+            and model_config["reshaper"] is True
+            and "classifier_id" in ["knn_dtw"]
+        ):
+            pipeline.append(("dim_adder", DimAdder()))
 
         add_classifier(
             pipeline,
