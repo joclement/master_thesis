@@ -92,8 +92,16 @@ def keep_needed_columns(measurements: List[pd.DataFrame]):
 
 
 class Oned(BaseEstimator, TransformerMixin):
-    def __init__(self, fix_duration: str, frequency: str, **kw_args):
-        self.set_params(**{"fix_duration": fix_duration, "frequency": frequency})
+    def __init__(
+        self, fix_duration: str, frequency: str, take_mean: bool = False, **kw_args
+    ):
+        self.set_params(
+            **{
+                "fix_duration": fix_duration,
+                "frequency": frequency,
+                "take_mean": take_mean,
+            }
+        )
 
     def to_time_series(self, df: pd.DataFrame) -> pd.Series:
         duration = df[data.TIME_DIFF].sum()
@@ -112,12 +120,20 @@ class Oned(BaseEstimator, TransformerMixin):
             df[data.TIME_DIFF].cumsum(), unit=data.TIME_UNIT
         )
         df = df.set_index("DateTimeIndex")
-        time_series = (
-            df[data.PD]
-            .asfreq(MAX_FREQUENCY, fill_value=0.0)
-            .resample(self._frequency)
-            .max()
-        )
+        if self.take_mean:
+            time_series = (
+                df[data.PD]
+                .asfreq(MAX_FREQUENCY, fill_value=0.0)
+                .resample(self._frequency)
+                .mean()
+            )
+        else:
+            time_series = (
+                df[data.PD]
+                .asfreq(MAX_FREQUENCY, fill_value=0.0)
+                .resample(self._frequency)
+                .max()
+            )
         if len(time_series.index) < self._time_series_len:
             len_diff = self._time_series_len - len(time_series.index)
             time_series = time_series.append(
@@ -146,6 +162,8 @@ class Oned(BaseEstimator, TransformerMixin):
         return {"fix_duration": self.fix_duration_str, "frequency": self.frequency_str}
 
     def set_params(self, **parameters):
+        if "take_mean" in parameters:
+            self.take_mean = parameters["take_mean"]
         if "fix_duration" in parameters:
             self.fix_duration_str = parameters["fix_duration"]
             self._fix_duration = to_dataTIME(pd.Timedelta(self.fix_duration_str))

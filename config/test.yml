@@ -194,6 +194,7 @@ models:
       oned:
         fix_duration: *min_duration
         frequency: "500ms"
+        take_mean: True
       boss:
         strategy: "entropy"
 
