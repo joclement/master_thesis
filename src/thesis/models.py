@@ -32,6 +32,7 @@ from tslearn.svm import TimeSeriesSVC
 
 from . import prepared_data
 from .classifiers import (
+    FastDtwKnn,
     LukasMeanDist,
     MyKerasClassifier,
     PolarityKNN,
@@ -250,6 +251,7 @@ CLASSIFIER_MAP = {
     "rf": RandomForestClassifier,
     "knn": KNeighborsClassifier,
     "knn_dtw": KNeighborsTimeSeriesClassifier,
+    "knn_fastdtw": FastDtwKnn,
     "pytsknn": PytsKNN,
     "lr": LogisticRegression,
     "ott_algo": LukasMeanDist,
@@ -277,6 +279,7 @@ def add_classifier(
             "ott_algo",
             "knn",
             "knn_dtw",
+            "knn_fastdtw",
             "uknn_dtw",
             "usvm_dtw",
             "polknn_dtw",

@@ -2,6 +2,7 @@ import math
 import random
 from typing import Dict, List, Tuple
 
+import dtaidistance
 from keras.wrappers.scikit_learn import KerasClassifier
 import numpy as np
 import pandas as pd
@@ -104,6 +105,13 @@ def undersample(measurements, y, min_len):
         X.extend(v[:min_samples])
         y.extend([k[0]] * min_samples)
     return X, y
+
+
+class FastDtwKnn(KNeighborsClassifier):
+    def __init__(self, **kw_args):
+        super().__init__(
+            metric=dtaidistance.dtw.distance_fast, algorithm="brute", **kw_args
+        )
 
 
 class UnderSampleKNN(KNeighborsTimeSeriesClassifier):

@@ -20,6 +20,7 @@ tensorflow = "^2.4.0"
 lightgbm = "^3.1.1"
 pyts = "^0.11.0"
 imbalanced-learn = "^0.8.0"
+dtaidistance = "^2.2.5"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.1.0"

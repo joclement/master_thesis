@@ -205,6 +205,22 @@ tornado = {version = ">=6.0.3", markers = "python_version >= \"3.8\""}
 zict = ">=0.1.3"
 
 [[package]]
+name = "dtaidistance"
+version = "2.2.5"
+description = "Distance measures for time series"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.dependencies]
+cython = ">=0.29.6"
+
+[package.extras]
+all = ["matplotlib", "numpy", "scipy"]
+numpy = ["numpy", "scipy"]
+vis = ["matplotlib"]
+
+[[package]]
 name = "execnet"
 version = "1.8.0"
 description = "execnet: rapid multi-Python deployment"
@@ -1267,7 +1283,7 @@ heapdict = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "469bd257bd87434f35f3f4aede4e5c78623786307cdc430e954913ec9fa56dc5"
+content-hash = "a50261bab581ed0cbe19aa08fb97bae8fe987573ac88ec23c8093c12377217b4"
 
 [metadata.files]
 absl-py = [
@@ -1333,9 +1349,6 @@ coverage = [
     {file = "coverage-5.5-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:8963a499849a1fc54b35b1c9f162f4108017b2e6db2c46c1bed93a72262ed083"},
     {file = "coverage-5.5-cp27-cp27mu-manylinux2010_i686.whl", hash = "sha256:869a64f53488f40fa5b5b9dcb9e9b2962a66a87dab37790f3fcfb5144b996ef5"},
     {file = "coverage-5.5-cp27-cp27mu-manylinux2010_x86_64.whl", hash = "sha256:4a7697d8cb0f27399b0e393c0b90f0f1e40c82023ea4d45d22bce7032a5d7b81"},
-    {file = "coverage-5.5-cp310-cp310-macosx_10_14_x86_64.whl", hash = "sha256:8d0a0725ad7c1a0bcd8d1b437e191107d457e2ec1084b9f190630a4fb1af78e6"},
-    {file = "coverage-5.5-cp310-cp310-manylinux1_x86_64.whl", hash = "sha256:51cb9476a3987c8967ebab3f0fe144819781fca264f57f89760037a2ea191cb0"},
-    {file = "coverage-5.5-cp310-cp310-win_amd64.whl", hash = "sha256:c0891a6a97b09c1f3e073a890514d5012eb256845c451bd48f7968ef939bf4ae"},
     {file = "coverage-5.5-cp35-cp35m-macosx_10_9_x86_64.whl", hash = "sha256:3487286bc29a5aa4b93a072e9592f22254291ce96a9fbc5251f566b6b7343cdb"},
     {file = "coverage-5.5-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:deee1077aae10d8fa88cb02c845cfba9b62c55e1183f52f6ae6a2df6a2187160"},
     {file = "coverage-5.5-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:f11642dddbb0253cc8853254301b51390ba0081750a8ac03f20ea8103f0c56b6"},
@@ -1419,6 +1432,10 @@ dask = [
 distributed = [
     {file = "distributed-2021.3.0-py3-none-any.whl", hash = "sha256:bd64bd0dd0d210f7dd45cded4d4372a9c7f17e5bd3c782a9dd75ccb73dac9614"},
     {file = "distributed-2021.3.0.tar.gz", hash = "sha256:427fe7e047bbad7413c65d57e56fa4d6b1cf921fd206a3d2caab94bf9153c3db"},
+]
+dtaidistance = [
+    {file = "dtaidistance-2.2.5-cp39-cp39-macosx_10_15_x86_64.whl", hash = "sha256:3b2d72ff83f898cdfa09aca018a8798a59063823da4df45d212d612d9d401e73"},
+    {file = "dtaidistance-2.2.5.tar.gz", hash = "sha256:a34f8f8b3ba6ba7fa1be91f93266d16319d8da67d8dbe3ec02572f0b8cc9f0da"},
 ]
 execnet = [
     {file = "execnet-1.8.0-py2.py3-none-any.whl", hash = "sha256:7a13113028b1e1cc4c6492b28098b3c6576c9dccc7973bfe47b342afadafb2ac"},
