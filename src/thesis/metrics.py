@@ -29,7 +29,6 @@ def file_scores(
     predictions: Union[pd.Series, np.array, list],
     sample_weight=None,
 ) -> float:
-
     matches = pd.DataFrame(
         data={"true": y_true, "predict": predictions}, index=y_true.index
     )
