@@ -50,7 +50,7 @@ from .fingerprint import (
     get_X_index,
     POLARITY,
 )
-from .metrics import avg_file_scores, file_scores, top_k_accuracy_score
+from .metrics import avg_file_scores, file_scores
 from .models import (
     get_classifier,
     is_data_finger,
@@ -60,6 +60,7 @@ from .models import (
     no_sample_weight,
 )
 from .prepared_data import adapt_durations, extract_features, MeasurementNormalizer
+from .sklearn_metrics import top_k_accuracy_score
 
 
 warnings.simplefilter("ignore")

@@ -11,8 +11,8 @@ from . import __version__, data
 from .classify import build_index
 from .constants import K
 from .data import Defect
-from .metrics import top_k_accuracy_score
 from .predict import PredictionHandler
+from .sklearn_metrics import top_k_accuracy_score
 from .visualize_results import plot_predictions
 
 
