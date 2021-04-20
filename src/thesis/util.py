@@ -17,6 +17,10 @@ def finish_plot(name: Optional[str], output_folder: Optional[Path], show: bool =
     plt.close()
 
 
+def flatten(t):
+    return [item for sublist in t for item in sublist]
+
+
 def to_dataTIME(time: pd.Timedelta) -> int:
     return int(time.value / 10 ** 6)
 

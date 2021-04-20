@@ -60,10 +60,6 @@ def print_wrong_files(predictions: pd.DataFrame):
     )
 
 
-def flatten(t):
-    return [item for sublist in t for item in sublist]
-
-
 def get_file_predictions(
     predictions: pd.DataFrame,
 ):
@@ -140,10 +136,10 @@ def plot_predictions(
                     for model in models
                 ]
             ),
-            "model": flatten(
+            "model": util.flatten(
                 [len(set(predictions["true"])) * [model] for model in models]
             ),
-            "defect": flatten([defect_names for _ in models]),
+            "defect": util.flatten([defect_names for _ in models]),
         }
     )
 

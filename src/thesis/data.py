@@ -55,6 +55,9 @@ class Defect(IntEnum):
     def wrapped(self):
         return textwrap.fill(str(self), 12)
 
+    def abbreviation(self):
+        return textwrap.fill(_DEFECT_ABBREVIATIONS[self.value], 8)
+
 
 _DEFECT_NAMES: Final = {
     Defect.free_particle: "Free Particle",
@@ -63,6 +66,16 @@ _DEFECT_NAMES: Final = {
     Defect.protrusion_hv: "Protrusion on HV",
     Defect.floating: "Floating Electrode",
     Defect.cavity: "Void in Insulator",
+    Defect.noise: "Noise",
+}
+
+_DEFECT_ABBREVIATIONS: Final = {
+    Defect.free_particle: "Free Partic.",
+    Defect.particle_insulator: "Partic. Insula.",
+    Defect.protrusion_earth: "Protru. Enclos.",
+    Defect.protrusion_hv: "Protru. HV",
+    Defect.floating: "Floating",
+    Defect.cavity: "Void",
     Defect.noise: "Noise",
 }
 
