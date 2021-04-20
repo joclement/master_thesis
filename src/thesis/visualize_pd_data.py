@@ -67,6 +67,9 @@ def _generate_plots_for_single_csv(df: pd.DataFrame, output_folder, show):
 
 
 def _generate_summary_plots(measurements: List[pd.DataFrame], output_folder, show):
+    _boxplot_lengths_of_pd_csvs_per_defect(measurements)
+    util.finish_plot("boxplots_lengths_of_pd_csv_per_defect", output_folder, show)
+
     _stripplot_lengths_of_pd_csvs_per_defect(measurements)
     util.finish_plot("stripplot_lengths_of_pd_csv_per_defect", output_folder, show)
 
