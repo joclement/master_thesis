@@ -49,7 +49,9 @@ def create_plots(results: pd.DataFrame, test_set_name, test_results_name, show) 
     ax.set(xlabel="")
     output_dir = Path(f"./output/test_plots/{test_results_name}/")
     output_dir.mkdir(parents=True, exist_ok=True)
-    util.finish_plot(f"{test_results_name}_{test_set_name}_recall_precision", output_dir, show)
+    util.finish_plot(
+        f"{test_results_name}_{test_set_name}_recall_precision", output_dir, show
+    )
 
 
 def print_scores(test_predictions) -> None:
