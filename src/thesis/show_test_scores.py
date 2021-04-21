@@ -75,7 +75,7 @@ def main(test_predictions: pd.DataFrame, test_results_name, show: bool = False) 
 @click.argument(
     "test_predictions", type=click.Path(exists=True, file_okay=True, dir_okay=False)
 )
-@click.option("--show/--no-show", default=True)
+@click.option("--show/--no-show", default=False)
 def click_command(test_predictions, show):
     main(
         pd.read_csv(test_predictions, header=0, index_col="path"),
