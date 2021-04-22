@@ -1,62 +1,63 @@
 general:
   balance: True
   balance_polarity: False
-  normalize_pd: True
+  cache_dir: ./cache
+  calc_cm: False
   calc_train_score: True
-  verbose: False
-  n_jobs: 2
   cv: 2
   data_dir: ./data/csv-files/testdata_small
-  calc_cm: False
+  drop_empty: True
+  max_duration: "60 seconds"
+  max_len: null
+  min_duration: &min_duration "60 seconds"
+  min_len: 10
+  n_jobs: 2
+  normalize_pd: True
   output_dir: ./output/test_tmp
   overwrite_output_dir: True
+  repeat: null
   save_models: False
   show_plots: False
-  min_duration: &min_duration "60 seconds"
-  step_duration: "60 seconds"
-  max_duration: "60 seconds"
   split: True
-  min_len: 10
-  max_len: null
-  repeat: null
-  drop_empty: True
+  step_duration: "60 seconds"
   treat_negative_values: "absolute"
-  cache_dir: ./cache
+  verbose: False
 
 defects:
+  - cavity
+  - floating
   - free_particle
   - particle_insulator
   - protrusion_earth
   - protrusion_hv
-  - floating
-  - cavity
 
 models-to-run:
   - dt-finger_own
-  - bossvs-oned
-  - knn_dtw-oned
-  - knn_dtw-twod
-  - knn_dtw-seqfinger_seqown
-  - knn_fastdtw-oned
-  - knn-oned
-  - knn-sparse
-  - pytsknn-oned
-  - knn-oned_boss
   - knn-finger_ott
-  - mlp-tsfresh
-  - ott_algo-finger_ott
-  - rf-finger_tugraz
-  - svm_dtw-seqfinger_seqown
-  - svm-finger_all
+  - knn-oned
+  - knn-oned_boss
+  - knn-sparse
+  - knn_dtw-oned
+  - knn_dtw-seqfinger_seqown
+  - knn_dtw-twod
+  - knn_fastdtw-oned
   - lgbm-finger_own
   - lr-oned_weasel
+  - mlp-tsfresh
+  - ott_algo-finger_ott
+  - pytsknn-oned
+  - rf-finger_tugraz
+  - svm-finger_all
+  - svm_dtw-seqfinger_seqown
+  # @note: move to bottom as it's not working for saving & then prediction
+  - bossvs-oned
 
 defaults:
-  duration: &duration "30 seconds"
-  step_duration: &step_duration "10 seconds"
-  n_jobs: &n_jobs 1
   batch_size: &batch_size 10
+  duration: &duration "30 seconds"
   epochs: &epochs 3
+  n_jobs: &n_jobs 1
+  step_duration: &step_duration "10 seconds"
   verbose: &verbose 0
 
   dt_grid: &dt_grid
