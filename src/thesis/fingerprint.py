@@ -126,7 +126,6 @@ def get_parameter_group(df: pd.DataFrame, group: Group) -> pd.DataFrame:
     return df[wanted_columns].copy()
 
 
-# TODO Issue #22: ensure that weibull fit is correct
 @memory.cache
 def calc_weibull_params(data: Union[list, pd.Series]) -> Tuple[float, float]:
     weibull_a, _, weibull_b = stats.weibull_min.fit(data, floc=0.0)
