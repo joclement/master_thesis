@@ -47,10 +47,16 @@ def main(
     predictions = []
     proba_predictions = []
     failing_indexes = []
-    durations = []
+    preprocess_durations = []
+    predict_durations = []
     for i, df in enumerate(measurements):
         try:
-            prediction, proba_prediction, duration = predictionHandler.predict_one(df)
+            (
+                prediction,
+                proba_prediction,
+                preprocess_duration,
+                predict_duration,
+            ) = predictionHandler.predict_one(df)
             click.echo(
                 f"prediction: {prediction}, probas: {proba_prediction}, true: {y[i]}"
             )
@@ -60,7 +66,8 @@ def main(
             continue
         predictions.append(prediction)
         proba_predictions.append(proba_prediction)
-        durations.append(duration)
+        preprocess_durations.append(preprocess_duration)
+        predict_durations.append(predict_duration)
     y = np.delete(y, failing_indexes)
     measurements = [df for i, df in enumerate(measurements) if i not in failing_indexes]
     print_score("Accuracy", accuracy_score(y, predictions))
@@ -73,7 +80,12 @@ def main(
     )
     if output_file:
         pd.DataFrame(
-            data={"prediction": predictions, "true": y, "duration": durations},
+            data={
+                "prediction": predictions,
+                "true": y,
+                "preprocess_duration": preprocess_durations,
+                "predict_duration": predict_durations,
+            },
             index=build_index(measurements),
         ).to_csv(output_file)
     predictions_df = pd.DataFrame(

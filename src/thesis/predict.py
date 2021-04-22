@@ -34,13 +34,15 @@ class PredictionHandler:
             else:
                 raise ValueError("Missing finger preprocessor.")
 
-    def predict_one(self, csv_data: pd.DataFrame) -> Tuple[Defect, Any, float]:
+    def predict_one(self, csv_data: pd.DataFrame) -> Tuple[Defect, Any, float, float]:
         start = time.process_time()
         X = self.preprocessor.transform([csv_data])
+        preprocess_duration = time.process_time() - start
+        start = time.process_time()
         if hasattr(self, "finger_preprocessor"):
             X = self.finger_preprocessor.transform(X)
         proba_predictions = self.classifier.predict_proba(X)
-        duration = time.process_time() - start
+        predict_duration = time.process_time() - start
         proba_prediction = np.sum(proba_predictions, axis=0) / len(X)
         prediction = np.argmax(proba_prediction)
-        return prediction, proba_prediction, duration
+        return prediction, proba_prediction, preprocess_duration, predict_duration
