@@ -471,9 +471,10 @@ class ClassificationHandler:
             pipeline = self.modelHandler.get_model(model_name)
             model_folder = Path(self.output_dir, model_name)
 
-            self._cross_validate(
-                model_name, model_folder, pipeline, self.get_X(model_name)
-            )
+            if not self.config["general"]["just_train"]:
+                self._cross_validate(
+                    model_name, model_folder, pipeline, self.get_X(model_name)
+                )
 
             model_folder.mkdir(exist_ok=True)
             with open(Path(model_folder, "pipeline_representation.html"), "w") as file:

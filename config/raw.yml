@@ -7,6 +7,7 @@ general:
   cv: "group"
   data_dir: ./data/csv-files/prepared/dataset/train
   drop_empty: True
+  just_train: False
   max_duration: null
   max_len: null
   min_duration: null
