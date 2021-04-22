@@ -427,6 +427,10 @@ def relown_feature_union(**data_config) -> FeatureUnion:
     )
 
 
+def relown(df: pd.DataFrame) -> pd.Series:
+    return build_set([df], relown).iloc[0]
+
+
 def own(df: pd.DataFrame) -> pd.Series:
     return build_set([df], own).iloc[0]
 
@@ -471,6 +475,7 @@ def build_set(
 ) -> pd.DataFrame:
     FINGER_FEATURE_UNION_MAP = {
         own: own_feature_union,
+        relown: relown_feature_union,
         tugraz: tugraz_feature_union,
         ott: ott_feature_union,
     }

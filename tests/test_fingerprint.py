@@ -55,6 +55,11 @@ def test_normalize_fingerprints(measurements):
     assert all(np.amin(normalized_fingers, axis=0) == 0)
 
 
+def test_fingerprint_relown_set(measurements):
+    dataset = fingerprint.build_set(measurements, fingerprint=fingerprint.relown)
+    assert dataset.shape == (6, 35)
+
+
 def test_fingerprint_own_set(measurements):
     dataset = fingerprint.build_set(measurements, fingerprint=fingerprint.own)
     assert dataset.shape == (6, 40)
