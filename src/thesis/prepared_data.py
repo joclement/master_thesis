@@ -58,6 +58,7 @@ class TsfreshTransformer(TransformerMixin, BaseEstimator):
         self._tsfresh_data = pd.read_csv(
             self.tsfresh_data_path, header=0, index_col=[PATH, PART]
         )
+        self._tsfresh_feature_names = self._tsfresh_data.columns
         self._tsfresh_data = self._tsfresh_data.rename(columns=self._get_feature_name)
         del self._i
 
