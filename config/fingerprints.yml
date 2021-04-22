@@ -132,8 +132,9 @@ models:
         tsfresh_data: ./data/csv-files/prepared/dataset/train/tsfresh_features_efficient_duration60seconds_stepduration30seconds.data
     select:
       tsfresh:
+        fdr_level: 0.001
         multiclass: true
-        n_significant: 3
+        n_significant: 5
     normalize: "minmax"
     classifier:
       n_jobs: *n_jobs
@@ -168,8 +169,9 @@ models:
         tsfresh_data: ./data/csv-files/prepared/dataset/train/tsfresh_features_efficient_duration60seconds_stepduration30seconds.data
     select:
       tsfresh:
+        fdr_level: 0.001
         multiclass: true
-        n_significant: 3
+        n_significant: 5
     normalize: "zscore"
     classifier:
       batch_size: 1
@@ -286,8 +288,9 @@ models:
         tsfresh_data: ./data/csv-files/prepared/dataset/train/tsfresh_features_efficient_duration60seconds_stepduration30seconds.data
     select:
       tsfresh:
+        fdr_level: 0.001
         multiclass: true
-        n_significant: 3
+        n_significant: 5
     normalize: "none"
     classifier:
       class_weight: "balanced"
@@ -347,8 +350,9 @@ models:
         tsfresh_data: ./data/csv-files/prepared/dataset/train/tsfresh_features_efficient_duration60seconds_stepduration30seconds.data
     select:
       tsfresh:
+        fdr_level: 0.001
         multiclass: true
-        n_significant: 3
+        n_significant: 5
     normalize: "minmax"
     classifier:
       class_weight: "balanced"
@@ -406,8 +410,9 @@ models:
         tsfresh_data: ./data/csv-files/prepared/dataset/train/tsfresh_features_efficient_duration60seconds_stepduration30seconds.data
     select:
       tsfresh:
+        fdr_level: 0.001
         multiclass: true
-        n_significant: 3
+        n_significant: 5
     normalize: "none"
     classifier:
       bootstrap: True
