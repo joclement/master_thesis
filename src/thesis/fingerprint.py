@@ -128,7 +128,7 @@ def get_parameter_group(df: pd.DataFrame, group: Group) -> pd.DataFrame:
 
 @memory.cache
 def calc_weibull_params(data: Union[list, pd.Series]) -> Tuple[float, float]:
-    weibull_a, _, weibull_b = stats.weibull_min.fit(data, floc=0.0)
+    weibull_b, _, weibull_a = stats.weibull_min.fit(data, floc=0.0)
     return weibull_a, weibull_b
 
 

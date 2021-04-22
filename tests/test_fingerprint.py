@@ -114,10 +114,9 @@ def test_ott_fingerprint_results_with_master_thesis_values(real_data_folder):
 
     assert finger[fingerprint.TD_MEDIAN] == approx(0.091, abs=1e-3)
 
-    # FIXME Issue #22: Weibull parameters are not the same as in Lukas thesis
-    # assert finger[fingerprint.PD_WEIB_A] == approx(7.917, abs=1e-3)
-    # assert finger[fingerprint.PD_WEIB_B] == approx(8.277, abs=1e-3)
-    # assert finger[fingerprint.PD_DIFF_WEIB_A] == approx(0.391, abs=1e-3)
+    assert finger[fingerprint.PD_WEIB_A] == approx(7.917, abs=1e-3)
+    assert finger[fingerprint.PD_WEIB_B] == approx(8.277, abs=1e-2)
+    assert finger[fingerprint.PD_DIFF_WEIB_A] == approx(0.491, abs=1e-2)
 
     assert finger[fingerprint.CORR_PD_DIFF_TO_PD_BINS] == approx(-0.908, abs=1e-1)
     assert finger[fingerprint.CORR_NEXT_PD_TO_PD_BINS] == approx(0.503, abs=1e-2)
