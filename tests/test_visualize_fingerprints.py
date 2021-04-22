@@ -7,6 +7,7 @@ import pandas as pd
 import pytest
 
 from thesis import data, fingerprint, visualize_fingerprints
+from thesis.constants import PLOT_FILE_FORMAT
 
 
 @pytest.fixture
@@ -28,24 +29,24 @@ def fingerprints(two_measurements):
 
 def test__generate_heatmap(fingerprints, tmpdir):
     visualize_fingerprints._generate_heatmap(fingerprints, tmpdir, False)
-    assert len(list(Path(tmpdir).glob("*.svg"))) == 1
+    assert len(list(Path(tmpdir).glob(f"*.{PLOT_FILE_FORMAT}"))) == 1
 
 
 def test__generate_dendogram(fingerprints, tmpdir):
     visualize_fingerprints._generate_dendogram(fingerprints, tmpdir, False)
-    assert len(list(Path(tmpdir).glob("*.svg"))) == 1
+    assert len(list(Path(tmpdir).glob(f"*.{PLOT_FILE_FORMAT}"))) == 1
 
 
 @pytest.mark.expensive
 def test__generate_pairplots_use_groups(fingerprints, tmpdir):
     visualize_fingerprints._generate_pairplots(fingerprints, tmpdir, True, False)
-    assert len(list(Path(tmpdir).glob("*.svg"))) == 4
+    assert len(list(Path(tmpdir).glob(f"*.{PLOT_FILE_FORMAT}"))) == 4
 
 
 @pytest.mark.expensive
 def test__generate_pairplots_random(fingerprints, tmpdir):
     visualize_fingerprints._generate_pairplots(fingerprints, tmpdir, False, False)
-    assert len(list(Path(tmpdir).glob("*.svg"))) >= 1
+    assert len(list(Path(tmpdir).glob(f"*.{PLOT_FILE_FORMAT}"))) >= 1
 
 
 @pytest.mark.expensive
@@ -58,7 +59,7 @@ def test_visualize_fingerprints_main_with_save_succeeds(
         ["--output-folder", tmpdir, "own", folder_with_two_csv_files],
     )
     assert result.exit_code == 0
-    assert len(list(Path(tmpdir).glob("*.svg"))) >= 1
+    assert len(list(Path(tmpdir).glob(f"*.{PLOT_FILE_FORMAT}"))) >= 1
 
 
 def test_visualize_fingerprints_version_succeeds():

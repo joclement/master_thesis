@@ -6,13 +6,13 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 
-from .constants import CACHE_DIR
+from .constants import CACHE_DIR, PLOT_FILE_FORMAT
 
 
 def finish_plot(name: Optional[str], output_folder: Optional[Path], show: bool = False):
     plt.tight_layout()
     if output_folder:
-        plt.savefig(f"{output_folder}/{name}.svg")
+        plt.savefig(f"{output_folder}/{name}.{PLOT_FILE_FORMAT}")
     if show:
         plt.show()
     plt.close()

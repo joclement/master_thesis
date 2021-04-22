@@ -31,3 +31,5 @@ CACHE_DIR = "./cache"
 PART = "part"
 
 RANDOM_STATE = 11
+
+PLOT_FILE_FORMAT = "pdf"

@@ -6,6 +6,7 @@ import pytest
 import yaml
 
 from thesis import classify, data
+from thesis.constants import PLOT_FILE_FORMAT
 
 
 @pytest.fixture
@@ -39,9 +40,9 @@ def test_classify_ClassificationHandler_with_saving(
     handler.run()
 
     num_of_models = len(config["models-to-run"])
-    assert len(list(output_dir.rglob("confusion_matrix_*.svg"))) == num_of_models * (
-        config["general"]["cv"] + 1
-    )
+    assert len(
+        list(output_dir.rglob(f"confusion_matrix_*.{PLOT_FILE_FORMAT}"))
+    ) == num_of_models * (config["general"]["cv"] + 1)
     assert len(list(output_dir.rglob("model-*.p"))) == num_of_models
     num_of_mlp_models = len([m for m in config["models-to-run"] if "mlp-" in m])
     assert len(list(output_dir.rglob("keras.h5"))) == num_of_mlp_models
@@ -80,7 +81,7 @@ def test_classify_ClassificationHandler_logo_cv(config):
     handler = classify.ClassificationHandler(config)
     handler.run()
     output_dir = Path(config["general"]["output_dir"])
-    assert len(list(output_dir.rglob("confusion_matrix_*.svg"))) == 1
+    assert len(list(output_dir.rglob(f"confusion_matrix_*.{PLOT_FILE_FORMAT}"))) == 1
 
 
 def test_classify_ClassificationHandler_max_len(config):

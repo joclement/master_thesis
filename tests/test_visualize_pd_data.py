@@ -3,6 +3,7 @@ from pathlib import Path
 import click.testing
 
 from thesis import visualize_pd_data
+from thesis.constants import PLOT_FILE_FORMAT
 
 
 def test_visualize_pd_data_main_succeeds(tiny_csv_filepath):
@@ -18,7 +19,7 @@ def test_visualize_pd_data_main_save_succeeds(tiny_csv_filepath, tmpdir):
         ["--output-folder", tmpdir, tiny_csv_filepath],
     )
     assert result.exit_code == 0
-    assert len(list(Path(tmpdir).glob("*.svg"))) == 4
+    assert len(list(Path(tmpdir).glob(f"*.{PLOT_FILE_FORMAT}"))) == 4
 
 
 def test_visualize_pd_data_main_dir_succeeds(tiny_csv_folder):
@@ -40,7 +41,7 @@ def test_visualize_pd_data_main_dir_save_succeeds(tiny_csv_folder, tmpdir):
         ["--output-folder", tmpdir, tiny_csv_folder],
     )
     assert result.exit_code == 0
-    assert len(list(Path(tmpdir).glob("*.svg"))) >= 1
+    assert len(list(Path(tmpdir).glob(f"*.{PLOT_FILE_FORMAT}"))) >= 1
 
 
 def test_visualize_pd_data_main_dir_save_recursive_succeeds(tiny_csv_folder, tmpdir):
