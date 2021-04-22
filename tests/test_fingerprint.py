@@ -68,7 +68,7 @@ def test_fingerprint_own(measurement):
 @fixture
 def real_data_folder() -> Path:
     folder = Path(
-        "./data/csv-files/prepared/older_mat_converted/unique/3_entities_or_more",
+        "./data/csv-files/prepared/dataset/test/normal/longer/",
     )
     assert folder.is_dir()
     return folder
@@ -88,7 +88,7 @@ def test_ott_fingerprint_results_with_master_thesis_values(real_data_folder):
     assert pd.max() == approx(9.914, abs=1e-3)
     assert pd.std() / pd.mean() == approx(0.154, abs=1e-3)
 
-    pd_diff = df[data.PD_DIFF]
+    pd_diff = df[data.PD].diff()[1:].abs().reset_index(drop=True)
     assert pd_diff.mean() == approx(0.388, abs=1e-3)
     assert pd_diff.skew() == approx(5.381, abs=1e-3)
     # @note: the Matlab implementation of kurtosis done by Lukas is biased,
