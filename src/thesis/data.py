@@ -115,7 +115,11 @@ def _get_voltage_sign(filename: str) -> VoltageSign:
 
 def get_defect(filename: str) -> Defect:
     defects = []
-    if "Störeinkopplungen" in filename or "Stützer_Störer" in filename:
+    if (
+        "Störeinkopplungen" in filename
+        or "Stützer_Störer" in filename
+        or "nach Gasfuellen" in filename
+    ):
         defects.append(Defect.noise)
     elif "Stütze" in filename:
         defects.append(Defect.cavity)
