@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 from thesis import data, prepared_data
@@ -58,4 +59,4 @@ def test_oned(measurements):
     dataset = prepared_data.oned_func(measurements, **config)
 
     assert len(dataset.shape) == 3
-    # FIXME assert not np.isnan(dataset).any()
+    assert not np.isnan(dataset).any()
