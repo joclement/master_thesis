@@ -79,7 +79,6 @@ def real_data_folder() -> Path:
     return folder
 
 
-@mark.expensive
 @mark.e2e
 def test_ott_fingerprint_results_with_master_thesis_values(real_data_folder):
     df = data.read(
