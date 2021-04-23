@@ -228,10 +228,15 @@ class ModelHandler:
         if "reshaper" in model_config and model_config["reshaper"] is True:
             pipeline.append(("reshaper", Reshaper()))
 
-        if "undersample" in model_config and model_config["undersample"] is True:
-            pipeline.append(
-                ("undersample", RandomUnderSampler(random_state=RANDOM_STATE))
-            )
+        if "undersample" in model_config:
+            undersample_config = model_config["undersample"]
+            if undersample_config is True:
+                undersampler = RandomUnderSampler(random_state=RANDOM_STATE)
+            elif type(undersample_config) is dict:
+                undersampler = RandomUnderSampler(
+                    sampling_strategy=undersample_config, random_state=RANDOM_STATE
+                )
+            pipeline.append(("undersample", undersampler))
 
         if (
             "reshaper" in model_config
@@ -247,7 +252,7 @@ class ModelHandler:
             model_config["classifier"] if "classifier" in model_config else {},
         )
 
-        if "undersample" in model_config and model_config["undersample"] is True:
+        if "undersample" in model_config and model_config["undersample"] is not False:
             return imblearn.pipeline.Pipeline(pipeline, verbose=self.verbose)
         return Pipeline(pipeline, verbose=self.verbose)
 
