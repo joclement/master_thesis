@@ -15,9 +15,7 @@ def tests(session):
         "3",
         "--cov",
         "-m",
-        "not e2e",
-        "-m",
-        "not expensive",
+        "not e2e and not expensive",
         "--exitfirst",
     ]
     session.install(".")
