@@ -138,9 +138,9 @@ def get_defect(filename: str) -> Defect:
         or "Floating electrode" in filename
     ):
         defects.append(Defect.floating)
-    if "Isolator" in filename:
+    if "Isolator" in filename and "Partikel" in filename:
         defects.append(Defect.particle_insulator)
-    elif "Partikel" in filename:
+    elif "Partikel" in filename and "Isolator" not in filename:
         defects.append(Defect.free_particle)
     if len(defects) != 1:
         raise ValueError(f"No or multiple defects found: {filename}")
