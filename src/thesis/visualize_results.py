@@ -9,6 +9,8 @@ import seaborn as sns
 from sklearn.metrics import (
     accuracy_score,
     balanced_accuracy_score,
+    confusion_matrix,
+    ConfusionMatrixDisplay,
     precision_score,
     recall_score,
 )
@@ -148,6 +150,13 @@ def plot_predictions(
 
     sns.barplot(data=df, x="model", y="recall", hue="defect").set_title(description)
     util.finish_plot(f"{description}-recalls", output_dir, show)
+
+    for model in models:
+        ConfusionMatrixDisplay(
+            confusion_matrix(predictions["true"], predictions[model]),
+            display_labels=defect_names,
+        ).plot()
+        util.finish_plot(f"confusion_matrix_{model}_{description}", output_dir, show)
 
 
 def plot_scores(
