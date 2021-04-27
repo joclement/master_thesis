@@ -96,11 +96,11 @@ def make_plot(scores, models, description):
 
 def plot_predictions(
     predictions: pd.DataFrame,
+    models: list,
     output_dir: Optional[Path] = None,
     description: str = "",
     show: bool = False,
 ):
-    models = predictions.columns
     predictions["true"] = [get_defect_from_index(i) for i in predictions.index]
     defect_names = [str(Defect(d)) for d in sorted(set(predictions["true"]))]
 
@@ -211,9 +211,9 @@ def main(result_dir, config_file, show):
             Path(result_dir, PREDICTIONS_FILENAME), header=0, index_col=0
         )
     predictions = predictions.loc[:, models]
-    plot_predictions(predictions, show=show)
+    plot_predictions(predictions, models, show=show)
     plot_predictions(
-        get_file_predictions(predictions), description="file-based", show=show
+        get_file_predictions(predictions), models, description="file-based", show=show
     )
 
     scores = pd.read_csv(Path(result_dir, SCORES_FILENAME), header=[0, 1], index_col=0)

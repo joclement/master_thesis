@@ -92,7 +92,7 @@ def main(
         data={"predictions": predictions, "true": y},
         index=build_index(measurements),
     )
-    plot_predictions(predictions_df, show=show)
+    plot_predictions(predictions_df, ["predictions"], show=show)
 
 
 @click.command()
