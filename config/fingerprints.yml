@@ -17,7 +17,7 @@ general:
   output_dir: ./output/tmp
   overwrite_output_dir: False
   repeat: null
-  save_models: False
+  save_models: True
   show_plots: False
   split: True
   step_duration: "30 seconds"
