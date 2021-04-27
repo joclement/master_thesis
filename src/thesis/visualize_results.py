@@ -102,7 +102,7 @@ def plot_predictions(
     show: bool = False,
 ):
     predictions["true"] = [get_defect_from_index(i) for i in predictions.index]
-    defect_names = [str(Defect(d)) for d in sorted(set(predictions["true"]))]
+    defect_names = [Defect(d).abbreviation() for d in sorted(set(predictions["true"]))]
 
     make_plot(
         [accuracy_score(predictions["true"], predictions[m]) for m in models],
