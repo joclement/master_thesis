@@ -62,9 +62,11 @@ def _generate_dendogram(fingerprints: pd.DataFrame, output_folder, show):
 @click.option("--group", "-g", is_flag=True, help="Use groups for pairplots")
 def main(finger, path, output_folder, show, split, group):
     "Plot visualization of measurement file csv"
-    measurements, _ = data.read_recursive(path)
+    measurements, _ = data.read_recursive(path, data.TreatNegValues.absolute)
     if split:
-        measurements = prepared_data.adapt_durations(measurements)
+        measurements = prepared_data.adapt_durations(
+            measurements, max_duration="60 seconds"
+        )
 
     fingerprints = fingerprint.build_set(
         measurements, getattr(fingerprint, finger), add_class=True
