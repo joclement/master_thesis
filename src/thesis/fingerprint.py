@@ -89,7 +89,6 @@ PD_MIN = f"{PD_ID} min"
 PD_MEDIAN = f"{PD_ID} Median"
 PD_STD = f"{PD_ID} std"
 PD_VAR = f"{PD_ID} var"
-SIZE = f"{PD_ID} Num"
 PD_NUM_PEAKS_50 = f"{PD_ID} num peaks 50"
 PD_NUM_PEAKS_10 = f"{PD_ID} num peaks 10"
 PD_NUM_PEAKS_5 = f"{PD_ID} num peaks 5"
@@ -198,7 +197,6 @@ def extract_features(df: pd.DataFrame):
         PD_STD: df[PD].std(),
         PD_SUM: df[PD].sum(),
         PD_VAR: df[PD].var(),
-        SIZE: len(df.index),
         TD_CHANGE_QUANTILES: change_quantiles(df[TIME_DIFF], 0.0, 0.3, True, "var"),
         TD_KURT: df[TIME_DIFF].kurt(),
         TD_LONGEST_STRIKE_BELOW_MEAN: longest_strike_below_mean(df[PD]) / len(df.index),
@@ -374,9 +372,9 @@ RELOWN_FEATURES = [
     feature(PD_NORM_WEIB_B),
     feature(PD_NUM_PEAKS_10),
     feature(PD_NUM_PEAKS_5),
+    feature(PDS_PER_SEC),
     feature(PD_VAR),
     feature(POLARITY),
-    feature(SIZE),
     feature(TDIFF_NORM_WEIB_A),
     feature(TDIFF_NORM_WEIB_B),
     feature(TD_CHANGE_QUANTILES),
