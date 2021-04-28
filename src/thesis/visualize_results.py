@@ -202,10 +202,6 @@ def main(result_dir, config_file, show):
     else:
         models = classify_config[CONFIG_MODELS_RUN_ID]
 
-    scores = pd.read_csv(Path(result_dir, SCORES_FILENAME), header=[0, 1], index_col=0)
-    scores = scores.loc[scores.index.isin(models), :]
-    plot_scores(scores, classify_config, show=show)
-
     if classify_config["general"]["split"]:
         predictions = pd.read_csv(
             Path(result_dir, PREDICTIONS_FILENAME), header=0, index_col=[PATH, PART]
@@ -219,4 +215,9 @@ def main(result_dir, config_file, show):
     plot_predictions(
         get_file_predictions(predictions), description="file-based", show=show
     )
+
+    scores = pd.read_csv(Path(result_dir, SCORES_FILENAME), header=[0, 1], index_col=0)
+    scores = scores.loc[scores.index.isin(models), :]
+    plot_scores(scores, classify_config, show=show)
+
     print_wrong_files(predictions)
