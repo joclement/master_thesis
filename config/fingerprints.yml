@@ -274,12 +274,13 @@ models:
   lgbm-finger_relown:
     normalize: "none"
     classifier:
-      class_weight: null
+      class_weight: "balanced"
       colsample_bytree: 0.8
-      max_bin: 127
-      min_split_gain: 0.0
+      min_child_samples: 10
+      min_split_gain: 0.05
+      max_bin: 63
       n_jobs: *n_jobs
-      num_leaves: 10
+      num_leaves: 20
     grid:
       classifier: *lgbm_grid
 
