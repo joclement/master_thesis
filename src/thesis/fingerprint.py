@@ -172,7 +172,7 @@ def extract_features(df: pd.DataFrame):
         AUTOCORR_3RD_NEXT_TD: autocorrelate(df[TIME_DIFF], 3),
         AUTOCORR_5TH_NEXT_TD: autocorrelate(df[TIME_DIFF], 5),
         AUTOCORR_10TH_NEXT_TD: autocorrelate(df[TIME_DIFF], 10),
-        PDS_PER_SEC: len(df[TIME_DIFF]) / (df[TIME_DIFF].sum() / 1000),
+        PDS_PER_SEC: len(df.index) / (df[TIME_DIFF].sum() / 1000),
         PD_CHANGE_QUANTILES: change_quantiles(df[PD], 0.0, 0.7, True, "mean"),
         PD_COUNT_ABOVE_MEAN: count_above_mean(df[PD]),
         PD_COUNT_BELOW_MEAN: count_below_mean(df[PD]),
