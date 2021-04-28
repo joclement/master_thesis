@@ -239,7 +239,7 @@ models:
     normalize: "none"
     classifier:
       class_weight: "balanced"
-      feature_fraction: 1.0
+      colsample_bytree: 1.0
       max_bin: 63
       min_split_gain: 0.0
       n_jobs: *n_jobs
@@ -251,7 +251,7 @@ models:
     normalize: "none"
     classifier:
       class_weight: "balanced"
-      feature_fraction: 1.0
+      colsample_bytree: 1.0
       max_bin: 127
       min_split_gain: 0.0
       n_jobs: *n_jobs
@@ -263,7 +263,7 @@ models:
     normalize: "none"
     classifier:
       class_weight: "balanced"
-      feature_fraction: 0.8
+      colsample_bytree: 0.8
       max_bin: 63
       min_split_gain: 0.0
       n_jobs: *n_jobs
@@ -275,7 +275,7 @@ models:
     normalize: "none"
     classifier:
       class_weight: null
-      feature_fraction: 0.8
+      colsample_bytree: 0.8
       max_bin: 127
       min_split_gain: 0.0
       n_jobs: *n_jobs
@@ -294,7 +294,7 @@ models:
     normalize: "none"
     classifier:
       class_weight: "balanced"
-      feature_fraction: 0.8
+      colsample_bytree: 0.8
       max_bin: 63
       min_split_gain: 0.0
       num_leaves: 30
@@ -304,7 +304,7 @@ models:
     normalize: "none"
     classifier:
       class_weight: "balanced"
-      feature_fraction: 1.0
+      colsample_bytree: 1.0
       max_bin: 255
       min_child_samples: 50
       min_split_gain: 0.01
