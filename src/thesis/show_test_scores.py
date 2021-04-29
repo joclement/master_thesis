@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import List
 
 import click
 import matplotlib.pyplot as plt
@@ -18,13 +19,12 @@ from . import __version__, util
 from .data import Defect
 
 
-TEST_SET_IDS = ["/normal/", "/DC-GIL/", "/normal-0.4/", "/cleanair/"]
-
 ID_TO_NAME = {
     "normal": "Mixture",
     "normal-0.4": "Mix-0.4nV",
     "DC-GIL": "OS-V2",
     "cleanair": "CleanAir",
+    "noise": "Noise",
 }
 
 
@@ -85,8 +85,16 @@ def print_scores(test_predictions) -> None:
     click.echo(f"  Support: {len(true)}")
 
 
+def add_legend(fig: plt.Figure) -> None:
+    handles, labels = plt.gca().get_legend_handles_labels()
+    by_label = dict(zip(labels, handles))
+    fig.legend(
+        by_label.values(), by_label.keys(), loc="center right", prop={"size": 10}
+    )
+
+
 def create_combined_plot(
-    test_predictions: pd.DataFrame, test_results_name: str, output_dir: Path, show: bool
+    test_predictions: pd.DataFrame, test_set_ids: List[str], with_noise: bool
 ):
     scores_df = pd.concat(
         [
@@ -94,16 +102,24 @@ def create_combined_plot(
                 test_predictions.loc[test_predictions.index.str.contains(test_set_id)],
                 test_set_id.strip("/"),
             )
-            for test_set_id in TEST_SET_IDS
+            for test_set_id in test_set_ids
         ]
     )
 
     fig = plt.figure()
-    ax1 = plt.subplot2grid((2, 7), (0, 0), colspan=6, fig=fig)
-    ax2 = plt.subplot2grid((2, 7), (0, 6), colspan=1, fig=fig)
-    ax3 = plt.subplot2grid((2, 7), (1, 0), colspan=5, fig=fig, sharey=ax1)
-    ax4 = plt.subplot2grid((2, 7), (1, 5), colspan=2, fig=fig, sharey=ax2)
-    axes = [ax1, ax2, ax3, ax4]
+    if with_noise:
+        ax1 = plt.subplot2grid((3, 6), (0, 0), colspan=6, fig=fig)
+        ax3 = plt.subplot2grid((3, 6), (1, 0), colspan=5, fig=fig, sharey=ax1)
+        ax2 = plt.subplot2grid((3, 6), (2, 0), colspan=1, fig=fig, sharey=ax1)
+        ax4 = plt.subplot2grid((3, 6), (2, 2), colspan=2, fig=fig)
+        ax5 = plt.subplot2grid((3, 6), (2, 5), colspan=1, fig=fig, sharey=ax4)
+        axes = [ax1, ax2, ax3, ax4, ax5]
+    else:
+        ax1 = plt.subplot2grid((2, 7), (0, 0), colspan=6, fig=fig)
+        ax2 = plt.subplot2grid((2, 7), (0, 6), colspan=1, fig=fig)
+        ax3 = plt.subplot2grid((2, 7), (1, 0), colspan=5, fig=fig, sharey=ax1)
+        ax4 = plt.subplot2grid((2, 7), (1, 5), colspan=2, fig=fig, sharey=ax2)
+        axes = [ax1, ax2, ax3, ax4]
 
     WIDTH = 0.35
     for i, (dataset_name, df) in enumerate(
@@ -123,20 +139,30 @@ def create_combined_plot(
         ax.set_ylim([0, 1])
         ax.set_xticklabels(df["Defect class"].unique())
 
-    ax1.legend(loc="lower left")
+    if with_noise:
+        add_legend(fig)
+    else:
+        ax1.legend(loc="lower left")
     fig.tight_layout()
 
-    util.finish_plot(f"{test_results_name}_combined_recall_precision", output_dir, show)
 
-
-def main(test_predictions: pd.DataFrame, test_results_name, show: bool = False) -> None:
-
+def main(
+    test_predictions: pd.DataFrame,
+    test_results_name,
+    with_noise: bool,
+    show: bool = False,
+) -> None:
     output_dir = Path(f"./output/test_plots/{test_results_name}/")
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    create_combined_plot(test_predictions, test_results_name, output_dir, show)
+    test_set_ids = ["/normal/", "/DC-GIL/", "/normal-0.4/", "/cleanair/"]
+    if with_noise:
+        test_set_ids.append("/noise/")
 
-    for test_set_id in TEST_SET_IDS:
+    create_combined_plot(test_predictions, test_set_ids, with_noise)
+    util.finish_plot(f"{test_results_name}_combined_recall_precision", output_dir, show)
+
+    for test_set_id in test_set_ids:
         part = test_predictions.loc[test_predictions.index.str.contains(test_set_id)]
         click.echo(f"Scores for {test_set_id} set:")
         print_scores(part)
@@ -148,10 +174,13 @@ def main(test_predictions: pd.DataFrame, test_results_name, show: bool = False) 
 @click.argument(
     "test_predictions", type=click.Path(exists=True, file_okay=True, dir_okay=False)
 )
+@click.option("--with-noise/--without-noise", default=False)
 @click.option("--show/--no-show", default=False)
-def click_command(test_predictions, show):
+def click_command(test_predictions, with_noise, show):
+
     main(
         pd.read_csv(test_predictions, header=0, index_col="path"),
         Path(test_predictions).stem,
+        with_noise,
         show,
     )
