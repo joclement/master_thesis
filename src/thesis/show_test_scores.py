@@ -9,6 +9,8 @@ import seaborn as sns
 from sklearn.metrics import (
     accuracy_score,
     balanced_accuracy_score,
+    confusion_matrix,
+    ConfusionMatrixDisplay,
 )
 from sklearn.metrics import (
     precision_score,
@@ -146,6 +148,15 @@ def create_combined_plot(
     fig.tight_layout()
 
 
+def create_confusion_matrix(results: pd.DataFrame):
+    defect_names = [Defect(d).abbreviation() for d in sorted(set(results["true"]))]
+    fig, ax = plt.subplots(figsize=(7, 7))
+    ConfusionMatrixDisplay(
+        confusion_matrix(results["true"], results["prediction"]),
+        display_labels=defect_names,
+    ).plot(ax=ax, colorbar=False)
+
+
 def main(
     test_predictions: pd.DataFrame,
     test_results_name,
@@ -161,6 +172,9 @@ def main(
 
     create_combined_plot(test_predictions, test_set_ids, with_noise)
     util.finish_plot(f"{test_results_name}_combined_recall_precision", output_dir, show)
+
+    create_confusion_matrix(test_predictions)
+    util.finish_plot(f"confusion_matrix_{test_results_name}", output_dir, show)
 
     for test_set_id in test_set_ids:
         part = test_predictions.loc[test_predictions.index.str.contains(test_set_id)]
