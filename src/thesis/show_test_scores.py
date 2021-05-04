@@ -178,6 +178,17 @@ def main(
 
     for test_set_id in test_set_ids:
         part = test_predictions.loc[test_predictions.index.str.contains(test_set_id)]
+        if "duration" in part.columns:
+            click.echo(f"Duration sum for {test_set_id} set: {part['duration'].sum()}")
+        else:
+            click.echo(
+                f"Preprocess duration sum for {test_set_id} set: "
+                f"{part['preprocess_duration'].sum()}"
+            )
+            click.echo(
+                f"Predict duration sum for {test_set_id} set: "
+                f"{part['predict_duration'].sum()}"
+            )
         click.echo(f"Scores for {test_set_id} set:")
         print_scores(part)
         create_plots(part, test_set_id.strip("/"), test_results_name, output_dir, show)
