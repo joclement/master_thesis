@@ -1,6 +1,7 @@
 from enum import Enum
 import math
-from typing import Any, Callable, List, Set, Tuple, Union
+import time
+from typing import Any, Callable, Dict, Final, List, Set, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -19,9 +20,7 @@ from tsfresh.feature_extraction.feature_calculators import (
 
 from .constants import PART
 from .data import CLASS, get_defects, PATH, PD, TIME_DIFF, VOLTAGE_SIGN
-from .util import get_memory
 
-memory = get_memory()
 
 PD_ID = "PD-Value"
 PD_DIFF_ID = "PD-Diff"
@@ -126,7 +125,6 @@ def get_parameter_group(df: pd.DataFrame, group: Group) -> pd.DataFrame:
     return df[wanted_columns].copy()
 
 
-@memory.cache
 def calc_weibull_params(data: Union[list, pd.Series]) -> Tuple[float, float]:
     weibull_b, _, weibull_a = stats.weibull_min.fit(data, floc=0.0)
     return weibull_a, weibull_b
@@ -148,91 +146,147 @@ def autocorrelate(values: pd.Series, lag: int) -> float:
     return corr_coef
 
 
-@memory.cache
+def make_distribution(values: pd.Series) -> pd.Series:
+    distribution = values.sort_values()
+    return distribution / distribution.max()
+
+
+class Features:
+    TIMES_FILEPATH: Final = "./output/extract_times.csv"
+    first_run = True
+
+    def __del__(self):
+        if Features.FIRST_RUN:
+            idx = pd.MultiIndex.from_tuples(
+                [(self.df_attrs[PATH], self.df_attrs[PART])], name=[PATH, PART]
+            )
+            self.time_df = pd.DataFrame(
+                data=[self.times.values()], index=idx, columns=self.times.keys()
+            )
+            Features.first_run = False
+        else:
+            self.time_df.loc[(self.df_attrs[PATH], self.df_attrs[PART]), :] = pd.Series(
+                data=self.times.values(), index=self.times.keys()
+            )
+        self.time_df.to_csv(Features.TIMES_FILEPATH)
+
+    def __init__(self, df_attrs: str):
+        self.features: Dict[str, float] = {}
+        self.times: Dict[str, float] = {}
+        if not Features.first_run:
+            self.time_df = pd.read_csv(
+                Features.TIMES_FILEPATH, header=0, index_col=[PATH, PART]
+            )
+        self.df_attrs = df_attrs
+
+    def add(self, feature_id: Union[Tuple[str, str], str], function: Callable):
+        start = time.process_time()
+        result = function()
+        duration = time.process_time() - start
+        if isinstance(feature_id, str):
+            self.features[feature_id] = result
+            count_id = feature_id
+        else:
+            for id, val in zip(feature_id, result):
+                self.features[id] = val
+            count_id = "+".join(feature_id)
+        self.times[count_id] = duration
+
+
 def extract_features(df: pd.DataFrame):
     pd_diff = df[PD].diff()[1:].abs().reset_index(drop=True)
-    features = {
-        CORR_NEXT_PD_TO_PD_BINS: _correlate_with_bins(
-            df[PD][:-1], df[PD][1:].reset_index(drop=True)
-        ),
-        CORR_PD_DIFF_TO_PD_BINS: _correlate_with_bins(
-            df[PD][1:].reset_index(drop=True), pd_diff
-        ),
-        CORR_NEXT_PD_TO_PD: autocorrelate(df[PD], 1),
-        CORR_2ND_NEXT_PD_TO_PD: autocorrelate(df[PD], 2),
-        CORR_3RD_NEXT_PD_TO_PD: autocorrelate(df[PD], 3),
-        CORR_5TH_NEXT_PD_TO_PD: autocorrelate(df[PD], 5),
-        CORR_10TH_NEXT_PD_TO_PD: autocorrelate(df[PD], 10),
-        CORR_PD_DIFF_TO_PD: stats.pearsonr(df[PD][1:].reset_index(drop=True), pd_diff)[
-            0
-        ],
-        CORR_PD_TO_TD: stats.pearsonr(df[PD], df[TIME_DIFF])[0],
-        AUTOCORR_NEXT_TD: autocorrelate(df[TIME_DIFF], 1),
-        AUTOCORR_2ND_NEXT_TD: autocorrelate(df[TIME_DIFF], 2),
-        AUTOCORR_3RD_NEXT_TD: autocorrelate(df[TIME_DIFF], 3),
-        AUTOCORR_5TH_NEXT_TD: autocorrelate(df[TIME_DIFF], 5),
-        AUTOCORR_10TH_NEXT_TD: autocorrelate(df[TIME_DIFF], 10),
-        DURATION: df[TIME_DIFF].sum(),
-        PDS_PER_SEC: len(df.index) / (df[TIME_DIFF].sum() / 1000),
-        PD_CHANGE_QUANTILES: change_quantiles(df[PD], 0.0, 0.7, True, "mean"),
-        PD_COUNT_ABOVE_MEAN: count_above_mean(df[PD]) / len(df.index),
-        PD_COUNT_BELOW_MEAN: count_below_mean(df[PD]) / len(df.index),
-        PD_CV: df[PD].std() / df[PD].mean(),
-        PD_DIFF_KURT: pd_diff.kurt(),
-        PD_DIFF_MEAN: pd_diff.mean(),
-        PD_DIFF_SKEW: pd_diff.skew(),
-        PD_DIFF_VAR: pd_diff.var(),
-        PD_KURT: df[PD].kurt(),
-        PD_MAX: df[PD].max(),
-        PD_MEAN: df[PD].mean(),
-        PD_MEDIAN: df[PD].median(),
-        PD_MIN: df[PD].min(),
-        PD_NUM_PEAKS_10: number_peaks(df[PD], 10),
-        PD_NUM_PEAKS_5: number_peaks(df[PD], 5),
-        PD_NUM_PEAKS_50: number_peaks(df[PD], 50),
-        PD_NUM_PEAKS_100: number_peaks(df[PD], 100),
-        PD_PERC_REOCCUR: percentage_of_reoccurring_datapoints_to_all_datapoints(df[PD]),
-        PD_RATIO: ratio_value_number_to_time_series_length(df[PD]),
-        PD_SKEW: df[PD].skew(),
-        PD_STD: df[PD].std(),
-        PD_SUM: df[PD].sum(),
-        PD_VAR: df[PD].var(),
-        TD_CHANGE_QUANTILES: change_quantiles(df[TIME_DIFF], 0.0, 0.3, True, "var"),
-        TD_KURT: df[TIME_DIFF].kurt(),
-        TD_LONGEST_STRIKE_BELOW_MEAN: longest_strike_below_mean(df[PD]) / len(df.index),
-        TD_MAX: df[TIME_DIFF].max(),
-        TD_MEAN: df[TIME_DIFF].mean(),
-        TD_MEDIAN: df[TIME_DIFF].median(),
-        TD_MIN: df[TIME_DIFF].min(),
-        TD_SKEW: df[TIME_DIFF].skew(),
-        TD_SUM: df[TIME_DIFF].sum(),
-        TD_VAR: df[TIME_DIFF].var(),
-        POLARITY: df.attrs[VOLTAGE_SIGN],
-    }
 
-    (
-        features[PD_DIFF_WEIB_A],
-        features[PD_DIFF_WEIB_B],
-    ) = calc_weibull_params(pd_diff)
-    (
-        features[PD_NORM_WEIB_A],
-        features[PD_NORM_WEIB_B],
-    ) = calc_weibull_params(df[PD].sort_values() / df[PD].max())
-    (
-        features[TDIFF_NORM_WEIB_A],
-        features[TDIFF_NORM_WEIB_B],
-    ) = calc_weibull_params(df[TIME_DIFF].cumsum() / df[TIME_DIFF].sum())
+    features = Features(df.attrs)
+    features.add(
+        CORR_NEXT_PD_TO_PD_BINS,
+        lambda: _correlate_with_bins(df[PD][:-1], df[PD][1:].reset_index(drop=True)),
+    ),
+    features.add(
+        CORR_PD_DIFF_TO_PD_BINS,
+        lambda: _correlate_with_bins(df[PD][1:].reset_index(drop=True), pd_diff),
+    ),
+    features.add(CORR_NEXT_PD_TO_PD, lambda: autocorrelate(df[PD], 1)),
+    features.add(CORR_2ND_NEXT_PD_TO_PD, lambda: autocorrelate(df[PD], 2)),
+    features.add(CORR_3RD_NEXT_PD_TO_PD, lambda: autocorrelate(df[PD], 3)),
+    features.add(CORR_5TH_NEXT_PD_TO_PD, lambda: autocorrelate(df[PD], 5)),
+    features.add(CORR_10TH_NEXT_PD_TO_PD, lambda: autocorrelate(df[PD], 10)),
+    features.add(
+        CORR_PD_DIFF_TO_PD,
+        lambda: stats.pearsonr(df[PD][1:].reset_index(drop=True), pd_diff)[0],
+    ),
+    features.add(CORR_PD_TO_TD, lambda: stats.pearsonr(df[PD], df[TIME_DIFF])[0]),
+    features.add(AUTOCORR_NEXT_TD, lambda: autocorrelate(df[TIME_DIFF], 1)),
+    features.add(AUTOCORR_2ND_NEXT_TD, lambda: autocorrelate(df[TIME_DIFF], 2)),
+    features.add(AUTOCORR_3RD_NEXT_TD, lambda: autocorrelate(df[TIME_DIFF], 3)),
+    features.add(AUTOCORR_5TH_NEXT_TD, lambda: autocorrelate(df[TIME_DIFF], 5)),
+    features.add(AUTOCORR_10TH_NEXT_TD, lambda: autocorrelate(df[TIME_DIFF], 10)),
+    features.add(DURATION, lambda: df[TIME_DIFF].sum()),
+    features.add(PDS_PER_SEC, lambda: len(df.index) / (df[TIME_DIFF].sum() / 1000)),
+    features.add(
+        PD_CHANGE_QUANTILES, lambda: change_quantiles(df[PD], 0.0, 0.7, True, "mean")
+    ),
+    features.add(PD_COUNT_ABOVE_MEAN, lambda: count_above_mean(df[PD]) / len(df.index)),
+    features.add(PD_COUNT_BELOW_MEAN, lambda: count_below_mean(df[PD]) / len(df.index)),
+    features.add(PD_CV, lambda: df[PD].std() / df[PD].mean()),
+    features.add(PD_DIFF_KURT, lambda: pd_diff.kurt()),
+    features.add(PD_DIFF_MEAN, lambda: pd_diff.mean()),
+    features.add(PD_DIFF_SKEW, lambda: pd_diff.skew()),
+    features.add(PD_DIFF_VAR, lambda: pd_diff.var()),
+    features.add(PD_KURT, lambda: df[PD].kurt()),
+    features.add(PD_MAX, lambda: df[PD].max()),
+    features.add(PD_MEAN, lambda: df[PD].mean()),
+    features.add(PD_MEDIAN, lambda: df[PD].median()),
+    features.add(PD_MIN, lambda: df[PD].min()),
+    features.add(PD_NUM_PEAKS_10, lambda: number_peaks(df[PD], 10)),
+    features.add(PD_NUM_PEAKS_5, lambda: number_peaks(df[PD], 5)),
+    features.add(PD_NUM_PEAKS_50, lambda: number_peaks(df[PD], 50)),
+    features.add(PD_NUM_PEAKS_100, lambda: number_peaks(df[PD], 100)),
+    features.add(
+        PD_PERC_REOCCUR,
+        lambda: percentage_of_reoccurring_datapoints_to_all_datapoints(df[PD]),
+    ),
+    features.add(PD_RATIO, lambda: ratio_value_number_to_time_series_length(df[PD])),
+    features.add(PD_SKEW, lambda: df[PD].skew()),
+    features.add(PD_STD, lambda: df[PD].std()),
+    features.add(PD_SUM, lambda: df[PD].sum()),
+    features.add(PD_VAR, lambda: df[PD].var()),
+    features.add(
+        TD_CHANGE_QUANTILES,
+        lambda: change_quantiles(df[TIME_DIFF], 0.0, 0.3, True, "var"),
+    ),
+    features.add(TD_KURT, lambda: df[TIME_DIFF].kurt()),
+    features.add(
+        TD_LONGEST_STRIKE_BELOW_MEAN,
+        lambda: longest_strike_below_mean(df[PD]) / len(df.index),
+    ),
+    features.add(TD_MAX, lambda: df[TIME_DIFF].max()),
+    features.add(TD_MEAN, lambda: df[TIME_DIFF].mean()),
+    features.add(TD_MEDIAN, lambda: df[TIME_DIFF].median()),
+    features.add(TD_MIN, lambda: df[TIME_DIFF].min()),
+    features.add(TD_SKEW, lambda: df[TIME_DIFF].skew()),
+    features.add(TD_SUM, lambda: df[TIME_DIFF].sum()),
+    features.add(TD_VAR, lambda: df[TIME_DIFF].var()),
+    features.add(POLARITY, lambda: df.attrs[VOLTAGE_SIGN]),
 
-    pd_by_timediff = (df[PD] / df[TIME_DIFF]).sort_values()
-    pd_by_timediff /= pd_by_timediff.max()
-    features[PD_BY_TD_WEIB_A], features[PD_BY_TD_WEIB_B] = calc_weibull_params(
-        pd_by_timediff
+    features.add((PD_DIFF_WEIB_A, PD_DIFF_WEIB_B), lambda: calc_weibull_params(pd_diff))
+    features.add(
+        (PD_NORM_WEIB_A, PD_NORM_WEIB_B),
+        lambda: calc_weibull_params(make_distribution(df[PD])),
     )
-
-    features[PD_WEIB_A], features[PD_WEIB_B] = calc_weibull_params(df[PD])
+    features.add(
+        (TDIFF_NORM_WEIB_A, TDIFF_NORM_WEIB_B),
+        lambda: calc_weibull_params(make_distribution(df[TIME_DIFF].cumsum())),
+    )
+    features.add(
+        (PD_BY_TD_WEIB_A, PD_BY_TD_WEIB_B),
+        lambda: calc_weibull_params(make_distribution(df[PD] / df[TIME_DIFF])),
+    )
+    features.add((PD_WEIB_A, PD_WEIB_B), lambda: calc_weibull_params(df[PD]))
 
     extracted_features = pd.DataFrame(
-        data=features, columns=features.keys(), index=[get_X_index(df)]
+        data=features.features,
+        columns=features.features.keys(),
+        index=[get_X_index(df)],
     )
     if math.isnan(extracted_features[PD_DIFF_KURT]):
         extracted_features[PD_DIFF_KURT] = 0.0
