@@ -154,7 +154,7 @@ def create_confusion_matrix(results: pd.DataFrame):
     ConfusionMatrixDisplay(
         confusion_matrix(results["true"], results["prediction"]),
         display_labels=defect_names,
-    ).plot(ax=ax, colorbar=False)
+    ).plot(ax=ax, cmap=plt.cm.Blues, colorbar=False)
 
 
 def main(
