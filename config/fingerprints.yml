@@ -92,7 +92,7 @@ defaults:
     num_leaves: [5, 8, 10, 12, 20]
     min_child_samples: [6, 10, 15]
     min_split_gain: [0.05, 0.1, 0.15]
-    colsample_bytree: [0.9, 0.8, 0.7]
+    colsample_bytree: [1.0, 0.9, 0.8, 0.7]
 
 
 models:
