@@ -1,7 +1,6 @@
 general:
   balance: False
   balance_polarity: False
-  cache_dir: ./cache
   calc_cm: True
   calc_train_score: False
   cv: "logo"
