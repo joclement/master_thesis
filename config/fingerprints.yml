@@ -180,6 +180,7 @@ models:
       hidden_layer_sizes: !!python/tuple [20,10]
       optimizer: *optimizer
       verbose: *verbose
+    grid: "fingerprint_compare"
 
   mlp-finger_all:
     normalize: "zscore"
