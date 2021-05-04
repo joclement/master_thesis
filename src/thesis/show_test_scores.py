@@ -130,8 +130,8 @@ def create_combined_plot(
         ax = axes[i]
         x = np.arange(len(df["score"]) / 2)
         metrics = list(df.groupby(axis=0, by="metric", sort=False))
-        ax.bar(x - WIDTH / 2, metrics[0][1]["score"], WIDTH, label=metrics[0][0])
-        ax.bar(x + WIDTH / 2, metrics[1][1]["score"], WIDTH, label=metrics[1][0])
+        ax.bar(x - WIDTH / 2, metrics[0][1]["score"], WIDTH - 0.02, label=metrics[0][0])
+        ax.bar(x + WIDTH / 2, metrics[1][1]["score"], WIDTH - 0.02, label=metrics[1][0])
         if ax.is_first_col():
             ax.set_ylabel("Score")
         else:
