@@ -132,7 +132,7 @@ models:
     select:
       tsfresh:
         fdr_level: 0.0001
-        multiclass: true
+        multiclass: True
         n_significant: 5
     normalize: "minmax"
     classifier:
@@ -169,7 +169,7 @@ models:
     select:
       tsfresh:
         fdr_level: 0.0001
-        multiclass: true
+        multiclass: True
         n_significant: 5
     normalize: "zscore"
     classifier:
@@ -289,7 +289,7 @@ models:
     select:
       tsfresh:
         fdr_level: 0.0001
-        multiclass: true
+        multiclass: True
         n_significant: 5
     normalize: "none"
     classifier:
@@ -351,7 +351,7 @@ models:
     select:
       tsfresh:
         fdr_level: 0.0001
-        multiclass: true
+        multiclass: True
         n_significant: 5
     normalize: "minmax"
     classifier:
@@ -411,7 +411,7 @@ models:
     select:
       tsfresh:
         fdr_level: 0.0001
-        multiclass: true
+        multiclass: True
         n_significant: 5
     normalize: "none"
     classifier:
