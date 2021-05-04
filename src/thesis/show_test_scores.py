@@ -168,6 +168,12 @@ def main(
 
     test_set_ids = ["/normal/", "/DC-GIL/", "/normal-0.4/", "/cleanair/"]
     if with_noise:
+        test_predictions = test_predictions[
+            ~(
+                test_predictions.index.str.contains("/noise/")
+                & test_predictions.index.str.contains("(+DC)_", regex=False)
+            )
+        ]
         test_set_ids.append("/noise/")
 
     create_combined_plot(test_predictions, test_set_ids, with_noise)
