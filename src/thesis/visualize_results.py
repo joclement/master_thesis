@@ -155,7 +155,7 @@ def plot_predictions(
         ConfusionMatrixDisplay(
             confusion_matrix(predictions["true"], predictions[model]),
             display_labels=defect_names,
-        ).plot()
+        ).plot(cmap=plt.cm.Blues, colorbar=False)
         util.finish_plot(f"confusion_matrix_{model}_{description}", output_dir, show)
 
 
