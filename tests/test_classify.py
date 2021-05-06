@@ -84,6 +84,18 @@ def test_classify_ClassificationHandler_logo_cv(config):
     assert len(list(output_dir.rglob(f"confusion_matrix_*.{PLOT_FILE_FORMAT}"))) == 1
 
 
+def test_classify_ClassificationHandler_timing(classify_config, tmpdir):
+    classify_config["models-to-run"] = classify_config["models-to-run"][:1]
+    timing_file = Path(tmpdir, "extract_times.csv")
+    classify_config["general"]["timing_file"] = str(timing_file)
+    assert not timing_file.exists()
+
+    handler = classify.ClassificationHandler(classify_config)
+    handler.run()
+
+    assert timing_file.exists()
+
+
 def test_classify_ClassificationHandler_max_len(config):
     config["general"]["min_duration"] = None
     config["general"]["max_duration"] = None

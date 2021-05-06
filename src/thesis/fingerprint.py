@@ -1,7 +1,9 @@
 from enum import Enum
 import math
+from pathlib import Path
 import time
-from typing import Any, Callable, Dict, Final, List, Set, Tuple, Union
+from typing import Any, Callable, Dict, List, Set, Tuple, Union
+
 
 import numpy as np
 import pandas as pd
@@ -152,32 +154,40 @@ def make_distribution(values: pd.Series) -> pd.Series:
 
 
 class Features:
-    TIMES_FILEPATH: Final = "./output/extract_times.csv"
-    first_run = True
-
     def __del__(self):
-        if Features.FIRST_RUN:
-            idx = pd.MultiIndex.from_tuples(
-                [(self.df_attrs[PATH], self.df_attrs[PART])], name=[PATH, PART]
-            )
-            self.time_df = pd.DataFrame(
-                data=[self.times.values()], index=idx, columns=self.times.keys()
-            )
-            Features.first_run = False
-        else:
-            self.time_df.loc[(self.df_attrs[PATH], self.df_attrs[PART]), :] = pd.Series(
-                data=self.times.values(), index=self.times.keys()
-            )
-        self.time_df.to_csv(Features.TIMES_FILEPATH)
+        if self.timing_filepath is not None:
+            if not self.timing_filepath.exists():
+                idx = pd.MultiIndex.from_tuples(
+                    [(self.df_attrs[PATH], self.df_attrs[PART])],
+                    name=self.get_index_col(),
+                )
+                self.time_df = pd.DataFrame(
+                    data=[self.times.values()], index=idx, columns=self.times.keys()
+                )
+                Features.first_run = False
+            else:
+                self.time_df.loc[
+                    (self.df_attrs[PATH], self.df_attrs[PART]), :
+                ] = pd.Series(data=self.times.values(), index=self.times.keys())
+            self.time_df.to_csv(self.timing_filepath)
 
-    def __init__(self, df_attrs: str):
+    def get_index_col(self) -> List[str]:
+        index_col = [PATH]
+        if PART in self.df_attrs:
+            index_col.append(PART)
+        return index_col
+
+    def __init__(self, df_attrs: dict, timing_filepath):
+        self.timing_filepath = timing_filepath
         self.features: Dict[str, float] = {}
         self.times: Dict[str, float] = {}
-        if not Features.first_run:
-            self.time_df = pd.read_csv(
-                Features.TIMES_FILEPATH, header=0, index_col=[PATH, PART]
-            )
-        self.df_attrs = df_attrs
+        if self.timing_filepath is not None:
+            self.timing_filepath = Path(timing_filepath)
+            self.df_attrs = df_attrs
+            if self.timing_filepath.exists():
+                self.time_df = pd.read_csv(
+                    self.timing_filepath, header=0, index_col=self.get_index_col()
+                )
 
     def add(self, feature_id: Union[Tuple[str, str], str], function: Callable):
         start = time.process_time()
@@ -193,10 +203,10 @@ class Features:
         self.times[count_id] = duration
 
 
-def extract_features(df: pd.DataFrame):
+def extract_features(df: pd.DataFrame, timing_filepath: str = None):
     pd_diff = df[PD].diff()[1:].abs().reset_index(drop=True)
 
-    features = Features(df.attrs)
+    features = Features(df.attrs, timing_filepath)
     features.add(
         CORR_NEXT_PD_TO_PD_BINS,
         lambda: _correlate_with_bins(df[PD][:-1], df[PD][1:].reset_index(drop=True)),

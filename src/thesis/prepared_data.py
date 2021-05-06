@@ -488,5 +488,8 @@ def finger_all(**config) -> FunctionTransformer:
 
 def extract_features(
     measurements: List[pd.DataFrame],
+    timing_filepath: Optional[str] = None,
 ) -> pd.DataFrame:
-    return pd.concat([fingerprint.extract_features(df) for df in measurements])
+    return pd.concat(
+        [fingerprint.extract_features(df, timing_filepath) for df in measurements]
+    )
