@@ -2,7 +2,7 @@ from pathlib import Path
 
 import click.testing
 
-from thesis import visualize_pd_data
+from thesis import util, visualize_pd_data
 from thesis.constants import PLOT_FILE_FORMAT
 
 
@@ -52,6 +52,12 @@ def test_visualize_pd_data_main_dir_save_recursive_succeeds(tiny_csv_folder, tmp
     )
     assert result.exit_code == 0
     assert sum(sub_path.is_dir() for sub_path in Path(tmpdir).iterdir()) == 2
+
+
+def test_visualize_pd_data_sliding_window(measurement, tmpdir):
+    visualize_pd_data.plot_sliding_window(measurement)
+    util.finish_plot("SlidingWindow", tmpdir, False)
+    assert Path(tmpdir, f"SlidingWindow.{PLOT_FILE_FORMAT}").exists()
 
 
 def test_visualize_pd_data_version_succeeds():
