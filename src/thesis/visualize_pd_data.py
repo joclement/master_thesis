@@ -33,7 +33,7 @@ def plot_sliding_window(df):
     length = 60
     x_step = 30
     windows = list(range(0, math.ceil(ts["time"].iloc[-1]) - length, x_step))
-    ys = [i / (len(windows) - 0.5) * ts[data.PD].iloc[-1] for i in range(len(windows))]
+    ys = [i / (len(windows) - 0.9) * ts[data.PD].iloc[-1] for i in range(len(windows))]
     xmins = [i for i in windows]
     xmaxs = [i + length for i in windows]
     plt.hlines(ys, xmin=xmins, xmax=xmaxs, colors="black")
@@ -54,16 +54,18 @@ def plot_sliding_window(df):
         horizontalalignment="center",
     )
 
-    step_window_y = 1.35 * ys[1]
-    plt.hlines(step_window_y, xmin=xmins[1], xmax=xmins[1] + x_step, colors="black")
-    plt.annotate("|", xy=(xmins[1], step_window_y), **anno_args)
-    plt.annotate("|", xy=(xmins[1] + x_step, step_window_y), **anno_args)
+    step_window_y = 0.45 * (ys[1] - ys[0]) + ys[0]
+    plt.hlines(step_window_y, xmin=xmins[0], xmax=xmins[0] + x_step, colors="dimgray")
+    anno_args = {"ha": "center", "va": "center", "size": 20, "color": "dimgray"}
+    plt.annotate("|", xy=(xmins[0], step_window_y), **anno_args)
+    plt.annotate("|", xy=(xmins[0] + x_step, step_window_y), **anno_args)
     plt.text(
-        xmins[1] + x_step / 2,
+        xmins[0] + x_step / 2,
         step_window_y,
         "Step size",
         verticalalignment="bottom",
         horizontalalignment="center",
+        color="dimgray",
     )
 
 
