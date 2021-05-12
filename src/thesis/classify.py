@@ -506,9 +506,22 @@ class ClassificationHandler:
         X = self.get_X(model_name)
         self._train(pipeline, X, range(0, len(X)), range(0), False)
 
-        explainer = shap.Explainer(model)
-        shap_values = explainer(X)
-        shap.plots.bar(shap_values)
+        explainer = shap.Explainer(
+            pipeline.named_steps["classifier"],
+            feature_names=get_feature_names(pipeline[-2]),
+            output_names=self.defect_names,
+        )
+        X_tr = pd.DataFrame(
+            data=pipeline[:-1].transform(X),
+            index=X.index,
+            columns=get_feature_names(pipeline[-2]),
+        )
+        shap.summary_plot(
+            explainer.shap_values(X_tr),
+            X_tr,
+            class_names=self.defect_names,
+            show=self.config["general"]["show_plots"],
+        )
         util.finish_plot(
             "feature_importance", model_folder, self.config["general"]["show_plots"]
         )
