@@ -193,7 +193,7 @@ class ClassificationHandler:
             index=build_index(self.measurements),
             dtype=np.int8,
         )
-        self.defects: Final = sorted(set(self.y))
+        self.defects: Final = [data.Defect(i) for i in sorted(set(self.y))]
         self.defect_names: Final = data.get_names(self.defects)
         self.cv_splits: Final = self._generate_cv_splits()
 
