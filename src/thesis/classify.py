@@ -13,6 +13,7 @@ import lightgbm
 from lightgbm import LGBMClassifier
 import numpy as np
 import pandas as pd
+import shap
 from sklearn import metrics
 from sklearn.base import BaseEstimator
 from sklearn.metrics import (
@@ -505,11 +506,12 @@ class ClassificationHandler:
         X = self.get_X(model_name)
         self._train(pipeline, X, range(0, len(X)), range(0), False)
 
-        if isinstance(get_classifier(pipeline), LGBMClassifier):
-            lightgbm.plot_importance(get_classifier(pipeline))
-            util.finish_plot(
-                "feature_importance", model_folder, self.config["general"]["show_plots"]
-            )
+        explainer = shap.Explainer(model)
+        shap_values = explainer(X)
+        shap.plots.bar(shap_values)
+        util.finish_plot(
+            "feature_importance", model_folder, self.config["general"]["show_plots"]
+        )
 
         if is_keras(pipeline):
             pipeline.named_steps["classifier"].model.save(
