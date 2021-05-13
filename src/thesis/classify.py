@@ -520,6 +520,7 @@ class ClassificationHandler:
             explainer.shap_values(X_tr),
             X_tr,
             class_names=self.defect_names,
+            max_display=X.shape[1],
             show=self.config["general"]["show_plots"],
         )
         util.finish_plot(
