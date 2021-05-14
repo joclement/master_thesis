@@ -100,7 +100,7 @@ PD_COUNT_BELOW_MEAN = f"{PD_ID}-Num-<-mean"
 PD_CHANGE_QUANTILES = f"{PD_ID}-change-quantiles"
 PD_NORM_WEIB_A = f"{PD_ID}-norm-Weib-\u03B1"
 PD_NORM_WEIB_B = f"{PD_ID}-norm-Weib-\u03B2"
-TD_LONGEST_STRIKE_BELOW_MEAN = f"{PD_ID}-max-strike-<-mean"
+PD_LONGEST_STRIKE_BELOW_MEAN = f"{PD_ID}-max-strike-<-mean"
 
 TD_CHANGE_QUANTILES = f"{TD_ID}-Change-quantiles"
 TD_SUM = f"{TD_ID}-Sum"
@@ -265,7 +265,7 @@ def extract_features(df: pd.DataFrame, timing_filepath: str = None):
     ),
     features.add(TD_KURT, lambda: df[TIME_DIFF].kurt()),
     features.add(
-        TD_LONGEST_STRIKE_BELOW_MEAN,
+        PD_LONGEST_STRIKE_BELOW_MEAN,
         lambda: longest_strike_below_mean(df[PD]) / len(df.index),
     ),
     features.add(TD_MAX, lambda: df[TIME_DIFF].max()),
@@ -442,7 +442,7 @@ RELOWN_FEATURES = [
     feature(TDIFF_NORM_WEIB_B),
     feature(TD_CHANGE_QUANTILES),
     feature(TD_KURT),
-    feature(TD_LONGEST_STRIKE_BELOW_MEAN),
+    feature(PD_LONGEST_STRIKE_BELOW_MEAN),
     feature(TD_MEDIAN),
     feature(TD_SKEW),
     feature(TD_SUM),
