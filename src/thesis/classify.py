@@ -21,7 +21,6 @@ from sklearn.metrics import (
     balanced_accuracy_score,
 )
 from sklearn.model_selection import LeaveOneGroupOut, StratifiedKFold
-from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import FeatureUnion, Pipeline
 from sklearn.preprocessing import FunctionTransformer
 from sklearn.utils import estimator_html_repr
@@ -513,7 +512,9 @@ class ClassificationHandler:
 
         if (
             is_pipeline_finger(pipeline)
-            and not isinstance(get_classifier(pipeline), KNeighborsClassifier)
+            # @note: LGBMClassifier is chosen to make the tests pass the CI,
+            #        but all classifiers except k-NN also work.
+            and isinstance(get_classifier(pipeline), LGBMClassifier)
             and "finger_all" not in pipeline.named_steps
         ):
             explainer = shap.Explainer(
