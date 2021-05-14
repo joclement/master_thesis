@@ -21,6 +21,7 @@ from sklearn.metrics import (
     balanced_accuracy_score,
 )
 from sklearn.model_selection import LeaveOneGroupOut, StratifiedKFold
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import FeatureUnion, Pipeline
 from sklearn.preprocessing import FunctionTransformer
 from sklearn.utils import estimator_html_repr
@@ -71,6 +72,10 @@ random.seed(SEED)
 os.environ["PYTHONHASHSEED"] = str(SEED)
 np.random.seed(SEED)
 tensorflow.random.set_seed(SEED)
+
+
+def is_pipeline_finger(pipeline: Pipeline) -> bool:
+    return is_data_finger(list(pipeline.named_steps.keys())[0])
 
 
 def combine(dataPart: DataPart, metric_name: str):
@@ -351,7 +356,7 @@ class ClassificationHandler:
                     (get_data_transformer(pipeline).transform(X_val), y_val),
                     (get_data_transformer(pipeline).transform(X_train), y_train),
                 ]
-            if is_data_finger(list(pipeline.named_steps.keys())[0]):
+            if is_pipeline_finger(pipeline):
                 feature_name, categorical_feature = get_categorical_features_info(
                     get_data_transformer(pipeline), X
                 )
@@ -506,26 +511,31 @@ class ClassificationHandler:
         X = self.get_X(model_name)
         self._train(pipeline, X, range(0, len(X)), range(0), False)
 
-        explainer = shap.Explainer(
-            pipeline.named_steps["classifier"],
-            feature_names=get_feature_names(pipeline[-2]),
-            output_names=self.defect_names,
-        )
-        X_tr = pd.DataFrame(
-            data=pipeline[:-1].transform(X),
-            index=X.index,
-            columns=get_feature_names(pipeline[-2]),
-        )
-        shap.summary_plot(
-            explainer.shap_values(X_tr),
-            X_tr,
-            class_names=self.defect_names,
-            max_display=X.shape[1],
-            show=self.config["general"]["show_plots"],
-        )
-        util.finish_plot(
-            "feature_importance", model_folder, self.config["general"]["show_plots"]
-        )
+        if (
+            is_pipeline_finger(pipeline)
+            and not isinstance(get_classifier(pipeline), KNeighborsClassifier)
+            and "finger_all" not in pipeline.named_steps
+        ):
+            explainer = shap.Explainer(
+                pipeline.named_steps["classifier"],
+                feature_names=get_feature_names(pipeline[0]),
+                output_names=self.defect_names,
+            )
+            X_tr = pd.DataFrame(
+                data=pipeline[:-1].transform(X),
+                index=X.index,
+                columns=get_feature_names(pipeline[0]),
+            )
+            shap.summary_plot(
+                explainer.shap_values(X_tr),
+                X_tr,
+                class_names=self.defect_names,
+                max_display=X.shape[1],
+                show=self.config["general"]["show_plots"],
+            )
+            util.finish_plot(
+                "feature_importance", model_folder, self.config["general"]["show_plots"]
+            )
 
         if is_keras(pipeline):
             pipeline.named_steps["classifier"].model.save(
