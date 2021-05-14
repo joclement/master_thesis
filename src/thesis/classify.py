@@ -13,6 +13,7 @@ import lightgbm
 from lightgbm import LGBMClassifier
 import numpy as np
 import pandas as pd
+import shap
 from sklearn import metrics
 from sklearn.base import BaseEstimator
 from sklearn.metrics import (
@@ -70,6 +71,10 @@ random.seed(SEED)
 os.environ["PYTHONHASHSEED"] = str(SEED)
 np.random.seed(SEED)
 tensorflow.random.set_seed(SEED)
+
+
+def is_pipeline_finger(pipeline: Pipeline) -> bool:
+    return is_data_finger(list(pipeline.named_steps.keys())[0])
 
 
 def combine(dataPart: DataPart, metric_name: str):
@@ -192,7 +197,7 @@ class ClassificationHandler:
             index=build_index(self.measurements),
             dtype=np.int8,
         )
-        self.defects: Final = sorted(set(self.y))
+        self.defects: Final = [data.Defect(i) for i in sorted(set(self.y))]
         self.defect_names: Final = data.get_names(self.defects)
         self.cv_splits: Final = self._generate_cv_splits()
 
@@ -350,7 +355,7 @@ class ClassificationHandler:
                     (get_data_transformer(pipeline).transform(X_val), y_val),
                     (get_data_transformer(pipeline).transform(X_train), y_train),
                 ]
-            if is_data_finger(list(pipeline.named_steps.keys())[0]):
+            if is_pipeline_finger(pipeline):
                 feature_name, categorical_feature = get_categorical_features_info(
                     get_data_transformer(pipeline), X
                 )
@@ -505,8 +510,30 @@ class ClassificationHandler:
         X = self.get_X(model_name)
         self._train(pipeline, X, range(0, len(X)), range(0), False)
 
-        if isinstance(get_classifier(pipeline), LGBMClassifier):
-            lightgbm.plot_importance(get_classifier(pipeline))
+        if (
+            is_pipeline_finger(pipeline)
+            # @note: LGBMClassifier is chosen to make the tests pass the CI,
+            #        but all classifiers except k-NN also work.
+            and isinstance(get_classifier(pipeline), LGBMClassifier)
+            and "finger_all" not in pipeline.named_steps
+        ):
+            explainer = shap.Explainer(
+                pipeline.named_steps["classifier"],
+                feature_names=get_feature_names(pipeline[0]),
+                output_names=self.defect_names,
+            )
+            X_tr = pd.DataFrame(
+                data=pipeline[:-1].transform(X),
+                index=X.index,
+                columns=get_feature_names(pipeline[0]),
+            )
+            shap.summary_plot(
+                explainer.shap_values(X_tr),
+                X_tr,
+                class_names=self.defect_names,
+                max_display=X.shape[1],
+                show=self.config["general"]["show_plots"],
+            )
             util.finish_plot(
                 "feature_importance", model_folder, self.config["general"]["show_plots"]
             )

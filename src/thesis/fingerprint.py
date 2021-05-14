@@ -24,10 +24,10 @@ from .constants import PART
 from .data import CLASS, get_defects, PATH, PD, TIME_DIFF, VOLTAGE_SIGN
 
 
-PD_ID = "PD-Value"
-PD_DIFF_ID = "PD-Diff"
-TD_ID = "TimeDiff"
-CORR_ID = "Correlate"
+PD_ID = "A"
+PD_DIFF_ID = "\u0394A"
+TD_ID = "\u0394t"
+CORR_ID = "Corr"
 
 
 class Group(Enum):
@@ -41,31 +41,31 @@ class Group(Enum):
 
 
 # @note: parameter in TU Graz fingerprint
-PD_VAR = f"{PD_ID} Variance"
-PD_SKEW = f"{PD_ID} Skewness"
-PD_KURT = f"{PD_ID} Kurtosis"
-PD_WEIB_A = f"{PD_ID} Weibull A"
-PD_WEIB_B = f"{PD_ID} Weibull B"
+PD_VAR = f"{PD_ID}-Var"
+PD_SKEW = f"{PD_ID}-Skew"
+PD_KURT = f"{PD_ID}-Kurt"
+PD_WEIB_A = f"{PD_ID}-Weib-\u03B1"
+PD_WEIB_B = f"{PD_ID} Weib-\u03B2"
 
-PD_DIFF_WEIB_B = f"{PD_DIFF_ID} Weibull B"
+PD_DIFF_WEIB_B = f"{PD_DIFF_ID}-Weib-\u03B2"
 
-TD_MAX = f"{TD_ID} Max"
-TD_MEAN = f"{TD_ID} Mean"
-TD_MIN = f"{TD_ID} Min"
-TD_VAR = f"{TD_ID} Variance"
-TD_SKEW = f"{TD_ID} Skewness"
-TD_KURT = f"{TD_ID} Kurtosis"
-TDIFF_NORM_WEIB_A = f"{TD_ID} Sorted Normed Weibull A"
-TDIFF_NORM_WEIB_B = f"{TD_ID} Sorted Normed Weibull B"
+TD_MAX = f"{TD_ID}-Max"
+TD_MEAN = f"{TD_ID}-Mean"
+TD_MIN = f"{TD_ID}-Min"
+TD_VAR = f"{TD_ID}-Var"
+TD_SKEW = f"{TD_ID}-Skew"
+TD_KURT = f"{TD_ID}-Kurt"
+TDIFF_NORM_WEIB_A = f"{TD_ID}-Norm-Weib-\u03B1"
+TDIFF_NORM_WEIB_B = f"{TD_ID}-Norm-Weib-\u03B2"
 
 
 # @note: parameter in Lukas fingerprint
-PDS_PER_SEC = "Number of PDs/sec"
+PDS_PER_SEC = "PDs/Sec"
 
-PD_MEAN = f"{PD_ID} Mean"
-PD_MAX = f"{PD_ID} Max"
-PD_CV = f"{PD_ID} std/mean"
-PD_SUM = f"{PD_ID} Sum"
+PD_MEAN = f"{PD_ID}-Mean"
+PD_MAX = f"{PD_ID}-Max"
+PD_CV = f"{PD_ID}-Std/Mean"
+PD_SUM = f"{PD_ID}-Sum"
 
 PD_DIFF_MEAN = f"{PD_DIFF_ID} Mean"
 PD_DIFF_SKEW = f"{PD_DIFF_ID} Skewness"
@@ -73,14 +73,13 @@ PD_DIFF_VAR = f"{PD_DIFF_ID} Variance"
 PD_DIFF_KURT = f"{PD_DIFF_ID} Kurtosis"
 PD_DIFF_WEIB_A = f"{PD_DIFF_ID} Weibull A"
 
-TD_MEDIAN = f"{TD_ID} Median"
+TD_MEDIAN = f"{TD_ID}-Median"
 
-CORR_PD_DIFF_TO_PD_BINS = f"{CORR_ID} {PD_DIFF_ID} - PD Bins"
-CORR_NEXT_PD_TO_PD_BINS = f"{CORR_ID} Next PD - PD Bins"
-CORR_NEXT_PD_TO_PD = f"{CORR_ID} Next PD - PD"
-CORR_PD_DIFF_TO_PD = f"{CORR_ID} {PD_DIFF_ID} - PD"
-CORR_PD_DIFF_TO_TD = f"{CORR_ID} PD - {PD_DIFF_ID}"
-CORR_PD_TO_TD = f"{CORR_ID} PD - {TD_ID}"
+CORR_PD_DIFF_TO_PD_BINS = f"{CORR_ID}-{PD_DIFF_ID}-{PD_ID}-Bins"
+CORR_NEXT_PD_TO_PD_BINS = f"Auto-{CORR_ID}-{PD_ID}-Bins"
+CORR_NEXT_PD_TO_PD = f"Auto-{CORR_ID}-{PD_ID}-1"
+CORR_PD_DIFF_TO_PD = f"{CORR_ID}-{PD_DIFF_ID}-{PD_ID}"
+CORR_PD_TO_TD = f"{CORR_ID}-{PD_ID}-{TD_ID}"
 
 # @note: parameter in own fingerprint
 DURATION = "duration"
@@ -89,37 +88,37 @@ POLARITY = "+DC/-DC"
 PD_MIN = f"{PD_ID} min"
 PD_MEDIAN = f"{PD_ID} Median"
 PD_STD = f"{PD_ID} std"
-PD_VAR = f"{PD_ID} var"
-PD_NUM_PEAKS_50 = f"{PD_ID} num peaks 50"
-PD_NUM_PEAKS_10 = f"{PD_ID} num peaks 10"
-PD_NUM_PEAKS_5 = f"{PD_ID} num peaks 5"
-PD_NUM_PEAKS_100 = f"{PD_ID} num peaks 100"
+PD_VAR = f"{PD_ID}-Var"
+PD_NUM_PEAKS_50 = f"{PD_ID}-Num-peaks-50"
+PD_NUM_PEAKS_10 = f"{PD_ID}-Num-peaks-10"
+PD_NUM_PEAKS_5 = f"{PD_ID}-Num-peaks-5"
+PD_NUM_PEAKS_100 = f"{PD_ID}-Num-peaks-100"
 PD_RATIO = f"{PD_ID} ratio"
 PD_PERC_REOCCUR = f"{PD_ID} percentage reocurring"
-PD_COUNT_ABOVE_MEAN = f"{PD_ID} count above mean"
-PD_COUNT_BELOW_MEAN = f"{PD_ID} count below mean"
-PD_CHANGE_QUANTILES = f"{PD_ID} ChangeQuantiles"
-PD_NORM_WEIB_A = f"{PD_ID} Weibull normed sorted A"
-PD_NORM_WEIB_B = f"{PD_ID} Weibull normed sorted B"
+PD_COUNT_ABOVE_MEAN = f"{PD_ID}-Num->-mean"
+PD_COUNT_BELOW_MEAN = f"{PD_ID}-Num-<-mean"
+PD_CHANGE_QUANTILES = f"{PD_ID}-change-quantiles"
+PD_NORM_WEIB_A = f"{PD_ID}-norm-Weib-\u03B1"
+PD_NORM_WEIB_B = f"{PD_ID}-norm-Weib-\u03B2"
+TD_LONGEST_STRIKE_BELOW_MEAN = f"{PD_ID}-max-strike-<-mean"
 
-TD_LONGEST_STRIKE_BELOW_MEAN = f"{TD_ID} longest strike below mean"
-TD_CHANGE_QUANTILES = f"{TD_ID} ChangeQuantiles"
-TD_SUM = f"{TD_ID} Sum"
+TD_CHANGE_QUANTILES = f"{TD_ID}-Change-quantiles"
+TD_SUM = f"{TD_ID}-Sum"
 
-CORR_2ND_NEXT_PD_TO_PD = f"{CORR_ID} Auto 2nd Next {PD_ID}"
-CORR_3RD_NEXT_PD_TO_PD = f"{CORR_ID} Auto 3rd Next {PD_ID}"
-CORR_5TH_NEXT_PD_TO_PD = f"{CORR_ID} Auto 5th Next {PD_ID}"
-CORR_10TH_NEXT_PD_TO_PD = f"{CORR_ID} Auto 10th Next {PD_ID}"
+CORR_2ND_NEXT_PD_TO_PD = f"Auto-{CORR_ID}-{PD_ID}-2"
+CORR_3RD_NEXT_PD_TO_PD = f"Auto-{CORR_ID}-{PD_ID}-3"
+CORR_5TH_NEXT_PD_TO_PD = f"Auto-{CORR_ID}-{PD_ID}-5"
+CORR_10TH_NEXT_PD_TO_PD = f"Auto-{CORR_ID}-{PD_ID}-10"
 
-AUTOCORR_NEXT_TD = f"{CORR_ID} Auto Next {TD_ID}"
-AUTOCORR_2ND_NEXT_TD = f"{CORR_ID} Auto 2nd Next {TD_ID}"
-AUTOCORR_3RD_NEXT_TD = f"{CORR_ID} Auto 3rd Next {TD_ID}"
-AUTOCORR_5TH_NEXT_TD = f"{CORR_ID} Auto 5th Next {TD_ID}"
-AUTOCORR_10TH_NEXT_TD = f"{CORR_ID} Auto 10th Next {TD_ID}"
+AUTOCORR_NEXT_TD = f"Auto-{CORR_ID}-{TD_ID}-1"
+AUTOCORR_2ND_NEXT_TD = f"Auto-{CORR_ID}-{TD_ID}-2"
+AUTOCORR_3RD_NEXT_TD = f"Auto-{CORR_ID}-{TD_ID}-3"
+AUTOCORR_5TH_NEXT_TD = f"Auto-{CORR_ID}-{TD_ID}-5"
+AUTOCORR_10TH_NEXT_TD = f"Auto-{CORR_ID}-{TD_ID}-10"
 
 # @note: further parameters
-PD_BY_TD_WEIB_A = f"{PD_ID} / {TD_ID} Weibull A"
-PD_BY_TD_WEIB_B = f"{PD_ID} / {TD_ID} Weibull B"
+PD_BY_TD_WEIB_A = f"{PD_ID}/{TD_ID}-Weib-\u03B1"
+PD_BY_TD_WEIB_B = f"{PD_ID}/{TD_ID}-Weibu-\u03B2"
 
 
 def get_parameter_group(df: pd.DataFrame, group: Group) -> pd.DataFrame:
