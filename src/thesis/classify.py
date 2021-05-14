@@ -201,13 +201,13 @@ class ClassificationHandler:
                 ("extract_features", FunctionTransformer(extract_features)),
             ]
             finger_preprocessor = Pipeline(finger_preprocessor)
-            click.echo("Calc finger features...")
             if "timing_file" in self.config["general"]:
                 finger_preprocessor.set_params(
                     extract_features__kw_args={
                         "timing_filepath": self.config["general"]["timing_file"]
                     }
                 )
+            click.echo("Calc finger features...")
             self.finger_X = finger_preprocessor.fit_transform(self.measurements)
             click.echo("Done.")
             if self.config["general"]["save_models"]:
