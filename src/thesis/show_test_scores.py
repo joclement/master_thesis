@@ -96,7 +96,10 @@ def add_legend(fig: plt.Figure) -> None:
 
 
 def create_combined_plot(
-    test_predictions: pd.DataFrame, test_set_ids: List[str], with_noise: bool
+    test_predictions: pd.DataFrame,
+    test_set_ids: List[str],
+    with_noise: bool,
+    sharey: bool,
 ):
     scores_df = pd.concat(
         [
@@ -134,7 +137,7 @@ def create_combined_plot(
         ax.bar(x + WIDTH / 2, metrics[1][1]["score"], WIDTH - 0.02, label=metrics[1][0])
         if ax.is_first_col():
             ax.set_ylabel("Score")
-        else:
+        elif sharey:
             ax.set_yticklabels([])
         ax.set_title(ID_TO_NAME[dataset_name])
         ax.set_xticks(x)
@@ -161,6 +164,7 @@ def main(
     test_predictions: pd.DataFrame,
     test_results_name,
     with_noise: bool,
+    sharey: bool,
     show: bool = False,
 ) -> None:
     output_dir = Path(f"./output/test_plots/{test_results_name}/")
@@ -176,7 +180,7 @@ def main(
         ]
         test_set_ids.append("/noise/")
 
-    create_combined_plot(test_predictions, test_set_ids, with_noise)
+    create_combined_plot(test_predictions, test_set_ids, with_noise, sharey)
     util.finish_plot(f"{test_results_name}_combined_recall_precision", output_dir, show)
 
     create_confusion_matrix(test_predictions)
@@ -207,11 +211,13 @@ def main(
 )
 @click.option("--with-noise/--without-noise", default=False)
 @click.option("--show/--no-show", default=False)
-def click_command(test_predictions, with_noise, show):
+@click.option("--sharey/--no-sharey", default=True)
+def click_command(test_predictions, with_noise, sharey, show):
 
     main(
         pd.read_csv(test_predictions, header=0, index_col="path"),
         Path(test_predictions).stem,
         with_noise,
+        sharey,
         show,
     )
