@@ -87,7 +87,11 @@ class TreatNegValues(Enum):
 
 
 def get_names(defects: Union[List[Defect], pd.Series]) -> List[str]:
-    return [str(defect) for defect in defects]
+    return [str(Defect(defect)) for defect in defects]
+
+
+def get_abbreviations(defects: Union[List[Defect], pd.Series]) -> List[str]:
+    return [Defect(defect).abbreviation() for defect in defects]
 
 
 def _has_voltage_sign(voltage_sign: VoltageSign, filename: str) -> bool:

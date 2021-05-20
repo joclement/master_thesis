@@ -8,6 +8,10 @@ import seaborn as sns
 from . import __version__, data, fingerprint, prepared_data, util
 
 
+FEATURE_NUM = 8
+CLASS_NAME = "Defect class"
+
+
 def _generate_heatmap(fingerprints: pd.DataFrame, output_folder, show):
     corr = fingerprints.corr()
     sns.heatmap(corr, center=0)
@@ -15,12 +19,12 @@ def _generate_heatmap(fingerprints: pd.DataFrame, output_folder, show):
 
 
 def _generate_pairplots(fingerprints: pd.DataFrame, output_folder, use_groups, show):
-    fingerprints[data.CLASS] = data.get_names(fingerprints[data.CLASS])
+    fingerprints[CLASS_NAME] = data.get_abbreviations(fingerprints[data.CLASS])
     if use_groups:
         for group in fingerprint.Group:
             features = fingerprint.get_parameter_group(fingerprints, group)
-            features[data.CLASS] = data.get_names(fingerprints[data.CLASS])
-            pairgrid = sns.pairplot(features, hue=data.CLASS)
+            features[CLASS_NAME] = fingerprints[CLASS_NAME]
+            pairgrid = sns.pairplot(features, hue=CLASS_NAME)
             pairgrid.fig.suptitle(
                 f"Pairwise relationships in fingerprint {group} parameters",
             )
@@ -28,14 +32,17 @@ def _generate_pairplots(fingerprints: pd.DataFrame, output_folder, use_groups, s
     else:
         features = list(fingerprints.columns)
         shuffle(features)
-        for idx_part_start in range(0, len(features), 8):
+        for idx_part_start in range(0, len(features), FEATURE_NUM):
             pairgrid = sns.pairplot(
                 fingerprints[
-                    set(features[idx_part_start : idx_part_start + 8] + [data.CLASS])
+                    set(
+                        features[idx_part_start : idx_part_start + FEATURE_NUM]
+                        + [CLASS_NAME]
+                    )
                 ],
-                hue=data.CLASS,
+                hue=CLASS_NAME,
             )
-            pairgrid.fig.suptitle("Pairwise relationships of 8 features")
+            pairgrid.fig.suptitle(f"Pairwise relationships of {FEATURE_NUM} features")
             util.finish_plot(f"pairplot_{idx_part_start}", output_folder, show)
 
 
