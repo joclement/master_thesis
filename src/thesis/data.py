@@ -60,7 +60,7 @@ class Defect(IntEnum):
 
 
 _DEFECT_NAMES: Final = {
-    Defect.free_particle: "Free Particle",
+    Defect.free_particle: "Moving Particle",
     Defect.particle_insulator: "Particle on Insulator",
     Defect.protrusion_earth: "Protrusion on Enclosure",
     Defect.protrusion_hv: "Protrusion on HV",
@@ -70,7 +70,7 @@ _DEFECT_NAMES: Final = {
 }
 
 _DEFECT_ABBREVIATIONS: Final = {
-    Defect.free_particle: "Free Particle",
+    Defect.free_particle: "Moving Particle",
     Defect.particle_insulator: "Particle Insulator",
     Defect.protrusion_earth: "Protrusion Enclosure",
     Defect.protrusion_hv: "Protrusion HV",
