@@ -126,8 +126,8 @@ def get_parameter_group(df: pd.DataFrame, group: Group) -> pd.DataFrame:
 
 
 def calc_weibull_params(data: Union[list, pd.Series]) -> Tuple[float, float]:
-    weibull_b, _, weibull_a = stats.weibull_min.fit(data, floc=0.0)
-    return weibull_a, weibull_b
+    weibull_b_shape, _, weibull_a_scale = stats.weibull_min.fit(data, floc=0.0)
+    return weibull_a_scale, weibull_b_shape
 
 
 CATEGORICAL_FEATURES = {POLARITY}
