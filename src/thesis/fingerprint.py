@@ -82,7 +82,6 @@ CORR_PD_DIFF_TO_PD = f"{CORR_ID}-{PD_DIFF_ID}-{PD_ID}"
 CORR_PD_TO_TD = f"{CORR_ID}-{PD_ID}-{TD_ID}"
 
 # @note: parameter in own fingerprint
-DURATION = "duration"
 POLARITY = "+DC/-DC"
 
 PD_MIN = f"{PD_ID} min"
@@ -229,7 +228,6 @@ def extract_features(df: pd.DataFrame, timing_filepath: str = None):
     features.add(AUTOCORR_3RD_NEXT_TD, lambda: autocorrelate(df[TIME_DIFF], 3)),
     features.add(AUTOCORR_5TH_NEXT_TD, lambda: autocorrelate(df[TIME_DIFF], 5)),
     features.add(AUTOCORR_10TH_NEXT_TD, lambda: autocorrelate(df[TIME_DIFF], 10)),
-    features.add(DURATION, lambda: df[TIME_DIFF].sum()),
     features.add(PDS_PER_SEC, lambda: len(df.index) / (df[TIME_DIFF].sum() / 1000)),
     features.add(
         PD_CHANGE_QUANTILES, lambda: change_quantiles(df[PD], 0.0, 0.7, True, "mean")
@@ -425,7 +423,6 @@ RELOWN_FEATURES = [
     feature(CORR_NEXT_PD_TO_PD),
     feature(CORR_PD_DIFF_TO_PD),
     feature(CORR_PD_TO_TD),
-    feature(DURATION),
     feature(PD_BY_TD_WEIB_A),
     feature(PD_BY_TD_WEIB_B),
     feature(PD_CHANGE_QUANTILES),
