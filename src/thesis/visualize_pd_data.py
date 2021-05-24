@@ -142,13 +142,13 @@ def _generate_polarity_plot(measurements: List[pd.DataFrame], output_folder, sho
         counts[(df.attrs[CLASS], str(df.attrs[VOLTAGE_SIGN]))] += 1
     info_df = pd.DataFrame(
         data={
-            "defect": [defect.wrapped() for defect, _ in counts.keys()],
-            "polarity": [polarity for _, polarity in counts.keys()],
-            "occurence": list(counts.values()),
+            "Defect": [defect.abbreviation() for defect, _ in counts.keys()],
+            "Polarity": [polarity for _, polarity in counts.keys()],
+            "Occurence": list(counts.values()),
         }
     )
 
-    sns.barplot(x="defect", y="occurence", hue="polarity", data=info_df)
+    sns.barplot(x="Defect", y="Occurence", hue="Polarity", data=info_df)
     util.finish_plot("occurence_of_polarity_per_defect", output_folder, show)
 
 
