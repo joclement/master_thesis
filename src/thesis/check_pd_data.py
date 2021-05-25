@@ -182,6 +182,9 @@ def main(path, recursive, expensive):
         click.echo(f"Overall min TimeDiff value: {min_timediff}")
         click.echo(f"Overall max TimeDiff value: {max_timediff}")
 
+        count_below_60 = sum(df[data.TIME_DIFF].sum() < 60000 for df in measurements)
+        click.echo(f"Measurements shorter than 60 seconds: {count_below_60}")
+
         _info_on_negative_pds(measurements, csv_filepaths)
 
         if expensive:
