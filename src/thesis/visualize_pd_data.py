@@ -117,14 +117,16 @@ def _generate_plots_for_single_csv(df: pd.DataFrame, output_folder, show):
     util.finish_plot("an-an+1", output_folder, show)
 
 
-def _generate_summary_plots(measurements: List[pd.DataFrame], output_folder, show):
+def _generate_summary_plots(
+    measurements: List[pd.DataFrame], output_folder, logarithmic: bool, show
+):
     _boxplot_lengths_of_pd_csvs_per_defect(measurements)
     util.finish_plot("boxplots_lengths_of_pd_csv_per_defect", output_folder, show)
 
     _stripplot_lengths_of_pd_csvs_per_defect(measurements)
     util.finish_plot("stripplot_lengths_of_pd_csv_per_defect", output_folder, show)
 
-    _scatterplot_length_duration(measurements)
+    _scatterplot_length_duration(measurements, logarithmic)
     util.finish_plot("scatterplot_lengths_durations", output_folder, show)
 
     _stripplot_duration_of_pd_csvs_per_defect(measurements)
@@ -184,13 +186,16 @@ def _stripplot_lengths_of_pd_csvs_per_defect(measurements):
     )
 
 
-def _scatterplot_length_duration(measurements):
-    sns.relplot(
+def _scatterplot_length_duration(measurements, logarithmic: bool):
+    g = sns.relplot(
         data=_calc_duration_and_lengths(measurements),
         x=_LENGTH_KEY,
         y=_DURATION_KEY,
         hue=data.CLASS,
     )
+    if logarithmic:
+        g.set(xscale="log")
+        g.set(yscale="log")
 
 
 def _stripplot_duration_of_pd_csvs_per_defect(measurements):
@@ -232,6 +237,9 @@ def _plot_histogram_duration_of_pd_csvs(measurements):
 @click.version_option(version=__version__)
 @click.argument("path", type=click.Path(exists=True))
 @click.option(
+    "--logarithmic", "-l", is_flag=True, help="Plot some plots with logarithmic scale"
+)
+@click.option(
     "-o",
     "--output-folder",
     type=click.Path(exists=True),
@@ -245,7 +253,7 @@ def _plot_histogram_duration_of_pd_csvs(measurements):
 )
 @click.option("--show", "-s", is_flag=True, help="Show plots")
 @click.option("--split", "-s", is_flag=True, help="Split data into 60 seconds samples")
-def main(path, output_folder, recursive, show, split):
+def main(path, logarithmic, output_folder, recursive, show, split):
     "Plot visualization of measurement file csv"
 
     sns.set(font_scale=1.2)
@@ -263,5 +271,5 @@ def main(path, output_folder, recursive, show, split):
             measurements = prepared_data.adapt_durations(
                 measurements, max_duration="60 seconds"
             )
-        _generate_summary_plots(measurements, output_folder, show)
+        _generate_summary_plots(measurements, output_folder, logarithmic, show)
         _generate_polarity_plot(measurements, output_folder, show)
