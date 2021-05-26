@@ -152,10 +152,11 @@ def plot_predictions(
     util.finish_plot(f"{description}-recalls", output_dir, show)
 
     for model in models:
-        ConfusionMatrixDisplay(
+        disp = ConfusionMatrixDisplay(
             confusion_matrix(predictions["true"], predictions[model]),
             display_labels=defect_names,
         ).plot(cmap=plt.cm.Blues, colorbar=False)
+        disp.ax_.set_title(f"{model} {description}")
         util.finish_plot(f"confusion_matrix_{model}_{description}", output_dir, show)
 
 
