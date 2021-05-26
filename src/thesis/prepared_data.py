@@ -310,6 +310,8 @@ def _split_by_duration(
 ) -> List[pd.DataFrame]:
     df = df.assign(**{"tmp_time": df[TIME_DIFF].cumsum()})
     int_dur = to_dataTIME(duration)
+    if df["tmp_time"].iloc[-1] <= int_dur:
+        return [df]
     if drop_last:
         end_edge = math.ceil(df["tmp_time"].iloc[-1])
     else:
