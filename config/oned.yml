@@ -32,7 +32,7 @@ defects:
   - protrusion_hv
 
 models-to-run:
-  - knn-oned_weasel
+  - lgbm-oned_weasel
   - knn-sparse
   - knn_dtw-oned
   - knn_fastdtw-oned
