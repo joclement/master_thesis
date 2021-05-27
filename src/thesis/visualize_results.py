@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import Optional, Union
+import warnings
 
 import click
 import matplotlib.pyplot as plt
@@ -221,6 +222,11 @@ def main(result_dir, config_file, show):
             Path(result_dir, PREDICTIONS_FILENAME), header=0, index_col=0
         )
     predictions = predictions.loc[:, models]
+    if (predictions == -1).any().any():
+        warnings.warn("Invalid prediction(s) in predictions results file.")
+        predictions = predictions.loc[:, ~(predictions == -1).any()]
+        models = predictions.columns
+        print(models)
     plot_predictions(predictions, models, show=show)
     plot_predictions(
         get_file_predictions(predictions), models, description="file-based", show=show
