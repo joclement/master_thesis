@@ -174,8 +174,11 @@ def _boxplot_lengths_of_pd_csvs_per_defect(measurements):
     for df in measurements:
         lengths_per_defect[data.Defect(df.attrs[data.CLASS])].append(len(df.index))
     fig, ax = plt.subplots()
-    labels = [f"{str(key)}: {len(value)}" for key, value in lengths_per_defect.items()]
-    ax.boxplot(lengths_per_defect.values(), labels=labels)
+    labels = [
+        f"{defect.abbreviation()}\n {len(num)}"
+        for defect, num in lengths_per_defect.items()
+    ]
+    ax.boxplot(lengths_per_defect.values(), labels=labels, showmeans=True)
     plt.ylabel("Number of PDs")
     plt.xlabel("Defect type with number of samples")
 
