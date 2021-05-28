@@ -514,17 +514,11 @@ class ClassificationHandler:
             is_pipeline_finger(pipeline)
             # @note: LGBMClassifier is chosen to make the tests pass the CI,
             #        but all classifiers except k-NN also work.
-            and (
-                isinstance(get_classifier(pipeline), LGBMClassifier)
-                or isinstance(get_classifier(pipeline), KerasClassifier)
-            )
+            and isinstance(get_classifier(pipeline), LGBMClassifier)
             and "finger_all" not in pipeline.named_steps
         ):
-            model = pipeline.named_steps["classifier"]
-            if isinstance(model, KerasClassifier):
-                model = model.model
             explainer = shap.Explainer(
-                model,
+                pipeline.named_steps["classifier"],
                 feature_names=get_feature_names(pipeline[0]),
                 output_names=self.defect_names,
             )
