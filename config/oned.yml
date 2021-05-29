@@ -24,18 +24,18 @@ general:
   verbose: False
 
 defects:
-  - cavity
-  - floating
-  - free_particle
-  - particle_insulator
-  - protrusion_earth
-  - protrusion_hv
+- cavity
+- floating
+- free_particle
+- particle_insulator
+- protrusion_earth
+- protrusion_hv
 
 models-to-run:
-  - lgbm-oned_weasel
-  - knn-sparse
-  - knn_dtw-oned
-  - knn_fastdtw-oned
+- lgbm-oned_weasel
+- knn-sparse
+- knn_dtw-oned
+- knn_fastdtw-oned
 
 defaults:
   n_jobs: &n_jobs 1

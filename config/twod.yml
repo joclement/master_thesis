@@ -25,15 +25,15 @@ general:
   verbose: False
 
 defects:
-  - free_particle
-  - particle_insulator
-  - protrusion_earth
-  - protrusion_hv
-  - floating
-  - cavity
+- free_particle
+- particle_insulator
+- protrusion_earth
+- protrusion_hv
+- floating
+- cavity
 
 models-to-run:
-  - knn_dtw-twod
+- knn_dtw-twod
 
 defaults:
   n_jobs: &n_jobs 6
