@@ -35,24 +35,6 @@ defects:
 models-to-run:
 - knn_dtw-twod
 
-defaults:
-  n_jobs: &n_jobs 6
-
-  knn_grid: &knn_grid
-    classifier:
-      n_neighbors:
-        - 1
-        - 3
-        - 7
-        - 15
-        - 30
-      weights:
-        - "uniform"
-        - "distance"
-      metric:
-        - "dtw"
-        - "euclidean"
-
 models:
   knn_dtw-twod:
     normalize: "none"
@@ -60,7 +42,20 @@ models:
       max_len: *max_len
       normalize: "none"
     classifier:
-      n_jobs: *n_jobs
+      n_jobs: 6
       n_neighbors: 1
       metric: "dtw"
-    grid: *knn_grid
+    grid:
+      classifier:
+        n_neighbors:
+          - 1
+          - 3
+          - 7
+          - 15
+          - 30
+        weights:
+          - "uniform"
+          - "distance"
+        metric:
+          - "dtw"
+          - "euclidean"
