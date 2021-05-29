@@ -12,7 +12,8 @@ from scipy.stats import zscore
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer
-from tslearn.utils import to_time_series_dataset
+from sktime.transformations.panel.rocket import MiniRocket
+from tslearn.utils import to_sktime_dataset, to_time_series_dataset
 
 from . import data, fingerprint
 from .constants import MIN_TIME_DIFF, PART
@@ -233,6 +234,14 @@ def oned_weasel(**config):
         ("oned", Oned(**config["oned"])),
         ("reshaper", Reshaper()),
         ("weasel", WEASEL(**config["weasel"])),
+    ]
+
+
+def oned_rocket(**config):
+    return [
+        ("oned", Oned(**config["oned"])),
+        ("tosktime", FunctionTransformer(to_sktime_dataset)),
+        ("rocket", MiniRocket(**config["rocket"])),
     ]
 
 

@@ -19,7 +19,7 @@ from sklearn.feature_selection import (
     SelectKBest,
     VarianceThreshold,
 )
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression, RidgeClassifierCV
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
@@ -55,7 +55,7 @@ def no_sample_weight(classifier: BaseEstimator) -> bool:
 
 
 def no_predict_proba(classifier: BaseEstimator) -> bool:
-    return isinstance(classifier, (SVC, TimeSeriesSVC, BOSSVS))
+    return isinstance(classifier, (SVC, TimeSeriesSVC, BOSSVS, RidgeClassifierCV))
 
 
 def is_data_finger(data_id: str):
@@ -273,6 +273,7 @@ CLASSIFIER_MAP = {
     "uknn_dtw": UnderSampleKNN,
     "usvm_dtw": UndersampleTimeSeriesSVM,
     "polknn_dtw": PolarityKNN,
+    "ridgecv": RidgeClassifierCV,
 }
 
 
@@ -295,6 +296,7 @@ def add_classifier(
             "uknn_dtw",
             "usvm_dtw",
             "polknn_dtw",
+            "ridgecv",
         }:
             classifier_config["random_state"] = RANDOM_STATE
         classifier = CLASSIFIER_MAP[classifier_id](**classifier_config)

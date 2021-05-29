@@ -36,6 +36,7 @@ models-to-run:
 - knn-sparse
 - knn_dtw-oned
 - knn_fastdtw-oned
+- ridgecv-oned_rocket
 
 defaults:
   n_jobs: &n_jobs 1
@@ -105,3 +106,12 @@ models:
         frequency: "100us"
       weasel:
           window_sizes: [1000, 10000, 90000]
+
+  ridgecv-oned_rocket:
+    normalize: "none"
+    data:
+      oned:
+        fix_duration: *min_duration
+        frequency: "100us"
+      rocket:
+        num_features: 1000

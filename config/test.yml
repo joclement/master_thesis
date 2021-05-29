@@ -48,6 +48,7 @@ models-to-run:
   - ott_algo-finger_ott
   - pytsknn-oned
   - rf-finger_tugraz
+  - ridgecv-oned_rocket
   - svm-finger_all
   - svm_dtw-seqfinger_seqown
   # @note: move to bottom as it's not working for saving & then prediction
@@ -420,3 +421,12 @@ models:
       max_depth: 3
       num_leaves: 3
       n_jobs: *n_jobs
+
+  ridgecv-oned_rocket:
+    normalize: "none"
+    data:
+      oned:
+        fix_duration: *min_duration
+        frequency: "500ms"
+      rocket:
+        num_features: 100
