@@ -1,5 +1,6 @@
 from enum import Enum
 import math
+import sys
 from typing import List, Optional
 import warnings
 
@@ -20,6 +21,7 @@ from .constants import MIN_TIME_DIFF, PART
 from .data import PATH, PD, START_TIME, TIME_DIFF
 from .util import get_memory, to_dataTIME
 
+DEFAULT_REPEAT = sys.maxsize
 MAX_FREQUENCY = pd.tseries.frequencies.to_offset(MIN_TIME_DIFF)
 
 ONEPD_DURATION = pd.Timedelta("10 seconds")
@@ -371,8 +373,9 @@ def split_by_lengths(
 def split_by_durations(
     measurements: List[pd.DataFrame],
     max_duration: pd.Timedelta,
-    step_duration: Optional[pd.Timedelta] = None,
+    step_duration: Optional[pd.Timedelta],
     drop_empty=False,
+    repeat: int = DEFAULT_REPEAT,
 ) -> List[pd.DataFrame]:
     if step_duration is not None:
         if max_duration % step_duration != pd.Timedelta(0):
@@ -385,13 +388,14 @@ def split_by_durations(
     else:
         length = 1
         duration = max_duration
+        repeat = 1
     splitted_measurements = [
         _split_by_duration(df, duration, True, drop_empty=drop_empty)
         for df in measurements
     ]
     stepped_measurements = []
     for file_dfs in splitted_measurements:
-        for idx in range(len(file_dfs) - length + 1):
+        for idx in range(min(len(file_dfs) - length + 1, repeat)):
             df = pd.concat(file_dfs[idx : idx + length]).reset_index(drop=True)
             df.attrs = file_dfs[idx].attrs
             stepped_measurements.append(df)
@@ -405,10 +409,12 @@ def adapt_durations(
     step_duration: Optional[str] = None,
     min_len: int = 0,
     max_len: Optional[int] = None,
-    repeat: int = 0,
+    repeat: int = DEFAULT_REPEAT,
     split: bool = True,
     drop_empty: bool = True,
 ):
+    if repeat is None:
+        repeat = DEFAULT_REPEAT
     min_dur = to_dataTIME(pd.Timedelta(min_duration))
     long_enough_measurements = [
         df for df in measurements if df[data.TIME_DIFF].sum() >= min_dur
@@ -419,12 +425,13 @@ def adapt_durations(
 
     if len(long_enough_measurements) == 0:
         raise ValueError("No long enough data.")
-    if not split and max_duration is None and max_len is None:
+    if not split and max_duration is None and max_len is None and step_duration is None:
         return long_enough_measurements
     if split and max_duration is not None:
         return split_by_durations(
             long_enough_measurements,
             pd.Timedelta(max_duration),
+            repeat=repeat,
             step_duration=pd.Timedelta(step_duration) if step_duration else None,
             drop_empty=drop_empty,
         )

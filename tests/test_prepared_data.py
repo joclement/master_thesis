@@ -7,7 +7,7 @@ from thesis import data, prepared_data
 def test_split_by_durations(measurement):
     assert "path" in measurement.attrs
     splitted = prepared_data.split_by_durations(
-        [measurement], pd.Timedelta("30 seconds")
+        [measurement], pd.Timedelta("30 seconds"), pd.Timedelta("30 seconds")
     )
 
     assert all([df.attrs["path"] == measurement.attrs["path"] for df in splitted])
@@ -20,9 +20,18 @@ def test_split_by_durations(measurement):
     assert all([all(df.index == range(len(df.index))) for df in splitted])
 
     splitted = prepared_data.split_by_durations(
-        [measurement], pd.Timedelta("60 seconds")
+        [measurement], pd.Timedelta("60 seconds"), pd.Timedelta("60 seconds")
     )
     assert len(splitted) == 2
+
+    splitted = prepared_data.split_by_durations(
+        [measurement], pd.Timedelta("30 seconds"), None
+    )
+    assert len(splitted) == 1
+    splitted = prepared_data.split_by_durations(
+        [measurement], pd.Timedelta("60 seconds"), None
+    )
+    assert len(splitted) == 1
 
 
 def test__split_by_duration(measurement):
