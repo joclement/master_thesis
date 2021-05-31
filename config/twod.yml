@@ -6,7 +6,7 @@ general:
   calc_train_score: False
   cv: "logo"
   data_dir: ./data/csv-files/prepared/dataset/train
-  drop_empty: True
+  drop_empty: False
   just_train: False
   max_duration: null
   max_len: &max_len 247
