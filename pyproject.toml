@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "thesis"
 version = "1.5.0"
-description = ""
+description = "Master's Theses at TU Berlin"
 authors = ["Joris Clement <j.clement@campus.tu-berlin.de>"]
 
 [tool.poetry.dependencies]
