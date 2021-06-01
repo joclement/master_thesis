@@ -25,7 +25,7 @@ def tests(session):
 
 @nox.session(python="3.8")
 def lint(session):
-    session.install("flake8", "flake8-black", "flake8-import-order")
+    session.install("flake8", "flake8-black", "flake8-isort")
     session.run("flake8", *LOCATIONS)
 
 
@@ -33,6 +33,13 @@ def lint(session):
 def black(session):
     session.install("black")
     session.run("black", *LOCATIONS)
+
+
+@nox.session(python="3.8")
+def isort(session):
+    session.install("isort")
+    args = ["--profile", "black", *LOCATIONS]
+    session.run("isort", *args)
 
 
 @nox.session(python="3.8")
