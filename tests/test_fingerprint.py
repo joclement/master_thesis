@@ -57,17 +57,17 @@ def test_normalize_fingerprints(measurements):
 
 def test_fingerprint_relown_set(measurements):
     dataset = fingerprint.build_set(measurements, fingerprint=fingerprint.relown)
-    assert dataset.shape == (6, 32)
+    assert dataset.shape == (6, 31)
 
 
 def test_fingerprint_own_set(measurements):
     dataset = fingerprint.build_set(measurements, fingerprint=fingerprint.own)
-    assert dataset.shape == (6, 37)
+    assert dataset.shape == (6, 36)
 
 
 def test_fingerprint_own(measurement):
     finger = fingerprint.own(measurement)
-    assert len(finger) == 37
+    assert len(finger) == 36
 
 
 @fixture

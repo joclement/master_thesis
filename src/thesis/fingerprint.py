@@ -442,7 +442,6 @@ RELOWN_FEATURES = [
     feature(PD_LONGEST_STRIKE_BELOW_MEAN),
     feature(TD_MEDIAN),
     feature(TD_SKEW),
-    feature(TD_SUM),
 ]
 
 
