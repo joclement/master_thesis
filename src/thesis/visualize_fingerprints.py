@@ -72,7 +72,7 @@ def main(finger, path, output_folder, show, split, group):
     measurements, _ = data.read_recursive(path, data.TreatNegValues.absolute)
     if split:
         measurements = prepared_data.adapt_durations(
-            measurements, max_duration="60 seconds"
+            measurements, max_duration="60 seconds", step_duration="60 seconds"
         )
 
     fingerprints = fingerprint.build_set(

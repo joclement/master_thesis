@@ -272,7 +272,7 @@ def main(path, logarithmic, output_folder, recursive, show, split):
                 _generate_plots_for_single_csv(measurement, single_csv_folder, show)
         if split:
             measurements = prepared_data.adapt_durations(
-                measurements, max_duration="60 seconds"
+                measurements, max_duration="60 seconds", step_duration="60 seconds"
             )
         _generate_summary_plots(measurements, output_folder, logarithmic, show)
         _generate_polarity_plot(measurements, output_folder, show)
