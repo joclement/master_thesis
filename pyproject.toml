@@ -36,6 +36,7 @@ pytest = "^6.1.0"
 pytest-cov = "^2.10.1"
 pytest-xdist = "^2.1.0"
 statsmodels = "^0.12.2"
+jupyterlab = "^3.0.16"
 
 [tool.poetry.scripts]
 calc-test-scores = "thesis.calc_test_scores:click_command"
