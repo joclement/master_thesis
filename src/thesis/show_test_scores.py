@@ -20,10 +20,11 @@ from sklearn.metrics import (
 from . import __version__, util
 from .data import Defect
 
+ARTIFICIAL_DATASET = "normal-0.4"
 
 ID_TO_NAME = {
     "normal": "Mixture",
-    "normal-0.4": "Mix-0.4nV",
+    ARTIFICIAL_DATASET: "Mix-0.4nV",
     "DC-GIL": "OS-V2",
     "cleanair": "CleanAir",
     "noise": "Noise",
@@ -185,6 +186,14 @@ def main(
 
     create_confusion_matrix(test_predictions)
     util.finish_plot(f"confusion_matrix_{test_results_name}", output_dir, show)
+
+    click.echo("Overall test scores:")
+    print_scores(test_predictions)
+
+    click.echo(f"Overall test scores without {ARTIFICIAL_DATASET}:")
+    print_scores(
+        test_predictions.loc[~test_predictions.index.str.contains(ARTIFICIAL_DATASET)]
+    )
 
     for test_set_id in test_set_ids:
         part = test_predictions.loc[test_predictions.index.str.contains(test_set_id)]
