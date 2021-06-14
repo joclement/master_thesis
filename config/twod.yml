@@ -1,6 +1,6 @@
 general:
-  balance: False
-  balance_polarity: False
+  balance: True
+  balance_polarity: True
   cache_dir: ./cache
   calc_cm: True
   calc_train_score: False
@@ -12,17 +12,17 @@ general:
   max_len: &max_len 247
   min_duration: null
   min_len: 0
-  n_jobs: 1
+  n_jobs: 4
   normalize_pd: True
-  output_dir: ./output/tmp_twod
+  output_dir: ./output/tune-raw-knn-dtw-window-size
   overwrite_output_dir: False
-  repeat: 16
+  repeat: 12
   save_models: True
   show_plots: False
   split: True
   step_duration: null
   treat_negative_values: "absolute"
-  verbose: False
+  verbose: True
 
 defects:
 - free_particle
@@ -41,9 +41,12 @@ models:
     data:
       normalize: "none"
     classifier:
-      n_jobs: 6
-      n_neighbors: 1
+      n_jobs: 2
+      n_neighbors: 3
+      weights: "uniform"
       metric: "dtw"
+      metric_params:
+        sakoe_chiba_radius: 64
     grid:
       classifier:
         n_neighbors:
@@ -51,10 +54,15 @@ models:
           - 3
           - 7
           - 15
-          - 30
         weights:
           - "uniform"
           - "distance"
-        metric:
-          - "dtw"
-          - "euclidean"
+        metric_params:
+          - {sakoe_chiba_radius: 1}
+          - {sakoe_chiba_radius: 2}
+          - {sakoe_chiba_radius: 4}
+          - {sakoe_chiba_radius: 8}
+          - {sakoe_chiba_radius: 16}
+          - {sakoe_chiba_radius: 32}
+          - {sakoe_chiba_radius: 64}
+          - {sakoe_chiba_radius: 128}
