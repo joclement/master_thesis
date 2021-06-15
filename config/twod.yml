@@ -14,7 +14,7 @@ general:
   min_len: 0
   n_jobs: 4
   normalize_pd: False
-  output_dir: ./output/tmp
+  output_dir: ./output/tune-raw-knn-dtw
   overwrite_output_dir: False
   repeat: 13
   save_models: True
@@ -40,6 +40,7 @@ models:
     normalize: "none"
     data:
       normalize: "minmax"
+      append_prepend_0: False
     classifier:
       n_jobs: 2
       n_neighbors: 7
@@ -52,6 +53,9 @@ models:
         normalize:
           - "minmax"
           - "zscore"
+        append_prepend_0:
+          - True
+          - False
       classifier:
         n_neighbors:
           - 1
