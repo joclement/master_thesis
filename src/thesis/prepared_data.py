@@ -270,8 +270,8 @@ def raw(**config):
 
 
 class twod(BaseEstimator, TransformerMixin):
-    def __init__(self, max_len: int, normalize: str, **kw_args):
-        self.set_params(**{"max_len": max_len, "normalize": normalize})
+    def __init__(self, normalize: str, **kw_args):
+        self.set_params(**{"normalize": normalize})
 
     def fit(self, measurements: List[pd.DataFrame], y=None, **kwargs):
         return self
@@ -284,14 +284,12 @@ class twod(BaseEstimator, TransformerMixin):
         elif self._normalize is NormalizationMethod.zscore:
             for df in measurements:
                 df.loc[:, PD] = df.apply(zscore)[PD]
-        return to_time_series_dataset([df[: self.max_len] for df in measurements])
+        return to_time_series_dataset(measurements)
 
     def get_params(self, deep=True):
-        return {"normalize": self.normalize_str, "max_len": self.max_len}
+        return {"normalize": self.normalize_str}
 
     def set_params(self, **parameters):
-        if "max_len" in parameters:
-            self.max_len = parameters["max_len"]
         if "normalize" in parameters:
             self.normalize_str = parameters["normalize"]
             self._normalize = NormalizationMethod(self.normalize_str)
@@ -352,7 +350,7 @@ def _split_by_duration(
 
 
 def get_part(df: pd.DataFrame, length: int, pos: int) -> pd.DataFrame:
-    part = df[pos : pos + length + 1]
+    part = df[pos : pos + length]
     part.attrs[PART] = pos
     assert len(part.index) > 0
     return part.reset_index(drop=True)

@@ -39,7 +39,6 @@ models:
   knn_dtw-twod:
     normalize: "none"
     data:
-      max_len: *max_len
       normalize: "none"
     classifier:
       n_jobs: 6
