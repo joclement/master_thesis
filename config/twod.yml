@@ -12,9 +12,9 @@ general:
   max_len: &max_len 247
   min_duration: null
   min_len: 0
-  n_jobs: 2
-  normalize_pd: True
-  output_dir: ./output/val-raw-knn-dtw-window-size-groupcv
+  n_jobs: 4
+  normalize_pd: False
+  output_dir: ./output/tmp
   overwrite_output_dir: False
   repeat: 13
   save_models: True
@@ -39,30 +39,30 @@ models:
   knn_dtw-twod:
     normalize: "none"
     data:
-      normalize: "none"
+      normalize: "minmax"
     classifier:
-      n_jobs: 1
-      n_neighbors: 3
-      weights: "uniform"
+      n_jobs: 2
+      n_neighbors: 7
+      weights: "distance"
       metric: "dtw"
       metric_params:
-        sakoe_chiba_radius: 64
+        sakoe_chiba_radius: 4
     grid:
+      data:
+        normalize:
+          - "minmax"
+          - "zscore"
       classifier:
         n_neighbors:
           - 1
           - 3
           - 7
-          - 15
         weights:
           - "uniform"
           - "distance"
         metric_params:
-          - {sakoe_chiba_radius: 1}
-          - {sakoe_chiba_radius: 2}
           - {sakoe_chiba_radius: 4}
           - {sakoe_chiba_radius: 8}
           - {sakoe_chiba_radius: 16}
           - {sakoe_chiba_radius: 32}
           - {sakoe_chiba_radius: 64}
-          - {sakoe_chiba_radius: 128}
