@@ -36,6 +36,7 @@ def black(session):
 
 
 @nox.session(python="3.8")
+@nox_poetry.session
 def mypy(session):
     session.install("mypy")
     session.run("mypy", *LOCATIONS)
