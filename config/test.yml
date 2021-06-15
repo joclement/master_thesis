@@ -179,6 +179,7 @@ models:
   knn_dtw-twod:
     normalize: "none"
     data:
+      append_prepend_0: False
       normalize: "minmax"
     classifier:
       n_jobs: *n_jobs

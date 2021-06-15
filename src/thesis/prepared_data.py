@@ -270,8 +270,10 @@ def raw(**config):
 
 
 class twod(BaseEstimator, TransformerMixin):
-    def __init__(self, normalize: str, **kw_args):
-        self.set_params(**{"normalize": normalize})
+    def __init__(self, normalize: str, append_prepend_0: bool, **kw_args):
+        self.set_params(
+            **{"normalize": normalize, "append_prepend_0": append_prepend_0}
+        )
 
     def fit(self, measurements: List[pd.DataFrame], y=None, **kwargs):
         return self
@@ -284,15 +286,22 @@ class twod(BaseEstimator, TransformerMixin):
         elif self._normalize is NormalizationMethod.zscore:
             for df in measurements:
                 df.loc[:, PD] = df.apply(zscore)[PD]
+        if self.append_prepend_0:
+            zero_row = pd.DataFrame(data={TIME_DIFF: [0], PD: [0]})
+            return to_time_series_dataset(
+                [pd.concat([zero_row, df, zero_row]) for df in measurements]
+            )
         return to_time_series_dataset(measurements)
 
     def get_params(self, deep=True):
-        return {"normalize": self.normalize_str}
+        return {"normalize": self.normalize_str, "append_prepend_0": self.append_prepend_0}
 
     def set_params(self, **parameters):
         if "normalize" in parameters:
             self.normalize_str = parameters["normalize"]
             self._normalize = NormalizationMethod(self.normalize_str)
+        if "append_prepend_0" in parameters:
+            self.append_prepend_0 = parameters["append_prepend_0"]
         return self
 
 
