@@ -294,7 +294,10 @@ class twod(BaseEstimator, TransformerMixin):
         return to_time_series_dataset(measurements)
 
     def get_params(self, deep=True):
-        return {"normalize": self.normalize_str, "append_prepend_0": self.append_prepend_0}
+        return {
+            "normalize": self.normalize_str,
+            "append_prepend_0": self.append_prepend_0,
+        }
 
     def set_params(self, **parameters):
         if "normalize" in parameters:
