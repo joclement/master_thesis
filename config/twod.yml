@@ -13,8 +13,8 @@ general:
   min_duration: null
   min_len: 0
   n_jobs: 1
-  normalize_pd: False
-  output_dir: ./output/val-raw-twod-knn-dtw_06_16
+  normalize_pd: True
+  output_dir: ./output/val-raw-twod-knn-dtw_normalize_pd
   overwrite_output_dir: False
   repeat: 12
   save_models: True
@@ -40,7 +40,7 @@ models:
     normalize: "none"
     data:
       append_prepend_0: False
-      normalize: "minmax"
+      normalize: "none"
     classifier:
       n_jobs: 8
       n_neighbors: 1
