@@ -417,14 +417,10 @@ def own_feature_union(**data_config) -> FeatureUnion:
 
 RELOWN_FEATURES = [
     feature(AUTOCORR_10TH_NEXT_TD),
-    feature(AUTOCORR_2ND_NEXT_TD),
-    feature(AUTOCORR_3RD_NEXT_TD),
     feature(AUTOCORR_5TH_NEXT_TD),
     feature(AUTOCORR_NEXT_TD),
-    feature(CORR_10TH_NEXT_PD_TO_PD),
     feature(CORR_2ND_NEXT_PD_TO_PD),
     feature(CORR_3RD_NEXT_PD_TO_PD),
-    feature(CORR_5TH_NEXT_PD_TO_PD),
     feature(CORR_NEXT_PD_TO_PD),
     feature(CORR_PD_DIFF_TO_PD),
     feature(CORR_PD_TO_TD),
