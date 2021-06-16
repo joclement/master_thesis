@@ -3,7 +3,7 @@ general:
   balance_polarity: False
   calc_cm: True
   calc_train_score: True
-  cv: "logo"
+  cv: "group"
   data_dir: ./data/csv-files/prepared/dataset/train
   drop_empty: True
   just_train: False
@@ -11,9 +11,9 @@ general:
   max_len: null
   min_duration: &min_duration "60 seconds"
   min_len: 0
-  n_jobs: 1
+  n_jobs: 8
   normalize_pd: True
-  output_dir: ./output/tmp
+  output_dir: ./output/tune-grid-search-finger_relown-relfip_06_16
   overwrite_output_dir: False
   repeat: null
   save_models: True
@@ -21,7 +21,7 @@ general:
   split: True
   step_duration: "30 seconds"
   treat_negative_values: "absolute"
-  verbose: False
+  verbose: True
 
 defects:
 - cavity
@@ -32,29 +32,7 @@ defects:
 - protrusion_hv
 
 models-to-run:
-- knn-finger_ott
-- knn-finger_own
-- knn-finger_relown
-- knn-finger_tugraz
-- lgbm-finger_all
-- lgbm-finger_ott
-- lgbm-finger_own
-- lgbm-finger_relown
-- lgbm-finger_tugraz
-- mlp-finger_all
-- mlp-finger_ott
-- mlp-finger_own
 - mlp-finger_relown
-- mlp-finger_tugraz
-- rf-finger_all
-- rf-finger_ott
-- rf-finger_own
-- rf-finger_relown
-- rf-finger_tugraz
-- svm-finger_ott
-- svm-finger_own
-- svm-finger_relown
-- svm-finger_tugraz
 
 defaults:
   batch_size: &batch_size 5
@@ -282,8 +260,7 @@ models:
       min_split_gain: 0.0
       n_jobs: *n_jobs
       num_leaves: 10
-    grid:
-      classifier: *lgbm_grid
+
 
   lgbm-tsfresh:
     data:
