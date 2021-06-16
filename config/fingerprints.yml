@@ -34,6 +34,7 @@ defects:
 models-to-run:
 - knn-finger_ott
 - knn-finger_own
+- knn-finger_relown
 - knn-finger_tugraz
 - lgbm-finger_all
 - lgbm-finger_ott
@@ -52,6 +53,7 @@ models-to-run:
 - rf-finger_tugraz
 - svm-finger_ott
 - svm-finger_own
+- svm-finger_relown
 - svm-finger_tugraz
 
 defaults:
