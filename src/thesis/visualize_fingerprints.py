@@ -14,7 +14,7 @@ CLASS_NAME = "Defect class"
 
 def _generate_heatmap(fingerprints: pd.DataFrame, output_folder, show):
     corr = fingerprints.corr()
-    sns.heatmap(corr, center=0)
+    sns.heatmap(corr, center=0, yticklabels=True)
     util.finish_plot("correlation_fingerprint", output_folder, show)
 
 
