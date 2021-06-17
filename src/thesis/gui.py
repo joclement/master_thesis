@@ -83,6 +83,7 @@ class ClassifierGui(tk.Toplevel):
         self._check_classification_readiness()
 
     def _predict(self):
+        self.df.attrs[data.VOLTAGE_SIGN] = self.polarity
         prediction, probabilities_list = self.predictionHandler.predict_one(self.df)
         probabilities_dict = {
             data.Defect(idx): prob for idx, prob in enumerate(probabilities_list)
