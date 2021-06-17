@@ -3,7 +3,7 @@ general:
   balance_polarity: False
   calc_cm: True
   calc_train_score: True
-  cv: "group"
+  cv: "logo"
   data_dir: ./data/csv-files/prepared/dataset/train
   drop_empty: True
   just_train: False
@@ -11,9 +11,9 @@ general:
   max_len: null
   min_duration: &min_duration "60 seconds"
   min_len: 0
-  n_jobs: 8
+  n_jobs: 1
   normalize_pd: True
-  output_dir: ./output/tune-grid-search-finger_relown-relfip_06_16
+  output_dir: ./output/val-finger_relown-relfip_06_17
   overwrite_output_dir: False
   repeat: null
   save_models: True
@@ -21,7 +21,7 @@ general:
   split: True
   step_duration: "30 seconds"
   treat_negative_values: "absolute"
-  verbose: True
+  verbose: False
 
 defects:
 - cavity
@@ -32,14 +32,18 @@ defects:
 - protrusion_hv
 
 models-to-run:
+- knn-finger_relown
+- lgbm-finger_relown
 - mlp-finger_relown
+- rf-finger_relown
+- svm-finger_relown
 
 defaults:
   batch_size: &batch_size 5
   dropout: &dropout 0.01
   duration: &duration "30 seconds"
   epochs: &epochs 40
-  n_jobs: &n_jobs 1
+  n_jobs: &n_jobs 8
   optimizer: &optimizer "adam"
   step_duration: &step_duration "10 seconds"
   verbose: &verbose 0
