@@ -9,6 +9,7 @@ from . import data
 from .predict import PredictionHandler
 
 
+FINGER_PREPROCESSOR_PATH: Final = Path("./finger_preprocessor.p")
 PREPROCESSOR_PATH: Final = Path("./preprocessor.p")
 MODEL_PATH: Final = Path("./model.p")
 
@@ -52,7 +53,15 @@ class ClassifierGui(tk.Toplevel):
         self.text_field.grid(column=1, row=5)
 
         self.df = None
-        self.predictionHandler = PredictionHandler(PREPROCESSOR_PATH, [MODEL_PATH])
+        if FINGER_PREPROCESSOR_PATH.exists():
+            finger_preprocessor_path = FINGER_PREPROCESSOR_PATH
+        else:
+            finger_preprocessor_path = None
+        self.predictionHandler = PredictionHandler(
+            PREPROCESSOR_PATH,
+            MODEL_PATH,
+            finger_preprocessor_path=finger_preprocessor_path,
+        )
 
     def _polarity_chosen(self, value):
         self.polarity = value
