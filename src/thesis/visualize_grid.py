@@ -108,7 +108,7 @@ def combine_split_scores(grid_results):
             build_row(grid_results, i, split_idx)
             for i in range(len(grid_results["mean_test_score"]))
             for split_idx in range(4)
-            if grid_results["rank_test_score"][i] <= 10
+            if grid_results["rank_test_score"][i] <= 23
         ]
     )
 
