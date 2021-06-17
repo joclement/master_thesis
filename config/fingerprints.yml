@@ -96,8 +96,8 @@ models:
     normalize: "minmax"
     classifier:
       n_jobs: *n_jobs
-      n_neighbors: 1
-      weights: "uniform"
+      n_neighbors: 5
+      weights: "distance"
 
   knn-finger_tugraz:
     normalize: "minmax"
@@ -188,18 +188,12 @@ models:
   mlp-finger_relown:
     normalize: "zscore"
     classifier:
-      batch_size: 1
-      class_weight:
-        0: 1.0212121212121212,
-        1: 0.8467336683417085,
-        2: 1.2389705882352942,
-        3: 1.2210144927536233,
-        4: 1.1950354609929077,
-        5: 0.7262931034482759}
+      batch_size: 10
+      class_weight: null
       hidden_layer_sizes: !!python/tuple [20]
-      dropout: 0.05
+      dropout: 0.0
       optimizer: *optimizer
-      epochs: 150
+      epochs: 100
       verbose: *verbose
     grid: "fingerprint_compare"
 
@@ -254,13 +248,12 @@ models:
   lgbm-finger_relown:
     normalize: "none"
     classifier:
-      class_weight: null
-      colsample_bytree: 0.8
+      class_weight: "balanced"
+      colsample_bytree: 1.0
       max_bin: 127
-      min_split_gain: 0.0
+      min_split_gain: 0.1
       n_jobs: *n_jobs
-      num_leaves: 10
-
+      num_leaves: 30
 
   lgbm-tsfresh:
     data:
@@ -367,8 +360,8 @@ models:
     classifier:
       n_jobs: *n_jobs
       class_weight: "balanced"
-      bootstrap: False
-      min_samples_leaf: 10
+      bootstrap: True
+      min_samples_leaf: 2
 
   rf-finger_tugraz:
     normalize: "none"
