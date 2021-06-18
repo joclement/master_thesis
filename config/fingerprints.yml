@@ -32,11 +32,29 @@ defects:
 - protrusion_hv
 
 models-to-run:
+- knn-finger_ott
+- knn-finger_own
 - knn-finger_relown
+- knn-finger_tugraz
+- lgbm-finger_all
+- lgbm-finger_ott
+- lgbm-finger_own
 - lgbm-finger_relown
+- lgbm-finger_tugraz
+- mlp-finger_all
+- mlp-finger_ott
+- mlp-finger_own
 - mlp-finger_relown
+- mlp-finger_tugraz
+- rf-finger_all
+- rf-finger_ott
+- rf-finger_own
 - rf-finger_relown
+- rf-finger_tugraz
+- svm-finger_ott
+- svm-finger_own
 - svm-finger_relown
+- svm-finger_tugraz
 
 defaults:
   batch_size: &batch_size 5
