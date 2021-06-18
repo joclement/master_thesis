@@ -287,7 +287,7 @@ def extract_features(df: pd.DataFrame, timing_filepath: str = None):
     )
     features.add(
         (TDIFF_NORM_WEIB_A, TDIFF_NORM_WEIB_B),
-        lambda: calc_weibull_params(make_distribution(df[TIME_DIFF].cumsum())),
+        lambda: calc_weibull_params(make_distribution(df[TIME_DIFF])),
     )
     features.add(
         (PD_BY_TD_WEIB_A, PD_BY_TD_WEIB_B),
