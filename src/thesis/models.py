@@ -2,10 +2,6 @@ from typing import Final, List, Tuple
 
 import imblearn
 from imblearn.under_sampling import RandomUnderSampler
-import keras
-from keras.layers import Dense, Dropout
-from keras.models import Sequential
-from keras.wrappers.scikit_learn import KerasClassifier
 from lightgbm import LGBMClassifier
 import numpy as np
 from pyts.classification import BOSSVS
@@ -25,6 +21,10 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.svm import LinearSVC, SVC
 from sklearn.tree import DecisionTreeClassifier
+from tensorflow import keras
+from tensorflow.keras.layers import Dense, Dropout
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
 from tsfresh.transformers import FeatureSelector
 from tslearn.neighbors import KNeighborsTimeSeriesClassifier
 from tslearn.preprocessing import TimeSeriesScalerMeanVariance, TimeSeriesScalerMinMax
