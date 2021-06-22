@@ -536,7 +536,21 @@ class ClassificationHandler:
                 show=self.config["general"]["show_plots"],
             )
             util.finish_plot(
-                "feature_importance", model_folder, self.config["general"]["show_plots"]
+                "feature_importance_all_features",
+                model_folder,
+                self.config["general"]["show_plots"],
+            )
+            shap.summary_plot(
+                explainer.shap_values(X_tr),
+                X_tr,
+                class_names=self.defect_names,
+                max_display=10,
+                show=self.config["general"]["show_plots"],
+            )
+            util.finish_plot(
+                "feature_importance_top10_features",
+                model_folder,
+                self.config["general"]["show_plots"],
             )
 
         if is_keras(pipeline):
