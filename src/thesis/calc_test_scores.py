@@ -42,7 +42,6 @@ def main(
         preprocessor_file, model_file, finger_preprocessor_file, keras_model
     )
     predictions = []
-    proba_predictions = []
     failing_indexes = []
     preprocess_durations = []
     predict_durations = []
@@ -62,7 +61,6 @@ def main(
             warn(str(e) + f" Path: {df.attrs[data.PATH]}")
             continue
         predictions.append(prediction)
-        proba_predictions.append(proba_prediction)
         preprocess_durations.append(preprocess_duration)
         predict_durations.append(predict_duration)
     y = np.delete(y, failing_indexes)
