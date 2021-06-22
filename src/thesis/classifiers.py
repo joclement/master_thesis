@@ -3,7 +3,6 @@ import random
 from typing import Dict, List, Tuple
 
 import dtaidistance
-from keras.wrappers.scikit_learn import KerasClassifier
 import numpy as np
 import pandas as pd
 from scipy import stats
@@ -11,6 +10,7 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils.multiclass import unique_labels
 from sklearn.utils.validation import check_X_y
+from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
 from tslearn.neighbors import KNeighborsTimeSeriesClassifier
 from tslearn.svm import TimeSeriesSVC
 from tslearn.utils import to_time_series_dataset

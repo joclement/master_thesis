@@ -5,7 +5,6 @@ description = "Code to Master's Thesis at TU Berlin."
 authors = ["Joris Clement <j.clement@campus.tu-berlin.de>"]
 
 [tool.poetry.dependencies]
-Keras = "^2.4.3"
 click = "^7.1.2"
 dtaidistance = "^2.2.5"
 imbalanced-learn = "^0.8.0"

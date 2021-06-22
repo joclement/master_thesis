@@ -8,7 +8,6 @@ from typing import Any, Dict, Final, Iterable, List, Optional, Tuple, Union
 import warnings
 
 import click
-from keras.wrappers.scikit_learn import KerasClassifier
 import lightgbm
 from lightgbm import LGBMClassifier
 import numpy as np
@@ -27,6 +26,7 @@ from sklearn.preprocessing import FunctionTransformer
 from sklearn.utils import estimator_html_repr
 from sklearn.utils.class_weight import compute_class_weight
 import tensorflow
+from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
 import yaml
 
 from . import __version__, data, util

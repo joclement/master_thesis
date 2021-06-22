@@ -770,24 +770,6 @@ requests = "*"
 test = ["codecov", "ipykernel", "pytest (>=5.3.2)", "pytest-cov", "jupyter-server", "openapi-core (>=0.13.8,<0.14.0)", "pytest-console-scripts", "strict-rfc3339", "ruamel.yaml", "wheel"]
 
 [[package]]
-name = "keras"
-version = "2.4.3"
-description = "Deep Learning for humans"
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-h5py = "*"
-numpy = ">=1.9.1"
-pyyaml = "*"
-scipy = ">=0.14"
-
-[package.extras]
-tests = ["pytest", "pytest-pep8", "pytest-xdist", "flaky", "pytest-cov", "pandas", "requests", "markdown"]
-visualize = ["pydot (>=1.2.4)"]
-
-[[package]]
 name = "keras-nightly"
 version = "2.6.0.dev2021062200"
 description = "TensorFlow Keras."
@@ -2043,7 +2025,7 @@ heapdict = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "931d546bd9fe776fb6e189da551f812aecaec18dda7d0b62b32b4d725d8119d0"
+content-hash = "1c66e1fe82b2b3fd80726778a6cfa904522da8286293dd09beb02a8dd3a28675"
 
 [metadata.files]
 absl-py = [
@@ -2485,10 +2467,6 @@ jupyterlab-pygments = [
 jupyterlab-server = [
     {file = "jupyterlab_server-2.6.0-py3-none-any.whl", hash = "sha256:10ca364e764a6ca1e387530dfe5a09dc8fd563f1739b2b7b5a49e8cf5c4140ee"},
     {file = "jupyterlab_server-2.6.0.tar.gz", hash = "sha256:f300adf6bb0a952bebe9c807a3b2a345d62da39b476b4f69ea0dc6b5f3f6b97d"},
-]
-keras = [
-    {file = "Keras-2.4.3-py2.py3-none-any.whl", hash = "sha256:05e2faf6885f7899482a7d18fc00ba9655fe2c9296a35ad96949a07a9c27d1bb"},
-    {file = "Keras-2.4.3.tar.gz", hash = "sha256:fedd729b52572fb108a98e3d97e1bac10a81d3917d2103cc20ab2a5f03beb973"},
 ]
 keras-nightly = [
     {file = "keras_nightly-2.6.0.dev2021062200-py2.py3-none-any.whl", hash = "sha256:a171ac505ced42ee5b8fa7487ffd4f933b36250dbb74eb95a86e209185841bfe"},

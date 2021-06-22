@@ -3,9 +3,9 @@ import pickle
 import time
 from typing import Any, Optional, Tuple
 
-from keras.models import load_model
 import numpy as np
 import pandas as pd
+from tensorflow.keras.models import load_model
 
 from .data import Defect
 from .models import is_data_finger
