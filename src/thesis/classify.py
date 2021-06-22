@@ -19,6 +19,7 @@ from sklearn.base import BaseEstimator
 from sklearn.metrics import (
     accuracy_score,
     balanced_accuracy_score,
+    top_k_accuracy_score,
 )
 from sklearn.model_selection import LeaveOneGroupOut, StratifiedKFold
 from sklearn.pipeline import FeatureUnion, Pipeline
@@ -37,6 +38,7 @@ from .constants import (
     CONFIG_MODELS_RUN_ID,
     DataPart,
     FILE_SCORE,
+    K,
     MODEL_ID,
     PART,
     PREDICTIONS_FILENAME,
@@ -61,7 +63,6 @@ from .models import (
     no_sample_weight,
 )
 from .prepared_data import adapt_durations, extract_features, MeasurementNormalizer
-from .sklearn_metrics import top_k_accuracy_score
 
 
 warnings.simplefilter("ignore")
@@ -394,7 +395,7 @@ class ClassificationHandler:
             predictions = np.argmax(proba_predictions, axis=1)
             scores = self._calc_scores(y_true, predictions)
             scores[TOP_K_ACCURACY_SCORE] = top_k_accuracy_score(
-                y_true, proba_predictions, self.defects
+                y_true, proba_predictions, k=K, labels=self.defects
             )
             if (
                 self.config["general"]["cv"] in ["logo", "group"]
