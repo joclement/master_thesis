@@ -13,7 +13,7 @@ general:
   min_len: 0
   n_jobs: 1
   normalize_pd: True
-  output_dir: ./output/val-noise-lgbm-finger_relown_06_22
+  output_dir: ./output/tmp_noise
   overwrite_output_dir: False
   repeat: null
   save_models: True
