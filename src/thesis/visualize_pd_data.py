@@ -105,23 +105,25 @@ def _plot_relation_between_consecutive_pd_volts(df):
     plt.ylabel("A(n+1) in nV")
 
 
-def _generate_plots_for_single_csv(df: pd.DataFrame, output_folder, show):
+def _generate_plots_for_single_csv(df: pd.DataFrame, single_csv_folder, show):
     _plot_pd_volts_over_time(df)
     plt.get_current_fig_manager().canvas.set_window_title(
         f"{df.attrs[CLASS]}_{df.attrs[VOLTAGE_SIGN]}"
     )
     util.finish_plot(
-        f"PDOverTime_{df.attrs[CLASS]}_{df.attrs[VOLTAGE_SIGN]}", output_folder, show
+        f"PDOverTime_{df.attrs[CLASS]}_{df.attrs[VOLTAGE_SIGN]}",
+        single_csv_folder,
+        show,
     )
 
     _plot_timediff_between_pds_over_time(df)
-    util.finish_plot("DeltaTOverTime", output_folder, show)
+    util.finish_plot("DeltaTOverTime", single_csv_folder, show)
 
     _plot_number_of_pds_over_time(df)
-    util.finish_plot("NumberOfPDsOverTime", output_folder, show)
+    util.finish_plot("NumberOfPDsOverTime", single_csv_folder, show)
 
     _plot_relation_between_consecutive_pd_volts(df)
-    util.finish_plot("an-an+1", output_folder, show)
+    util.finish_plot("an-an+1", single_csv_folder, show)
 
 
 def _generate_summary_plots(
@@ -274,8 +276,11 @@ def main(path, logarithmic, output_folder, recursive, show, split):
         measurements, csv_filepaths = data.read_recursive(path)
         if recursive:
             for measurement, csv_filepath in zip(measurements, csv_filepaths):
-                single_csv_folder = Path(output_folder, Path(csv_filepath).name)
-                single_csv_folder.mkdir(parents=True, exist_ok=False)
+                if output_folder is None:
+                    single_csv_folder = None
+                else:
+                    single_csv_folder = Path(output_folder, Path(csv_filepath).name)
+                    single_csv_folder.mkdir(parents=True, exist_ok=False)
                 _generate_plots_for_single_csv(measurement, single_csv_folder, show)
         if split:
             measurements = prepared_data.adapt_durations(
