@@ -107,7 +107,7 @@ def _plot_relation_between_consecutive_pd_volts(df):
 
 def _generate_plots_for_single_csv(df: pd.DataFrame, single_csv_folder, show):
     _plot_pd_volts_over_time(df)
-    plt.get_current_fig_manager().canvas.set_window_title(
+    plt.get_current_fig_manager().set_window_title(
         f"{df.attrs[CLASS]}_{df.attrs[VOLTAGE_SIGN]}"
     )
     util.finish_plot(
