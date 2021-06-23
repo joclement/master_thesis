@@ -14,9 +14,11 @@ from .data import CLASS, VOLTAGE_SIGN, VoltageSign
 
 
 def _plot_pd_volts_over_time(df):
+    assert data.TIME_UNIT == "ms"
+    df[data.TIME_DIFF] /= 1000
     plt.scatter(df[data.TIME_DIFF].cumsum(), df[data.PD], marker=".")
-    plt.xlabel(f"t {data.TIME_UNIT}")
-    plt.ylabel("PD in nV")
+    plt.xlabel("Time (sec)")
+    plt.ylabel("PD (nV)")
 
 
 def plot_sliding_window(df):
@@ -105,7 +107,12 @@ def _plot_relation_between_consecutive_pd_volts(df):
 
 def _generate_plots_for_single_csv(df: pd.DataFrame, output_folder, show):
     _plot_pd_volts_over_time(df)
-    util.finish_plot("PDOverTime", output_folder, show)
+    plt.get_current_fig_manager().canvas.set_window_title(
+        f"{df.attrs[CLASS]}_{df.attrs[VOLTAGE_SIGN]}"
+    )
+    util.finish_plot(
+        f"PDOverTime_{df.attrs[CLASS]}_{df.attrs[VOLTAGE_SIGN]}", output_folder, show
+    )
 
     _plot_timediff_between_pds_over_time(df)
     util.finish_plot("DeltaTOverTime", output_folder, show)
