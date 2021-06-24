@@ -109,7 +109,9 @@ class Oned(BaseEstimator, TransformerMixin):
 
     def to_time_series(self, df: pd.DataFrame) -> pd.Series:
         duration = df[data.TIME_DIFF].sum()
-        assert duration <= self._fix_duration
+        assert duration <= self._fix_duration or math.isclose(
+            duration, self._fix_duration
+        )
         if duration < self._fix_duration:
             df = df.append(
                 pd.DataFrame(
