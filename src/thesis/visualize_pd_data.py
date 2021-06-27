@@ -15,8 +15,9 @@ from .data import CLASS, VOLTAGE_SIGN, VoltageSign
 
 def _plot_pd_volts_over_time(df):
     assert data.TIME_UNIT == "ms"
-    df[data.TIME_DIFF] /= 1000
-    plt.scatter(df[data.TIME_DIFF].cumsum(), df[data.PD], marker=".", rasterized=True)
+    ts = df.copy()
+    ts["time"] = (ts[data.TIME_DIFF] / 1000).cumsum()
+    plt.scatter(ts["time"], ts[data.PD], marker=".", rasterized=True)
     plt.xlabel("Time (sec)")
     plt.ylabel("PD (nV)")
 
