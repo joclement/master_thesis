@@ -9,7 +9,15 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from .constants import CACHE_DIR, PLOT_FILE_FORMAT
 
 
+SMALL_SIZE = 18
+MEDIUM_SIZE = 23
+
+
 def finish_plot(name: Optional[str], output_folder: Optional[Path], show: bool = False):
+    plt.rc("axes", labelsize=MEDIUM_SIZE)
+    plt.rc("xtick", labelsize=SMALL_SIZE)
+    plt.rc("ytick", labelsize=SMALL_SIZE)
+
     plt.tight_layout()
     if output_folder:
         plt.savefig(f"{output_folder}/{name}.{PLOT_FILE_FORMAT}")
