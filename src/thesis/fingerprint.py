@@ -22,10 +22,6 @@ from tsfresh.feature_extraction.feature_calculators import (
 
 from .constants import PART
 from .data import CLASS, get_defects, PATH, PD, TIME_DIFF, VOLTAGE_SIGN
-from .util import get_memory
-
-
-memory = get_memory()
 
 
 PD_ID = "A"
@@ -205,7 +201,6 @@ class Features:
         self.times[count_id] = duration
 
 
-@memory.cache
 def extract_features(df: pd.DataFrame, timing_filepath: str = None):
     pd_diff = df[PD].diff()[1:].abs().reset_index(drop=True)
 
