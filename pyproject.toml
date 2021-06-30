@@ -1,8 +1,8 @@
 [tool.poetry]
+authors = ["Joris Clement <j.clement@campus.tu-berlin.de>"]
+description = "Code to Master's Thesis at TU Berlin."
 name = "thesis"
 version = "1.7.0"
-description = "Code to Master's Thesis at TU Berlin."
-authors = ["Joris Clement <j.clement@campus.tu-berlin.de>"]
 
 [tool.poetry.dependencies]
 click = "^7.1.2"
@@ -29,13 +29,13 @@ coverage = "^5.3"
 flake8 = "^3.8.4"
 flake8-black = "^0.2.1"
 flake8-import-order = "^0.18.1"
+jupyterlab = "^3.0.16"
 mat4py = "^0.4.3"
 mypy = "^0.812" # Wait for next release: https://github.com/python/mypy/issues/10622
 pytest = "^6.1.0"
 pytest-cov = "^2.10.1"
 pytest-xdist = "^2.1.0"
 statsmodels = "^0.12.2"
-jupyterlab = "^3.0.16"
 
 [tool.poetry.scripts]
 calc-test-scores = "thesis.calc_test_scores:click_command"
