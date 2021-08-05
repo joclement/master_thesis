@@ -17,7 +17,6 @@ from tsfresh.feature_extraction.feature_calculators import (
     longest_strike_below_mean,
     number_peaks,
     percentage_of_reoccurring_datapoints_to_all_datapoints,
-    ratio_value_number_to_time_series_length,
 )
 
 from .constants import PART
@@ -45,7 +44,7 @@ PD_VAR = f"{PD_ID}-Var"
 PD_SKEW = f"{PD_ID}-Skew"
 PD_KURT = f"{PD_ID}-Kurt"
 PD_WEIB_A = f"{PD_ID}-Weib-\u03B1"
-PD_WEIB_B = f"{PD_ID} Weib-\u03B2"
+PD_WEIB_B = f"{PD_ID}-Weib-\u03B2"
 
 PD_DIFF_WEIB_B = f"{PD_DIFF_ID}-Weib-\u03B2"
 
@@ -67,11 +66,11 @@ PD_MAX = f"{PD_ID}-Max"
 PD_CV = f"{PD_ID}-Std/Mean"
 PD_SUM = f"{PD_ID}-Sum"
 
-PD_DIFF_MEAN = f"{PD_DIFF_ID} Mean"
-PD_DIFF_SKEW = f"{PD_DIFF_ID} Skewness"
-PD_DIFF_VAR = f"{PD_DIFF_ID} Variance"
-PD_DIFF_KURT = f"{PD_DIFF_ID} Kurtosis"
-PD_DIFF_WEIB_A = f"{PD_DIFF_ID} Weibull A"
+PD_DIFF_MEAN = f"{PD_DIFF_ID}-Mean"
+PD_DIFF_SKEW = f"{PD_DIFF_ID}-Skew"
+PD_DIFF_VAR = f"{PD_DIFF_ID}-Var"
+PD_DIFF_KURT = f"{PD_DIFF_ID}-Kurt"
+PD_DIFF_WEIB_A = f"{PD_DIFF_ID}-Weib-\u03B1"
 
 TD_MEDIAN = f"{TD_ID}-Median"
 
@@ -84,15 +83,13 @@ CORR_PD_TO_TD = f"{CORR_ID}-{PD_ID}-{TD_ID}"
 # @note: parameter in own fingerprint
 POLARITY = "+DC/-DC"
 
-PD_MIN = f"{PD_ID} min"
-PD_MEDIAN = f"{PD_ID} Median"
-PD_STD = f"{PD_ID} std"
+PD_MIN = f"{PD_ID}-Min"
+PD_MEDIAN = f"{PD_ID}-Median"
 PD_VAR = f"{PD_ID}-Var"
 PD_NUM_PEAKS_50 = f"{PD_ID}-Num-peaks-50"
 PD_NUM_PEAKS_10 = f"{PD_ID}-Num-peaks-10"
 PD_NUM_PEAKS_5 = f"{PD_ID}-Num-peaks-5"
 PD_NUM_PEAKS_100 = f"{PD_ID}-Num-peaks-100"
-PD_RATIO = f"{PD_ID} ratio"
 PD_PERC_REOCCUR = f"{PD_ID} percentage reocurring"
 PD_COUNT_ABOVE_MEAN = f"{PD_ID}-Num->-mean"
 PD_COUNT_BELOW_MEAN = f"{PD_ID}-Num-<-mean"
@@ -117,7 +114,7 @@ AUTOCORR_10TH_NEXT_TD = f"Auto-{CORR_ID}-{TD_ID}-10"
 
 # @note: further parameters
 PD_BY_TD_WEIB_A = f"{PD_ID}/{TD_ID}-Weib-\u03B1"
-PD_BY_TD_WEIB_B = f"{PD_ID}/{TD_ID}-Weibu-\u03B2"
+PD_BY_TD_WEIB_B = f"{PD_ID}/{TD_ID}-Weib-\u03B2"
 
 
 def get_parameter_group(df: pd.DataFrame, group: Group) -> pd.DataFrame:
@@ -251,9 +248,7 @@ def extract_features(df: pd.DataFrame, timing_filepath: str = None):
         PD_PERC_REOCCUR,
         lambda: percentage_of_reoccurring_datapoints_to_all_datapoints(df[PD]),
     ),
-    features.add(PD_RATIO, lambda: ratio_value_number_to_time_series_length(df[PD])),
     features.add(PD_SKEW, lambda: df[PD].skew()),
-    features.add(PD_STD, lambda: df[PD].std()),
     features.add(PD_SUM, lambda: df[PD].sum()),
     features.add(PD_VAR, lambda: df[PD].var()),
     features.add(

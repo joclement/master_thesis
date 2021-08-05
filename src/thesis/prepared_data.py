@@ -19,14 +19,12 @@ from tslearn.utils import to_sktime_dataset, to_time_series_dataset
 from . import data, fingerprint
 from .constants import MIN_TIME_DIFF, PART
 from .data import PATH, PD, START_TIME, TIME_DIFF
-from .util import get_memory, to_dataTIME
+from .util import to_dataTIME
 
 DEFAULT_REPEAT = sys.maxsize
 MAX_FREQUENCY = pd.tseries.frequencies.to_offset(MIN_TIME_DIFF)
 
 ONEPD_DURATION = pd.Timedelta("10 seconds")
-
-memory = get_memory()
 
 
 class NormalizationMethod(Enum):
@@ -452,7 +450,6 @@ def adapt_durations(
     raise ValueError("Invalid config.")
 
 
-@memory.cache
 def _build_fingerprint_sequence(
     df: pd.DataFrame, finger_algo, duration: pd.Timedelta, step_duration: pd.Timedelta
 ):
