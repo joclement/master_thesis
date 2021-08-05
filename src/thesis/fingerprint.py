@@ -17,7 +17,6 @@ from tsfresh.feature_extraction.feature_calculators import (
     longest_strike_below_mean,
     number_peaks,
     percentage_of_reoccurring_datapoints_to_all_datapoints,
-    ratio_value_number_to_time_series_length,
 )
 
 from .constants import PART
@@ -86,13 +85,11 @@ POLARITY = "+DC/-DC"
 
 PD_MIN = f"{PD_ID}-Min"
 PD_MEDIAN = f"{PD_ID}-Median"
-PD_STD = f"{PD_ID} std"
 PD_VAR = f"{PD_ID}-Var"
 PD_NUM_PEAKS_50 = f"{PD_ID}-Num-peaks-50"
 PD_NUM_PEAKS_10 = f"{PD_ID}-Num-peaks-10"
 PD_NUM_PEAKS_5 = f"{PD_ID}-Num-peaks-5"
 PD_NUM_PEAKS_100 = f"{PD_ID}-Num-peaks-100"
-PD_RATIO = f"{PD_ID} ratio"
 PD_PERC_REOCCUR = f"{PD_ID} percentage reocurring"
 PD_COUNT_ABOVE_MEAN = f"{PD_ID}-Num->-mean"
 PD_COUNT_BELOW_MEAN = f"{PD_ID}-Num-<-mean"
@@ -251,9 +248,7 @@ def extract_features(df: pd.DataFrame, timing_filepath: str = None):
         PD_PERC_REOCCUR,
         lambda: percentage_of_reoccurring_datapoints_to_all_datapoints(df[PD]),
     ),
-    features.add(PD_RATIO, lambda: ratio_value_number_to_time_series_length(df[PD])),
     features.add(PD_SKEW, lambda: df[PD].skew()),
-    features.add(PD_STD, lambda: df[PD].std()),
     features.add(PD_SUM, lambda: df[PD].sum()),
     features.add(PD_VAR, lambda: df[PD].var()),
     features.add(
