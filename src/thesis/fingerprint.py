@@ -162,7 +162,6 @@ class Features:
                 self.time_df = pd.DataFrame(
                     data=[self.times.values()], index=idx, columns=self.times.keys()
                 )
-                Features.first_run = False
             else:
                 self.time_df.loc[
                     (self.df_attrs[PATH], self.df_attrs[PART]), :
