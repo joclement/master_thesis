@@ -4,7 +4,7 @@ general:
   calc_cm: True
   calc_train_score: True
   cv: "logo"
-  data_dir: ./data/csv-files/prepared/dataset/test/normal
+  data_dir: ./data/csv-files/prepared/dataset/train
   drop_empty: True
   just_train: False
   max_duration: "60 seconds"
@@ -18,7 +18,6 @@ general:
   repeat: null
   save_models: True
   show_plots: False
-  timing_file: "./output/new_extract_times.csv"
   split: True
   step_duration: "30 seconds"
   treat_negative_values: "absolute"
