@@ -7,7 +7,7 @@ version = "1.7.0"
 
 [tool.poetry.dependencies]
 click = "^7.1.2"
-dtaidistance = "^2.2.5"
+dtaidistance = "~2.2.5"
 imbalanced-learn = "^0.8.0"
 lightgbm = "^3.1.1"
 matplotlib = "^3.3.2"
