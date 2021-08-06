@@ -3,6 +3,28 @@
 [![Tests](https://github.com/flyingdutchman23/thesis_implementation/workflows/Tests/badge.svg)](https://github.com/flyingdutchman23/thesis_implementation/actions?workflow=Tests)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
+## To use GUI
+
+To use the GUI, install the latest python wheel provided [here](https://git.tu-berlin.de/flyingdutchman/thesis_implementation/-/packages).
+For installation Python 3.8 or higher is necessary.
+
+### Windows
+
+Check e.g.\ [the official python docs](https://docs.python.org/3/using/windows.html)
+to install Python and make a command line ready.
+
+### Installation & Start
+On a linux command line install with the following command when the wheel is
+downloaded:
+```
+python -m pip install FILEPATH_TO_WHEEL
+```
+Then start the GUI by:
+```
+python -m thesis
+```
+
+## For future development
 This is the code to the master's thesis from Joris Clement with the title "Evaluation
 of Classification Algorithms for Partial Discharge Diagnosis in Gas-Insulated HVDC
 Systems".
