@@ -9,9 +9,12 @@ from . import data
 from .predict import PredictionHandler
 
 
-FINGER_PREPROCESSOR_PATH: Final = Path("./finger_preprocessor.p")
-PREPROCESSOR_PATH: Final = Path("./preprocessor.p")
-MODEL_PATH: Final = Path("./model.p")
+MODEL_FILES_DIR: Final = Path(Path(__file__).parent, "./model_files")
+FINGER_PREPROCESSOR_PATH: Final = Path(MODEL_FILES_DIR, "./finger_preprocessor.p")
+PREPROCESSOR_PATH: Final = Path(MODEL_FILES_DIR, "./preprocessor.p")
+MODEL_PATH: Final = Path(MODEL_FILES_DIR, "./model.p")
+
+UNSET_POLARITY_VAR: Final = ""
 
 
 class ClassifierGui(tk.Toplevel):
@@ -31,15 +34,12 @@ class ClassifierGui(tk.Toplevel):
         )
         self.button_explore.grid(column=1, row=2)
 
-        self.polarity_options = ["", data.POS_VOLTAGE, data.NEG_VOLTAGE]
-        polarity_variable = tk.StringVar(parent)
-        polarity_variable.set(self.polarity_options[0])
-        self.polarity = self.polarity_options[0]
+        self.polarity_variable = tk.StringVar(parent)
 
         polarity_options_menu = tk.OptionMenu(
             parent,
-            polarity_variable,
-            *self.polarity_options,
+            self.polarity_variable,
+            *[UNSET_POLARITY_VAR, data.POS_VOLTAGE, data.NEG_VOLTAGE],
             command=self._polarity_chosen,
         )
         polarity_options_menu.grid(column=1, row=3)
@@ -49,10 +49,9 @@ class ClassifierGui(tk.Toplevel):
         )
         self.button_classify.grid(column=1, row=4)
 
-        self.text_field = tk.Text(parent, height=10, width=90)
+        self.text_field = tk.Text(parent, height=14, width=90)
         self.text_field.grid(column=1, row=5)
 
-        self.df = None
         if FINGER_PREPROCESSOR_PATH.exists():
             finger_preprocessor_path = FINGER_PREPROCESSOR_PATH
         else:
@@ -63,12 +62,20 @@ class ClassifierGui(tk.Toplevel):
             finger_preprocessor_path=finger_preprocessor_path,
         )
 
-    def _polarity_chosen(self, value):
-        self.polarity = value
+        self._reset()
+
+    def _reset(self):
+        self.polarity_variable.set(UNSET_POLARITY_VAR)
+        self.button_classify["state"] = "disabled"
+        self.label_file_explorer.configure(text="")
+        self.df = None
+        self.filepath = None
+
+    def _polarity_chosen(self, _):
         self._check_classification_readiness()
 
     def _check_classification_readiness(self):
-        if self.df is not None and self.polarity != self.polarity_options[0]:
+        if self.df is not None and self.polarity_variable.get() != UNSET_POLARITY_VAR:
             self.text_field.delete(1.0, tk.END)
             self.button_classify["state"] = "normal"
 
@@ -78,29 +85,37 @@ class ClassifierGui(tk.Toplevel):
             title="Select the measurement file",
             filetypes=(("csv files", "*.csv*"),),
         )
-        self.df = data.read(filepath, labeled_file=False)
-        self.label_file_explorer.configure(text="File valid: " + filepath)
-        self._check_classification_readiness()
+        if isinstance(filepath, str):
+            self.df = data.read(filepath, labeled_file=False)
+            self.label_file_explorer.configure(text="File valid: " + filepath)
+            self._check_classification_readiness()
+            self.filepath = filepath
 
     def _predict(self):
-        self.df.attrs[data.VOLTAGE_SIGN] = self.polarity
-        prediction, probabilities_list = self.predictionHandler.predict_one(self.df)
+        self.df.attrs[data.VOLTAGE_SIGN] = data.VoltageSign.from_str(
+            self.polarity_variable.get()
+        )
+        prediction, probabilities_list, _, _ = self.predictionHandler.predict_one(
+            self.df
+        )
         probabilities_dict = {
             data.Defect(idx): prob for idx, prob in enumerate(probabilities_list)
         }
         probabilities_output = "".join(
-            [f"{str(defect)}: {prob}\n" for defect, prob in probabilities_dict.items()]
+            [
+                f"  {str(defect)}: {prob}\n"
+                for defect, prob in probabilities_dict.items()
+            ]
         )
         self.text_field.insert(
             tk.END,
-            "Classification results:\n"
-            f"class {str(prediction)}\n\n"
+            f"Filepath: {self.filepath}\n\n"
+            f"Classification result: {str(prediction)}\n"
             "Probabilities:\n"
             f"{probabilities_output}",
         )
-        self.button_classify["state"] = "disabled"
-        self.label_file_explorer.configure(text="")
-        self.df = None
+
+        self._reset()
 
     def _handle_error(self, *args):
         error = traceback.format_exception(*args)

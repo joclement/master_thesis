@@ -45,4 +45,9 @@ class PredictionHandler:
         predict_duration = time.process_time() - start
         proba_prediction = np.sum(proba_predictions, axis=0) / len(X)
         prediction = np.argmax(proba_prediction)
-        return prediction, proba_prediction, preprocess_duration, predict_duration
+        return (
+            Defect(prediction),
+            proba_prediction,
+            preprocess_duration,
+            predict_duration,
+        )

@@ -1,7 +1,7 @@
 from enum import Enum, IntEnum
 from pathlib import Path
 import textwrap
-from typing import Final, List, Tuple, Union
+from typing import Dict, Final, List, Tuple, Union
 
 import pandas as pd
 
@@ -33,8 +33,12 @@ class VoltageSign(IntEnum):
     def __str__(self):
         return _VOLTAGE_NAMES[self.value]
 
+    @staticmethod
+    def from_str(voltage_sign: str):
+        return {value: key for key, value in _VOLTAGE_NAMES.items()}[voltage_sign]
 
-_VOLTAGE_NAMES: Final = {
+
+_VOLTAGE_NAMES: Final[Dict[IntEnum, str]] = {
     VoltageSign.positive: POS_VOLTAGE,
     VoltageSign.negative: NEG_VOLTAGE,
 }
