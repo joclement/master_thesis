@@ -3,7 +3,7 @@ authors = ["Joris Clement <j.clement@campus.tu-berlin.de>"]
 description = "Code to Master's Thesis at TU Berlin."
 license = "MIT"
 name = "thesis"
-version = "1.8.3"
+version = "1.8.4"
 
 [tool.poetry.dependencies]
 click = "^7.1.2"
