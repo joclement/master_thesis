@@ -17,4 +17,4 @@ jobs:
     - run: pip install nox-poetry==0.8.5
     - run: nox
     - run: poetry build
-    - run: poetry publish -r tuberlin-gitlab -u=${{ secrets.PYPI_USERNAME }} -p=${{ secrets.PYPI_TOKEN }}
+    - run: poetry publish -r tuberlin-gitlab -u=${{ secrets.PYPI_USERNAME }} -p=${{ secrets.PYPI_PASSWORD }}
