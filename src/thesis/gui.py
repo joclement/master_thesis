@@ -9,9 +9,10 @@ from . import data
 from .predict import PredictionHandler
 
 
-FINGER_PREPROCESSOR_PATH: Final = Path("./finger_preprocessor.p")
-PREPROCESSOR_PATH: Final = Path("./preprocessor.p")
-MODEL_PATH: Final = Path("./model.p")
+MODEL_FILES_DIR: Final = Path(Path(__file__).parent, "./model_files")
+FINGER_PREPROCESSOR_PATH: Final = Path(MODEL_FILES_DIR, "./finger_preprocessor.p")
+PREPROCESSOR_PATH: Final = Path(MODEL_FILES_DIR, "./preprocessor.p")
+MODEL_PATH: Final = Path(MODEL_FILES_DIR, "./model.p")
 
 
 class ClassifierGui(tk.Toplevel):
