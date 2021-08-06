@@ -2016,7 +2016,7 @@ heapdict = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "68156c0c9784633056b045ef8df290dd4e230939d7805b2bef7f370bd5d6ceb6"
+content-hash = "4a8cd4fbf802606deb55e05a5cd224179ab7188e0d58525c0469c9e641492468"
 
 [metadata.files]
 absl-py = [
