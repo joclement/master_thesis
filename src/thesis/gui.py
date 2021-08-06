@@ -49,7 +49,7 @@ class ClassifierGui(tk.Toplevel):
         )
         self.button_classify.grid(column=1, row=4)
 
-        self.text_field = tk.Text(parent, height=10, width=90)
+        self.text_field = tk.Text(parent, height=14, width=90)
         self.text_field.grid(column=1, row=5)
 
         if FINGER_PREPROCESSOR_PATH.exists():
