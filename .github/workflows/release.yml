@@ -17,4 +17,8 @@ jobs:
     - run: pip install nox-poetry==0.8.5
     - run: nox
     - run: poetry build
-    - run: poetry publish -r tuberlin-gitlab -u=${{ secrets.PYPI_USERNAME }} -p=${{ secrets.PYPI_PASSWORD }}
+    - name: upload package to Gitlab pypi
+      env:
+        POETRY_HTTP_BASIC_TUBERLINGITLAB_USERNAME: ${{ secrets.POETRY_HTTP_BASIC_TUBERLINGITLAB_USERNAME }}
+        POETRY_HTTP_BASIC_TUBERLINGITLAB_PASSWORD: ${{ secrets.POETRY_HTTP_BASIC_TUBERLINGITLAB_PASSWORD }}
+      run: poetry publish -r tuberlingitlab
