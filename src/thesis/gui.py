@@ -69,6 +69,7 @@ class ClassifierGui(tk.Toplevel):
         self.button_classify["state"] = "disabled"
         self.label_file_explorer.configure(text="")
         self.df = None
+        self.filepath = None
 
     def _polarity_chosen(self, _):
         self._check_classification_readiness()
@@ -84,9 +85,11 @@ class ClassifierGui(tk.Toplevel):
             title="Select the measurement file",
             filetypes=(("csv files", "*.csv*"),),
         )
-        self.df = data.read(filepath, labeled_file=False)
-        self.label_file_explorer.configure(text="File valid: " + filepath)
-        self._check_classification_readiness()
+        if isinstance(filepath, str):
+            self.df = data.read(filepath, labeled_file=False)
+            self.label_file_explorer.configure(text="File valid: " + filepath)
+            self._check_classification_readiness()
+            self.filepath = filepath
 
     def _predict(self):
         self.df.attrs[data.VOLTAGE_SIGN] = data.VoltageSign.from_str(
@@ -103,8 +106,7 @@ class ClassifierGui(tk.Toplevel):
         )
         self.text_field.insert(
             tk.END,
-            "Classification results:\n"
-            f"class {str(prediction)}\n\n"
+            f"Filepath: {self.filepath}\n\n"
             "Probabilities:\n"
             f"{probabilities_output}",
         )
