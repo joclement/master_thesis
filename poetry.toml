@@ -1,0 +1,3 @@
+[repositories]
+[repositories.tuberlin-gitlab]
+url = "https://git.tu-berlin.de/api/v4/projects/9438/packages/pypi/"
