@@ -92,7 +92,9 @@ class ClassifierGui(tk.Toplevel):
         self.df.attrs[data.VOLTAGE_SIGN] = data.VoltageSign.from_str(
             self.polarity_variable.get()
         )
-        prediction, probabilities_list = self.predictionHandler.predict_one(self.df)
+        prediction, probabilities_list, _, _ = self.predictionHandler.predict_one(
+            self.df
+        )
         probabilities_dict = {
             data.Defect(idx): prob for idx, prob in enumerate(probabilities_list)
         }
