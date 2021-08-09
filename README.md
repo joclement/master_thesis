@@ -44,7 +44,7 @@ Then just type `nox` on the command line to run the tests and checks.
 
 After the dependencies are installed and the scripts can be executed. Run for e.g.
 ```bash
-poetry run classify config/fingerprints
+poetry run classify config/fingerprints.yml
 ```
 to train and validate some of the feature-based models.
 The data is needed to do that. The data is contained in the submodule `data` and not in
