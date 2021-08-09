@@ -576,7 +576,7 @@ def main(config_path, warn):
     OUTPUT_DIRECTORY folder where plot(s) will be saved
     """
     with open(config_path, "r") as stream:
-        config = yaml.load(stream)
+        config = yaml.load(stream, Loader=yaml.FullLoader)
 
     if warn:
         warnings.resetwarnings()

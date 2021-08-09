@@ -205,7 +205,7 @@ def plot_scores(
 @click.option("--show/--no-show", default=True)
 def main(result_dir, config_file, show):
     with open(Path(result_dir, CONFIG_FILENAME), "r") as stream:
-        classify_config = yaml.load(stream)
+        classify_config = yaml.load(stream, Loader=yaml.FullLoader)
     if config_file:
         with open(config_file, "r") as stream:
             config = yaml.load(stream)
