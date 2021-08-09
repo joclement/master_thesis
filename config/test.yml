@@ -210,6 +210,7 @@ models:
         frequency: "500ms"
       weasel:
         window_sizes: [10, 23]
+        n_bins: 2
     classifier:
       solver: "liblinear"
       dual: True

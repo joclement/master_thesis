@@ -489,7 +489,11 @@ class ClassificationHandler:
                 )
 
             model_folder.mkdir(exist_ok=True)
-            with open(Path(model_folder, "pipeline_representation.html"), "w") as file:
+            with open(
+                Path(model_folder, "pipeline_representation.html"),
+                "w",
+                encoding="utf-8",
+            ) as file:
                 file.write(estimator_html_repr(pipeline))
             self.scores.to_csv(Path(self.output_dir, SCORES_FILENAME))
             self.predictions.to_csv(Path(self.output_dir, PREDICTIONS_FILENAME))

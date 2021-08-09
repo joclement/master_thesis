@@ -16,7 +16,6 @@ def tests(session):
         "--cov",
         "-m",
         "not e2e and not expensive",
-        "--exitfirst",
     ]
     session.install(".")
     session.install("coverage[toml]", "pytest", "pytest-cov", "pytest-xdist")
