@@ -11,7 +11,7 @@ version >= 3.8.7 and < 3.9.
 
 ### Windows
 
-Check e.g.\ [the official python docs](https://docs.python.org/3/using/windows.html)
+Check e.g. [the official python docs](https://docs.python.org/3/using/windows.html)
 to install Python and make a command line ready.
 
 ### Installation & Start
