@@ -2015,8 +2015,8 @@ heapdict = "*"
 
 [metadata]
 lock-version = "1.1"
-python-versions = "^3.8"
-content-hash = "4a8cd4fbf802606deb55e05a5cd224179ab7188e0d58525c0469c9e641492468"
+python-versions = "~3.8.7"
+content-hash = "9c0b770bbb3b4940679878960dd0b0c5ee6e42fe6286be7bf6b8edb7b06894c3"
 
 [metadata.files]
 absl-py = [
