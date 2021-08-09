@@ -15,7 +15,7 @@ Check e.g. [the official python docs](https://docs.python.org/3/using/windows.ht
 to install Python and make a command line ready.
 
 ### Installation & Start
-On a linux command line install with the following command when the wheel is
+On a command line install with the following command when the wheel is
 downloaded:
 ```
 python -m pip install FILEPATH_TO_WHEEL
