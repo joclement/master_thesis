@@ -6,7 +6,8 @@
 ## To use GUI
 
 To use the GUI, install the latest python wheel provided [here](https://git.tu-berlin.de/flyingdutchman/thesis_implementation/-/packages).
-For installation Python 3.8 or higher is necessary.
+For installation a Python version with the following requirements is necessary:
+version >= 3.8.7 and < 3.9.
 
 ### Windows
 
