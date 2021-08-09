@@ -1,18 +1,11 @@
-from pathlib import Path
 import sys
 import tkinter as tk
 from tkinter.filedialog import askopenfilename
 import traceback
 from typing import Final
 
-from . import data
-from .predict import PredictionHandler
+from . import data, predict
 
-
-MODEL_FILES_DIR: Final = Path(Path(__file__).parent, "./model_files")
-FINGER_PREPROCESSOR_PATH: Final = Path(MODEL_FILES_DIR, "./finger_preprocessor.p")
-PREPROCESSOR_PATH: Final = Path(MODEL_FILES_DIR, "./preprocessor.p")
-MODEL_PATH: Final = Path(MODEL_FILES_DIR, "./model.p")
 
 UNSET_POLARITY_VAR: Final = ""
 
@@ -52,16 +45,7 @@ class ClassifierGui(tk.Toplevel):
         self.text_field = tk.Text(parent, height=14, width=90)
         self.text_field.grid(column=1, row=5)
 
-        if FINGER_PREPROCESSOR_PATH.exists():
-            finger_preprocessor_path = FINGER_PREPROCESSOR_PATH
-        else:
-            finger_preprocessor_path = None
-        self.predictionHandler = PredictionHandler(
-            PREPROCESSOR_PATH,
-            MODEL_PATH,
-            finger_preprocessor_path=finger_preprocessor_path,
-        )
-
+        self.predictionHandler = predict.load_handler_with_pkg_model()
         self._reset()
 
     def _reset(self):
