@@ -1,7 +1,7 @@
 from pathlib import Path
 import pickle
 import time
-from typing import Any, Optional, Tuple
+from typing import Any, Final, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -9,6 +9,12 @@ from tensorflow.keras.models import load_model
 
 from .data import Defect
 from .models import is_data_finger
+
+
+MODEL_FILES_DIR: Final = Path(Path(__file__).parent, "./model_files")
+FINGER_PREPROCESSOR_PATH: Final = Path(MODEL_FILES_DIR, "./finger_preprocessor.p")
+PREPROCESSOR_PATH: Final = Path(MODEL_FILES_DIR, "./preprocessor.p")
+MODEL_PATH: Final = Path(MODEL_FILES_DIR, "./model.p")
 
 
 class PredictionHandler:
@@ -51,3 +57,11 @@ class PredictionHandler:
             preprocess_duration,
             predict_duration,
         )
+
+
+def load_handler_with_pkg_model():
+    return PredictionHandler(
+        PREPROCESSOR_PATH,
+        MODEL_PATH,
+        finger_preprocessor_path=FINGER_PREPROCESSOR_PATH,
+    )
