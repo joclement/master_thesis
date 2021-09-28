@@ -44,6 +44,7 @@ models-to-run:
   - knn_fastdtw-oned
   - lgbm-finger_own
   - lr-oned_weasel
+  - mlp-finger_relown
   - mlp-tsfresh
   - ott_algo-finger_ott
   - pytsknn-oned
@@ -308,6 +309,19 @@ models:
       rfe:
         features: 20
 
+  mlp-finger_relown:
+    normalize: "zscore"
+    classifier:
+      n_jobs: *n_jobs
+      hidden_layer_sizes: !!python/tuple [4]
+      dropout: 0.01
+      optimizer: "adam"
+      batch_size: *batch_size
+      epochs: *epochs
+      verbose: *verbose
+    grid:
+      classifier: *mlp_grid
+
   mlp-finger_all:
     normalize: "zscore"
     classifier:
@@ -324,25 +338,12 @@ models:
       frommodel:
         penalty: "l1"
 
-
   mlp-finger_tugraz:
     normalize: "zscore"
     classifier:
       n_jobs: *n_jobs
       batch_size: *batch_size
       hidden_layer_sizes: !!python/tuple [4]
-      dropout: 0.05
-      optimizer: "adam"
-      epochs: *epochs
-      verbose: *verbose
-
-  mlp-finger_both:
-    normalize: "zscore"
-    classifier:
-      n_jobs: *n_jobs
-      batch_size: *batch_size
-      hidden_layer_sizes:
-        - 6
       dropout: 0.05
       optimizer: "adam"
       epochs: *epochs
