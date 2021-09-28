@@ -335,18 +335,6 @@ models:
       epochs: *epochs
       verbose: *verbose
 
-  mlp-finger_both:
-    normalize: "zscore"
-    classifier:
-      n_jobs: *n_jobs
-      batch_size: *batch_size
-      hidden_layer_sizes:
-        - 6
-      dropout: 0.05
-      optimizer: "adam"
-      epochs: *epochs
-      verbose: *verbose
-
   svm-finger_all:
     normalize: "zscore"
     classifier:
