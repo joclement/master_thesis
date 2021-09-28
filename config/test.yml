@@ -324,7 +324,6 @@ models:
       frommodel:
         penalty: "l1"
 
-
   mlp-finger_tugraz:
     normalize: "zscore"
     classifier:
