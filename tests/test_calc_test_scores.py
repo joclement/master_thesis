@@ -3,7 +3,7 @@ from pathlib import Path
 import click.testing
 import pytest
 
-from thesis import calc_test_scores, classify
+from jc_thesis_code import calc_test_scores, classify
 
 
 @pytest.fixture

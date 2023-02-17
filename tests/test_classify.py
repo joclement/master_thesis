@@ -5,8 +5,8 @@ import pandas as pd
 import pytest
 import yaml
 
-from thesis import classify, data
-from thesis.constants import PLOT_FILE_FORMAT
+from jc_thesis_code import classify, data
+from jc_thesis_code.constants import PLOT_FILE_FORMAT
 
 
 @pytest.fixture

@@ -4,7 +4,7 @@ import click.testing
 import pytest
 import yaml
 
-from thesis import grid_search
+from jc_thesis_code import grid_search
 
 
 @pytest.mark.expensive

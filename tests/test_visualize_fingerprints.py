@@ -6,8 +6,8 @@ import click.testing
 import pandas as pd
 import pytest
 
-from thesis import data, fingerprint, visualize_fingerprints
-from thesis.constants import PLOT_FILE_FORMAT
+from jc_thesis_code import data, fingerprint, visualize_fingerprints
+from jc_thesis_code.constants import PLOT_FILE_FORMAT
 
 
 @pytest.fixture

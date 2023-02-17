@@ -5,7 +5,7 @@ import pandas as pd
 import pytest
 from sklearn.model_selection import train_test_split
 
-from thesis import data
+from jc_thesis_code import data
 
 
 def test_data_read(csv_filepath):

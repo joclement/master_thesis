@@ -1,4 +1,4 @@
-from thesis import data, predict
+from jc_thesis_code import data, predict
 
 
 def test_predict_one_with_pkg_model(large_df):

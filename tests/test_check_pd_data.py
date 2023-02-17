@@ -1,6 +1,6 @@
 import click.testing
 
-from thesis import check_pd_data
+from jc_thesis_code import check_pd_data
 
 
 def test_check_pd_data_main_file_succeeds(large_csv_filepath):

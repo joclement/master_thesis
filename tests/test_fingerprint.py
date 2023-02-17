@@ -6,7 +6,7 @@ import pandas as pd
 from pytest import approx, fixture, mark
 from sklearn.preprocessing import MinMaxScaler
 
-from thesis import data, fingerprint
+from jc_thesis_code import data, fingerprint
 
 
 def test_fingerprint_tugraz(measurement):

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from thesis import illustrate_dtw
+from jc_thesis_code import illustrate_dtw
 
 
 def test_main(tmpdir):

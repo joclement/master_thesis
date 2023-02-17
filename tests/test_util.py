@@ -1,7 +1,7 @@
 import pandas as pd
 from pytest import approx
 
-from thesis import data, util
+from jc_thesis_code import data, util
 
 
 def test_to_dataTime(measurement):

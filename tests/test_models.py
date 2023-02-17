@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from thesis import data, models
+from jc_thesis_code import data, models
 
 
 @pytest.fixture

@@ -22,7 +22,7 @@ python -m pip install FILEPATH_TO_WHEEL
 ```
 Then start the GUI by:
 ```
-python -m thesis
+python -m jc-thesis-code
 ```
 
 ## For future development

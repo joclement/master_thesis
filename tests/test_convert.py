@@ -4,7 +4,7 @@ from pathlib import Path
 import click.testing
 import pytest
 
-from thesis import convert, data
+from jc_thesis_code import convert, data
 
 
 @pytest.fixture

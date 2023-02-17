@@ -2,8 +2,8 @@ from pathlib import Path
 
 import click.testing
 
-from thesis import util, visualize_pd_data
-from thesis.constants import PLOT_FILE_FORMAT
+from jc_thesis_code import util, visualize_pd_data
+from jc_thesis_code.constants import PLOT_FILE_FORMAT
 
 
 def test_visualize_pd_data_main_succeeds(tiny_csv_filepath):
