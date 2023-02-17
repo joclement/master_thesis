@@ -24,14 +24,7 @@ def tests(session):
 @session(python="3.8")
 def lint(session):
     session.install("flake8", "flake8-black", "flake8-import-order")
-    session.run(
-        "flake8",
-        "--application-import-names",
-        "jc_thesis_code",
-        "--application-package-names",
-        "jc-thesis-code",
-        *LOCATIONS
-    )
+    session.run("flake8", "--application-import-names", "jc_thesis_code", *LOCATIONS)
 
 
 @session(python="3.8")
