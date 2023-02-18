@@ -1,7 +1,7 @@
 import click.testing
 import pytest
 
-from thesis import classify, visualize_results
+from jc_thesis_code import classify, visualize_results
 
 
 @pytest.fixture

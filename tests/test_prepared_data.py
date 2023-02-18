@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from thesis import data, prepared_data
+from jc_thesis_code import data, prepared_data
 
 
 def test_split_by_durations(measurement):

@@ -4,7 +4,7 @@ import pytest
 from sklearn.dummy import DummyClassifier
 from sklearn.utils.estimator_checks import check_estimator
 
-from thesis import classifiers, data
+from jc_thesis_code import classifiers, data
 
 
 @pytest.fixture

@@ -2,7 +2,7 @@
 authors = ["Joris Clement <j.clement@campus.tu-berlin.de>"]
 description = "Code to Master's Thesis at TU Berlin."
 license = "MIT"
-name = "thesis"
+name = "jc-thesis-code"
 readme = "README.md"
 version = "1.9.0"
 
@@ -14,14 +14,14 @@ lightgbm = "^3.1.1"
 matplotlib = "^3.3.2"
 numpy = "^1.19.4"
 pandas = "^1.1.2"
-python = "~3.8.7"
+python = "^3.8.7"
 pyts = "^0.11.0"
 scikit-learn = "~0.24.2"
 scipy = "^1.5.2"
 seaborn = "^0.11.0"
 shap = "^0.39.0"
 sktime = "^0.6.1"
-tensorflow = "~2.5.1"
+tensorflow = "~2.5.2"
 tsfresh = "^0.18.0"
 tslearn = "~0.5"
 
@@ -40,28 +40,28 @@ pytest-xdist = "^2.1.0"
 statsmodels = "^0.12.2"
 
 [tool.poetry.scripts]
-calc-test-scores = "thesis.calc_test_scores:click_command"
-check-pd-data = "thesis.check_pd_data:main"
-classify = "thesis.classify:main"
-grid-search = "thesis.grid_search:main"
-gui = "thesis.gui:main"
-illu-dtw = "thesis.illustrate_dtw:main"
-mat2csv = "thesis.convert:mat2csv"
-plot-stratified-kfold = "thesis.plot_stratified_kfold:main"
-print-feature-extract-times = "thesis.print_feature_extraction_times:click_command"
-show-test-scores = "thesis.show_test_scores:click_command"
-tsfresh-features = "thesis.tsfresh_features:main"
-visualize-fingerprints = "thesis.visualize_fingerprints:main"
-visualize-grid = "thesis.visualize_grid:main"
-visualize-pd-data = "thesis.visualize_pd_data:main"
-visualize-results = "thesis.visualize_results:main"
+calc-test-scores = "jc_thesis_code.calc_test_scores:click_command"
+check-pd-data = "jc_thesis_code.check_pd_data:main"
+classify = "jc_thesis_code.classify:main"
+grid-search = "jc_thesis_code.grid_search:main"
+gui = "jc_thesis_code.gui:main"
+illu-dtw = "jc_thesis_code.illustrate_dtw:main"
+mat2csv = "jc_thesis_code.convert:mat2csv"
+plot-stratified-kfold = "jc_thesis_code.plot_stratified_kfold:main"
+print-feature-extract-times = "jc_thesis_code.print_feature_extraction_times:click_command"
+show-test-scores = "jc_thesis_code.show_test_scores:click_command"
+tsfresh-features = "jc_thesis_code.tsfresh_features:main"
+visualize-fingerprints = "jc_thesis_code.visualize_fingerprints:main"
+visualize-grid = "jc_thesis_code.visualize_grid:main"
+visualize-pd-data = "jc_thesis_code.visualize_pd_data:main"
+visualize-results = "jc_thesis_code.visualize_results:main"
 
 [tool.coverage.paths]
 source = ["src", "*/site-packages"]
 
 [tool.coverage.run]
 branch = true
-source = ["thesis"]
+source = ["jc_thesis_code"]
 
 [tool.coverage.report]
 show_missing = true

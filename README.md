@@ -1,13 +1,7 @@
 # Implementation for Master Thesis
 
-[![Tests](https://github.com/flyingdutchman23/thesis_implementation/workflows/Tests/badge.svg)](https://github.com/flyingdutchman23/thesis_implementation/actions?workflow=Tests)
+[![Tests](https://github.com/joclement/master_thesis/workflows/Tests/badge.svg)](https://github.com/joclement/master_thesis/actions?workflow=Tests)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-
-## To use GUI
-
-To use the GUI, install the latest python wheel provided [here](https://git.tu-berlin.de/flyingdutchman/thesis_implementation/-/packages).
-For installation a Python version with the following requirements is necessary:
-version >= 3.8.7 and < 3.9.
 
 ### Windows
 
@@ -22,7 +16,7 @@ python -m pip install FILEPATH_TO_WHEEL
 ```
 Then start the GUI by:
 ```
-python -m thesis
+python -m jc-thesis-code
 ```
 
 ## For future development

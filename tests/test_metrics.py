@@ -1,6 +1,6 @@
 import pytest
 
-from thesis import metrics
+from jc_thesis_code import metrics
 
 
 def test_file_score_valid_input():

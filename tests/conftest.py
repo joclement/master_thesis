@@ -5,9 +5,9 @@ from shutil import copyfile
 import pytest
 import yaml
 
-from thesis import data
-from thesis.prepared_data import adapt_durations
-from thesis.tsfresh_features import save_extract_features
+from jc_thesis_code import data
+from jc_thesis_code.prepared_data import adapt_durations
+from jc_thesis_code.tsfresh_features import save_extract_features
 
 
 def pytest_configure(config):

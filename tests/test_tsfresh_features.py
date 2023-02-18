@@ -4,7 +4,7 @@ import shutil
 import click.testing
 import pandas as pd
 
-from thesis import tsfresh_features
+from jc_thesis_code import tsfresh_features
 
 
 def test_main_with_features_saved(csv_folder, tmpdir):
